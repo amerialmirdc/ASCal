@@ -1,0 +1,13 @@
+# 🔒 Ignore compiled binaries
+bin/
+obj/
+
+# 🧍 Ignore user-specific VS settings
+*.user
+*.suo
+*.sln.docstates
+
+# 📦 Ignore packages or temporary files
+*.bak
+*.tmp
+*.log

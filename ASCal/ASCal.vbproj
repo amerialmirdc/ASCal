@@ -1,0 +1,477 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F6B664F9-709C-42CB-8833-6436A81C4547}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>ASCal.My.MyApplication</StartupObject>
+    <RootNamespace>ASCal</RootNamespace>
+    <AssemblyName>ASCal</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>WindowsForms</MyType>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>ASCal.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>ASCal.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic.PowerPacks.Vs, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SQLite.Designer">
+      <HintPath>bin\Debug\SQLite\sqlite\SQLite.Designer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.SQLite, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SqlServerCe, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows.Forms" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Forms\Admin\jobDashAdmin.Designer.vb">
+      <DependentUpon>jobDashAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\jobDashAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Technician\jobPreview.Designer.vb">
+      <DependentUpon>jobPreview.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Technician\jobPreview.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\dmmManagementAdmin.Designer.vb">
+      <DependentUpon>dmmManagementAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\dmmManagementAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\editDMMAdmin.Designer.vb">
+      <DependentUpon>editDMMAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\editDMMAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\newDmmAdmin.Designer.vb">
+      <DependentUpon>newDmmAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\newDmmAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Signatory\jobDashSig.Designer.vb">
+      <DependentUpon>jobDashSig.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Signatory\jobDashSig.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Signatory\landingPageSignatory.Designer.vb">
+      <DependentUpon>landingPageSignatory.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Signatory\landingPageSignatory.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Technician\calibrate.Designer.vb">
+      <DependentUpon>calibrate.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Technician\calibrate.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\compManagementAdmin.Designer.vb">
+      <DependentUpon>compManagementAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\compManagementAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\editCompanyAdmin.Designer.vb">
+      <DependentUpon>editCompanyAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\editCompanyAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\editUserAdmin.Designer.vb">
+      <DependentUpon>editUserAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\editUserAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Technician\jobDashTech.Designer.vb">
+      <DependentUpon>jobDashTech.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Technician\jobDashTech.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\newCompanyForm.Designer.vb">
+      <DependentUpon>newCompanyForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\newCompanyForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Module\UIHelper.vb" />
+    <Compile Include="Module\SessionManager.vb" />
+    <Compile Include="Module\SQLiteHelper.vb" />
+    <Compile Include="Forms\Admin\userManagementAdmin.Designer.vb">
+      <DependentUpon>userManagementAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\userManagementAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\newUserAdmin.Designer.vb">
+      <DependentUpon>newUserAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\newUserAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Admin\landingPageAdmin.Designer.vb">
+      <DependentUpon>landingPageAdmin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\landingPageAdmin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Technician\landingPageTechnician.Designer.vb">
+      <DependentUpon>landingPageTechnician.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Technician\landingPageTechnician.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\login.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\login.Designer.vb">
+      <DependentUpon>login.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\Admin\dmmManagementAdmin.resx">
+      <DependentUpon>dmmManagementAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\editDMMAdmin.resx">
+      <DependentUpon>editDMMAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\jobDashAdmin.resx">
+      <DependentUpon>jobDashAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\newDMMAdmin.resx">
+      <DependentUpon>newDmmAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Technician\jobPreview.resx">
+      <DependentUpon>jobPreview.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Signatory\jobDashSig.resx">
+      <DependentUpon>jobDashSig.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Signatory\landingPageSignatory.resx">
+      <DependentUpon>landingPageSignatory.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Technician\calibrate.resx">
+      <DependentUpon>calibrate.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\compManagementAdmin.resx">
+      <DependentUpon>compManagementAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\editCompanyAdmin.resx">
+      <DependentUpon>editCompanyAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\editUserAdmin.resx">
+      <DependentUpon>editUserAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Technician\jobDashTech.resx">
+      <DependentUpon>jobDashTech.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\newCompanyForm.resx">
+      <DependentUpon>newCompanyForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\userManagementAdmin.resx">
+      <DependentUpon>userManagementAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\newUserAdmin.resx">
+      <DependentUpon>newUserAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\landingPageAdmin.resx">
+      <DependentUpon>landingPageAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Technician\landingPageTechnician.resx">
+      <DependentUpon>landingPageTechnician.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\login.resx">
+      <DependentUpon>login.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="My Project\app.manifest" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\amerial-combi6-c-1-removebg-preview-1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ascal logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Fonts\Coure.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\CoureB.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\CoureBI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\CoureI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\Dutch.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\3ds Bold Italic.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\3ds Bold.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\3ds Italic.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\3ds Regular.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\3ds_fonticon.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\DutchB.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\DutchBI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\DutchI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\Mathe.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\Monos.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\MonosB.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\MonosBI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\MonosI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SwiOuB.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\Swiss.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SwissB.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SwissBI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SwissCL.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SwissCLI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SwissI.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SymbC.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SymbM.ttf" />
+    <EmbeddedResource Include="Resources\Fonts\SymbP.ttf" />
+    <None Include="Resources\Slide1.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Slide2.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\profile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\profile1.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\profile2.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.SQL.Server.Compact.3.5">
+      <Visible>False</Visible>
+      <ProductName>SQL Server Compact 3.5 SP2</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="ADODB">
+      <Guid>{00000205-0000-0010-8000-00AA006D2EA4}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>5</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>7</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Access">
+      <Guid>{4AFFC9A0-5F99-101B-AF4E-00AA003F0F07}</Guid>
+      <VersionMajor>9</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Access.Dao">
+      <Guid>{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28}</Guid>
+      <VersionMajor>12</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="MSOLAPADMINLib2">
+      <Guid>{1E083960-829F-11D3-AB5D-00C04F9407B9}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\download-6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\download-61.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Group 26.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Image1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\31.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
