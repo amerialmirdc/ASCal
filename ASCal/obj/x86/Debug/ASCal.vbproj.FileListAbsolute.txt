@@ -1,0 +1,43 @@
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\bin\Debug\ASCal.exe
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\bin\Debug\ASCal.pdb
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\bin\Debug\ASCal.xml
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\obj\x86\Debug\ASCal.Resources.resources
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\obj\x86\Debug\ASCal.vbproj.GenerateResource.Cache
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\obj\x86\Debug\ASCal.exe
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\obj\x86\Debug\ASCal.xml
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\obj\x86\Debug\ASCal.pdb
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\obj\x86\Debug\ASCal.login.resources
+C:\Users\dbneri\AppData\Local\Temporary Projects\ASCal\obj\x86\Debug\ASCal.Form1.resources
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.exe
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.xml
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.pdb
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\bin\Debug\ASCal.exe
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\bin\Debug\ASCal.pdb
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\bin\Debug\ASCal.xml
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.login.resources
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.Resources.resources
+C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.GenerateResource.Cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.landingPageAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbprojResolveAssemblyReference.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\Interop.MSOLAPADMINLib2.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.ResolveComReference.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.calibrate.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.newUserAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.userManagementAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.jobDashTech.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.compManagementAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ASCal.exe.config
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.newCompanyForm.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\SQLite.Designer.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\SQLite.Designer.pdb
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\SQLite.Designer.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.landingPageSignatory.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.landingPageTechnician.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.jobDashboard.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.dmmManagementAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.newDMMAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.jobPreview.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.jobDashAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.editDMMAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.editCompanyAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.editUserAdmin.resources
