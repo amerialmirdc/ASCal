@@ -69,15 +69,15 @@ Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Cl
 
         'CheckFontsAcrossAllForms()
 
-        CheckFontsAndNotify(Me)
-        CheckFontsAndNotify(compManagementAdmin)
-        CheckFontsAndNotify(dmmManagementAdmin)
-        CheckFontsAndNotify(jobDashAdmin)
-        CheckFontsAndNotify(landingPageAdmin)
-        CheckFontsAndNotify(newCompanyForm)
-        CheckFontsAndNotify(newDMMAdmin)
-        CheckFontsAndNotify(newUserAdmin)
-        CheckFontsAndNotify(userManagementAdmin)
+        'CheckFontsAndNotify(Me)
+        'CheckFontsAndNotify(compManagementAdmin)
+        'CheckFontsAndNotify(dmmManagementAdmin)
+        'CheckFontsAndNotify(jobDashAdmin)
+        'CheckFontsAndNotify(landingPageAdmin)
+        'CheckFontsAndNotify(newCompanyForm)
+        'CheckFontsAndNotify(newDMMAdmin)
+        'CheckFontsAndNotify(newUserAdmin)
+        'CheckFontsAndNotify(userManagementAdmin)
 
 
 

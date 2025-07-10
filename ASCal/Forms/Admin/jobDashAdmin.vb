@@ -118,21 +118,21 @@ Public Class jobDashAdmin
 
             Dim header As New Label With {
                 .Text = "JOB #" & job.WorkOrderNumber,
-                .Font = New Font("Courier New", 11, FontStyle.Bold),
+                .Font = New Font("Courier10 BT", 11, FontStyle.Bold),
                 .AutoSize = True,
                 .Location = New Point(10, 10)
             }
 
             Dim dateLbl As New Label With {
-                .Text = "Date: " & job.CalibrationDate.ToString("MMM dd, yyyy"),
-                .Font = New Font("Courier New", 9),
+                .Text = "Date: " & Convert.ToDateTime(job.CalibrationDate).ToString("MMM dd, yyyy"),
+                .Font = New Font("Courier10 BT", 9),
                 .AutoSize = True,
                 .Location = New Point(10, 35)
             }
 
             Dim statusLbl As New Label With {
                 .Text = "Status: " & job.Status,
-                .Font = New Font("Courier New", 9, FontStyle.Bold),
+                .Font = New Font("Courier10 BT", 9, FontStyle.Bold),
                 .ForeColor = GetStatusColor(job.Status),
                 .AutoSize = True,
                 .Location = New Point(10, 60)
@@ -191,7 +191,7 @@ Public Class jobDashAdmin
 
         Dim headerLabel As New Label With {
             .Text = title,
-            .Font = New Font("Segoe UI", 11, FontStyle.Bold),
+            .Font = New Font("Courier10 BT", 11, FontStyle.Bold),
             .ForeColor = Color.White,
             .AutoSize = True,
             .Location = New Point(10, 10)
@@ -212,21 +212,21 @@ Public Class jobDashAdmin
 
             Dim header As New Label With {
                 .Text = "JOB #" & job.WorkOrderNumber,
-                .Font = New Font("Courier New", 11, FontStyle.Bold),
+                .Font = New Font("CCourier10 BT", 11, FontStyle.Bold),
                 .AutoSize = True,
                 .Location = New Point(10, 10)
             }
 
             Dim dateLbl As New Label With {
-                .Text = "Date: " & job.CalibrationDate.ToString("MMM dd, yyyy"),
-                .Font = New Font("Courier New", 9),
+                .Text = "Date: " & Convert.ToDateTime(job.CalibrationDate).ToString("MMM dd, yyyy"),
+                .Font = New Font("Courier10 BT", 9),
                 .AutoSize = True,
                 .Location = New Point(10, 35)
             }
 
             Dim statusLbl As New Label With {
                 .Text = "Status: " & job.Status,
-                .Font = New Font("Courier New", 9, FontStyle.Bold),
+                .Font = New Font("CCourier10 BT", 9, FontStyle.Bold),
                 .ForeColor = GetStatusColor(job.Status),
                 .AutoSize = True,
                 .Location = New Point(10, 60)

@@ -25,7 +25,7 @@ Public Class landingPageAdmin
             Case sender Is logoBox
                 Me.Refresh()
             Case sender Is Button2
-                MessageBox.Show("Job Management Button")
+                jobDashAdmin.Show()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
                 Me.Hide()

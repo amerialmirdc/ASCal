@@ -243,7 +243,7 @@ Partial Class jobDashAdmin
         Me.pageLabel.AutoSize = True
         Me.pageLabel.BackColor = System.Drawing.Color.White
         Me.pageLabel.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.pageLabel.Location = New System.Drawing.Point(1534, 879)
+        Me.pageLabel.Location = New System.Drawing.Point(1412, 944)
         Me.pageLabel.Name = "pageLabel"
         Me.pageLabel.Size = New System.Drawing.Size(107, 17)
         Me.pageLabel.TabIndex = 16
@@ -254,7 +254,7 @@ Partial Class jobDashAdmin
         'prevBtn
         '
         Me.prevBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.prevBtn.Location = New System.Drawing.Point(1446, 872)
+        Me.prevBtn.Location = New System.Drawing.Point(1324, 937)
         Me.prevBtn.Name = "prevBtn"
         Me.prevBtn.Size = New System.Drawing.Size(84, 30)
         Me.prevBtn.TabIndex = 15
@@ -264,7 +264,7 @@ Partial Class jobDashAdmin
         'nextBtn
         '
         Me.nextBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.nextBtn.Location = New System.Drawing.Point(1660, 872)
+        Me.nextBtn.Location = New System.Drawing.Point(1538, 937)
         Me.nextBtn.Name = "nextBtn"
         Me.nextBtn.Size = New System.Drawing.Size(84, 30)
         Me.nextBtn.TabIndex = 14
@@ -274,19 +274,20 @@ Partial Class jobDashAdmin
         'jobPrevPanel
         '
         Me.jobPrevPanel.AutoScroll = True
+        Me.jobPrevPanel.AutoScrollMinSize = New System.Drawing.Size(1671, 650)
         Me.jobPrevPanel.BackColor = System.Drawing.Color.White
-        Me.jobPrevPanel.Location = New System.Drawing.Point(84, 214)
+        Me.jobPrevPanel.Location = New System.Drawing.Point(14, 214)
         Me.jobPrevPanel.Name = "jobPrevPanel"
-        Me.jobPrevPanel.Size = New System.Drawing.Size(1671, 650)
+        Me.jobPrevPanel.Size = New System.Drawing.Size(1666, 717)
         Me.jobPrevPanel.TabIndex = 11
         '
         'Panel9
         '
         Me.Panel9.Controls.Add(Me.Label3)
         Me.Panel9.Controls.Add(Me.completeBtn)
-        Me.Panel9.Location = New System.Drawing.Point(1344, 74)
+        Me.Panel9.Location = New System.Drawing.Point(1283, 74)
         Me.Panel9.Name = "Panel9"
-        Me.Panel9.Size = New System.Drawing.Size(364, 103)
+        Me.Panel9.Size = New System.Drawing.Size(359, 103)
         Me.Panel9.TabIndex = 10
         '
         'Label3
@@ -298,7 +299,7 @@ Partial Class jobDashAdmin
         Me.Label3.Location = New System.Drawing.Point(0, 66)
         Me.Label3.Margin = New System.Windows.Forms.Padding(0)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(364, 37)
+        Me.Label3.Size = New System.Drawing.Size(359, 37)
         Me.Label3.TabIndex = 4
         Me.Label3.Text = "COMPLETED"
         Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -311,7 +312,7 @@ Partial Class jobDashAdmin
         Me.completeBtn.Font = New System.Drawing.Font("Courier10 BT", 50.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.completeBtn.Location = New System.Drawing.Point(0, 0)
         Me.completeBtn.Name = "completeBtn"
-        Me.completeBtn.Size = New System.Drawing.Size(364, 66)
+        Me.completeBtn.Size = New System.Drawing.Size(359, 66)
         Me.completeBtn.TabIndex = 0
         Me.completeBtn.Text = "#"
         Me.completeBtn.UseVisualStyleBackColor = False
@@ -320,9 +321,9 @@ Partial Class jobDashAdmin
         '
         Me.Panel10.Controls.Add(Me.Label2)
         Me.Panel10.Controls.Add(Me.forReviBtn)
-        Me.Panel10.Location = New System.Drawing.Point(933, 74)
+        Me.Panel10.Location = New System.Drawing.Point(872, 74)
         Me.Panel10.Name = "Panel10"
-        Me.Panel10.Size = New System.Drawing.Size(364, 103)
+        Me.Panel10.Size = New System.Drawing.Size(359, 103)
         Me.Panel10.TabIndex = 9
         '
         'Label2
@@ -334,7 +335,7 @@ Partial Class jobDashAdmin
         Me.Label2.Location = New System.Drawing.Point(0, 66)
         Me.Label2.Margin = New System.Windows.Forms.Padding(0)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(364, 37)
+        Me.Label2.Size = New System.Drawing.Size(359, 37)
         Me.Label2.TabIndex = 4
         Me.Label2.Text = "FOR REVISION"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -347,7 +348,7 @@ Partial Class jobDashAdmin
         Me.forReviBtn.Font = New System.Drawing.Font("Courier10 BT", 50.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.forReviBtn.Location = New System.Drawing.Point(0, 0)
         Me.forReviBtn.Name = "forReviBtn"
-        Me.forReviBtn.Size = New System.Drawing.Size(364, 66)
+        Me.forReviBtn.Size = New System.Drawing.Size(359, 66)
         Me.forReviBtn.TabIndex = 0
         Me.forReviBtn.Text = "#"
         Me.forReviBtn.UseVisualStyleBackColor = False
@@ -356,9 +357,9 @@ Partial Class jobDashAdmin
         '
         Me.Panel11.Controls.Add(Me.Label1)
         Me.Panel11.Controls.Add(Me.forRevBtn)
-        Me.Panel11.Location = New System.Drawing.Point(513, 74)
+        Me.Panel11.Location = New System.Drawing.Point(452, 74)
         Me.Panel11.Name = "Panel11"
-        Me.Panel11.Size = New System.Drawing.Size(364, 103)
+        Me.Panel11.Size = New System.Drawing.Size(359, 103)
         Me.Panel11.TabIndex = 8
         '
         'Label1
@@ -370,7 +371,7 @@ Partial Class jobDashAdmin
         Me.Label1.Location = New System.Drawing.Point(0, 66)
         Me.Label1.Margin = New System.Windows.Forms.Padding(0)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(364, 37)
+        Me.Label1.Size = New System.Drawing.Size(359, 37)
         Me.Label1.TabIndex = 4
         Me.Label1.Text = "PENDING FOR REVIEW"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -383,7 +384,7 @@ Partial Class jobDashAdmin
         Me.forRevBtn.Font = New System.Drawing.Font("Courier10 BT", 50.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.forRevBtn.Location = New System.Drawing.Point(0, 0)
         Me.forRevBtn.Name = "forRevBtn"
-        Me.forRevBtn.Size = New System.Drawing.Size(364, 66)
+        Me.forRevBtn.Size = New System.Drawing.Size(359, 66)
         Me.forRevBtn.TabIndex = 0
         Me.forRevBtn.Text = "#"
         Me.forRevBtn.UseVisualStyleBackColor = False
@@ -392,7 +393,7 @@ Partial Class jobDashAdmin
         '
         Me.userName.AutoSize = True
         Me.userName.Font = New System.Drawing.Font("Courier10 BT", 40.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.userName.Location = New System.Drawing.Point(75, 111)
+        Me.userName.Location = New System.Drawing.Point(15, 113)
         Me.userName.Margin = New System.Windows.Forms.Padding(0)
         Me.userName.Name = "userName"
         Me.userName.Size = New System.Drawing.Size(332, 46)
@@ -401,7 +402,7 @@ Partial Class jobDashAdmin
         '
         'jobDashAdmin
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 12.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1924, 979)
         Me.Controls.Add(Me.Panel7)
