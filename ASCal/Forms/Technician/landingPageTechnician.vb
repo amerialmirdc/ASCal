@@ -24,7 +24,6 @@ Public Class landingPageTechnician
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
-
         If CurrentUser IsNot Nothing Then
             userName.Text = CurrentUser.Name
             accountType.Text = CurrentUser.AccountType
@@ -108,19 +107,14 @@ Public Class landingPageTechnician
         ApplyFilter("all")
     End Sub
 
-
-
-
     Private Sub ApplyFilter(statusFilter As String)
         filteredJobs.Clear()
         currentPage = 1
 
         Dim filteredList = If(statusFilter = "all", allJobs, allJobs.Where(Function(j) j.Status = statusFilter).ToList())
-
         For Each job In filteredList
             filteredJobs.Add(CreateJobPanel(job))
         Next
-
         DisplayCurrentPage()
         UpdateNavButtons()
     End Sub
@@ -206,8 +200,6 @@ Public Class landingPageTechnician
         Return jobPanel
     End Function
 
-
-
     Private Sub DisplayCurrentPage()
         userJobLogs.Controls.Clear()
 
@@ -220,10 +212,10 @@ Public Class landingPageTechnician
             .Margin = New Padding(0, 0, 0, 10)
         }
 
-        Dim filterAll As New Button With {.Text = "ALL", .Font = New Font("Courier New", 12), .Width = 80, .Height = 30, .FlatStyle = FlatStyle.Flat}
-        Dim filterReview As New Button With {.Text = "FOR REVIEW", .Font = New Font("Courier New", 12), .Width = 120, .Height = 30, .FlatStyle = FlatStyle.Flat}
-        Dim filterRevision As New Button With {.Text = "FOR REVISION", .Font = New Font("Courier New", 12), .Width = 150, .Height = 30, .FlatStyle = FlatStyle.Flat}
-        Dim filterApproved As New Button With {.Text = "APPROVED", .Font = New Font("Courier New", 12), .Width = 120, .Height = 30, .FlatStyle = FlatStyle.Flat}
+        Dim filterAll As New Button With {.Text = "ALL", .Font = New Font("Courier10 BT", 12), .Width = 80, .Height = 30, .FlatStyle = FlatStyle.Flat}
+        Dim filterReview As New Button With {.Text = "FOR REVIEW", .Font = New Font("Courier10 BT", 12), .Width = 120, .Height = 30, .FlatStyle = FlatStyle.Flat}
+        Dim filterRevision As New Button With {.Text = "FOR REVISION", .Font = New Font("Courier10 BT", 12), .Width = 150, .Height = 30, .FlatStyle = FlatStyle.Flat}
+        Dim filterApproved As New Button With {.Text = "APPROVED", .Font = New Font("Courier10 BT", 12), .Width = 120, .Height = 30, .FlatStyle = FlatStyle.Flat}
 
         filterAll.Location = New Point(10, (filterPanel.Height - filterAll.Height) / 2)
         filterReview.Location = New Point(100, (filterPanel.Height - filterReview.Height) / 2)
@@ -250,14 +242,11 @@ Public Class landingPageTechnician
             pageLabel.Text = "Page 0 of 0"
             Exit Sub
         End If
-
         Dim startIndex As Integer = (currentPage - 1) * jobsPerPage
         Dim endIndex As Integer = Math.Min(startIndex + jobsPerPage, filteredJobs.Count)
-
         For i As Integer = startIndex To endIndex - 1
             userJobLogs.Controls.Add(filteredJobs(i))
         Next
-
         pageLabel.Text = "Page " & currentPage.ToString() & " of " & Math.Ceiling(filteredJobs.Count / jobsPerPage)
     End Sub
 
@@ -303,7 +292,6 @@ Public Class landingPageTechnician
         currentPage = 1
         LoadTechnicianJobs()
     End Sub
-
 
 End Class
 

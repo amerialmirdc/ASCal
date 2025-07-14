@@ -8,19 +8,17 @@ Public Class calibrate
         contextMenuCompanies.SelectedIndex = -1
         contextMenuCompanies.Text = ""
         dmmSearch.Clear()
-
+        Me.Close()
 
         Select Case True
             Case sender Is logoBtn
                 landingPageTechnician.Show()
-                Me.Hide()
             Case sender Is logoutBtn
                 login.Show()
-                Me.Hide()
             Case sender Is jobDashBtn
                 jobDashTech.Show()
-                Me.Hide()
         End Select
+
     End Sub
 
     Private companyDict As New Dictionary(Of String, String)
@@ -245,7 +243,6 @@ Public Class calibrate
             Next
         Next
 
-
     End Sub
 
     Private Sub contextMenuCompanies_SelectedIndexChanged(sender As Object, e As EventArgs) Handles contextMenuCompanies.SelectedIndexChanged
@@ -279,7 +276,6 @@ Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEven
 
         Dim selectedRow As DataGridViewRow = dataGridResult.Rows(e.RowIndex)
         Dim selectedModel As String = selectedRow.Cells(0).Value.ToString()
-
         ' Autofill DMM info
         Dim dmm = dmmItems.FirstOrDefault(Function(i) i.Item1 = selectedModel)
         If dmm Is Nothing Then
@@ -326,7 +322,6 @@ Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEven
         End Select
     End Function
 
-
     Private Sub dataGridResult_CellMouseMove(sender As Object, e As DataGridViewCellMouseEventArgs) Handles dataGridResult.CellMouseMove
         If e.RowIndex >= 0 Then
             dataGridResult.Cursor = Cursors.Hand
@@ -334,7 +329,6 @@ Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEven
             dataGridResult.Cursor = Cursors.Default
         End If
     End Sub
-
 
     ' ========== Populate dataGrid with optional filter (for search) ==========
     Private Sub PopulateDataGrid(Optional ByVal filter As String = "")
@@ -346,7 +340,6 @@ Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEven
         Next
     End Sub
 
-
     ' ========== Filter models habang nagta-type ==========
     Private Sub dmmSearch_TextChanged(sender As Object, e As EventArgs)
         PopulateDataGrid(dmmSearch.Text)
@@ -356,7 +349,6 @@ Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEven
     Private Sub dataGridResult_SelectionChanged(sender As Object, e As EventArgs) Handles dataGridResult.SelectionChanged
         If dataGridResult.SelectedRows.Count > 0 Then
             Dim selectedModel As String = dataGridResult.SelectedRows(0).Cells(0).Value.ToString()
-
             ' Auto-fill manufacturer and description
             Dim selectedItem As Tuple(Of String, String, String) = dmmItems.FirstOrDefault(Function(i) i.Item1 = selectedModel)
             If selectedItem IsNot Nothing Then
@@ -364,7 +356,6 @@ Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEven
                 TextBox6.Text = selectedItem.Item2
                 TextBox4.Text = selectedItem.Item3
             End If
-
             ' Clear old data
             cLParamACV.Items.Clear()
 
@@ -384,16 +375,12 @@ Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEven
                         cLParamACV.SetItemChecked(cLParamACV.Items.Count - 1, False)
                     Next
                 Next
-
             Next
-
             ' Add spacing for readability
             cLParamACV.Items.Add(" ")
 
         End If
     End Sub
-
-
 
 Private Sub HandleCheckedListBoxClick(clb As CheckedListBox, e As MouseEventArgs)
         Dim index As Integer = clb.IndexFromPoint(e.Location)
@@ -445,8 +432,6 @@ Private Sub HandleCheckedListBoxClick(clb As CheckedListBox, e As MouseEventArgs
     Private Sub cLParamRES_MouseUp(sender As Object, e As MouseEventArgs) Handles cLParamRES.MouseUp
         HandleCheckedListBoxClick(cLParamRES, e)
     End Sub
-
-
 
     ' ========== Select all/Unselect all parameters buttons ==========
 Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
@@ -513,8 +498,6 @@ Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUn
             Dim signatoryName As String = "All Signatories"
             Dim selectedDate As String = TextBox3.Value.ToString("yyyy-MM-dd")
 
-
-
             Dim company As String = contextMenuCompanies.Text.Trim()
             Dim address As String = compAdd.Text.Trim()
             Dim model As String = TextBox10.Text.Trim()
@@ -570,8 +553,6 @@ Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUn
         End If
     End Sub
 
-
-
     ' ========== On-Site or In-House checkbox toggle logic ==========
     Private Sub CheckedListBox1_MouseUp(sender As Object, e As MouseEventArgs) Handles CheckedListBox1.MouseUp
         Dim index As Integer = CheckedListBox1.IndexFromPoint(e.Location)
@@ -598,15 +579,12 @@ Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUn
     End Sub
 
     Public Sub RefreshData()
-
         contextMenuCompanies.Items.Clear()
         companyDict.Clear()
-
         Dim companies = LoadAllCompanies()
         For Each comp In companies
             contextMenuCompanies.Items.Add(comp.Name)
         Next
-
     End Sub
 
     Private Sub addRefStandard_Click(sender As Object, e As EventArgs) Handles addRefStandard.Click
@@ -625,10 +603,8 @@ Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUn
                 .Font = New Font("Courier New", 10),
                 .Name = "refstand_" & currentRow.ToString() & "_" & col.ToString()
             }
-
             TableLayoutPanel1.Controls.Add(txtBox, col, currentRow)
         Next
-
         ' ⬇️ Ensure scroll brings new row into view
         Dim lastTextbox As Control = TableLayoutPanel1.GetControlFromPosition(0, currentRow)
         If lastTextbox IsNot Nothing Then

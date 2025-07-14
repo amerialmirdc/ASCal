@@ -13,7 +13,7 @@ Public Class landingPageSignatory
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, logoutBtn.Click
 
         calibrate.RefreshData()
-        Me.Hide()
+        Me.Close()
 
         Select Case True
             Case sender Is logoutBtn

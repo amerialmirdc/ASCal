@@ -8,7 +8,7 @@ Public Class jobDashTech
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoutBtn.Click, jobDashBtn.Click, calibrateBtn.Click, logoBox.Click
 
         calibrate.RefreshData()
-        Me.Hide()
+        Me.Close()
 
         Select Case True
             Case sender Is logoutBtn
@@ -24,6 +24,7 @@ Public Class jobDashTech
             Case sender Is logoBox
                 landingPageTechnician.Show()
         End Select
+
     End Sub
 
     ' ========== Variables ========== 
