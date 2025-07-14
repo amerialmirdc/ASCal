@@ -49,8 +49,8 @@ Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Cl
             calibrate.RefreshData()
             jobDashTech.RefreshData()
 
-            ' Hide login form
-            Me.Hide()
+            ' Close login form
+            Me.Close()
 
         Else
             ' If login failed
@@ -66,7 +66,6 @@ Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Cl
     ' Optional: clear fields when form loads
     Private Sub login_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-
         ''CheckFontsAcrossAllForms()
 
         'CheckFontsAndNotify(Me)
@@ -78,8 +77,6 @@ Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Cl
         'CheckFontsAndNotify(newDMMAdmin)
         'CheckFontsAndNotify(newUserAdmin)
         'CheckFontsAndNotify(userManagementAdmin)
-
-
 
         Dim users As List(Of userManagementAdmin.Personnel) = LoadAllUsers()
 

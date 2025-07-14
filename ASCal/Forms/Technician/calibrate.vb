@@ -8,15 +8,17 @@ Public Class calibrate
         contextMenuCompanies.SelectedIndex = -1
         contextMenuCompanies.Text = ""
         dmmSearch.Clear()
-        Me.Close()
 
         Select Case True
             Case sender Is logoBtn
                 landingPageTechnician.Show()
+                Me.Close()
             Case sender Is logoutBtn
                 login.Show()
+                Me.Close()
             Case sender Is jobDashBtn
                 jobDashTech.Show()
+                Me.Close()
         End Select
 
     End Sub

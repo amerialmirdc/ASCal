@@ -12,6 +12,30 @@ Public Class jobDashAdmin
     Private totalPages As Integer
     Private activeCategory As String = ""
 
+    ' ===== Unified Button Click Handler =====
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, userManagementBtn.Click, compMan.Click, Button1.Click, logoutBtn.Click
+
+        calibrate.RefreshData()
+
+        Select Case True
+            Case sender Is logoBox
+                landingPageAdmin.Show()
+                Me.Close()
+            Case sender Is compMan
+                compManagementAdmin.Show()
+                Me.Close()
+            Case sender Is userManagementBtn
+                userManagementAdmin.Show()
+                Me.Close()
+            Case sender Is Button1
+                dmmManagementAdmin.Show()
+                Me.Close()
+            Case sender Is logoutBtn
+                login.Show()
+                Me.Close()
+        End Select
+    End Sub
+
     Private Sub jobDashAdmin_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         ' Make sure start position is manual

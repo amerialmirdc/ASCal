@@ -11,21 +11,26 @@ Public Class newDMMAdmin
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, button1.Click, backBtn.Click
 
         calibrate.RefreshData()
-        Me.Close()
 
         Select Case True
             Case sender Is PictureBox1  ' Home
                 landingPageAdmin.Show()
+                Me.Close()
             Case sender Is jobdash      ' Job management
                 jobDashAdmin.Show()
+                Me.Close()
             Case sender Is Button3      ' User management
                 userManagementAdmin.Show()
+                Me.Close()
             Case sender Is compMan      ' Company management
                 compManagementAdmin.Show()
+                Me.Close()
             Case sender Is logoutBtn    ' Logout
                 login.Show()
+                Me.Close()
             Case sender Is backBtn      ' Refresh page
                 dmmManagementAdmin.Show()
+                Me.Close()
         End Select
 
     End Sub

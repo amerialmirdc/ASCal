@@ -18,11 +18,11 @@ Public Class jobDashboard
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, logoutBtn.Click
 
         calibrate.RefreshData()
-        Me.Close()
 
         Select Case True
             Case sender Is logoutBtn
                 login.Show()
+                Me.Close()
             Case sender Is Button2
                 activeCategory = ""
                 ResetButtonColors()
@@ -31,6 +31,7 @@ Public Class jobDashboard
                 Me.Show() ' Show this form again
             Case sender Is logoBox
                 landingPageSignatory.Show()
+                Me.Close()
         End Select
     End Sub
 

@@ -12,22 +12,27 @@ Public Class newUserAdmin
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, compMan.Click, logoutBtn.Click, Button1.Click, backBtn.Click
 
         calibrate.RefreshData()
-        Me.Close()
 
         Select Case True
             Case sender Is logoBox OrElse sender Is logoBox
                 landingPageAdmin.Show()
+                Me.Close()
             Case sender Is Button2
                 jobDashAdmin.Show()
+                Me.Close()
             Case sender Is compMan
                 compManagementAdmin.Show()
+                Me.Close()
             Case sender Is logoutBtn
                 login.Show()
+                Me.Close()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
+                Me.Close()
             Case sender Is Button1
                 ClearFields()
                 userManagementAdmin.Show()
+                Me.Close()
         End Select
 
     End Sub

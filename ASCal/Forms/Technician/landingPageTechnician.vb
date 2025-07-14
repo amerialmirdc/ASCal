@@ -273,24 +273,27 @@ Public Class landingPageTechnician
         prevBtn.Enabled = currentPage > 1
     End Sub
 
-    Private Sub logoutBtn_Click(sender As System.Object, e As System.EventArgs) Handles logoutBtn.Click
-        login.Show()
-        Me.Hide()
-    End Sub
+    ' ========== Unified Navigation Handler ==========
+    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoutBtn.Click, jobDashBtn.Click, calibrateBtn.Click, logoBox.Click
 
-    Private Sub Button1_Click_1(sender As System.Object, e As System.EventArgs) Handles calibrateBtn.Click
-        calibrate.Show()
-        Me.Hide()
-    End Sub
+        calibrate.RefreshData()
 
-    Private Sub Button2_Click(sender As System.Object, e As System.EventArgs) Handles jobDashBtn.Click
-        jobDashTech.Show()
-        Me.Hide()
-    End Sub
+        Select Case True
+            Case sender Is logoutBtn
+                login.Show()
+                Me.Close()
+            Case sender Is jobDashBtn
+                jobDashTech.Show()
+                Me.Close()
+            Case sender Is calibrateBtn
+                calibrate.Show()
+                Me.Close()
+            Case sender Is logoBox
+                currentPage = 1
+                LoadTechnicianJobs()
+                Me.Close()
+        End Select
 
-    Private Sub logoBox_Click(sender As System.Object, e As System.EventArgs) Handles logoBox.Click
-        currentPage = 1
-        LoadTechnicianJobs()
     End Sub
 
 End Class

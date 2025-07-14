@@ -8,11 +8,11 @@ Public Class jobDashTech
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoutBtn.Click, jobDashBtn.Click, calibrateBtn.Click, logoBox.Click
 
         calibrate.RefreshData()
-        Me.Close()
 
         Select Case True
             Case sender Is logoutBtn
                 login.Show()
+                Me.Close()
             Case sender Is jobDashBtn
                 activeCategory = ""
                 ResetButtonColors()
@@ -21,8 +21,10 @@ Public Class jobDashTech
                 Me.Show() ' Show this form again
             Case sender Is calibrateBtn
                 calibrate.Show()
+                Me.Close()
             Case sender Is logoBox
                 landingPageTechnician.Show()
+                Me.Close()
         End Select
 
     End Sub
