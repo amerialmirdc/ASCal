@@ -34,31 +34,26 @@ Public Class dmmManagementAdmin
     End Sub
 
     ' ===== Unified Button Click Handler =====
-    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, button1.Click
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, button1.Click, newDmm.Click
+
         calibrate.RefreshData()
+        Me.Close()
+
         Select Case True
             Case sender Is PictureBox1
                 landingPageAdmin.Show()
-                Me.Hide()
             Case sender Is jobdash
-                MessageBox.Show("JOB MANAGEMENT")
+                jobDashAdmin.Show()
             Case sender Is Button3
                 userManagementAdmin.Show()
-                Me.Hide()
             Case sender Is compMan
                 compManagementAdmin.Show()
-                Me.Hide()
             Case sender Is logoutBtn
                 login.Show()
-                Me.Hide()
-            Case sender Is button1
-                Me.Refresh()
+            Case sender Is newDmm
+                newDMMAdmin.Show()
         End Select
-    End Sub
 
-    Private Sub newDmm_Click(sender As System.Object, e As System.EventArgs) Handles newDmm.Click
-        newDMMAdmin.Show()
-        Me.Hide()
     End Sub
 
     Private Sub LoadDMMGrid()

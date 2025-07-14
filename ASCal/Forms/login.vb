@@ -67,7 +67,7 @@ Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Cl
     Private Sub login_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
 
-        'CheckFontsAcrossAllForms()
+        ''CheckFontsAcrossAllForms()
 
         'CheckFontsAndNotify(Me)
         'CheckFontsAndNotify(compManagementAdmin)

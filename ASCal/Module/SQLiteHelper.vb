@@ -151,7 +151,7 @@ Module SQLiteHelper
     ' ===================== COMPANY FUNCTIONS =====================
     ' 🏢 Represents a company record from the database
     Public Class Company
-        Public Property ID As Integer
+        Public Property CompanyID As Integer ' 🛠 Changed from ID to CompanyID
         Public Property Name As String
         Public Property Address As String
         Public Property ContactPerson As String
@@ -172,7 +172,7 @@ Module SQLiteHelper
                 Using reader As SQLiteDataReader = cmd.ExecuteReader()
                     While reader.Read()
                         Dim comp As New Company With {
-                            .ID = reader("company_id"),
+                            .CompanyID = Convert.ToInt32(reader("company_id")),
                             .Name = reader("company_name").ToString(),
                             .Address = reader("address").ToString(),
                             .ContactPerson = reader("contact_person").ToString(),
@@ -189,6 +189,36 @@ Module SQLiteHelper
 
         Return companies
     End Function
+
+    ' 💾 Update a company's information in the database
+    Public Sub UpdateCompany(company As Company)
+        Using conn = GetConnection()
+            conn.Open()
+            Dim sql As String = "UPDATE companies SET " &
+                                "company_name = @name, " &
+                                "address = @address, " &
+                                "contact_person = @contactPerson, " &
+                                "contact_number = @contactNumber, " &
+                                "email = @email, " &
+                                "date_enrolled = @dateEnrolled, " &
+                                "status = @status " &
+                                "WHERE company_id = @companyID"
+
+            Using cmd As New SQLiteCommand(sql, conn)
+                cmd.Parameters.AddWithValue("@name", company.Name)
+                cmd.Parameters.AddWithValue("@address", company.Address)
+                cmd.Parameters.AddWithValue("@contactPerson", company.ContactPerson)
+                cmd.Parameters.AddWithValue("@contactNumber", company.ContactNumber)
+                cmd.Parameters.AddWithValue("@email", company.Email)
+                cmd.Parameters.AddWithValue("@dateEnrolled", company.DateEnrolled)
+                cmd.Parameters.AddWithValue("@status", company.Status)
+                cmd.Parameters.AddWithValue("@companyID", company.CompanyID)
+
+                cmd.ExecuteNonQuery()
+            End Using
+        End Using
+    End Sub
+
 
     ' ===================== JOB FUNCTIONS =====================
 

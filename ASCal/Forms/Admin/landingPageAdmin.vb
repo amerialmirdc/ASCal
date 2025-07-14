@@ -10,26 +10,21 @@ Public Class landingPageAdmin
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles userManagementBtn.Click, compMan.Click, logoutBtn.Click, logoBox.Click, Button2.Click, Button1.Click
 
         calibrate.RefreshData()
-
+        Me.Close()
 
         Select Case True
             Case sender Is userManagementBtn
                 userManagementAdmin.Show()
-                Me.Hide()
             Case sender Is compMan
                 compManagementAdmin.Show()
-                Me.Hide()
             Case sender Is logoutBtn
                 login.Show()
-                Me.Hide()
-            Case sender Is logoBox
-                Me.Refresh()
             Case sender Is Button2
                 jobDashAdmin.Show()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
-                Me.Hide()
         End Select
+
     End Sub
 
     ' ✅ On form load:

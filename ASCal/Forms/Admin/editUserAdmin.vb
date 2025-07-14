@@ -12,9 +12,29 @@ Public Class editUserAdmin
     Private originalName As String
     Private originalAccountType As String
 
+    ' ===== Unified Button Click Handler =====
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, Button4.Click, compMan.Click, Button3.Click, logoutBtn.Click, Button1.Click
+
+        calibrate.RefreshData()
+        Me.Close()
+
+        Select Case True
+            Case sender Is PictureBox1
+                landingPageAdmin.Show()
+            Case sender Is Button4
+                MessageBox.Show("JOB MANAGEMENT")
+            Case sender Is compMan
+                compManagementAdmin.Show()
+            Case sender Is Button3
+                userManagementAdmin.Show()
+            Case sender Is logoutBtn
+                login.Show()
+            Case sender Is Button1
+                dmmManagementAdmin.Show()
+        End Select
+    End Sub
 
     '' ===== SUB editUserForm_Load =====
-    '' Purpose: [Describe what editUserForm_Load does]
     Private Sub editUserForm_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
 
         ' Make sure start position is manual
@@ -267,32 +287,6 @@ Public Class editUserAdmin
         e.Handled = True
     End Sub
 
-    ' ===== Unified Button Click Handler =====
-    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, Button4.Click, compMan.Click, Button3.Click, logoutBtn.Click, Button1.Click
-
-        calibrate.RefreshData()
-
-        Select Case True
-            Case sender Is PictureBox1
-                landingPageAdmin.Show()
-                Me.Hide()
-            Case sender Is Button4
-                MessageBox.Show("JOB MANAGEMENT")
-            Case sender Is compMan
-                compManagementAdmin.Show()
-                Me.Hide()
-            Case sender Is Button3
-                Me.Refresh()
-            Case sender Is logoutBtn
-                login.Show()
-                Me.Hide()
-            Case sender Is Button1
-                dmmManagementAdmin.Show()
-                Me.Hide()
-        End Select
-    End Sub
-
-
     Private Shared Function GetInitials(fullName As String) As String
         Dim initials As String = ""
         Dim parts() As String = fullName.Trim().Split(" "c)
@@ -305,7 +299,4 @@ Public Class editUserAdmin
     End Function
 
 
-    Private Sub Panel6_Paint(sender As System.Object, e As System.Windows.Forms.PaintEventArgs) Handles Panel6.Paint
-
-    End Sub
 End Class

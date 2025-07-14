@@ -9,27 +9,25 @@ Public Class editDMMAdmin
 
     ' ===== Unified Button Click Handler =====
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, Button1.Click, cancelBtn.Click
+
         calibrate.RefreshData()
+        Me.Close()
+
         Select Case True
             Case sender Is PictureBox1
                 landingPageAdmin.Show()
-                Me.Hide()
             Case sender Is jobdash
-                MessageBox.Show("JOB MANAGEMENT")
+                jobDashAdmin.Show()
             Case sender Is Button3
                 userManagementAdmin.Show()
-                Me.Hide()
             Case sender Is compMan
                 compManagementAdmin.Show()
-                Me.Hide()
             Case sender Is logoutBtn
                 login.Show()
-                Me.Hide()
             Case sender Is Button1
-                Me.Refresh()
+                dmmManagementAdmin.Show()
             Case sender Is cancelBtn
                 dmmManagementAdmin.Show()
-                Me.Hide()
         End Select
     End Sub
 
@@ -224,6 +222,7 @@ Public Class editDMMAdmin
 
             MessageBox.Show("DMM and parameters updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Me.Close()
+            dmmManagementAdmin.Show()
         Catch ex As Exception
             MessageBox.Show("Error updating DMM: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try

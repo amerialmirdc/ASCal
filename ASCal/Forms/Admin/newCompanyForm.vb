@@ -7,26 +7,23 @@ Public Class newCompanyForm
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, Button2.Click, userManagementBtn.Click, compMan.Click, logoutBtn.Click, Button1.Click
 
         calibrate.RefreshData()
-
+        Me.Close()
 
         Select Case True
             Case sender Is PictureBox1 OrElse sender Is PictureBox1
                 landingPageAdmin.Show()
-                Me.Hide()
             Case sender Is Button2
-                MessageBox.Show("Job Management")
+                jobDashAdmin.Show()
             Case sender Is userManagementBtn
                 userManagementAdmin.Show()
-                Me.Hide()
             Case sender Is compMan
-                Me.Refresh()
+                compManagementAdmin.Show()
             Case sender Is logoutBtn
                 login.Show()
-                Me.Hide()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
-                Me.Hide()
         End Select
+
     End Sub
 
 
