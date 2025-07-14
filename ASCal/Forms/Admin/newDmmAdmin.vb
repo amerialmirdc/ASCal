@@ -8,27 +8,26 @@ Imports System.Data.SQLite
 Public Class newDMMAdmin
 
 ' ✅ Handles all top-level navigation clicks from the admin panel
-    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, button1.Click
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, button1.Click, backBtn.Click
+
         calibrate.RefreshData()
+        Me.Close()
 
         Select Case True
             Case sender Is PictureBox1  ' Home
                 landingPageAdmin.Show()
-                Me.Hide()
             Case sender Is jobdash      ' Job management
-                MessageBox.Show("JOB MANAGEMENT")
+                jobDashAdmin.Show()
             Case sender Is Button3      ' User management
                 userManagementAdmin.Show()
-                Me.Hide()
             Case sender Is compMan      ' Company management
                 compManagementAdmin.Show()
-                Me.Hide()
             Case sender Is logoutBtn    ' Logout
                 login.Show()
-                Me.Hide()
-            Case sender Is button1      ' Refresh page
-                Me.Refresh()
+            Case sender Is backBtn      ' Refresh page
+                dmmManagementAdmin.Show()
         End Select
+
     End Sub
 
     ' 🔁 Handles deletion of selected range (RadioButton) or nominal (ListViewItem) per section
@@ -847,9 +846,6 @@ Public Class newDMMAdmin
     End Sub
 
 
-    Private Sub backBtn_Click(sender As System.Object, e As System.EventArgs) Handles backBtn.Click
-        dmmManagementAdmin.Show()
-        Me.Hide()
-    End Sub
+
 
 End Class

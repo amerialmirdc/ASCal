@@ -9,26 +9,27 @@ Public Class newUserAdmin
     ' ✅ LOGOBOX
 
     ' ✅ Unified navbar handler for navigation
-    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, userManagementBtn.Click, compMan.Click, logoutBtn.Click, Button1.Click
+    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, compMan.Click, logoutBtn.Click, Button1.Click, backBtn.Click
 
         calibrate.RefreshData()
-        Me.Hide()
+        Me.Close()
 
         Select Case True
             Case sender Is logoBox OrElse sender Is logoBox
                 landingPageAdmin.Show()
             Case sender Is Button2
-                MessageBox.Show("Job Management")
-            Case sender Is userManagementBtn
-                Me.Refresh()
+                jobDashAdmin.Show()
             Case sender Is compMan
                 compManagementAdmin.Show()
             Case sender Is logoutBtn
                 login.Show()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
-                Me.Hide()
+            Case sender Is Button1
+                ClearFields()
+                userManagementAdmin.Show()
         End Select
+
     End Sub
 
     ' ✅ Pag load ng form, initialize placeholders and hide password by default
@@ -326,12 +327,7 @@ Public Class newUserAdmin
         InitializePlaceholders()
     End Sub
 
-    ' ✅ Back button event
-    Private Sub backBtn_Click_1(sender As System.Object, e As System.EventArgs) Handles backBtn.Click
-        ClearFields()
-        userManagementAdmin.Show()
-        Me.Hide()
-    End Sub
+
 
     ' ✅ Show/Hide password button toggle
     Private Sub showPassBtn_Click(sender As Object, e As EventArgs) Handles showPassBtn.Click
