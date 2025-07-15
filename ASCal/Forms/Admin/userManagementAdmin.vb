@@ -1,10 +1,4 @@
-﻿Imports System.Data.SQLite
-Imports ASCal.SessionManager
-Imports ASCal.SQLiteHelper
-Imports ASCal.UIHelper
-
-
-Public Class userManagementAdmin
+﻿Public Class userManagementAdmin
 
     ' ✅ Unified navbar handler for navigation
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, logobox.Click, Button2.Click, userManagementBtn.Click, compMan.Click, logoutBtn.Click, Button1.Click, Button3.Click
@@ -79,6 +73,7 @@ Public Class userManagementAdmin
             Me.Initials = GetInitials(name)
             Me.SignatoryType = signatoryType
         End Sub
+
     End Class
 
     Private Shared Function GetInitials(fullName As String) As String
@@ -91,8 +86,6 @@ Public Class userManagementAdmin
         Next
         Return initials
     End Function
-
-
 
     Public Sub RefreshGrid()
         LoadPersonnelData()

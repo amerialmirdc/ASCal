@@ -1,10 +1,6 @@
-﻿Imports System.Data.SQLite
-Imports ASCal.SQLiteHelper ' Contains Company class and LoadAllCompanies()
+﻿Public Class compManagementAdmin
 
-
-Public Class compManagementAdmin
-
-' ✅ Unified navbar handler for navigation
+    ' ✅ Unified navbar handler for navigation
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, userManagementBtn.Click, logoutBtn.Click, Button1.Click
 
         calibrate.RefreshData()
@@ -72,8 +68,8 @@ Public Class compManagementAdmin
             Me.DateEnrolled = dateEnrolled
             Me.Status = status
         End Sub
-    End Class
 
+    End Class
 
     ' ✅ Local list to hold company records (NOT shared or public)
     Private companyList As New List(Of SQLiteHelper.Company)
@@ -83,7 +79,6 @@ Public Class compManagementAdmin
 
     ' ✅ On Load ng Form
     Private Sub compManagementAdmin_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
 
         ' Make sure start position is manual
         Me.StartPosition = FormStartPosition.Manual
@@ -142,7 +137,6 @@ Public Class compManagementAdmin
         dataGridCompanies.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
     End Sub
 
-
     ' ✅ Load companies from SQLite
     Private Sub LoadCompanies()
         companyList = LoadAllCompanies()
@@ -184,7 +178,6 @@ Public Class compManagementAdmin
 
     Private previousHoveredRowIndex As Integer = -1
 
-
     Private Sub dataGridCompanies_CellMouseEnter(sender As Object, e As DataGridViewCellEventArgs) Handles dataGridCompanies.CellMouseEnter
         If e.RowIndex >= 0 AndAlso e.ColumnIndex = 2 Then
             Dim cell = dataGridCompanies.Rows(e.RowIndex).Cells(2)
@@ -208,9 +201,6 @@ Public Class compManagementAdmin
             End If
         End If
     End Sub
-
-
-
 
     ' ✅ Pagination Buttons
     Private Sub prevBtn_Click(sender As Object, e As EventArgs)
@@ -354,7 +344,6 @@ Public Class compManagementAdmin
             .Location = New Point(lblInitials.Right + colSpacing, 5)
         }
 
-
         headerPanel.Controls.AddRange({lblJobID, lblDate, lblModel, lblSN, lblInitials, lblStatus})
         compDetails.Controls.Add(headerPanel)
 
@@ -378,7 +367,6 @@ Public Class compManagementAdmin
                     .Padding = New Padding(10, 5, 10, 5),
                     .Margin = New Padding(marginSize, 5, marginSize, 5)
                 }
-
 
                 ' Job ID Label
                 Dim jobIDLabel As New Label With {
@@ -440,7 +428,6 @@ Public Class compManagementAdmin
                     .Location = New Point(jobInitialsLabel.Right + colSpacing, jobIDLabel.Top)
                 }
 
-
                 ' Add to jobPanel
                 jobPanel.Controls.Add(jobIDLabel)
                 jobPanel.Controls.Add(jobDateLabel)
@@ -471,7 +458,4 @@ Public Class compManagementAdmin
 
     End Sub
 
-
 End Class
-
-

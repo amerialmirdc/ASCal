@@ -1,6 +1,4 @@
-﻿Imports ASCal.calibrate
-Imports System.Data.SQLite
-
+﻿Imports System.Data.SQLite
 
 Public Class landingPageSignatory
 
@@ -9,6 +7,7 @@ Public Class landingPageSignatory
     Dim jobsPerPage As Integer = 10
     Dim filteredJobs As List(Of Panel) = New List(Of Panel)
     Dim allJobs As New List(Of JobData)
+
     ' ========== Unified Navigation Handler ==========
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, logoutBtn.Click
 
@@ -279,7 +278,6 @@ Public Class landingPageSignatory
         nextBtn.Enabled = currentPage < totalPages
     End Sub
 
-
     Private Sub nextBtn_Click(sender As Object, e As EventArgs) Handles nextBtn.Click
         Dim maxPage As Integer = Math.Ceiling(filteredJobs.Count / jobsPerPage)
         If currentPage < maxPage Then
@@ -302,6 +300,5 @@ Public Class landingPageSignatory
         nextBtn.Enabled = currentPage < maxPage
         prevBtn.Enabled = currentPage > 1
     End Sub
-
 
 End Class

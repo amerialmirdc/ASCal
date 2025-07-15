@@ -77,7 +77,7 @@ Partial Class jobDashAdmin
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Left
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(350, 979)
+        Me.Panel1.Size = New System.Drawing.Size(300, 991)
         Me.Panel1.TabIndex = 22
         '
         'Panel6
@@ -86,7 +86,7 @@ Partial Class jobDashAdmin
         Me.Panel6.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel6.Location = New System.Drawing.Point(0, 281)
         Me.Panel6.Name = "Panel6"
-        Me.Panel6.Size = New System.Drawing.Size(350, 63)
+        Me.Panel6.Size = New System.Drawing.Size(300, 63)
         Me.Panel6.TabIndex = 13
         '
         'Button1
@@ -98,9 +98,9 @@ Partial Class jobDashAdmin
         Me.Button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.Button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Button1.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Button1.Location = New System.Drawing.Point(37, 15)
+        Me.Button1.Location = New System.Drawing.Point(26, 6)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(286, 38)
+        Me.Button1.Size = New System.Drawing.Size(245, 41)
         Me.Button1.TabIndex = 0
         Me.Button1.Text = "DMM MANAGEMENT"
         Me.Button1.UseVisualStyleBackColor = False
@@ -111,7 +111,7 @@ Partial Class jobDashAdmin
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel3.Location = New System.Drawing.Point(0, 218)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(350, 63)
+        Me.Panel3.Size = New System.Drawing.Size(300, 63)
         Me.Panel3.TabIndex = 7
         '
         'compMan
@@ -122,9 +122,9 @@ Partial Class jobDashAdmin
         Me.compMan.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.compMan.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.compMan.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.compMan.Location = New System.Drawing.Point(37, 15)
+        Me.compMan.Location = New System.Drawing.Point(26, 16)
         Me.compMan.Name = "compMan"
-        Me.compMan.Size = New System.Drawing.Size(286, 38)
+        Me.compMan.Size = New System.Drawing.Size(245, 41)
         Me.compMan.TabIndex = 0
         Me.compMan.Text = "COMPANY MANAGEMENT"
         Me.compMan.UseVisualStyleBackColor = False
@@ -133,9 +133,9 @@ Partial Class jobDashAdmin
         '
         Me.Panel8.Controls.Add(Me.logoutBtn)
         Me.Panel8.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel8.Location = New System.Drawing.Point(0, 916)
+        Me.Panel8.Location = New System.Drawing.Point(0, 928)
         Me.Panel8.Name = "Panel8"
-        Me.Panel8.Size = New System.Drawing.Size(350, 63)
+        Me.Panel8.Size = New System.Drawing.Size(300, 63)
         Me.Panel8.TabIndex = 4
         '
         'logoutBtn
@@ -146,9 +146,9 @@ Partial Class jobDashAdmin
         Me.logoutBtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.logoutBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.logoutBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.logoutBtn.Location = New System.Drawing.Point(37, 15)
+        Me.logoutBtn.Location = New System.Drawing.Point(26, 9)
         Me.logoutBtn.Name = "logoutBtn"
-        Me.logoutBtn.Size = New System.Drawing.Size(286, 38)
+        Me.logoutBtn.Size = New System.Drawing.Size(245, 41)
         Me.logoutBtn.TabIndex = 0
         Me.logoutBtn.Text = "LOGOUT"
         Me.logoutBtn.UseVisualStyleBackColor = False
@@ -159,7 +159,7 @@ Partial Class jobDashAdmin
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel5.Location = New System.Drawing.Point(0, 155)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(350, 63)
+        Me.Panel5.Size = New System.Drawing.Size(300, 63)
         Me.Panel5.TabIndex = 3
         '
         'userManagementBtn
@@ -172,7 +172,7 @@ Partial Class jobDashAdmin
         Me.userManagementBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.userManagementBtn.Location = New System.Drawing.Point(37, 15)
         Me.userManagementBtn.Name = "userManagementBtn"
-        Me.userManagementBtn.Size = New System.Drawing.Size(286, 38)
+        Me.userManagementBtn.Size = New System.Drawing.Size(245, 41)
         Me.userManagementBtn.TabIndex = 0
         Me.userManagementBtn.Text = "USER MANAGEMENT"
         Me.userManagementBtn.UseVisualStyleBackColor = False
@@ -183,7 +183,7 @@ Partial Class jobDashAdmin
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel4.Location = New System.Drawing.Point(0, 92)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(350, 63)
+        Me.Panel4.Size = New System.Drawing.Size(300, 63)
         Me.Panel4.TabIndex = 2
         '
         'Button2
@@ -196,7 +196,7 @@ Partial Class jobDashAdmin
         Me.Button2.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button2.Location = New System.Drawing.Point(37, 15)
         Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(286, 38)
+        Me.Button2.Size = New System.Drawing.Size(245, 41)
         Me.Button2.TabIndex = 0
         Me.Button2.Text = "JOB DASHBOARD"
         Me.Button2.UseVisualStyleBackColor = False
@@ -207,7 +207,7 @@ Partial Class jobDashAdmin
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel2.Location = New System.Drawing.Point(0, 0)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(350, 92)
+        Me.Panel2.Size = New System.Drawing.Size(300, 92)
         Me.Panel2.TabIndex = 0
         '
         'logoBox
@@ -233,9 +233,9 @@ Partial Class jobDashAdmin
         Me.Panel7.Controls.Add(Me.Panel11)
         Me.Panel7.Controls.Add(Me.userName)
         Me.Panel7.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel7.Location = New System.Drawing.Point(350, 0)
+        Me.Panel7.Location = New System.Drawing.Point(300, 0)
         Me.Panel7.Name = "Panel7"
-        Me.Panel7.Size = New System.Drawing.Size(1574, 979)
+        Me.Panel7.Size = New System.Drawing.Size(1602, 991)
         Me.Panel7.TabIndex = 25
         '
         'pageLabel
@@ -404,7 +404,7 @@ Partial Class jobDashAdmin
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1924, 979)
+        Me.ClientSize = New System.Drawing.Size(1902, 991)
         Me.Controls.Add(Me.Panel7)
         Me.Controls.Add(Me.Panel1)
         Me.Font = New System.Drawing.Font("Courier10 BT", 8.25!)

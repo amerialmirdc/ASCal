@@ -1,7 +1,4 @@
-﻿Imports System.Data.SQLite
-Imports ASCal.SQLiteHelper
-Imports ASCal.userManagementAdmin
-Imports ASCal.UIHelper
+﻿Imports ASCal.userManagementAdmin
 
 Public Class newUserAdmin
 
@@ -53,7 +50,6 @@ Public Class newUserAdmin
 
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
-
 
         Dim excludeList As New List(Of String) From {"newBirthdayUser", "newEmailUser", "newUsernameUser", "newPassUser", "newConfPassUser"}
         ForceUppercaseInput(Me, excludeList)
@@ -132,8 +128,6 @@ Public Class newUserAdmin
         Return number.All(AddressOf Char.IsDigit) AndAlso number.Length >= 10 AndAlso number.Length <= 15
     End Function
 
-
-
     ' ✅ Function para lagyan ng placeholder text ang mga fields
     Private Sub InitializePlaceholders()
         AddPlaceholder(newNameUser, "Enter Full Name")
@@ -166,8 +160,6 @@ Public Class newUserAdmin
                                      End If
                                  End Sub
     End Sub
-
-
 
     ' ✅ Save button logic
     Private Sub newSaveBtn_Click_1(sender As System.Object, e As System.EventArgs) Handles newSaveBtn.Click
@@ -331,8 +323,6 @@ Public Class newUserAdmin
         sigType.SelectedIndex = -1
         InitializePlaceholders()
     End Sub
-
-
 
     ' ✅ Show/Hide password button toggle
     Private Sub showPassBtn_Click(sender As Object, e As EventArgs) Handles showPassBtn.Click

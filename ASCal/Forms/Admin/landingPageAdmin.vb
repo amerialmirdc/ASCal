@@ -1,10 +1,4 @@
-﻿Imports System.Data.SQLite
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-
-Public Class landingPageAdmin
-
+﻿Public Class landingPageAdmin
 
     ' ✅ Unified navigation handler for all navbar buttons
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles userManagementBtn.Click, compMan.Click, logoutBtn.Click, logoBox.Click, Button2.Click, Button1.Click
@@ -62,12 +56,11 @@ Public Class landingPageAdmin
             MessageBox.Show("No current user session found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Me.Close()
 
-
         End If
 
     End Sub
 
-Public Sub RefreshData()
+    Public Sub RefreshData()
         userName.Text = CurrentUser.Name
         userDesig.Text = CurrentUser.Designation
         userDepartment.Text = CurrentUser.Department
@@ -76,6 +69,5 @@ Public Sub RefreshData()
         userMobile.Text = CurrentUser.ContactNumber
         accountType.Text = CurrentUser.AccountType
     End Sub
-
 
 End Class

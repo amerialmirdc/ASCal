@@ -1,9 +1,4 @@
-﻿Imports System.Windows.Forms
-Imports ASCal.userManagementAdmin
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 
 Public Class dmmManagementAdmin
 
@@ -98,7 +93,6 @@ Public Class dmmManagementAdmin
         End If
     End Sub
 
-
     ' ✅ Display company list with pagination
     Private Sub PopulateCompanyGrid()
         dataGridDMM.Rows.Clear()
@@ -113,7 +107,7 @@ Public Class dmmManagementAdmin
     End Sub
 
     ' 📌 Handles cell click event on the DMM data grid
-Private Sub dataGridDMM_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dataGridDMM.CellClick
+    Private Sub dataGridDMM_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dataGridDMM.CellClick
         ' ✅ Step 1: Ignore clicks on header
         If e.RowIndex < 0 Then Exit Sub
 
@@ -177,7 +171,6 @@ Private Sub dataGridDMM_CellClick(sender As Object, e As DataGridViewCellEventAr
             }
             catPanel.Controls.Add(categoryLabel)
 
-
             ' Range Grouping
             For Each rangeGroup In categoryGroup.GroupBy(Function(p) p.RangeValue)
                 catPanel.Controls.Add(New Label With {
@@ -211,7 +204,6 @@ Private Sub dataGridDMM_CellClick(sender As Object, e As DataGridViewCellEventAr
         Next
     End Sub
 
-
     ' ✅ Pagination Buttons
     Private Sub prevBtn_Click(sender As Object, e As EventArgs)
         If currentPage > 1 Then
@@ -226,6 +218,5 @@ Private Sub dataGridDMM_CellClick(sender As Object, e As DataGridViewCellEventAr
             PopulateCompanyGrid()
         End If
     End Sub
-
 
 End Class

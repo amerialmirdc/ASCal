@@ -1,14 +1,10 @@
-﻿Imports System.Windows.Forms
-Imports System.Drawing
-Imports System.Drawing.Drawing2D
+﻿Imports System.Drawing.Drawing2D
 Imports System.Drawing.Text
-Imports System.Runtime.InteropServices
-Imports System.IO
-Imports System.Linq ' For easy font lookup
+Imports System.IO ' For easy font lookup
 Imports System.Reflection
-Imports Microsoft.Win32
 
 Public Module UIHelper
+
     ' 🧩 Tawagin ito sa Form_Load o kapag nag-resize ka ng panel
     Public Sub ApplyRoundedBorder(panel As Panel, radius As Integer, borderColor As Color, borderThickness As Integer)
         ' ⚠️ I-disable ang default border para walang conflict
@@ -155,7 +151,6 @@ Public Module UIHelper
         CheckFontsInstalled(fontsUsed)
     End Sub
 
-
     Public Sub CheckFontsInstalled(fontsUsed As HashSet(Of String))
         Dim installed = New InstalledFontCollection()
         ' ✅ Compatible workaround for .NET Framework used by VS2010
@@ -191,7 +186,6 @@ Public Module UIHelper
             fontFiles = Directory.GetFiles(fontFolderPath, "*.ttf", SearchOption.AllDirectories)
         End If
 
-
         Dim missingFonts As New List(Of String)
 
         For Each fontName In usedFonts
@@ -221,7 +215,6 @@ Public Module UIHelper
                             ' Try extracting from embedded
                             ExtractFontFromEmbeddedResource("YourProjectNamespace.Fonts.YourFont.ttf", fontFolderPath)
                         End If
-
                     Catch ex As Exception
                         MessageBox.Show("❌ Failed to install font: " & fontName & vbCrLf & ex.Message)
                     End Try
@@ -279,11 +272,9 @@ Public Module UIHelper
                     fontStream.CopyTo(fs)
                 End Using
             End Using
-
         Catch ex As Exception
             MessageBox.Show("❌ Error extracting embedded font: " & ex.Message, "Font Extraction Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
 
 End Module

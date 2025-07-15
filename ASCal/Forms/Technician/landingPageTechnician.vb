@@ -1,5 +1,4 @@
-﻿Imports ASCal.calibrate
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 
 Public Class landingPageTechnician
 
@@ -50,7 +49,6 @@ Public Class landingPageTechnician
         userMobile.Text = CurrentUser.ContactNumber
         accountType.Text = CurrentUser.AccountType
     End Sub
-
 
     Private Function GetInitials(fullName As String) As String
         Dim initials As String = ""
@@ -319,5 +317,3 @@ Public Class JobData
     Public Property SpecificSite As String
     Public Property LastUpdatedBy As String
 End Class
-
-

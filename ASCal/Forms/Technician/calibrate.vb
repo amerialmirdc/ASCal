@@ -48,7 +48,6 @@ Public Class calibrate
         End Try
     End Sub
 
-
     Private dmmItems As New List(Of Tuple(Of String, String, String))
     Private dmmParametersDict As New Dictionary(Of String, List(Of String))
 
@@ -97,7 +96,6 @@ Public Class calibrate
                     End While
                 End Using
             End Using
-
         Catch ex As Exception
             MessageBox.Show("Error loading DMMs and parameters: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
@@ -110,10 +108,10 @@ Public Class calibrate
             Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                 conn.Open()
 
-                Dim query As String = "SELECT pc.name AS category, dp.id, dp.parameter_category_id " & _
-                                      "FROM dmm d " & _
-                                      "JOIN dmm_parameters dp ON d.id = dp.dmm_id " & _
-                                      "JOIN parameter_categories pc ON dp.parameter_category_id = pc.id " & _
+                Dim query As String = "SELECT pc.name AS category, dp.id, dp.parameter_category_id " &
+                                      "FROM dmm d " &
+                                      "JOIN dmm_parameters dp ON d.id = dp.dmm_id " &
+                                      "JOIN parameter_categories pc ON dp.parameter_category_id = pc.id " &
                                       "WHERE d.model_name = @model"
 
                 Using cmd As New SQLiteCommand(query, conn)
@@ -264,6 +262,7 @@ Public Class calibrate
             compAdd.Clear()
         End If
     End Sub
+
     Private Sub RadioOptionChanged(sender As Object, e As EventArgs)
         Dim rb As RadioButton = DirectCast(sender, RadioButton)
 
@@ -273,7 +272,7 @@ Public Class calibrate
         End If
     End Sub
 
-Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dataGridResult.CellClick
+    Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dataGridResult.CellClick
         If e.RowIndex < 0 Then Exit Sub
 
         Dim selectedRow As DataGridViewRow = dataGridResult.Rows(e.RowIndex)
@@ -384,7 +383,7 @@ Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEven
         End If
     End Sub
 
-Private Sub HandleCheckedListBoxClick(clb As CheckedListBox, e As MouseEventArgs)
+    Private Sub HandleCheckedListBoxClick(clb As CheckedListBox, e As MouseEventArgs)
         Dim index As Integer = clb.IndexFromPoint(e.Location)
         If index < 0 Then Exit Sub
 
@@ -414,7 +413,6 @@ Private Sub HandleCheckedListBoxClick(clb As CheckedListBox, e As MouseEventArgs
         clb.ClearSelected()
     End Sub
 
-
     Private Sub cLParamACV_MouseUp(sender As Object, e As MouseEventArgs) Handles cLParamACV.MouseUp
         HandleCheckedListBoxClick(cLParamACV, e)
     End Sub
@@ -436,7 +434,7 @@ Private Sub HandleCheckedListBoxClick(clb As CheckedListBox, e As MouseEventArgs
     End Sub
 
     ' ========== Select all/Unselect all parameters buttons ==========
-Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
+    Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
         For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
             For i As Integer = 0 To clb.Items.Count - 1
                 clb.SetItemChecked(i, True)
@@ -444,7 +442,7 @@ Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSele
         Next
     End Sub
 
-Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUnselectAll.Click
+    Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUnselectAll.Click
         For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
             For i As Integer = 0 To clb.Items.Count - 1
                 clb.SetItemChecked(i, False)
@@ -548,7 +546,6 @@ Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUn
                 MessageBox.Show("Calibration job saved! Serial Number (Work Order No.): " & serialNumber)
                 Me.Hide()
                 landingPageTechnician.Show()
-
             Catch ex As Exception
                 MessageBox.Show("Error saving job: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try

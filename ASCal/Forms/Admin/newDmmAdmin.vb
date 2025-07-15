@@ -1,13 +1,8 @@
-﻿Imports System.Windows.Forms
-Imports ASCal.userManagementAdmin
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 
 Public Class newDMMAdmin
 
-' ✅ Handles all top-level navigation clicks from the admin panel
+    ' ✅ Handles all top-level navigation clicks from the admin panel
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, button1.Click, backBtn.Click
 
         calibrate.RefreshData()
@@ -64,7 +59,6 @@ Public Class newDMMAdmin
         End Select
     End Sub
 
-
     Private tempParams As New List(Of TempParameterGroup)
 
     Private Sub HandleRangeClick(sender As Object, e As EventArgs) Handles btnAddRange.Click, btnAddRangeDCV.Click, btnAddRangeACC.Click, btnAddRangeDCC.Click, btnAddRangeRES.Click
@@ -92,7 +86,6 @@ Public Class newDMMAdmin
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
-
         Dim freqSuggestions As New AutoCompleteStringCollection()
 
         ' Generate values from 50 Hz to 950 Hz + "1 kHz"
@@ -116,8 +109,6 @@ Public Class newDMMAdmin
         txtFreqValueACV.AutoCompleteSource = AutoCompleteSource.CustomSource
         txtFreqValueACV.AutoCompleteCustomSource = freqSuggestions
 
-
-
         ' Initialize each ListView on load
         InitListView(listViewParams)
         InitListView(listViewParamsDCV)
@@ -138,7 +129,7 @@ Public Class newDMMAdmin
     ' ✅ Toggles the visibility of parameter input sections based on which checkbox was clicked
     ' Each checkbox corresponds to a specific DMM parameter section (e.g., AC Voltage, DC Voltage, etc.)
     Private Sub SectionCheckbox_CheckedChanged(sender As Object, e As EventArgs) Handles _
-        CheckBox.CheckedChanged, CheckBoxDCV.CheckedChanged, CheckBoxACC.CheckedChanged, _
+        CheckBox.CheckedChanged, CheckBoxDCV.CheckedChanged, CheckBoxACC.CheckedChanged,
         CheckBoxDCC.CheckedChanged, CheckBoxRES.CheckedChanged
 
         ' 🔁 Convert the sender to a CheckBox to determine which one triggered the event
@@ -203,7 +194,6 @@ Public Class newDMMAdmin
                 btnAddFreqACC.Visible = visible
                 delBtnFreqACC.Visible = visible
 
-
             Case "DCC"
                 txtRangeValueDCC.Visible = visible
                 cmbRangeUnitDCC.Visible = visible
@@ -228,7 +218,6 @@ Public Class newDMMAdmin
         End Select
 
     End Sub
-
 
     ' ✅ Initializes a ListView with standard formatting and sorting behavior
     Private Sub InitListView(lst As ListView)
@@ -312,6 +301,7 @@ Public Class newDMMAdmin
     Private Class ListViewItemComparer
         Implements IComparer
         Private col As Integer
+
         Public Sub New(column As Integer)
             col = column
         End Sub
@@ -329,8 +319,8 @@ Public Class newDMMAdmin
 
             Return num1.CompareTo(num2)
         End Function
-    End Class
 
+    End Class
 
     ' Temp holder class for parameters before saving to DB
     Public Class TempParameterGroup
@@ -408,11 +398,9 @@ Public Class newDMMAdmin
         rbtn.AutoSize = True
         rbtn.Tag = New KeyValuePair(Of ListViewGroup, ListView)(group, targetListView)
 
-
         AddHandler rbtn.CheckedChanged, AddressOf RadioButton_CheckedChanged
         radioPanel.Controls.Add(rbtn)
         rbtn.Checked = True
-
 
         ' Step 7: Scroll to bottom of target ListView
         If targetListView.Items.Count > 0 Then
@@ -438,7 +426,6 @@ Public Class newDMMAdmin
                 cmbRangeUnitRES.SelectedIndex = -1
         End Select
     End Sub
-
 
     ' ✅ Adds a nominal value (with unit) under the currently selected range group in the respective ListView
     Private Sub AddNominal(sender As Object)
@@ -524,14 +511,13 @@ Public Class newDMMAdmin
         txtBox.Clear()
     End Sub
 
-
     ' Allow digits, backspace, and +/- signs in Range input
     Private Sub txtRangeValue_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _
-        txtRangeValue.KeyPress, txtRangeValueDCV.KeyPress, txtRangeValueACC.KeyPress, _
+        txtRangeValue.KeyPress, txtRangeValueDCV.KeyPress, txtRangeValueACC.KeyPress,
         txtRangeValueDCC.KeyPress, txtRangeValueRES.KeyPress
 
-        If Not Char.IsControl(e.KeyChar) AndAlso _
-           Not Char.IsDigit(e.KeyChar) AndAlso _
+        If Not Char.IsControl(e.KeyChar) AndAlso
+           Not Char.IsDigit(e.KeyChar) AndAlso
            e.KeyChar <> "+"c AndAlso e.KeyChar <> "-"c Then
             e.Handled = True
         End If
@@ -539,11 +525,11 @@ Public Class newDMMAdmin
 
     ' Allow digits, backspace, and +/- signs in Nominal input
     Private Sub txtNominalValue_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _
-        txtNominalValue.KeyPress, txtNominalValueDCV.KeyPress, txtNominalValueACC.KeyPress, _
+        txtNominalValue.KeyPress, txtNominalValueDCV.KeyPress, txtNominalValueACC.KeyPress,
         txtNominalValueDCC.KeyPress, txtNominalValueRES.KeyPress
 
-        If Not Char.IsControl(e.KeyChar) AndAlso _
-           Not Char.IsDigit(e.KeyChar) AndAlso _
+        If Not Char.IsControl(e.KeyChar) AndAlso
+           Not Char.IsDigit(e.KeyChar) AndAlso
            e.KeyChar <> "+"c AndAlso e.KeyChar <> "-"c Then
             e.Handled = True
         End If
@@ -562,7 +548,6 @@ Public Class newDMMAdmin
 
             Dim cmbUnit As ComboBox = Nothing
 
-
             ' Update the unit ComboBox text
             If cmbUnit IsNot Nothing Then
                 cmbUnit.Text = unitPart.Trim()
@@ -578,7 +563,6 @@ Public Class newDMMAdmin
             selectedRadio.BackColor = Color.LightBlue
         End If
     End Sub
-
 
     ' ✅ Helper function na naglalagay at nagtatanggal ng placeholder kapag focus/leave
     Private Sub AddPlaceholder(txtBox As TextBox, placeholder As String)
@@ -616,6 +600,7 @@ Public Class newDMMAdmin
 
     ' Class to represent parameter entries with categories
     Private dmmItems As New List(Of Tuple(Of String, String, String))
+
     Private dmmParametersDict As New Dictionary(Of String, List(Of String))
 
     ' Loads all DMMs and their parameters grouped by category
@@ -645,11 +630,11 @@ Public Class newDMMAdmin
                 'MessageBox.Show("Total DMM models loaded: " & dmmCount.ToString(), "DMM Load Summary", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
                 ' 🧩 Step 2: Load categories and ranges with nominal values
-                Dim paramSql As String = "SELECT d.model_name, pc.name AS category_name, r.range_value, nv.nominal_value " & _
-                                         "FROM dmm d " & _
-                                         "JOIN dmm_ranges r ON d.ID = r.dmm_id " & _
-                                         "JOIN parameter_categories pc ON r.category_id = pc.id " & _
-                                         "LEFT JOIN dmm_nominal_values nv ON r.id = nv.range_id " & _
+                Dim paramSql As String = "SELECT d.model_name, pc.name AS category_name, r.range_value, nv.nominal_value " &
+                                         "FROM dmm d " &
+                                         "JOIN dmm_ranges r ON d.ID = r.dmm_id " &
+                                         "JOIN parameter_categories pc ON r.category_id = pc.id " &
+                                         "LEFT JOIN dmm_nominal_values nv ON r.id = nv.range_id " &
                                          "ORDER BY d.model_name, pc.name, r.range_value"
 
                 Dim paramCmd As New SQLiteCommand(paramSql, conn)
@@ -671,12 +656,10 @@ Public Class newDMMAdmin
                     End While
                 End Using
             End Using
-
         Catch ex As Exception
             MessageBox.Show("Error loading DMM data: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
 
     Private Sub newSaveBtn_Click(sender As Object, e As EventArgs) Handles newSaveBtn.Click
         Dim modelText As String = modelNew.Text.Trim()
@@ -745,7 +728,6 @@ Public Class newDMMAdmin
         End Try
     End Sub
 
-
     Private Sub btnAddFreqACV_Click(sender As Object, e As EventArgs) Handles btnAddFreqACV.Click
 
         Dim nominalText As String = txtFreqValueACV.Text.Trim()
@@ -767,7 +749,6 @@ Public Class newDMMAdmin
         txtFreqValueACV.Clear()
         txtFreqValueACV.Clear()
     End Sub
-
 
     Private Sub btnAddFreqACC_Click(sender As Object, e As EventArgs) Handles btnAddFreqACC.Click
 
@@ -820,7 +801,6 @@ Public Class newDMMAdmin
         End If
     End Sub
 
-
     ' Handles Enter key on TextBox2 to add Nominal+Frequency to listViewParamsACC
     Private Sub txtFreqValueACV_KeyDown(sender As Object, e As KeyEventArgs) Handles txtFreqValueACV.KeyDown
         If e.KeyCode = Keys.Enter Then
@@ -849,8 +829,5 @@ Public Class newDMMAdmin
             txtFreqValueACV.Clear()
         End If
     End Sub
-
-
-
 
 End Class

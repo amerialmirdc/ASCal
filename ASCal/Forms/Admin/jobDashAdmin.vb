@@ -1,11 +1,4 @@
-﻿Imports System.Windows.Forms
-Imports ASCal.userManagementAdmin
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-Imports System.Data.SQLite
-
-Public Class jobDashAdmin
+﻿Public Class jobDashAdmin
     Private jobList As New List(Of Job)
     Private currentPage As Integer = 1
     Private jobsPerPage As Integer = 10
@@ -51,7 +44,6 @@ Public Class jobDashAdmin
 
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
-
 
         forRevBtn.BackColor = Color.Salmon
         forReviBtn.BackColor = Color.Cyan
@@ -274,4 +266,3 @@ Public Class jobDashAdmin
     End Sub
 
 End Class
-

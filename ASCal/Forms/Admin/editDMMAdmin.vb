@@ -1,9 +1,4 @@
-﻿Imports System.Windows.Forms
-Imports ASCal.userManagementAdmin
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 
 Public Class editDMMAdmin
 
@@ -85,7 +80,6 @@ Public Class editDMMAdmin
             End If
         Next
 
-
         ' Load grouped DMM parameters from DB
         Dim groupedParams = SQLiteHelper.LoadGroupedDMMParameters(modelDMM.Text.Trim())
 
@@ -137,7 +131,6 @@ Public Class editDMMAdmin
         Next
     End Sub
 
-
     Private Sub ListView_MouseClick(sender As Object, e As MouseEventArgs)
         Dim lv As ListView = CType(sender, ListView)
         Dim hit As ListViewHitTestInfo = lv.HitTest(e.Location)
@@ -172,7 +165,6 @@ Public Class editDMMAdmin
         End If
     End Sub
 
-
     Private originalModelName As String
 
     Public Sub New(model As String, manufacturer As String, description As String)
@@ -201,7 +193,6 @@ Public Class editDMMAdmin
             End Using
         End Using
     End Sub
-
 
     Private Sub saveBtn_Click(sender As Object, e As EventArgs) Handles saveBtn.Click
         Dim newModel As String = modelDMM.Text.Trim()
@@ -257,8 +248,6 @@ Public Class editDMMAdmin
             paramDict(category)(rangeVal).Add(New Tuple(Of String, String)(nominalVal, freqVal))
         Next
     End Sub
-
-
 
     Private Sub ConfirmAndDeleteSelectedItems(listView As ListView)
         If listView.SelectedItems.Count > 0 Then
@@ -365,7 +354,6 @@ Public Class editDMMAdmin
         End If
     End Sub
 
-
     ' ➕ Add Nominal + Frequency for AC Current with Unit Normalization
     Private Sub btnAddNomFreqACC_Click(sender As Object, e As EventArgs) Handles btnAddNomFreqACC.Click
         Dim selectedRange As String = ""
@@ -414,7 +402,6 @@ Public Class editDMMAdmin
             MessageBox.Show("The selected range was not found in the list. Please add the range first.", "Missing Range", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
-
 
     Private Sub delBtnFreqACV_Click(sender As Object, e As EventArgs) Handles delBtnFreqACV.Click
         ConfirmAndDeleteSelectedItems(listViewParams)
@@ -512,8 +499,6 @@ Public Class editDMMAdmin
         End Select
     End Sub
 
-
-
     ' Generic function to delete a selected range
     Private Sub DeleteSelectedRange(rangePanel As Panel, paramListView As ListView)
         Dim selectedRadio As RadioButton = Nothing
@@ -578,6 +563,5 @@ Public Class editDMMAdmin
                 DeleteSelectedRange(rangeRadioPanelRES, listViewParamsRES)
         End Select
     End Sub
-
 
 End Class

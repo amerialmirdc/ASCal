@@ -1,14 +1,10 @@
-﻿Imports System.Windows.Forms
-Imports ASCal.userManagementAdmin
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 
 Public Class jobDashboard
 
-    ' ========== Variables ========== 
+    ' ========== Variables ==========
     Private jobList As New List(Of Job)
+
     Private currentPage As Integer = 1
     Private jobsPerPage As Integer = 10
     Private totalPages As Integer
@@ -35,8 +31,7 @@ Public Class jobDashboard
         End Select
     End Sub
 
-
-    ' ========== Form Load ========== 
+    ' ========== Form Load ==========
     Private Sub jobDashboard_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Make sure start position is manual
         Me.StartPosition = FormStartPosition.Manual
@@ -64,7 +59,6 @@ Public Class jobDashboard
 
     End Sub
 
-
     Private Sub UpdateStatusCounts()
         Dim initial = CurrentUser.Initials.ToLower()
 
@@ -79,8 +73,7 @@ Public Class jobDashboard
 
     End Sub
 
-
-    ' ========== Display ALL Paginated ========== 
+    ' ========== Display ALL Paginated ==========
     Private Sub DisplayPaginatedJobs()
         jobPrevPanel.Controls.Clear()
 
@@ -161,8 +154,6 @@ Public Class jobDashboard
                                                  "Parameters: " & job.Parameters & vbCrLf &
                                                  "Date Created: " & job.DateCreated
 
-
-
             Select Case job.Status.ToLower()
                 Case "for review"
                     previewBtn.BackColor = Color.Orange
@@ -172,13 +163,11 @@ Public Class jobDashboard
                     previewBtn.BackColor = Color.Lime
             End Select
 
-
             Dim totalRightWidth As Integer = previewBtn.Width + TextRenderer.MeasureText(dateLabel.Text, dateLabel.Font).Width + 20
             dateLabel.Location = New Point(panel.Width - totalRightWidth, 12)
             previewBtn.Location = New Point(panel.Width - previewBtn.Width - 10, 7)
 
             AddHandler previewBtn.Click, Sub(senderObj, args)
-                                             
 
                                              MessageBox.Show(jobDetails, "Calibration Job Preview", MessageBoxButtons.OK, MessageBoxIcon.Information)
                                              If job.Status.ToLower().Trim() = "for review" Then
@@ -198,7 +187,6 @@ Public Class jobDashboard
                                                              End Using
                                                          End Using
 
-
                                                          MessageBox.Show("Job status updated to 'for revision'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
                                                          ' 🔄 Call the refresh logic for the view here
@@ -206,15 +194,12 @@ Public Class jobDashboard
                                                          jobList = LoadAllJobsFromDatabase()
                                                          UpdateStatusCounts()
                                                          DisplayPaginatedJobs()
-
                                                      Catch ex As Exception
                                                          MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                      End Try
                                                  End If
                                              End If
                                          End Sub
-
-
 
             panel.Controls.Add(label)
             panel.Controls.Add(dateLabel)
@@ -227,9 +212,7 @@ Public Class jobDashboard
         nextBtn.Enabled = currentPage < totalPages
     End Sub
 
-
-
-    ' ========== FILTERED Display ========== 
+    ' ========== FILTERED Display ==========
     Private Sub DisplayJobs(title As String, jobs As List(Of Job), headerColor As Color)
         jobPrevPanel.Controls.Clear()
 
@@ -345,7 +328,6 @@ Public Class jobDashboard
 
                                                         End Using
 
-
                                                         MessageBox.Show("Job status updated to 'for revision'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
                                                         ' 🔄 Call the refresh logic for the view here
@@ -353,7 +335,6 @@ Public Class jobDashboard
                                                         jobList = LoadAllJobsFromDatabase()
                                                         UpdateStatusCounts()
                                                         DisplayPaginatedJobs()
-
                                                     Catch ex As Exception
                                                         MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                     End Try
@@ -373,7 +354,6 @@ Public Class jobDashboard
 
                                                         End Using
 
-
                                                         MessageBox.Show("Job status updated to 'Approved'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
                                                         ' 🔄 Call the refresh logic for the view here
@@ -381,7 +361,6 @@ Public Class jobDashboard
                                                         jobList = LoadAllJobsFromDatabase()
                                                         UpdateStatusCounts()
                                                         DisplayPaginatedJobs()
-
                                                     Catch ex As Exception
                                                         MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                     End Try
@@ -421,7 +400,6 @@ Public Class jobDashboard
         End If
     End Sub
 
-
     Private Sub prevBtn_Click(sender As Object, e As EventArgs) Handles prevBtn.Click
         If currentPage > 1 Then
             currentPage -= 1
@@ -441,7 +419,6 @@ Public Class jobDashboard
             End Select
         End If
     End Sub
-
 
     Private Sub ResetButtonColors()
         forRevBtn.BackColor = Color.Salmon
@@ -476,7 +453,7 @@ Public Class jobDashboard
             forReviBtn.BackColor = Color.Cyan
             DisplayJobs("For Revision", revisionJobs, Color.Cyan)
         Else
-        MessageBox.Show("No 'for revision' jobs available.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show("No 'for revision' jobs available.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
     End Sub
 

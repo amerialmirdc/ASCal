@@ -1,9 +1,4 @@
-﻿Imports ASCal.SQLiteHelper
-Imports ASCal.compManagementAdmin
-Imports ASCal.SessionManager
-Imports System.Windows.Forms
-Imports System.Data.SQLite
-
+﻿Imports System.Data.SQLite
 
 Public Class editCompanyAdmin
 
@@ -32,8 +27,6 @@ Public Class editCompanyAdmin
                 Me.Close()
         End Select
     End Sub
-
-
 
     Private currentComp As Company
 
@@ -141,19 +134,15 @@ Public Class editCompanyAdmin
 
                 ' ✅ Close ONLY this edit form
                 Me.Close()
-
             Catch ex As Exception
                 MessageBox.Show("Error deleting company: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End If
     End Sub
 
-
-
     Private Sub backBtn_Click(sender As Object, e As EventArgs) Handles backBtn.Click
         compManagementAdmin.Show()
         Me.Hide()
     End Sub
-
 
 End Class

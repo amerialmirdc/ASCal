@@ -1,5 +1,4 @@
-﻿Imports ASCal.SQLiteHelper
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 
 Public Class newCompanyForm
 
@@ -31,7 +30,6 @@ Public Class newCompanyForm
 
     End Sub
 
-
     Private Sub newCompanyForm_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
 
         ' Make sure start position is manual
@@ -47,7 +45,6 @@ Public Class newCompanyForm
 
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
-
 
         InitializePlaceholders()
 
@@ -82,7 +79,6 @@ Public Class newCompanyForm
                                      End If
                                  End Sub
     End Sub
-
 
     Private Sub newSaveBtn_Click(sender As System.Object, e As System.EventArgs) Handles newSaveBtn.Click
         ' Extract input values from the form
@@ -124,7 +120,6 @@ Public Class newCompanyForm
             Exit Sub
         End If
 
-
         Try
             Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                 conn.Open()
@@ -160,12 +155,10 @@ Public Class newCompanyForm
 
             MessageBox.Show("Company record saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
             InitializePlaceholders()
-
         Catch ex As Exception
             MessageBox.Show("Error saving company: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
 
     Private Sub backBtn_Click(sender As System.Object, e As System.EventArgs) Handles backBtn.Click
         compManagementAdmin.Show()
@@ -182,6 +175,5 @@ Public Class newCompanyForm
             Return False
         End If
     End Function
-
 
 End Class
