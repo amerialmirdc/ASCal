@@ -18,7 +18,6 @@ C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\
 C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.Resources.resources
 C:\Users\dbneri\documents\visual studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.GenerateResource.Cache
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.landingPageAdmin.resources
-C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbprojResolveAssemblyReference.cache
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\Interop.MSOLAPADMINLib2.dll
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.ResolveComReference.cache
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.calibrate.resources
@@ -73,3 +72,12 @@ C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x8
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.login.resources
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.Resources.resources
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.GenerateResource.Cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Microsoft.VisualBasic.PowerPacks.Vs.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\System.Data.SqlServerCe.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\EnvDTE.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\stdole.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Microsoft.VisualBasic.PowerPacks.Vs.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\EnvDTE.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.AssemblyReference.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.CoreCompileInputs.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.Up2Date

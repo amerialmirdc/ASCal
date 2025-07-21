@@ -1,35 +1,34 @@
-﻿Imports System.Windows.Forms
-Imports ASCal.userManagementAdmin
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 
 Public Class editDMMAdmin
 
     ' ===== Unified Button Click Handler =====
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, Button1.Click, cancelBtn.Click
+
         calibrate.RefreshData()
+
         Select Case True
             Case sender Is PictureBox1
                 landingPageAdmin.Show()
-                Me.Hide()
+                Me.Close()
             Case sender Is jobdash
-                MessageBox.Show("JOB MANAGEMENT")
+                jobDashAdmin.Show()
+                Me.Close()
             Case sender Is Button3
                 userManagementAdmin.Show()
-                Me.Hide()
+                Me.Close()
             Case sender Is compMan
                 compManagementAdmin.Show()
-                Me.Hide()
+                Me.Close()
             Case sender Is logoutBtn
                 login.Show()
-                Me.Hide()
+                Me.Close()
             Case sender Is Button1
-                Me.Refresh()
+                dmmManagementAdmin.Show()
+                Me.Close()
             Case sender Is cancelBtn
                 dmmManagementAdmin.Show()
-                Me.Hide()
+                Me.Close()
         End Select
     End Sub
 
@@ -80,7 +79,6 @@ Public Class editDMMAdmin
                 lv.Columns.Add("✏️ Edit", col3Width)
             End If
         Next
-
 
         ' Load grouped DMM parameters from DB
         Dim groupedParams = SQLiteHelper.LoadGroupedDMMParameters(modelDMM.Text.Trim())
@@ -133,7 +131,6 @@ Public Class editDMMAdmin
         Next
     End Sub
 
-
     Private Sub ListView_MouseClick(sender As Object, e As MouseEventArgs)
         Dim lv As ListView = CType(sender, ListView)
         Dim hit As ListViewHitTestInfo = lv.HitTest(e.Location)
@@ -168,7 +165,6 @@ Public Class editDMMAdmin
         End If
     End Sub
 
-
     Private originalModelName As String
 
     Public Sub New(model As String, manufacturer As String, description As String)
@@ -198,7 +194,6 @@ Public Class editDMMAdmin
         End Using
     End Sub
 
-
     Private Sub saveBtn_Click(sender As Object, e As EventArgs) Handles saveBtn.Click
         Dim newModel As String = modelDMM.Text.Trim()
         Dim newManufacturer As String = manuDMM.Text.Trim()
@@ -224,6 +219,7 @@ Public Class editDMMAdmin
 
             MessageBox.Show("DMM and parameters updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Me.Close()
+            dmmManagementAdmin.Show()
         Catch ex As Exception
             MessageBox.Show("Error updating DMM: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
@@ -252,8 +248,6 @@ Public Class editDMMAdmin
             paramDict(category)(rangeVal).Add(New Tuple(Of String, String)(nominalVal, freqVal))
         Next
     End Sub
-
-
 
     Private Sub ConfirmAndDeleteSelectedItems(listView As ListView)
         If listView.SelectedItems.Count > 0 Then
@@ -360,7 +354,6 @@ Public Class editDMMAdmin
         End If
     End Sub
 
-
     ' ➕ Add Nominal + Frequency for AC Current with Unit Normalization
     Private Sub btnAddNomFreqACC_Click(sender As Object, e As EventArgs) Handles btnAddNomFreqACC.Click
         Dim selectedRange As String = ""
@@ -409,7 +402,6 @@ Public Class editDMMAdmin
             MessageBox.Show("The selected range was not found in the list. Please add the range first.", "Missing Range", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
-
 
     Private Sub delBtnFreqACV_Click(sender As Object, e As EventArgs) Handles delBtnFreqACV.Click
         ConfirmAndDeleteSelectedItems(listViewParams)
@@ -507,8 +499,6 @@ Public Class editDMMAdmin
         End Select
     End Sub
 
-
-
     ' Generic function to delete a selected range
     Private Sub DeleteSelectedRange(rangePanel As Panel, paramListView As ListView)
         Dim selectedRadio As RadioButton = Nothing
@@ -573,6 +563,5 @@ Public Class editDMMAdmin
                 DeleteSelectedRange(rangeRadioPanelRES, listViewParamsRES)
         End Select
     End Sub
-
 
 End Class

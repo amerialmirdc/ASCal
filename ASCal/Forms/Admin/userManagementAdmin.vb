@@ -1,32 +1,31 @@
-﻿Imports System.Data.SQLite
-Imports ASCal.SessionManager
-Imports ASCal.SQLiteHelper
-Imports ASCal.UIHelper
-
-
-Public Class userManagementAdmin
+﻿Public Class userManagementAdmin
 
     ' ✅ Unified navbar handler for navigation
-    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, logobox.Click, Button2.Click, userManagementBtn.Click, compMan.Click, logoutBtn.Click, Button1.Click
+    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, logobox.Click, Button2.Click, userManagementBtn.Click, compMan.Click, logoutBtn.Click, Button1.Click, Button3.Click
 
         calibrate.RefreshData()
-        Me.Hide()
 
         Select Case True
             Case sender Is PictureBox1 OrElse sender Is logobox
                 landingPageAdmin.Show()
+                Me.Close()
             Case sender Is Button2
-                MessageBox.Show("Job Management")
-            Case sender Is userManagementBtn
-                Me.Refresh()
+                jobDashAdmin.Show()
+                Me.Close()
             Case sender Is compMan
                 compManagementAdmin.Show()
+                Me.Close()
             Case sender Is logoutBtn
                 login.Show()
+                Me.Close()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
-                Me.Hide()
+                Me.Close()
+            Case sender Is Button3
+                newUserAdmin.Show()
+                Me.Close()
         End Select
+
     End Sub
 
     Public Class Personnel
@@ -74,6 +73,7 @@ Public Class userManagementAdmin
             Me.Initials = GetInitials(name)
             Me.SignatoryType = signatoryType
         End Sub
+
     End Class
 
     Private Shared Function GetInitials(fullName As String) As String
@@ -86,8 +86,6 @@ Public Class userManagementAdmin
         Next
         Return initials
     End Function
-
-
 
     Public Sub RefreshGrid()
         LoadPersonnelData()
@@ -170,7 +168,6 @@ Public Class userManagementAdmin
             Dim rowIndex As Integer = dataGridPersonnel.Rows.Add(person.Name, person.Designation, "CLICK HERE TO EDIT")
             dataGridPersonnel.Rows(rowIndex).Tag = person
         Next
-
         prevUser.Enabled = (currentPageUser > 1)
         nextUser.Enabled = (currentPageUser * itemsPerPageUser < personnelList.Count)
         paginationLabel.Text = String.Format("Page {0} of {1} ({2} records)", currentPageUser, Math.Ceiling(personnelList.Count / itemsPerPageUser), personnelList.Count)
@@ -322,7 +319,6 @@ Public Class userManagementAdmin
         headerPanel.Controls.AddRange({lblJobID, lblDate, lblCompany, lblStatus})
         userDetails.Controls.Add(headerPanel)
 
-
         Dim jobs = LoadJobsByTechnician(selectedUser.Initials)
         jobs = jobs.OrderByDescending(Function(j) DateTime.Parse(j.CalibrationDate)).ToList()
 
@@ -344,7 +340,6 @@ Public Class userManagementAdmin
                     .Padding = New Padding(10, 5, 10, 5),
                     .Margin = New Padding(marginSize, 5, marginSize, 5)
                 }
-
 
                 ' Job ID Label
                 Dim jobIDLabel As New Label With {
@@ -395,8 +390,6 @@ Public Class userManagementAdmin
 
                 userDetails.Controls.Add(jobPanel)
             Next
-
-
         End If
     End Sub
 
@@ -404,16 +397,9 @@ Public Class userManagementAdmin
     Private Sub dataGridPersonnel_CellMouseMove(sender As Object, e As DataGridViewCellMouseEventArgs) Handles dataGridPersonnel.CellMouseMove
         If e.RowIndex >= 0 AndAlso e.ColumnIndex = 2 Then
             dataGridPersonnel.Cursor = Cursors.Hand
-
-
         Else
             dataGridPersonnel.Cursor = Cursors.Default
         End If
-    End Sub
-
-    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        newUserAdmin.Show()
-        Me.Hide()
     End Sub
 
 End Class

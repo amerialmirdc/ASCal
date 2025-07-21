@@ -1,7 +1,4 @@
-﻿Imports System.Data.SQLite
-Imports ASCal.SQLiteHelper
-Imports ASCal.userManagementAdmin
-Imports ASCal.UIHelper
+﻿Imports ASCal.userManagementAdmin
 
 Public Class newUserAdmin
 
@@ -9,26 +6,32 @@ Public Class newUserAdmin
     ' ✅ LOGOBOX
 
     ' ✅ Unified navbar handler for navigation
-    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, userManagementBtn.Click, compMan.Click, logoutBtn.Click, Button1.Click
+    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, compMan.Click, logoutBtn.Click, Button1.Click, backBtn.Click
 
         calibrate.RefreshData()
-        Me.Hide()
 
         Select Case True
             Case sender Is logoBox OrElse sender Is logoBox
                 landingPageAdmin.Show()
+                Me.Close()
             Case sender Is Button2
-                MessageBox.Show("Job Management")
-            Case sender Is userManagementBtn
-                Me.Refresh()
+                jobDashAdmin.Show()
+                Me.Close()
             Case sender Is compMan
                 compManagementAdmin.Show()
+                Me.Close()
             Case sender Is logoutBtn
                 login.Show()
+                Me.Close()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
-                Me.Hide()
+                Me.Close()
+            Case sender Is Button1
+                ClearFields()
+                userManagementAdmin.Show()
+                Me.Close()
         End Select
+
     End Sub
 
     ' ✅ Pag load ng form, initialize placeholders and hide password by default
@@ -47,7 +50,6 @@ Public Class newUserAdmin
 
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
-
 
         Dim excludeList As New List(Of String) From {"newBirthdayUser", "newEmailUser", "newUsernameUser", "newPassUser", "newConfPassUser"}
         ForceUppercaseInput(Me, excludeList)
@@ -126,8 +128,6 @@ Public Class newUserAdmin
         Return number.All(AddressOf Char.IsDigit) AndAlso number.Length >= 10 AndAlso number.Length <= 15
     End Function
 
-
-
     ' ✅ Function para lagyan ng placeholder text ang mga fields
     Private Sub InitializePlaceholders()
         AddPlaceholder(newNameUser, "Enter Full Name")
@@ -160,8 +160,6 @@ Public Class newUserAdmin
                                      End If
                                  End Sub
     End Sub
-
-
 
     ' ✅ Save button logic
     Private Sub newSaveBtn_Click_1(sender As System.Object, e As System.EventArgs) Handles newSaveBtn.Click
@@ -324,13 +322,6 @@ Public Class newUserAdmin
         newSignUser.Image = Nothing
         sigType.SelectedIndex = -1
         InitializePlaceholders()
-    End Sub
-
-    ' ✅ Back button event
-    Private Sub backBtn_Click_1(sender As System.Object, e As System.EventArgs) Handles backBtn.Click
-        ClearFields()
-        userManagementAdmin.Show()
-        Me.Hide()
     End Sub
 
     ' ✅ Show/Hide password button toggle

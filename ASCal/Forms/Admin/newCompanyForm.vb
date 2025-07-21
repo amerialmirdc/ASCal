@@ -1,5 +1,4 @@
-﻿Imports ASCal.SQLiteHelper
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 
 Public Class newCompanyForm
 
@@ -8,27 +7,28 @@ Public Class newCompanyForm
 
         calibrate.RefreshData()
 
-
         Select Case True
             Case sender Is PictureBox1 OrElse sender Is PictureBox1
                 landingPageAdmin.Show()
-                Me.Hide()
+                Me.Close()
             Case sender Is Button2
-                MessageBox.Show("Job Management")
+                jobDashAdmin.Show()
+                Me.Close()
             Case sender Is userManagementBtn
                 userManagementAdmin.Show()
-                Me.Hide()
+                Me.Close()
             Case sender Is compMan
-                Me.Refresh()
+                compManagementAdmin.Show()
+                Me.Close()
             Case sender Is logoutBtn
                 login.Show()
-                Me.Hide()
+                Me.Close()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
-                Me.Hide()
+                Me.Close()
         End Select
-    End Sub
 
+    End Sub
 
     Private Sub newCompanyForm_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
 
@@ -45,7 +45,6 @@ Public Class newCompanyForm
 
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
-
 
         InitializePlaceholders()
 
@@ -80,7 +79,6 @@ Public Class newCompanyForm
                                      End If
                                  End Sub
     End Sub
-
 
     Private Sub newSaveBtn_Click(sender As System.Object, e As System.EventArgs) Handles newSaveBtn.Click
         ' Extract input values from the form
@@ -122,7 +120,6 @@ Public Class newCompanyForm
             Exit Sub
         End If
 
-
         Try
             Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                 conn.Open()
@@ -158,12 +155,10 @@ Public Class newCompanyForm
 
             MessageBox.Show("Company record saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
             InitializePlaceholders()
-
         Catch ex As Exception
             MessageBox.Show("Error saving company: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
 
     Private Sub backBtn_Click(sender As System.Object, e As System.EventArgs) Handles backBtn.Click
         compManagementAdmin.Show()
@@ -180,6 +175,5 @@ Public Class newCompanyForm
             Return False
         End If
     End Function
-
 
 End Class

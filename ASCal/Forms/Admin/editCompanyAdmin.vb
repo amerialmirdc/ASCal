@@ -1,9 +1,4 @@
-﻿Imports ASCal.SQLiteHelper
-Imports ASCal.compManagementAdmin
-Imports ASCal.SessionManager
-Imports System.Windows.Forms
-Imports System.Data.SQLite
-
+﻿Imports System.Data.SQLite
 
 Public Class editCompanyAdmin
 
@@ -11,25 +6,27 @@ Public Class editCompanyAdmin
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, Button2.Click, userManagementBtn.Click, compMan.Click, logoutBtn.Click, Button1.Click
 
         calibrate.RefreshData()
-        Me.Hide()
 
         Select Case True
             Case sender Is PictureBox1
                 landingPageAdmin.Show()
+                Me.Close()
             Case sender Is Button2
-                MessageBox.Show("Job Management")
+                jobDashAdmin.Show()
+                Me.Close()
             Case sender Is userManagementBtn
                 userManagementAdmin.Show()
+                Me.Close()
             Case sender Is compMan
                 compManagementAdmin.Show()
+                Me.Close()
             Case sender Is logoutBtn
                 login.Show()
             Case sender Is Button1
                 dmmManagementAdmin.Show()
+                Me.Close()
         End Select
     End Sub
-
-
 
     Private currentComp As Company
 
@@ -90,29 +87,17 @@ Public Class editCompanyAdmin
         currentComp.ContactPerson = contactPerson
         currentComp.ContactNumber = contactNumber
         currentComp.Status = status
+        currentComp.DateEnrolled = Date.Now.ToString("yyyy-MM-dd") ' 🕓 Optional update
 
-        ' Update in database
         Try
-            Using conn = GetConnection()
-                conn.Open()
-                Dim sql As String = "UPDATE companies SET company_name=@name, address=@address, contact_person=@person, contact_number=@number, email=@email, status=@status WHERE id=@id"
-                Using cmd As New SQLiteCommand(sql, conn)
-                    cmd.Parameters.AddWithValue("@name", name)
-                    cmd.Parameters.AddWithValue("@address", address)
-                    cmd.Parameters.AddWithValue("@person", contactPerson)
-                    cmd.Parameters.AddWithValue("@number", contactNumber)
-                    cmd.Parameters.AddWithValue("@email", email)
-                    cmd.Parameters.AddWithValue("@status", status)
-                    cmd.Parameters.AddWithValue("@id", currentComp.ID)
-                    cmd.ExecuteNonQuery()
-                End Using
-            End Using
-
+            UpdateCompany(currentComp) ' <-- now handled in SQLiteHelper.vb
             MessageBox.Show("Company details updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Me.Close()
+            compManagementAdmin.Show()
         Catch ex As Exception
             MessageBox.Show("Error updating company: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+
     End Sub
 
     Private Sub dltBtn_Click(sender As Object, e As EventArgs) Handles dltBtn.Click
@@ -134,7 +119,7 @@ Public Class editCompanyAdmin
                     conn.Open()
                     Dim sql As String = "DELETE FROM companies WHERE company_id=@id"
                     Using cmd As New SQLiteCommand(sql, conn)
-                        cmd.Parameters.AddWithValue("@id", currentComp.ID)
+                        cmd.Parameters.AddWithValue("@id", currentComp.CompanyID)
                         cmd.ExecuteNonQuery()
                     End Using
                 End Using
@@ -149,19 +134,15 @@ Public Class editCompanyAdmin
 
                 ' ✅ Close ONLY this edit form
                 Me.Close()
-
             Catch ex As Exception
                 MessageBox.Show("Error deleting company: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End If
     End Sub
 
-
-
     Private Sub backBtn_Click(sender As Object, e As EventArgs) Handles backBtn.Click
         compManagementAdmin.Show()
         Me.Hide()
     End Sub
-
 
 End Class

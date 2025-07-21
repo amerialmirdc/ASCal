@@ -1,6 +1,4 @@
 ﻿' ===================== FINAL JOB DASHBOARD CODE (WITH DATABASE + WORK ORDER NO.) =====================
-Imports ASCal.SQLiteHelper
-Imports System.Data.SQLite
 
 Public Class jobDashTech
 
@@ -8,11 +6,11 @@ Public Class jobDashTech
     Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles logoutBtn.Click, jobDashBtn.Click, calibrateBtn.Click, logoBox.Click
 
         calibrate.RefreshData()
-        Me.Hide()
 
         Select Case True
             Case sender Is logoutBtn
                 login.Show()
+                Me.Close()
             Case sender Is jobDashBtn
                 activeCategory = ""
                 ResetButtonColors()
@@ -21,19 +19,23 @@ Public Class jobDashTech
                 Me.Show() ' Show this form again
             Case sender Is calibrateBtn
                 calibrate.Show()
+                Me.Close()
             Case sender Is logoBox
                 landingPageTechnician.Show()
+                Me.Close()
         End Select
+
     End Sub
 
-    ' ========== Variables ========== 
+    ' ========== Variables ==========
     Private jobList As New List(Of Job)
+
     Private currentPage As Integer = 1
     Private jobsPerPage As Integer = 10
     Private totalPages As Integer
     Private activeCategory As String = ""
 
-    ' ========== Form Load ========== 
+    ' ========== Form Load ==========
     Private Sub jobDashTech_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Make sure start position is manual
         Me.StartPosition = FormStartPosition.Manual
@@ -63,7 +65,6 @@ Public Class jobDashTech
 
     End Sub
 
-
     Private Sub UpdateStatusCounts()
         Dim userInitials = CurrentUser.Initials
         forRevBtn.Text = jobList.Where(Function(j) j.Status.ToLower() = "for review" AndAlso j.TechnicianInitials = userInitials).Count().ToString() & vbCrLf & "FOR REVIEW"
@@ -71,8 +72,7 @@ Public Class jobDashTech
         completeBtn.Text = jobList.Where(Function(j) j.Status.ToLower() = "approved" AndAlso j.TechnicianInitials = userInitials).Count().ToString() & vbCrLf & "APPROVED"
     End Sub
 
-
-    ' ========== Display All Paginated ========== 
+    ' ========== Display All Paginated ==========
     Private Sub DisplayPaginatedJobs()
         jobPrevPanel.Controls.Clear()
 
@@ -114,7 +114,6 @@ Public Class jobDashTech
 
         For i = startIndex To endIndex - 1
             Dim job = userJobs(i)
-
 
             Dim panel As New Panel With {
                 .Height = 50,
@@ -176,7 +175,7 @@ Public Class jobDashTech
         nextBtn.Enabled = currentPage < totalPages
     End Sub
 
-    ' ========== Filtered Display ========== 
+    ' ========== Filtered Display ==========
     Private Sub DisplayJobs(title As String, jobs As List(Of Job), headerColor As Color)
         jobPrevPanel.Controls.Clear()
 
@@ -200,7 +199,6 @@ Public Class jobDashTech
         For i As Integer = 0 To jobs.Count - 1
             Dim job = jobs(i)
 
-
             Dim panel As New Panel With {
                 .Height = 50,
                 .Width = jobPrevPanel.ClientSize.Width - 20,
@@ -218,7 +216,6 @@ Public Class jobDashTech
                 Case "approved"
                     jobText &= " – Approved by " & job.LastUpdatedBy
             End Select
-
 
             Dim jobLabel As New Label With {
                 .Text = jobText,
@@ -249,7 +246,6 @@ Public Class jobDashTech
             dateLabel.Location = New Point(panel.Width - totalRightWidth, 12)
             actionBtn.Location = New Point(panel.Width - actionBtn.Width - 10, 7)
 
-
             AddHandler actionBtn.Click, Sub(senderObj, args)
                                             Dim jobDetails As String = "📋 JOB DETAILS" & vbCrLf & vbCrLf &
                                                 "Job ID: " & job.JobID & vbCrLf &
@@ -264,7 +260,6 @@ Public Class jobDashTech
                                             MessageBox.Show(jobDetails, "Calibration Job Preview", MessageBoxButtons.OK, MessageBoxIcon.Information)
                                         End Sub
 
-
             panel.Controls.Add(jobLabel)
             panel.Controls.Add(dateLabel)
             panel.Controls.Add(actionBtn)
@@ -276,7 +271,7 @@ Public Class jobDashTech
         nextBtn.Enabled = False
     End Sub
 
-    ' ========== Event Handlers ========== 
+    ' ========== Event Handlers ==========
     Private Sub ResetButtonColors()
         forRevBtn.BackColor = Color.Salmon
         forReviBtn.BackColor = Color.FromArgb(8, 189, 189)
@@ -334,11 +329,8 @@ Public Class jobDashTech
             Dim approved = userJobs.Where(Function(j) j.Status.ToLower() = "approved").ToList()
             DisplayJobs("Approved", approved, Color.Lime)
 
-
         End If
     End Sub
-
-
 
     Private Sub prevBtn_Click(sender As Object, e As EventArgs) Handles prevBtn.Click
         If currentPage > 1 Then
@@ -353,8 +345,6 @@ Public Class jobDashTech
             DisplayPaginatedJobs()
         End If
     End Sub
-
-
 
     Public Sub RefreshData()
         jobList = LoadJobsByTechnician(CurrentUser.Initials)

@@ -1,4 +1,5 @@
 ﻿Module SessionManager
+
     ' Store the currently logged-in user
     Public CurrentUser As userManagementAdmin.Personnel = Nothing
 
@@ -20,5 +21,3 @@
     Public Property LoggedInUser As userManagementAdmin.Personnel
 
 End Module
-
-

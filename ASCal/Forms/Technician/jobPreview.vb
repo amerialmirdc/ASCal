@@ -1,6 +1,5 @@
 ﻿Public Class jobPreview
 
-
     Private Sub jobPreview_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
         ' Make sure start position is manual
         Me.StartPosition = FormStartPosition.Manual
@@ -17,4 +16,5 @@
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
     End Sub
+
 End Class

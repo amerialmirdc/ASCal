@@ -1,16 +1,33 @@
-﻿Imports System.Windows.Forms
-Imports ASCal.userManagementAdmin
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-Imports System.Data.SQLite
-
-Public Class jobDashAdmin
+﻿Public Class jobDashAdmin
     Private jobList As New List(Of Job)
     Private currentPage As Integer = 1
     Private jobsPerPage As Integer = 10
     Private totalPages As Integer
     Private activeCategory As String = ""
+
+    ' ===== Unified Button Click Handler =====
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoBox.Click, Button2.Click, userManagementBtn.Click, compMan.Click, Button1.Click, logoutBtn.Click
+
+        calibrate.RefreshData()
+
+        Select Case True
+            Case sender Is logoBox
+                landingPageAdmin.Show()
+                Me.Close()
+            Case sender Is compMan
+                compManagementAdmin.Show()
+                Me.Close()
+            Case sender Is userManagementBtn
+                userManagementAdmin.Show()
+                Me.Close()
+            Case sender Is Button1
+                dmmManagementAdmin.Show()
+                Me.Close()
+            Case sender Is logoutBtn
+                login.Show()
+                Me.Close()
+        End Select
+    End Sub
 
     Private Sub jobDashAdmin_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -27,7 +44,6 @@ Public Class jobDashAdmin
 
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
-
 
         forRevBtn.BackColor = Color.Salmon
         forReviBtn.BackColor = Color.Cyan
@@ -250,4 +266,3 @@ Public Class jobDashAdmin
     End Sub
 
 End Class
-

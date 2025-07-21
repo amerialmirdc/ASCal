@@ -1,10 +1,4 @@
-﻿Imports System.Windows.Forms
-Imports ASCal.userManagementAdmin
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-Imports System.Data.SQLite
-
+﻿Imports ASCal.userManagementAdmin
 
 Public Class editUserAdmin
 
@@ -12,9 +6,34 @@ Public Class editUserAdmin
     Private originalName As String
     Private originalAccountType As String
 
+    ' ===== Unified Button Click Handler =====
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, Button4.Click, compMan.Click, Button3.Click, logoutBtn.Click, Button1.Click
+
+        calibrate.RefreshData()
+
+        Select Case True
+            Case sender Is PictureBox1
+                landingPageAdmin.Show()
+                Me.Close()
+            Case sender Is Button4
+                jobDashAdmin.Show()
+                Me.Close()
+            Case sender Is compMan
+                compManagementAdmin.Show()
+                Me.Close()
+            Case sender Is Button3
+                userManagementAdmin.Show()
+                Me.Close()
+            Case sender Is logoutBtn
+                login.Show()
+                Me.Close()
+            Case sender Is Button1
+                dmmManagementAdmin.Show()
+                Me.Close()
+        End Select
+    End Sub
 
     '' ===== SUB editUserForm_Load =====
-    '' Purpose: [Describe what editUserForm_Load does]
     Private Sub editUserForm_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
 
         ' Make sure start position is manual
@@ -31,10 +50,8 @@ Public Class editUserAdmin
         ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
-
         originalName = currentPerson.Name
         originalAccountType = currentPerson.AccountType
-
 
         ForceUppercaseInput(Me)
 
@@ -42,6 +59,7 @@ Public Class editUserAdmin
 
     ' ✅ Ito ang object ng user na ie-edit
     Private currentPerson As Personnel
+
     Private jobs As Job
 
     ' ✅ Constructor na tatanggap ng Personnel object na ie-edit
@@ -64,7 +82,6 @@ Public Class editUserAdmin
         contNumUser.Text = currentPerson.ContactNumber
         desigUser.Text = currentPerson.Designation
         deptUser.Text = currentPerson.Department
-
 
         ' Add combo box items para sa Account Type (isa lang ilalagay)
         accntTypUser.Items.Clear()
@@ -125,7 +142,6 @@ Public Class editUserAdmin
         Dim confirmPasswordInput As String = confNewPassUser.Text.Trim()
         Dim newUsername As String = usernameUser.Text.Trim()
 
-
         Dim oldInitials = currentPerson.Initials
         Dim oldname = currentPerson.Name
         Dim accountType = currentPerson.AccountType
@@ -137,8 +153,6 @@ Public Class editUserAdmin
         currentPerson.Initials = newInitials
 
         SQLiteHelper.UpdateJobRecordsIfUserChanged(newInitials, oldInitials, originalName, newName, accountType)
-
-
 
         ' Check kung may existing na username maliban sa kasalukuyang user
         Dim usernameExists As Boolean = userManagementAdmin.personnelList.Any(Function(p) p.Username.ToLower() = newUsername.ToLower() AndAlso p.ID <> currentPerson.ID)
@@ -186,14 +200,11 @@ Public Class editUserAdmin
         currentPerson.AccountType = accntTypUser.Text.Trim()
         currentPerson.SignatoryType = sigType.Text.Trim()
 
-
         ' ✅ Save to database
         SaveUser(currentPerson)
         MessageBox.Show("User details updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Me.Close()
     End Sub
-
-
 
     ' ✅ Show/Hide toggle para sa old password
     '' ===== SUB showOldPassBtn_Click =====
@@ -267,32 +278,6 @@ Public Class editUserAdmin
         e.Handled = True
     End Sub
 
-    ' ===== Unified Button Click Handler =====
-    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, Button4.Click, compMan.Click, Button3.Click, logoutBtn.Click, Button1.Click
-
-        calibrate.RefreshData()
-
-        Select Case True
-            Case sender Is PictureBox1
-                landingPageAdmin.Show()
-                Me.Hide()
-            Case sender Is Button4
-                MessageBox.Show("JOB MANAGEMENT")
-            Case sender Is compMan
-                compManagementAdmin.Show()
-                Me.Hide()
-            Case sender Is Button3
-                Me.Refresh()
-            Case sender Is logoutBtn
-                login.Show()
-                Me.Hide()
-            Case sender Is Button1
-                dmmManagementAdmin.Show()
-                Me.Hide()
-        End Select
-    End Sub
-
-
     Private Shared Function GetInitials(fullName As String) As String
         Dim initials As String = ""
         Dim parts() As String = fullName.Trim().Split(" "c)
@@ -304,8 +289,4 @@ Public Class editUserAdmin
         Return initials
     End Function
 
-
-    Private Sub Panel6_Paint(sender As System.Object, e As System.Windows.Forms.PaintEventArgs) Handles Panel6.Paint
-
-    End Sub
 End Class

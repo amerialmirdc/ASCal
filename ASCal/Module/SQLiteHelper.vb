@@ -47,7 +47,7 @@ Module SQLiteHelper
         Using conn = GetConnection()
             conn.Open()
 
-            Dim cmd As New SQLiteCommand("INSERT INTO personnel (Name, Position, Username, Password, Birthday, Email, ContactNumber, Designation, Department, AccountType, SignatoryType) " & _
+            Dim cmd As New SQLiteCommand("INSERT INTO personnel (Name, Position, Username, Password, Birthday, Email, ContactNumber, Designation, Department, AccountType, SignatoryType) " &
                                          "VALUES (@Name, @Position, @Username, @Password, @Birthday, @Email, @ContactNumber, @Designation, @Department, @AccountType, @SignatoryType)", conn)
 
             cmd.Parameters.AddWithValue("@Name", person.Name)
@@ -137,6 +137,7 @@ Module SQLiteHelper
             End Try
         End If
     End Sub
+
     ' ❌ Deletes a user from the personnel table
     Public Sub DeleteUser(userId As Integer)
         Using conn = GetConnection()
@@ -147,11 +148,10 @@ Module SQLiteHelper
         End Using
     End Sub
 
-
     ' ===================== COMPANY FUNCTIONS =====================
     ' 🏢 Represents a company record from the database
     Public Class Company
-        Public Property ID As Integer
+        Public Property CompanyID As Integer ' 🛠 Changed from ID to CompanyID
         Public Property Name As String
         Public Property Address As String
         Public Property ContactPerson As String
@@ -172,7 +172,7 @@ Module SQLiteHelper
                 Using reader As SQLiteDataReader = cmd.ExecuteReader()
                     While reader.Read()
                         Dim comp As New Company With {
-                            .ID = reader("company_id"),
+                            .CompanyID = Convert.ToInt32(reader("company_id")),
                             .Name = reader("company_name").ToString(),
                             .Address = reader("address").ToString(),
                             .ContactPerson = reader("contact_person").ToString(),
@@ -189,6 +189,35 @@ Module SQLiteHelper
 
         Return companies
     End Function
+
+    ' 💾 Update a company's information in the database
+    Public Sub UpdateCompany(company As Company)
+        Using conn = GetConnection()
+            conn.Open()
+            Dim sql As String = "UPDATE companies SET " &
+                                "company_name = @name, " &
+                                "address = @address, " &
+                                "contact_person = @contactPerson, " &
+                                "contact_number = @contactNumber, " &
+                                "email = @email, " &
+                                "date_enrolled = @dateEnrolled, " &
+                                "status = @status " &
+                                "WHERE company_id = @companyID"
+
+            Using cmd As New SQLiteCommand(sql, conn)
+                cmd.Parameters.AddWithValue("@name", company.Name)
+                cmd.Parameters.AddWithValue("@address", company.Address)
+                cmd.Parameters.AddWithValue("@contactPerson", company.ContactPerson)
+                cmd.Parameters.AddWithValue("@contactNumber", company.ContactNumber)
+                cmd.Parameters.AddWithValue("@email", company.Email)
+                cmd.Parameters.AddWithValue("@dateEnrolled", company.DateEnrolled)
+                cmd.Parameters.AddWithValue("@status", company.Status)
+                cmd.Parameters.AddWithValue("@companyID", company.CompanyID)
+
+                cmd.ExecuteNonQuery()
+            End Using
+        End Using
+    End Sub
 
     ' ===================== JOB FUNCTIONS =====================
 
@@ -305,7 +334,7 @@ Module SQLiteHelper
         Dim jobs As New List(Of Job)
         Try
             Using conn = GetConnection()
-                conn.Open() 
+                conn.Open()
                 Dim cmd As New SQLiteCommand("SELECT * FROM calibration_jobs WHERE last_updated_by = @initials ORDER BY date_created DESC", conn)
                 cmd.Parameters.AddWithValue("@initials", initials)
                 Using reader = cmd.ExecuteReader()
@@ -331,8 +360,8 @@ Module SQLiteHelper
                             .Parameters = reader("parameters").ToString(),
                             .LastUpdatedBy = reader("last_updated_by").ToString()
                         })
-                        End While
-                    End Using
+                    End While
+                End Using
             End Using
         Catch ex As Exception
             MessageBox.Show("Error loading signatory jobs: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -388,7 +417,7 @@ Module SQLiteHelper
         Public Property NominalValues As List(Of String)
     End Class
 
-' 📊 Loads grouped DMM parameters (Category → Range → Nominal Values)
+    ' 📊 Loads grouped DMM parameters (Category → Range → Nominal Values)
     Public Function LoadGroupedDMMParameters(ByVal modelName As String) As Dictionary(Of String, Dictionary(Of String, List(Of String)))
         Dim result As New Dictionary(Of String, Dictionary(Of String, List(Of String)))()
 
@@ -396,12 +425,12 @@ Module SQLiteHelper
             conn.Open()
 
             ' SQL joins to get category, range, and nominal values for a given model
-            Dim sql As String = "SELECT pc.name AS category, dr.range_value, dnv.nominal_value " & _
-                                "FROM dmm d " & _
-                                "JOIN dmm_ranges dr ON d.id = dr.dmm_id " & _
-                                "JOIN parameter_categories pc ON pc.id = dr.category_id " & _
-                                "JOIN dmm_nominal_values dnv ON dnv.range_id = dr.id " & _
-                                "WHERE d.model_name = @modelName " & _
+            Dim sql As String = "SELECT pc.name AS category, dr.range_value, dnv.nominal_value " &
+                                "FROM dmm d " &
+                                "JOIN dmm_ranges dr ON d.id = dr.dmm_id " &
+                                "JOIN parameter_categories pc ON pc.id = dr.category_id " &
+                                "JOIN dmm_nominal_values dnv ON dnv.range_id = dr.id " &
+                                "WHERE d.model_name = @modelName " &
                                 "ORDER BY pc.name, dr.range_value, dnv.nominal_value"
 
             Dim cmd As New SQLiteCommand(sql, conn)
@@ -449,6 +478,7 @@ Module SQLiteHelper
         Public Sub New()
             NominalValuesWithFreq = New List(Of Tuple(Of String, String))()
         End Sub
+
     End Class
 
     ' 🧾 Loads all DMM model names
@@ -477,13 +507,13 @@ Module SQLiteHelper
         Using conn As SQLiteConnection = GetConnection()
             conn.Open()
 
-            Dim sql As String = _
-                "SELECT dmm.id AS dmm_id, dmm.model_name, pc.name AS category, r.id AS range_id, r.range_value, nv.nominal_value, nv.frequency " & _
-                "FROM dmm " & _
-                "JOIN dmm_ranges r ON dmm.id = r.dmm_id " & _
-                "JOIN parameter_categories pc ON r.category_id = pc.id " & _
-                "LEFT JOIN dmm_nominal_values nv ON r.id = nv.range_id " & _
-                "WHERE dmm.model_name = @model " & _
+            Dim sql As String =
+                "SELECT dmm.id AS dmm_id, dmm.model_name, pc.name AS category, r.id AS range_id, r.range_value, nv.nominal_value, nv.frequency " &
+                "FROM dmm " &
+                "JOIN dmm_ranges r ON dmm.id = r.dmm_id " &
+                "JOIN parameter_categories pc ON r.category_id = pc.id " &
+                "LEFT JOIN dmm_nominal_values nv ON r.id = nv.range_id " &
+                "WHERE dmm.model_name = @model " &
                 "ORDER BY pc.name, r.range_value"
 
             Dim cmd As New SQLiteCommand(sql, conn)
@@ -605,7 +635,6 @@ Module SQLiteHelper
             End Using
         End Using
     End Sub
-
 
     ' 🔎 Gets category ID by name using existing connection
     Public Function GetCategoryIdByName(ByVal categoryName As String, ByVal conn As SQLiteConnection) As Integer

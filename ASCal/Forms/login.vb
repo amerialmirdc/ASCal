@@ -1,9 +1,4 @@
-﻿Imports System.Data.SQLite
-Imports ASCal.SQLiteHelper
-Imports ASCal.SessionManager
-Imports ASCal.UIHelper
-
-Public Class login
+﻿Public Class login
 
     ' Show/Hide password button
     Private Sub showPassBtn_Click(sender As Object, e As EventArgs) Handles showPassBtn.Click
@@ -12,7 +7,7 @@ Public Class login
     End Sub
 
     ' Login button click
-Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Click
+    Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Click
         Dim username As String = usernameTextbox.Text.Trim()
         Dim password As String = passwordTextbox.Text.Trim()
 
@@ -49,9 +44,8 @@ Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Cl
             calibrate.RefreshData()
             jobDashTech.RefreshData()
 
-            ' Hide login form
-            Me.Hide()
-
+            ' Close login form
+            Me.Close()
         Else
             ' If login failed
             MessageBox.Show("Invalid credentials. Please try again.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -61,13 +55,10 @@ Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Cl
         End If
     End Sub
 
-
-
     ' Optional: clear fields when form loads
     Private Sub login_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-
-        'CheckFontsAcrossAllForms()
+        ''CheckFontsAcrossAllForms()
 
         'CheckFontsAndNotify(Me)
         'CheckFontsAndNotify(compManagementAdmin)
@@ -78,8 +69,6 @@ Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Cl
         'CheckFontsAndNotify(newDMMAdmin)
         'CheckFontsAndNotify(newUserAdmin)
         'CheckFontsAndNotify(userManagementAdmin)
-
-
 
         Dim users As List(Of userManagementAdmin.Personnel) = LoadAllUsers()
 
