@@ -54,8 +54,8 @@ Partial Class editUserAdmin
         Me.oldPassword = New System.Windows.Forms.Label()
         Me.usernameUser = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
-        Me.ShapeContainer1 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
-        Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.ShapeContainer1 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
+        'Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.nameUser = New System.Windows.Forms.TextBox()
         Me.birthdayUser = New System.Windows.Forms.TextBox()
@@ -325,7 +325,7 @@ Partial Class editUserAdmin
         Me.newUserUserPass.Controls.Add(Me.oldPassword)
         Me.newUserUserPass.Controls.Add(Me.usernameUser)
         Me.newUserUserPass.Controls.Add(Me.Label2)
-        Me.newUserUserPass.Controls.Add(Me.ShapeContainer1)
+        'Me.newUserUserPass.Controls.Add(Me.ShapeContainer1)
         Me.newUserUserPass.Dock = System.Windows.Forms.DockStyle.Left
         Me.newUserUserPass.Font = New System.Drawing.Font("Courier10 BT", 8.25!)
         Me.newUserUserPass.Location = New System.Drawing.Point(0, 0)
@@ -452,21 +452,21 @@ Partial Class editUserAdmin
         '
         'ShapeContainer1
         '
-        Me.ShapeContainer1.Location = New System.Drawing.Point(0, 0)
-        Me.ShapeContainer1.Margin = New System.Windows.Forms.Padding(0)
-        Me.ShapeContainer1.Name = "ShapeContainer1"
-        Me.ShapeContainer1.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape1})
-        Me.ShapeContainer1.Size = New System.Drawing.Size(728, 576)
-        Me.ShapeContainer1.TabIndex = 33
-        Me.ShapeContainer1.TabStop = False
+        'Me.ShapeContainer1.Location = New System.Drawing.Point(0, 0)
+        'Me.ShapeContainer1.Margin = New System.Windows.Forms.Padding(0)
+        'Me.ShapeContainer1.Name = "ShapeContainer1"
+        'Me.ShapeContainer1.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape1})
+        'Me.ShapeContainer1.Size = New System.Drawing.Size(728, 576)
+        'Me.ShapeContainer1.TabIndex = 33
+        'Me.ShapeContainer1.TabStop = False
         '
         'LineShape1
         '
-        Me.LineShape1.Name = "LineShape1"
-        Me.LineShape1.X1 = 17
-        Me.LineShape1.X2 = 690
-        Me.LineShape1.Y1 = 244
-        Me.LineShape1.Y2 = 244
+        'Me.LineShape1.Name = "LineShape1"
+        'Me.LineShape1.X1 = 17
+        'Me.LineShape1.X2 = 690
+        'Me.LineShape1.Y1 = 244
+        'Me.LineShape1.Y2 = 244
         '
         'Label5
         '
@@ -745,8 +745,6 @@ Partial Class editUserAdmin
     Friend WithEvents newPassUser As System.Windows.Forms.TextBox
     Friend WithEvents newPassword As System.Windows.Forms.Label
     Friend WithEvents Label13 As System.Windows.Forms.Label
-    Friend WithEvents ShapeContainer1 As Microsoft.VisualBasic.PowerPacks.ShapeContainer
-    Friend WithEvents LineShape1 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents showConfPassBtn As System.Windows.Forms.Button
     Friend WithEvents showNewPassBtn As System.Windows.Forms.Button
     Friend WithEvents showOldPassBtn As System.Windows.Forms.Button

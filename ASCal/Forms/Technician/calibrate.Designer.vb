@@ -135,18 +135,18 @@ Partial Class calibrate
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
-        Me.ShapeContainer1 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
-        Me.LineShape8 = New Microsoft.VisualBasic.PowerPacks.LineShape()
-        Me.LineShape7 = New Microsoft.VisualBasic.PowerPacks.LineShape()
-        Me.LineShape6 = New Microsoft.VisualBasic.PowerPacks.LineShape()
-        Me.LineShape5 = New Microsoft.VisualBasic.PowerPacks.LineShape()
-        Me.LineShape4 = New Microsoft.VisualBasic.PowerPacks.LineShape()
-        Me.LineShape3 = New Microsoft.VisualBasic.PowerPacks.LineShape()
-        Me.OvalShape1 = New Microsoft.VisualBasic.PowerPacks.OvalShape()
-        Me.OvalShape2 = New Microsoft.VisualBasic.PowerPacks.OvalShape()
-        Me.OvalShape3 = New Microsoft.VisualBasic.PowerPacks.OvalShape()
-        Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
-        Me.LineShape2 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.ShapeContainer1 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
+        'Me.LineShape8 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.LineShape7 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.LineShape6 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.LineShape5 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.LineShape4 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.LineShape3 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.OvalShape1 = New Microsoft.VisualBasic.PowerPacks.OvalShape()
+        'Me.OvalShape2 = New Microsoft.VisualBasic.PowerPacks.OvalShape()
+        'Me.OvalShape3 = New Microsoft.VisualBasic.PowerPacks.OvalShape()
+        'Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.LineShape2 = New Microsoft.VisualBasic.PowerPacks.LineShape()
         Me.Panel1.SuspendLayout()
         Me.Panel8.SuspendLayout()
         Me.Panel4.SuspendLayout()
@@ -355,7 +355,7 @@ Partial Class calibrate
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label1)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label2)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label3)
-        Me.mainPanelCalibrateInp.Controls.Add(Me.ShapeContainer1)
+        'Me.mainPanelCalibrateInp.Controls.Add(Me.ShapeContainer1)
         Me.mainPanelCalibrateInp.Dock = System.Windows.Forms.DockStyle.Fill
         Me.mainPanelCalibrateInp.Location = New System.Drawing.Point(300, 0)
         Me.mainPanelCalibrateInp.Name = "mainPanelCalibrateInp"
@@ -1431,105 +1431,105 @@ Partial Class calibrate
         '
         'ShapeContainer1
         '
-        Me.ShapeContainer1.Location = New System.Drawing.Point(0, 0)
-        Me.ShapeContainer1.Margin = New System.Windows.Forms.Padding(0)
-        Me.ShapeContainer1.Name = "ShapeContainer1"
-        Me.ShapeContainer1.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape8, Me.LineShape7, Me.LineShape6, Me.LineShape5, Me.LineShape4, Me.LineShape3, Me.OvalShape1, Me.OvalShape2, Me.OvalShape3, Me.LineShape1, Me.LineShape2})
-        Me.ShapeContainer1.Size = New System.Drawing.Size(1680, 2100)
-        Me.ShapeContainer1.TabIndex = 0
-        Me.ShapeContainer1.TabStop = False
+        'Me.ShapeContainer1.Location = New System.Drawing.Point(0, 0)
+        'Me.ShapeContainer1.Margin = New System.Windows.Forms.Padding(0)
+        'Me.ShapeContainer1.Name = "ShapeContainer1"
+        'Me.ShapeContainer1.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape8, Me.LineShape7, Me.LineShape6, Me.LineShape5, Me.LineShape4, Me.LineShape3, Me.OvalShape1, Me.OvalShape2, Me.OvalShape3, Me.LineShape1, Me.LineShape2})
+        'Me.ShapeContainer1.Size = New System.Drawing.Size(1680, 2100)
+        'Me.ShapeContainer1.TabIndex = 0
+        'Me.ShapeContainer1.TabStop = False
         '
         'LineShape8
         '
-        Me.LineShape8.Name = "LineShape8"
-        Me.LineShape8.X1 = 49
-        Me.LineShape8.X2 = 1500
-        Me.LineShape8.Y1 = 1461
-        Me.LineShape8.Y2 = 1461
+        'Me.LineShape8.Name = "LineShape8"
+        'Me.LineShape8.X1 = 49
+        'Me.LineShape8.X2 = 1500
+        'Me.LineShape8.Y1 = 1461
+        'Me.LineShape8.Y2 = 1461
         '
         'LineShape7
         '
-        Me.LineShape7.Name = "LineShape7"
-        Me.LineShape7.X1 = 49
-        Me.LineShape7.X2 = 1550
-        Me.LineShape7.Y1 = 1257
-        Me.LineShape7.Y2 = 1257
+        'Me.LineShape7.Name = "LineShape7"
+        'Me.LineShape7.X1 = 49
+        'Me.LineShape7.X2 = 1550
+        'Me.LineShape7.Y1 = 1257
+        'Me.LineShape7.Y2 = 1257
         '
         'LineShape6
         '
-        Me.LineShape6.Name = "LineShape6"
-        Me.LineShape6.X1 = 49
-        Me.LineShape6.X2 = 1550
-        Me.LineShape6.Y1 = 1022
-        Me.LineShape6.Y2 = 1022
+        'Me.LineShape6.Name = "LineShape6"
+        'Me.LineShape6.X1 = 49
+        'Me.LineShape6.X2 = 1550
+        'Me.LineShape6.Y1 = 1022
+        'Me.LineShape6.Y2 = 1022
         '
         'LineShape5
         '
-        Me.LineShape5.Name = "LineShape5"
-        Me.LineShape5.X1 = 49
-        Me.LineShape5.X2 = 1550
-        Me.LineShape5.Y1 = 802
-        Me.LineShape5.Y2 = 802
+        'Me.LineShape5.Name = "LineShape5"
+        'Me.LineShape5.X1 = 49
+        'Me.LineShape5.X2 = 1550
+        'Me.LineShape5.Y1 = 802
+        'Me.LineShape5.Y2 = 802
         '
         'LineShape4
         '
-        Me.LineShape4.Name = "LineShape4"
-        Me.LineShape4.X1 = 49
-        Me.LineShape4.X2 = 1200
-        Me.LineShape4.Y1 = 579
-        Me.LineShape4.Y2 = 579
+        'Me.LineShape4.Name = "LineShape4"
+        'Me.LineShape4.X1 = 49
+        'Me.LineShape4.X2 = 1200
+        'Me.LineShape4.Y1 = 579
+        'Me.LineShape4.Y2 = 579
         '
         'LineShape3
         '
-        Me.LineShape3.Name = "LineShape3"
-        Me.LineShape3.X1 = 49
-        Me.LineShape3.X2 = 1550
-        Me.LineShape3.Y1 = 212
-        Me.LineShape3.Y2 = 212
-        '
+        'Me.LineShape3.Name = "LineShape3"
+        'Me.LineShape3.X1 = 49
+        'Me.LineShape3.X2 = 1550
+        'Me.LineShape3.Y1 = 212
+        'Me.LineShape3.Y2 = 212
+        ''
         'OvalShape1
         '
-        Me.OvalShape1.BackColor = System.Drawing.Color.DarkRed
-        Me.OvalShape1.Cursor = System.Windows.Forms.Cursors.Default
-        Me.OvalShape1.FillColor = System.Drawing.Color.Cyan
-        Me.OvalShape1.FillGradientColor = System.Drawing.Color.White
-        Me.OvalShape1.FillStyle = Microsoft.VisualBasic.PowerPacks.FillStyle.Solid
-        Me.OvalShape1.Location = New System.Drawing.Point(103, 32)
-        Me.OvalShape1.Name = "OvalShape1"
-        Me.OvalShape1.Size = New System.Drawing.Size(70, 70)
+        'Me.OvalShape1.BackColor = System.Drawing.Color.DarkRed
+        'Me.OvalShape1.Cursor = System.Windows.Forms.Cursors.Default
+        'Me.OvalShape1.FillColor = System.Drawing.Color.Cyan
+        'Me.OvalShape1.FillGradientColor = System.Drawing.Color.White
+        'Me.OvalShape1.FillStyle = Microsoft.VisualBasic.PowerPacks.FillStyle.Solid
+        'Me.OvalShape1.Location = New System.Drawing.Point(103, 32)
+        'Me.OvalShape1.Name = "OvalShape1"
+        'Me.OvalShape1.Size = New System.Drawing.Size(70, 70)
         '
-        'OvalShape2
-        '
-        Me.OvalShape2.BorderColor = System.Drawing.Color.Black
-        Me.OvalShape2.FillColor = System.Drawing.Color.White
-        Me.OvalShape2.FillStyle = Microsoft.VisualBasic.PowerPacks.FillStyle.Solid
-        Me.OvalShape2.Location = New System.Drawing.Point(273, 41)
-        Me.OvalShape2.Name = "OvalShape2"
-        Me.OvalShape2.Size = New System.Drawing.Size(55, 55)
-        '
-        'OvalShape3
-        '
-        Me.OvalShape3.FillColor = System.Drawing.Color.White
-        Me.OvalShape3.FillStyle = Microsoft.VisualBasic.PowerPacks.FillStyle.Solid
-        Me.OvalShape3.Location = New System.Drawing.Point(427, 41)
-        Me.OvalShape3.Name = "OvalShape3"
-        Me.OvalShape3.Size = New System.Drawing.Size(55, 55)
-        '
-        'LineShape1
-        '
-        Me.LineShape1.Name = "LineShape1"
-        Me.LineShape1.X1 = 173
-        Me.LineShape1.X2 = 274
-        Me.LineShape1.Y1 = 69
-        Me.LineShape1.Y2 = 69
-        '
-        'LineShape2
-        '
-        Me.LineShape2.Name = "LineShape2"
-        Me.LineShape2.X1 = 327
-        Me.LineShape2.X2 = 428
-        Me.LineShape2.Y1 = 69
-        Me.LineShape2.Y2 = 69
+        ''OvalShape2
+        ''
+        'Me.OvalShape2.BorderColor = System.Drawing.Color.Black
+        'Me.OvalShape2.FillColor = System.Drawing.Color.White
+        'Me.OvalShape2.FillStyle = Microsoft.VisualBasic.PowerPacks.FillStyle.Solid
+        'Me.OvalShape2.Location = New System.Drawing.Point(273, 41)
+        'Me.OvalShape2.Name = "OvalShape2"
+        'Me.OvalShape2.Size = New System.Drawing.Size(55, 55)
+        ''
+        ''OvalShape3
+        ''
+        'Me.OvalShape3.FillColor = System.Drawing.Color.White
+        'Me.OvalShape3.FillStyle = Microsoft.VisualBasic.PowerPacks.FillStyle.Solid
+        'Me.OvalShape3.Location = New System.Drawing.Point(427, 41)
+        'Me.OvalShape3.Name = "OvalShape3"
+        'Me.OvalShape3.Size = New System.Drawing.Size(55, 55)
+        ''
+        ''LineShape1
+        ''
+        'Me.LineShape1.Name = "LineShape1"
+        'Me.LineShape1.X1 = 173
+        'Me.LineShape1.X2 = 274
+        'Me.LineShape1.Y1 = 69
+        'Me.LineShape1.Y2 = 69
+        ''
+        ''LineShape2
+        ''
+        'Me.LineShape2.Name = "LineShape2"
+        'Me.LineShape2.X1 = 327
+        'Me.LineShape2.X2 = 428
+        'Me.LineShape2.Y1 = 69
+        'Me.LineShape2.Y2 = 69
         '
         'calibrate
         '
@@ -1569,12 +1569,12 @@ Partial Class calibrate
     Friend WithEvents Panel2 As System.Windows.Forms.Panel
     Friend WithEvents logoBtn As System.Windows.Forms.PictureBox
     Friend WithEvents mainPanelCalibrateInp As System.Windows.Forms.Panel
-    Friend WithEvents ShapeContainer1 As Microsoft.VisualBasic.PowerPacks.ShapeContainer
-    Friend WithEvents OvalShape1 As Microsoft.VisualBasic.PowerPacks.OvalShape
-    Friend WithEvents OvalShape2 As Microsoft.VisualBasic.PowerPacks.OvalShape
-    Friend WithEvents OvalShape3 As Microsoft.VisualBasic.PowerPacks.OvalShape
-    Friend WithEvents LineShape1 As Microsoft.VisualBasic.PowerPacks.LineShape
-    Friend WithEvents LineShape2 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents ShapeContainer1 As Microsoft.VisualBasic.PowerPacks.ShapeContainer
+    'Friend WithEvents OvalShape1 As Microsoft.VisualBasic.PowerPacks.OvalShape
+    'Friend WithEvents OvalShape2 As Microsoft.VisualBasic.PowerPacks.OvalShape
+    'Friend WithEvents OvalShape3 As Microsoft.VisualBasic.PowerPacks.OvalShape
+    'Friend WithEvents LineShape1 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape2 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents Label6 As System.Windows.Forms.Label
     Friend WithEvents Label4 As System.Windows.Forms.Label
     Friend WithEvents Label5 As System.Windows.Forms.Label
@@ -1585,7 +1585,7 @@ Partial Class calibrate
     Friend WithEvents technicalID As System.Windows.Forms.TextBox
     Friend WithEvents Label7 As System.Windows.Forms.Label
     Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
-    Friend WithEvents LineShape3 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape3 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents Label28 As System.Windows.Forms.Label
     Friend WithEvents specificSite As System.Windows.Forms.TextBox
     Friend WithEvents CheckedListBox1 As System.Windows.Forms.CheckedListBox
@@ -1620,9 +1620,9 @@ Partial Class calibrate
     Friend WithEvents Label11 As System.Windows.Forms.Label
     Friend WithEvents TextBox4 As System.Windows.Forms.TextBox
     Friend WithEvents Label9 As System.Windows.Forms.Label
-    Friend WithEvents LineShape6 As Microsoft.VisualBasic.PowerPacks.LineShape
-    Friend WithEvents LineShape5 As Microsoft.VisualBasic.PowerPacks.LineShape
-    Friend WithEvents LineShape4 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape6 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape5 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape4 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents refstand3 As System.Windows.Forms.TextBox
     Friend WithEvents refstand2 As System.Windows.Forms.TextBox
@@ -1666,8 +1666,8 @@ Partial Class calibrate
     Friend WithEvents Label55 As System.Windows.Forms.Label
     Friend WithEvents TextBox24 As System.Windows.Forms.TextBox
     Friend WithEvents Label56 As System.Windows.Forms.Label
-    Friend WithEvents LineShape7 As Microsoft.VisualBasic.PowerPacks.LineShape
-    Friend WithEvents LineShape8 As Microsoft.VisualBasic.PowerPacks.LineShape
+    ' WithEvents LineShape7 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape8 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents Label39 As System.Windows.Forms.Label
     Friend WithEvents parameterPanel As System.Windows.Forms.Panel
     Friend WithEvents cLParamACV As System.Windows.Forms.CheckedListBox

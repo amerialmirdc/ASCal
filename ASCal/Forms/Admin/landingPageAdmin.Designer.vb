@@ -23,7 +23,7 @@ Partial Class landingPageAdmin
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.userName = New System.Windows.Forms.Label()
-        Me.LineShape2 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.LineShape2 = New Microsoft.VisualBasic.PowerPacks.LineShape()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
@@ -49,8 +49,8 @@ Partial Class landingPageAdmin
         Me.logoBox = New System.Windows.Forms.PictureBox()
         Me.Panel7 = New System.Windows.Forms.Panel()
         Me.accountType = New System.Windows.Forms.Label()
-        Me.ShapeContainer2 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
-        Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.ShapeContainer2 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
+        'Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
         Me.Panel1.SuspendLayout()
         Me.Panel6.SuspendLayout()
         Me.Panel3.SuspendLayout()
@@ -75,13 +75,13 @@ Partial Class landingPageAdmin
         '
         'LineShape2
         '
-        Me.LineShape2.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
-        Me.LineShape2.Enabled = False
-        Me.LineShape2.Name = "LineShape2"
-        Me.LineShape2.X1 = 28
-        Me.LineShape2.X2 = 1465
-        Me.LineShape2.Y1 = 224
-        Me.LineShape2.Y2 = 224
+        'Me.LineShape2.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
+        'Me.LineShape2.Enabled = False
+        'Me.LineShape2.Name = "LineShape2"
+        'Me.LineShape2.X1 = 28
+        'Me.LineShape2.X2 = 1465
+        'Me.LineShape2.Y1 = 224
+        'Me.LineShape2.Y2 = 224
         '
         'Label1
         '
@@ -363,7 +363,7 @@ Partial Class landingPageAdmin
         Me.Panel7.Controls.Add(Me.userMobile)
         Me.Panel7.Controls.Add(Me.userBirthday)
         Me.Panel7.Controls.Add(Me.userName)
-        Me.Panel7.Controls.Add(Me.ShapeContainer2)
+        'Me.Panel7.Controls.Add(Me.ShapeContainer2)
         Me.Panel7.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel7.Location = New System.Drawing.Point(300, 0)
         Me.Panel7.Name = "Panel7"
@@ -384,23 +384,23 @@ Partial Class landingPageAdmin
         '
         'ShapeContainer2
         '
-        Me.ShapeContainer2.Location = New System.Drawing.Point(0, 0)
-        Me.ShapeContainer2.Margin = New System.Windows.Forms.Padding(0)
-        Me.ShapeContainer2.Name = "ShapeContainer2"
-        Me.ShapeContainer2.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape1, Me.LineShape2})
-        Me.ShapeContainer2.Size = New System.Drawing.Size(1624, 1061)
-        Me.ShapeContainer2.TabIndex = 3
-        Me.ShapeContainer2.TabStop = False
+        'Me.ShapeContainer2.Location = New System.Drawing.Point(0, 0)
+        'Me.ShapeContainer2.Margin = New System.Windows.Forms.Padding(0)
+        'Me.ShapeContainer2.Name = "ShapeContainer2"
+        'Me.ShapeContainer2.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape1, Me.LineShape2})
+        'Me.ShapeContainer2.Size = New System.Drawing.Size(1624, 1061)
+        'Me.ShapeContainer2.TabIndex = 3
+        'Me.ShapeContainer2.TabStop = False
         '
         'LineShape1
         '
-        Me.LineShape1.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
-        Me.LineShape1.Enabled = False
-        Me.LineShape1.Name = "LineShape1"
-        Me.LineShape1.X1 = 28
-        Me.LineShape1.X2 = 1465
-        Me.LineShape1.Y1 = 522
-        Me.LineShape1.Y2 = 522
+        'Me.LineShape1.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
+        'Me.LineShape1.Enabled = False
+        'Me.LineShape1.Name = "LineShape1"
+        'Me.LineShape1.X1 = 28
+        'Me.LineShape1.X2 = 1465
+        'Me.LineShape1.Y1 = 522
+        'Me.LineShape1.Y2 = 522
         '
         'landingPageAdmin
         '
@@ -438,7 +438,7 @@ Partial Class landingPageAdmin
     Friend WithEvents userMobile As System.Windows.Forms.Label
     Friend WithEvents userDepartment As System.Windows.Forms.Label
     Friend WithEvents userDesig As System.Windows.Forms.Label
-    Friend WithEvents LineShape2 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape2 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents Panel1 As System.Windows.Forms.Panel
     Friend WithEvents Panel5 As System.Windows.Forms.Panel
     Friend WithEvents userManagementBtn As System.Windows.Forms.Button
@@ -447,11 +447,11 @@ Partial Class landingPageAdmin
     Friend WithEvents Panel2 As System.Windows.Forms.Panel
     Friend WithEvents logoBox As System.Windows.Forms.PictureBox
     Friend WithEvents Panel7 As System.Windows.Forms.Panel
-    Friend WithEvents ShapeContainer2 As Microsoft.VisualBasic.PowerPacks.ShapeContainer
+    'Friend WithEvents ShapeContainer2 As Microsoft.VisualBasic.PowerPacks.ShapeContainer
     Friend WithEvents accountType As System.Windows.Forms.Label
     Friend WithEvents Panel8 As System.Windows.Forms.Panel
     Friend WithEvents logoutBtn As System.Windows.Forms.Button
-    Friend WithEvents LineShape1 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape1 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents Panel3 As System.Windows.Forms.Panel
     Friend WithEvents compMan As System.Windows.Forms.Button
     Friend WithEvents Panel6 As System.Windows.Forms.Panel

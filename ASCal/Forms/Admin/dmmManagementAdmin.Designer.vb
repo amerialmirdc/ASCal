@@ -71,7 +71,7 @@ Partial Class dmmManagementAdmin
         Me.Panel1.Controls.Add(Me.Panel2)
         Me.Panel1.Cursor = System.Windows.Forms.Cursors.Default
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Left
-        Me.Panel1.Font = New System.Drawing.Font("Courier10 BT", 8.25!)
+        Me.Panel1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(300, 991)
@@ -95,7 +95,7 @@ Partial Class dmmManagementAdmin
         Me.button1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White
         Me.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.button1.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.button1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.button1.Location = New System.Drawing.Point(32, 16)
         Me.button1.Name = "button1"
         Me.button1.Size = New System.Drawing.Size(245, 41)
@@ -120,7 +120,7 @@ Partial Class dmmManagementAdmin
         Me.logoutBtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White
         Me.logoutBtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.logoutBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.logoutBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.logoutBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.logoutBtn.Location = New System.Drawing.Point(32, 16)
         Me.logoutBtn.Name = "logoutBtn"
         Me.logoutBtn.Size = New System.Drawing.Size(245, 41)
@@ -145,7 +145,7 @@ Partial Class dmmManagementAdmin
         Me.compMan.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White
         Me.compMan.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.compMan.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.compMan.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.compMan.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.compMan.Location = New System.Drawing.Point(32, 16)
         Me.compMan.Name = "compMan"
         Me.compMan.Size = New System.Drawing.Size(245, 41)
@@ -170,7 +170,7 @@ Partial Class dmmManagementAdmin
         Me.Button3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White
         Me.Button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.Button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.Button3.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Button3.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button3.Location = New System.Drawing.Point(32, 16)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(245, 41)
@@ -194,7 +194,7 @@ Partial Class dmmManagementAdmin
         Me.jobdash.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White
         Me.jobdash.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.jobdash.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.jobdash.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.jobdash.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.jobdash.Location = New System.Drawing.Point(32, 16)
         Me.jobdash.Name = "jobdash"
         Me.jobdash.Size = New System.Drawing.Size(245, 41)
@@ -233,7 +233,7 @@ Partial Class dmmManagementAdmin
         Me.Panel6.Controls.Add(Me.newDmm)
         Me.Panel6.Controls.Add(Me.userPanel)
         Me.Panel6.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel6.Font = New System.Drawing.Font("Courier10 BT", 8.25!)
+        Me.Panel6.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.Panel6.Location = New System.Drawing.Point(300, 0)
         Me.Panel6.Name = "Panel6"
         Me.Panel6.Size = New System.Drawing.Size(1602, 991)
@@ -243,10 +243,10 @@ Partial Class dmmManagementAdmin
         '
         Me.Label2.AutoSize = True
         Me.Label2.BackColor = System.Drawing.Color.White
-        Me.Label2.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.Label2.Location = New System.Drawing.Point(120, 180)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(260, 17)
+        Me.Label2.Size = New System.Drawing.Size(185, 18)
         Me.Label2.TabIndex = 17
         Me.Label2.Text = "Page {0} of {1} ({2} records"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -254,7 +254,7 @@ Partial Class dmmManagementAdmin
         '
         'Button2
         '
-        Me.Button2.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.Button2.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.Button2.Location = New System.Drawing.Point(32, 176)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(72, 24)
@@ -264,7 +264,7 @@ Partial Class dmmManagementAdmin
         '
         'Button4
         '
-        Me.Button4.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.Button4.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.Button4.Location = New System.Drawing.Point(392, 176)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(72, 24)
@@ -278,7 +278,7 @@ Partial Class dmmManagementAdmin
         Me.DMMDetails.BackColor = System.Drawing.Color.White
         Me.DMMDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.DMMDetails.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.DMMDetails.Font = New System.Drawing.Font("Courier10 BT", 8.25!)
+        Me.DMMDetails.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.DMMDetails.Location = New System.Drawing.Point(928, 216)
         Me.DMMDetails.Name = "DMMDetails"
         Me.DMMDetails.Size = New System.Drawing.Size(648, 744)
@@ -288,16 +288,16 @@ Partial Class dmmManagementAdmin
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Courier10 BT", 40.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World)
+        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 40.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World)
         Me.Label1.Location = New System.Drawing.Point(24, 96)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(356, 47)
+        Me.Label1.Size = New System.Drawing.Size(427, 46)
         Me.Label1.TabIndex = 2
         Me.Label1.Text = "DMM MANAGEMENT"
         '
         'newDmm
         '
-        Me.newDmm.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.newDmm.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.newDmm.Location = New System.Drawing.Point(712, 160)
         Me.newDmm.Name = "newDmm"
         Me.newDmm.Size = New System.Drawing.Size(200, 40)
@@ -320,10 +320,10 @@ Partial Class dmmManagementAdmin
         '
         Me.pageLabel.AutoSize = True
         Me.pageLabel.BackColor = System.Drawing.Color.White
-        Me.pageLabel.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.pageLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.pageLabel.Location = New System.Drawing.Point(1184, 608)
         Me.pageLabel.Name = "pageLabel"
-        Me.pageLabel.Size = New System.Drawing.Size(260, 17)
+        Me.pageLabel.Size = New System.Drawing.Size(185, 18)
         Me.pageLabel.TabIndex = 4
         Me.pageLabel.Text = "Page {0} of {1} ({2} records"
         Me.pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -331,7 +331,7 @@ Partial Class dmmManagementAdmin
         '
         'prevBtn
         '
-        Me.prevBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.prevBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.prevBtn.Location = New System.Drawing.Point(1096, 600)
         Me.prevBtn.Name = "prevBtn"
         Me.prevBtn.Size = New System.Drawing.Size(72, 40)
@@ -341,7 +341,7 @@ Partial Class dmmManagementAdmin
         '
         'nextBtn
         '
-        Me.nextBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.nextBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.nextBtn.Location = New System.Drawing.Point(1456, 600)
         Me.nextBtn.Name = "nextBtn"
         Me.nextBtn.Size = New System.Drawing.Size(72, 40)

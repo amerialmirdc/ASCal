@@ -49,9 +49,9 @@ Partial Class landingPageTechnician
         Me.userMobile = New System.Windows.Forms.Label()
         Me.userBirthday = New System.Windows.Forms.Label()
         Me.userName = New System.Windows.Forms.Label()
-        Me.ShapeContainer2 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
-        Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
-        Me.LineShape2 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.ShapeContainer2 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
+        'Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
+        'Me.LineShape2 = New Microsoft.VisualBasic.PowerPacks.LineShape()
         Me.Panel1.SuspendLayout()
         Me.Panel8.SuspendLayout()
         Me.Panel4.SuspendLayout()
@@ -189,7 +189,7 @@ Partial Class landingPageTechnician
         Me.Panel7.Controls.Add(Me.userMobile)
         Me.Panel7.Controls.Add(Me.userBirthday)
         Me.Panel7.Controls.Add(Me.userName)
-        Me.Panel7.Controls.Add(Me.ShapeContainer2)
+        'Me.Panel7.Controls.Add(Me.ShapeContainer2)
         Me.Panel7.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel7.Location = New System.Drawing.Point(300, 0)
         Me.Panel7.Name = "Panel7"
@@ -382,37 +382,37 @@ Partial Class landingPageTechnician
         Me.userName.TabIndex = 2
         Me.userName.Text = "USERNAME"
         '
-        'ShapeContainer2
-        '
-        Me.ShapeContainer2.Location = New System.Drawing.Point(0, 0)
-        Me.ShapeContainer2.Margin = New System.Windows.Forms.Padding(0)
-        Me.ShapeContainer2.Name = "ShapeContainer2"
-        Me.ShapeContainer2.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape1, Me.LineShape2})
-        Me.ShapeContainer2.Size = New System.Drawing.Size(1602, 1500)
-        Me.ShapeContainer2.TabIndex = 3
-        Me.ShapeContainer2.TabStop = False
-        '
-        'LineShape1
-        '
-        Me.LineShape1.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
-        Me.LineShape1.Enabled = False
-        Me.LineShape1.Name = "LineShape1"
-        Me.LineShape1.X1 = 47
-        Me.LineShape1.X2 = 1484
-        Me.LineShape1.Y1 = 522
-        Me.LineShape1.Y2 = 522
-        '
-        'LineShape2
-        '
-        Me.LineShape2.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
-        Me.LineShape2.Enabled = False
-        Me.LineShape2.Name = "LineShape2"
-        Me.LineShape2.X1 = 47
-        Me.LineShape2.X2 = 1484
-        Me.LineShape2.Y1 = 224
-        Me.LineShape2.Y2 = 224
-        '
-        'landingPageTechnician
+        ''ShapeContainer2
+        ''
+        'Me.ShapeContainer2.Location = New System.Drawing.Point(0, 0)
+        'Me.ShapeContainer2.Margin = New System.Windows.Forms.Padding(0)
+        'Me.ShapeContainer2.Name = "ShapeContainer2"
+        'Me.ShapeContainer2.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape1, Me.LineShape2})
+        'Me.ShapeContainer2.Size = New System.Drawing.Size(1602, 1500)
+        'Me.ShapeContainer2.TabIndex = 3
+        'Me.ShapeContainer2.TabStop = False
+        ''
+        ''LineShape1
+        ''
+        'Me.LineShape1.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
+        'Me.LineShape1.Enabled = False
+        'Me.LineShape1.Name = "LineShape1"
+        'Me.LineShape1.X1 = 47
+        'Me.LineShape1.X2 = 1484
+        'Me.LineShape1.Y1 = 522
+        'Me.LineShape1.Y2 = 522
+        ''
+        ''LineShape2
+        ''
+        'Me.LineShape2.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
+        'Me.LineShape2.Enabled = False
+        'Me.LineShape2.Name = "LineShape2"
+        'Me.LineShape2.X1 = 47
+        'Me.LineShape2.X2 = 1484
+        'Me.LineShape2.Y1 = 224
+        'Me.LineShape2.Y2 = 224
+        ''
+        ''landingPageTechnician
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -458,9 +458,9 @@ Partial Class landingPageTechnician
     Friend WithEvents userMobile As System.Windows.Forms.Label
     Friend WithEvents userBirthday As System.Windows.Forms.Label
     Friend WithEvents userName As System.Windows.Forms.Label
-    Friend WithEvents ShapeContainer2 As Microsoft.VisualBasic.PowerPacks.ShapeContainer
-    Friend WithEvents LineShape1 As Microsoft.VisualBasic.PowerPacks.LineShape
-    Friend WithEvents LineShape2 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents ShapeContainer2 As Microsoft.VisualBasic.PowerPacks.ShapeContainer
+    'Friend WithEvents LineShape1 As Microsoft.VisualBasic.PowerPacks.LineShape
+    'Friend WithEvents LineShape2 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents userJobLogs As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents pageLabel As System.Windows.Forms.Label
     Friend WithEvents prevBtn As System.Windows.Forms.Button
