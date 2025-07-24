@@ -69,7 +69,7 @@ Partial Class jobDashTech
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Left
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(350, 1061)
+        Me.Panel1.Size = New System.Drawing.Size(300, 1061)
         Me.Panel1.TabIndex = 23
         '
         'Panel8
@@ -78,7 +78,7 @@ Partial Class jobDashTech
         Me.Panel8.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.Panel8.Location = New System.Drawing.Point(0, 993)
         Me.Panel8.Name = "Panel8"
-        Me.Panel8.Size = New System.Drawing.Size(350, 68)
+        Me.Panel8.Size = New System.Drawing.Size(300, 68)
         Me.Panel8.TabIndex = 4
         '
         'logoutBtn
@@ -103,7 +103,7 @@ Partial Class jobDashTech
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel4.Location = New System.Drawing.Point(0, 168)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(350, 68)
+        Me.Panel4.Size = New System.Drawing.Size(300, 68)
         Me.Panel4.TabIndex = 2
         '
         'jobDashBtn
@@ -116,7 +116,7 @@ Partial Class jobDashTech
         Me.jobDashBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.jobDashBtn.Location = New System.Drawing.Point(32, 16)
         Me.jobDashBtn.Name = "jobDashBtn"
-        Me.jobDashBtn.Size = New System.Drawing.Size(286, 38)
+        Me.jobDashBtn.Size = New System.Drawing.Size(245, 41)
         Me.jobDashBtn.TabIndex = 0
         Me.jobDashBtn.Text = "JOB DASHBOARD"
         Me.jobDashBtn.UseVisualStyleBackColor = False
@@ -127,7 +127,7 @@ Partial Class jobDashTech
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel3.Location = New System.Drawing.Point(0, 100)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(350, 68)
+        Me.Panel3.Size = New System.Drawing.Size(300, 68)
         Me.Panel3.TabIndex = 1
         '
         'calibrateBtn
@@ -140,7 +140,7 @@ Partial Class jobDashTech
         Me.calibrateBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.calibrateBtn.Location = New System.Drawing.Point(32, 16)
         Me.calibrateBtn.Name = "calibrateBtn"
-        Me.calibrateBtn.Size = New System.Drawing.Size(286, 38)
+        Me.calibrateBtn.Size = New System.Drawing.Size(245, 41)
         Me.calibrateBtn.TabIndex = 0
         Me.calibrateBtn.Text = "CALIBRATE"
         Me.calibrateBtn.UseVisualStyleBackColor = True
@@ -151,15 +151,15 @@ Partial Class jobDashTech
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel2.Location = New System.Drawing.Point(0, 0)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(350, 100)
+        Me.Panel2.Size = New System.Drawing.Size(300, 100)
         Me.Panel2.TabIndex = 0
         '
         'logoBox
         '
         Me.logoBox.Image = Global.ASCal.My.Resources.Resources._31
-        Me.logoBox.Location = New System.Drawing.Point(65, 22)
+        Me.logoBox.Location = New System.Drawing.Point(57, 18)
         Me.logoBox.Name = "logoBox"
-        Me.logoBox.Size = New System.Drawing.Size(224, 61)
+        Me.logoBox.Size = New System.Drawing.Size(192, 66)
         Me.logoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
         Me.logoBox.TabIndex = 0
         Me.logoBox.TabStop = False
@@ -178,9 +178,9 @@ Partial Class jobDashTech
         Me.Panel5.Controls.Add(Me.Panel6)
         Me.Panel5.Controls.Add(Me.userName)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel5.Location = New System.Drawing.Point(350, 0)
+        Me.Panel5.Location = New System.Drawing.Point(300, 0)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(1574, 1061)
+        Me.Panel5.Size = New System.Drawing.Size(1624, 1061)
         Me.Panel5.TabIndex = 24
         '
         'pageLabel

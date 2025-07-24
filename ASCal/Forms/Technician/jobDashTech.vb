@@ -1,4 +1,6 @@
-﻿' ===================== FINAL JOB DASHBOARD CODE (WITH DATABASE + WORK ORDER NO.) =====================
+﻿Imports System.Data.SQLite
+
+' ===================== FINAL JOB DASHBOARD CODE (WITH DATABASE + WORK ORDER NO.) =====================
 
 Public Class jobDashTech
 
@@ -150,8 +152,7 @@ Public Class jobDashTech
             dateLabel.Location = New Point(panel.Width - totalRightWidth, 12)
             previewBtn.Location = New Point(panel.Width - previewBtn.Width - 10, 7)
 
-            AddHandler previewBtn.Click, Sub(senderObj, args)
-                                             Dim jobDetails As String = "📋 JOB DETAILS" & vbCrLf & vbCrLf &
+            Dim jobDetails As String = "📋 JOB DETAILS" & vbCrLf & vbCrLf &
                                                  "Job ID: " & job.JobID & vbCrLf &
                                                  "Status: " & job.Status & vbCrLf &
                                                  "Model: " & job.Model & vbCrLf &
@@ -161,7 +162,41 @@ Public Class jobDashTech
                                                  "Parameters: " & job.Parameters & vbCrLf &
                                                  "Date Created: " & job.DateCreated
 
+            AddHandler previewBtn.Click, Sub(senderObj, args)
+
                                              MessageBox.Show(jobDetails, "Calibration Job Preview", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+                                             If job.Status.ToLower().Trim() = "for revision" Then
+                                                 Dim revisebtn As DialogResult = MessageBox.Show("Revise?", "Revision", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+
+                                                 If revisebtn = DialogResult.Yes Then
+                                                     Try
+                                                         Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+                                                             conn.Open()
+
+                                                             Dim updateSql As String = "UPDATE calibration_jobs SET status = 'for review', last_updated_by = @updatedBy WHERE id = @jobID"
+
+                                                             Using cmd As New SQLiteCommand(updateSql, conn)
+                                                                 cmd.Parameters.AddWithValue("@updatedBy", CurrentUser.Initials)
+                                                                 cmd.Parameters.AddWithValue("@jobID", job.JobID)
+                                                                 cmd.ExecuteNonQuery()
+                                                             End Using
+                                                         End Using
+
+                                                         MessageBox.Show("Job status updated to 'for review'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+                                                         ' 🔄 Call the refresh logic for the view here
+                                                         currentPage = 1
+                                                         jobList = LoadAllJobsFromDatabase()
+                                                         UpdateStatusCounts()
+                                                         DisplayPaginatedJobs()
+                                                     Catch ex As Exception
+                                                         MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                                     End Try
+                                                 End If
+
+                                             End If
+
                                          End Sub
 
             panel.Controls.Add(label)
@@ -246,8 +281,7 @@ Public Class jobDashTech
             dateLabel.Location = New Point(panel.Width - totalRightWidth, 12)
             actionBtn.Location = New Point(panel.Width - actionBtn.Width - 10, 7)
 
-            AddHandler actionBtn.Click, Sub(senderObj, args)
-                                            Dim jobDetails As String = "📋 JOB DETAILS" & vbCrLf & vbCrLf &
+            Dim jobDetails As String = "📋 JOB DETAILS" & vbCrLf & vbCrLf &
                                                 "Job ID: " & job.JobID & vbCrLf &
                                                 "Status: " & job.Status & vbCrLf &
                                                 "Model: " & job.Model & vbCrLf &
@@ -257,7 +291,40 @@ Public Class jobDashTech
                                                 "Parameters: " & job.Parameters & vbCrLf &
                                                 "Date Created: " & job.DateCreated
 
+            AddHandler actionBtn.Click, Sub(senderObj, args)
+
                                             MessageBox.Show(jobDetails, "Calibration Job Preview", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+                                            If job.Status.ToLower().Trim() = "for revision" Then
+                                                Dim revisebtn As DialogResult = MessageBox.Show("Revise?", "Revision", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+
+                                                If revisebtn = DialogResult.Yes Then
+                                                    Try
+                                                        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+                                                            conn.Open()
+
+                                                            Dim updateSql As String = "UPDATE calibration_jobs SET status = 'for review', last_updated_by = @updatedBy WHERE id = @jobID"
+
+                                                            Using cmd As New SQLiteCommand(updateSql, conn)
+                                                                cmd.Parameters.AddWithValue("@updatedBy", CurrentUser.Initials)
+                                                                cmd.Parameters.AddWithValue("@jobID", job.JobID)
+                                                                cmd.ExecuteNonQuery()
+                                                            End Using
+                                                        End Using
+
+                                                        MessageBox.Show("Job status updated to 'for review'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+                                                        ' 🔄 Call the refresh logic for the view here
+                                                        currentPage = 1
+                                                        jobList = LoadAllJobsFromDatabase()
+                                                        UpdateStatusCounts()
+                                                        DisplayPaginatedJobs()
+                                                    Catch ex As Exception
+                                                        MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                                    End Try
+                                                End If
+
+                                            End If
                                         End Sub
 
             panel.Controls.Add(jobLabel)

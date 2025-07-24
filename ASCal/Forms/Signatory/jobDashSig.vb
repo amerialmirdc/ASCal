@@ -171,9 +171,33 @@ Public Class jobDashboard
 
                                              MessageBox.Show(jobDetails, "Calibration Job Preview", MessageBoxButtons.OK, MessageBoxIcon.Information)
                                              If job.Status.ToLower().Trim() = "for review" Then
-                                                 Dim revisebtn As DialogResult = MessageBox.Show("Revise?", "Revision", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                                 Dim reviewbtn As DialogResult = MessageBox.Show("Approve", "Calibration Pass", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
 
-                                                 If revisebtn = DialogResult.Yes Then
+                                                 If reviewbtn = DialogResult.Yes Then
+                                                     Try
+                                                         Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+                                                             conn.Open()
+
+                                                             Dim updateSql As String = "UPDATE calibration_jobs SET status = 'approved', last_updated_by = @updatedBy WHERE id = @jobID"
+
+                                                             Using cmd As New SQLiteCommand(updateSql, conn)
+                                                                 cmd.Parameters.AddWithValue("@updatedBy", CurrentUser.Initials)
+                                                                 cmd.Parameters.AddWithValue("@jobID", job.JobID)
+                                                                 cmd.ExecuteNonQuery()
+                                                             End Using
+                                                         End Using
+
+                                                         MessageBox.Show("Job status updated to 'approved'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+                                                         ' 🔄 Call the refresh logic for the view here
+                                                         currentPage = 1
+                                                         jobList = LoadAllJobsFromDatabase()
+                                                         UpdateStatusCounts()
+                                                         DisplayPaginatedJobs()
+                                                     Catch ex As Exception
+                                                         MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                                     End Try
+                                                 ElseIf revisebtn = DialogResult.No Then
                                                      Try
                                                          Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                                                              conn.Open()
@@ -197,6 +221,7 @@ Public Class jobDashboard
                                                      Catch ex As Exception
                                                          MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                      End Try
+
                                                  End If
                                              End If
                                          End Sub
@@ -296,9 +321,7 @@ Public Class jobDashboard
                 Case "approved"
                     actionBtn.BackColor = Color.Lime
             End Select
-
-            AddHandler actionBtn.Click, Sub(senderObj, args)
-                                            Dim jobDetails As String = "📋 JOB DETAILS" & vbCrLf & vbCrLf &
+            Dim jobDetails As String = "📋 JOB DETAILS" & vbCrLf & vbCrLf &
                                                 "Job ID: " & job.JobID & vbCrLf &
                                                 "Status: " & job.Status & vbCrLf &
                                                 "Model: " & job.Model & vbCrLf &
@@ -308,38 +331,14 @@ Public Class jobDashboard
                                                 "Parameters: " & job.Parameters & vbCrLf &
                                                 "Date Created: " & job.DateCreated
 
+            AddHandler actionBtn.Click, Sub(senderObj, args)
+
                                             MessageBox.Show(jobDetails, "Calibration Job Preview", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
                                             If job.Status.ToLower().Trim() = "for review" Then
-                                                Dim revisebtn As DialogResult = MessageBox.Show("Revise?", "Revision", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+                                                Dim reviewbtn As DialogResult = MessageBox.Show("Approve", "Calibration Pass", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
 
-                                                If revisebtn = DialogResult.Yes Then
-                                                    Try
-                                                        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
-                                                            conn.Open()
-
-                                                            Dim updateSql As String = "UPDATE calibration_jobs SET status = 'for revision', last_updated_by = @updatedBy WHERE id = @jobID"
-
-                                                            Using cmd As New SQLiteCommand(updateSql, conn)
-                                                                cmd.Parameters.AddWithValue("@updatedBy", CurrentUser.Initials)
-                                                                cmd.Parameters.AddWithValue("@jobID", job.JobID)
-                                                                cmd.ExecuteNonQuery()
-                                                            End Using
-
-                                                        End Using
-
-                                                        MessageBox.Show("Job status updated to 'for revision'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
-
-                                                        ' 🔄 Call the refresh logic for the view here
-                                                        currentPage = 1
-                                                        jobList = LoadAllJobsFromDatabase()
-                                                        UpdateStatusCounts()
-                                                        DisplayPaginatedJobs()
-                                                    Catch ex As Exception
-                                                        MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                                                    End Try
-                                                End If
-                                                If revisebtn = DialogResult.No Then
+                                                If reviewbtn = DialogResult.Yes Then
                                                     Try
                                                         Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                                                             conn.Open()
@@ -351,10 +350,33 @@ Public Class jobDashboard
                                                                 cmd.Parameters.AddWithValue("@jobID", job.JobID)
                                                                 cmd.ExecuteNonQuery()
                                                             End Using
-
                                                         End Using
 
-                                                        MessageBox.Show("Job status updated to 'Approved'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                                                        MessageBox.Show("Job status updated to 'approved'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+                                                        ' 🔄 Call the refresh logic for the view here
+                                                        currentPage = 1
+                                                        jobList = LoadAllJobsFromDatabase()
+                                                        UpdateStatusCounts()
+                                                        DisplayPaginatedJobs()
+                                                    Catch ex As Exception
+                                                        MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                                    End Try
+                                                ElseIf revisebtn = DialogResult.No Then
+                                                    Try
+                                                        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+                                                            conn.Open()
+
+                                                            Dim updateSql As String = "UPDATE calibration_jobs SET status = 'for revision', last_updated_by = @updatedBy WHERE id = @jobID"
+
+                                                            Using cmd As New SQLiteCommand(updateSql, conn)
+                                                                cmd.Parameters.AddWithValue("@updatedBy", CurrentUser.Initials)
+                                                                cmd.Parameters.AddWithValue("@jobID", job.JobID)
+                                                                cmd.ExecuteNonQuery()
+                                                            End Using
+                                                        End Using
+
+                                                        MessageBox.Show("Job status updated to 'for revision'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
                                                         ' 🔄 Call the refresh logic for the view here
                                                         currentPage = 1

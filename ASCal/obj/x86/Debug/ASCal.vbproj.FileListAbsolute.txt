@@ -121,11 +121,11 @@ C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Entit
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\EntityFramework.SqlServer.xml
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\SQLite.Designer.pdb
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\SQLite.Designer.xml
-C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Microsoft.VisualStudio.Shell.Interop.xml
-C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Microsoft.VisualStudio.OLE.Interop.xml
-C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\EnvDTE.xml
-C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.xml
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\obj\x86\Debug\ASCal.vbproj.CopyComplete
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\obj\x86\Debug\ASCal.exe
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\obj\x86\Debug\ASCal.xml
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\obj\x86\Debug\ASCal.pdb
+C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Krypton.Navigator.dll
+C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Krypton.Toolkit.dll
+C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Krypton.Navigator.xml
+C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Krypton.Toolkit.xml

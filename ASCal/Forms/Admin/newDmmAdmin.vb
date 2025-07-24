@@ -335,7 +335,7 @@ Public Class newDMMAdmin
         Dim btn As Button = CType(sender, Button)
         Dim rangeText As String = ""
         Dim unit As String = ""
-        Dim targetListView As ListView
+        Dim targetListView As ListView = Nothing
         Dim radioPanel As Panel = Nothing
 
         ' Determine the context (AC/DC V/I/Resistance) from button name

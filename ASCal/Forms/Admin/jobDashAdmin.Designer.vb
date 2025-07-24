@@ -50,6 +50,7 @@ Partial Class jobDashAdmin
         Me.Label1 = New System.Windows.Forms.Label()
         Me.forRevBtn = New System.Windows.Forms.Button()
         Me.userName = New System.Windows.Forms.Label()
+        Me.EntityCommand1 = New System.Data.Entity.Core.EntityClient.EntityCommand()
         Me.Panel1.SuspendLayout()
         Me.Panel6.SuspendLayout()
         Me.Panel3.SuspendLayout()
@@ -194,7 +195,7 @@ Partial Class jobDashAdmin
         Me.Button2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.Button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Button2.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Button2.Location = New System.Drawing.Point(37, 15)
+        Me.Button2.Location = New System.Drawing.Point(32, 16)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(245, 41)
         Me.Button2.TabIndex = 0
@@ -213,9 +214,9 @@ Partial Class jobDashAdmin
         'logoBox
         '
         Me.logoBox.Image = Global.ASCal.My.Resources.Resources._31
-        Me.logoBox.Location = New System.Drawing.Point(65, 22)
+        Me.logoBox.Location = New System.Drawing.Point(46, 12)
         Me.logoBox.Name = "logoBox"
-        Me.logoBox.Size = New System.Drawing.Size(224, 61)
+        Me.logoBox.Size = New System.Drawing.Size(192, 66)
         Me.logoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
         Me.logoBox.TabIndex = 0
         Me.logoBox.TabStop = False
@@ -400,6 +401,14 @@ Partial Class jobDashAdmin
         Me.userName.TabIndex = 7
         Me.userName.Text = "JOB DASHBOARD"
         '
+        'EntityCommand1
+        '
+        Me.EntityCommand1.CommandTimeout = 0
+        Me.EntityCommand1.CommandTree = Nothing
+        Me.EntityCommand1.Connection = Nothing
+        Me.EntityCommand1.EnablePlanCaching = True
+        Me.EntityCommand1.Transaction = Nothing
+        '
         'jobDashAdmin
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 12.0!)
@@ -454,4 +463,5 @@ Partial Class jobDashAdmin
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents forRevBtn As System.Windows.Forms.Button
     Friend WithEvents userName As System.Windows.Forms.Label
+    Friend WithEvents EntityCommand1 As Entity.Core.EntityClient.EntityCommand
 End Class
