@@ -102,6 +102,7 @@ Partial Class jobDashboard
         '
         'Button2
         '
+        Me.Button2.BackColor = System.Drawing.Color.White
         Me.Button2.FlatAppearance.BorderColor = System.Drawing.Color.Black
         Me.Button2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White
         Me.Button2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
@@ -112,7 +113,7 @@ Partial Class jobDashboard
         Me.Button2.Size = New System.Drawing.Size(245, 41)
         Me.Button2.TabIndex = 0
         Me.Button2.Text = "JOB DASHBOARD"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.Button2.UseVisualStyleBackColor = False
         '
         'Panel2
         '
@@ -188,9 +189,9 @@ Partial Class jobDashboard
         '
         Me.jobPrevPanel.AutoScroll = True
         Me.jobPrevPanel.BackColor = System.Drawing.Color.White
-        Me.jobPrevPanel.Location = New System.Drawing.Point(72, 232)
+        Me.jobPrevPanel.Location = New System.Drawing.Point(40, 232)
         Me.jobPrevPanel.Name = "jobPrevPanel"
-        Me.jobPrevPanel.Size = New System.Drawing.Size(1432, 648)
+        Me.jobPrevPanel.Size = New System.Drawing.Size(1464, 648)
         Me.jobPrevPanel.TabIndex = 11
         '
         'Panel9
@@ -305,7 +306,7 @@ Partial Class jobDashboard
         '
         Me.userName.AutoSize = True
         Me.userName.Font = New System.Drawing.Font("Courier10 BT", 40.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.userName.Location = New System.Drawing.Point(64, 120)
+        Me.userName.Location = New System.Drawing.Point(32, 128)
         Me.userName.Margin = New System.Windows.Forms.Padding(0)
         Me.userName.Name = "userName"
         Me.userName.Size = New System.Drawing.Size(332, 46)

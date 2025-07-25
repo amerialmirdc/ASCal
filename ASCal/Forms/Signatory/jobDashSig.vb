@@ -189,15 +189,28 @@ Public Class jobDashboard
 
                                                          MessageBox.Show("Job status updated to 'approved'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-                                                         ' 🔄 Call the refresh logic for the view here
-                                                         currentPage = 1
+                                                         ' Refresh main list
                                                          jobList = LoadAllJobsFromDatabase()
                                                          UpdateStatusCounts()
-                                                         DisplayPaginatedJobs()
+
+                                                         ' Refresh the currently active filtered view
+                                                         Select Case activeCategory
+                                                             Case "forreview"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for review").ToList()
+                                                                 DisplayJobs("For Review", filtered, Color.Orange)
+                                                             Case "forrevision"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for revision" AndAlso j.LastUpdatedBy.ToLower() = CurrentUser.Initials.ToLower()).ToList()
+                                                                 DisplayJobs("For Revision", filtered, Color.Cyan)
+                                                             Case "approved"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "approved").ToList()
+                                                                 DisplayJobs("Approved", filtered, Color.Lime)
+                                                             Case Else
+                                                                 DisplayPaginatedJobs()
+                                                         End Select
                                                      Catch ex As Exception
                                                          MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                      End Try
-                                                 ElseIf revisebtn = DialogResult.No Then
+                                                 ElseIf reviewbtn = DialogResult.No Then
                                                      Try
                                                          Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                                                              conn.Open()
@@ -213,11 +226,24 @@ Public Class jobDashboard
 
                                                          MessageBox.Show("Job status updated to 'for revision'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-                                                         ' 🔄 Call the refresh logic for the view here
-                                                         currentPage = 1
+                                                         ' Refresh main list
                                                          jobList = LoadAllJobsFromDatabase()
                                                          UpdateStatusCounts()
-                                                         DisplayPaginatedJobs()
+
+                                                         ' Refresh the currently active filtered view
+                                                         Select Case activeCategory
+                                                             Case "forreview"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for review").ToList()
+                                                                 DisplayJobs("For Review", filtered, Color.Orange)
+                                                             Case "forrevision"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for revision" AndAlso j.LastUpdatedBy.ToLower() = CurrentUser.Initials.ToLower()).ToList()
+                                                                 DisplayJobs("For Revision", filtered, Color.Cyan)
+                                                             Case "approved"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "approved").ToList()
+                                                                 DisplayJobs("Approved", filtered, Color.Lime)
+                                                             Case Else
+                                                                 DisplayPaginatedJobs()
+                                                         End Select
                                                      Catch ex As Exception
                                                          MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                      End Try
@@ -354,15 +380,28 @@ Public Class jobDashboard
 
                                                         MessageBox.Show("Job status updated to 'approved'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-                                                        ' 🔄 Call the refresh logic for the view here
-                                                        currentPage = 1
+                                                        ' Refresh main list
                                                         jobList = LoadAllJobsFromDatabase()
                                                         UpdateStatusCounts()
-                                                        DisplayPaginatedJobs()
+
+                                                        ' Refresh the currently active filtered view
+                                                        Select Case activeCategory
+                                                            Case "forreview"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for review").ToList()
+                                                                DisplayJobs("For Review", filtered, Color.Orange)
+                                                            Case "forrevision"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for revision" AndAlso j.LastUpdatedBy.ToLower() = CurrentUser.Initials.ToLower()).ToList()
+                                                                DisplayJobs("For Revision", filtered, Color.Cyan)
+                                                            Case "approved"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "approved").ToList()
+                                                                DisplayJobs("Approved", filtered, Color.Lime)
+                                                            Case Else
+                                                                DisplayPaginatedJobs()
+                                                        End Select
                                                     Catch ex As Exception
                                                         MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                     End Try
-                                                ElseIf revisebtn = DialogResult.No Then
+                                                ElseIf reviewbtn = DialogResult.No Then
                                                     Try
                                                         Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                                                             conn.Open()
@@ -378,11 +417,24 @@ Public Class jobDashboard
 
                                                         MessageBox.Show("Job status updated to 'for revision'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-                                                        ' 🔄 Call the refresh logic for the view here
-                                                        currentPage = 1
+                                                        ' Refresh main list
                                                         jobList = LoadAllJobsFromDatabase()
                                                         UpdateStatusCounts()
-                                                        DisplayPaginatedJobs()
+
+                                                        ' Refresh the currently active filtered view
+                                                        Select Case activeCategory
+                                                            Case "forreview"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for review").ToList()
+                                                                DisplayJobs("For Review", filtered, Color.Orange)
+                                                            Case "forrevision"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for revision" AndAlso j.LastUpdatedBy.ToLower() = CurrentUser.Initials.ToLower()).ToList()
+                                                                DisplayJobs("For Revision", filtered, Color.Cyan)
+                                                            Case "approved"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "approved").ToList()
+                                                                DisplayJobs("Approved", filtered, Color.Lime)
+                                                            Case Else
+                                                                DisplayPaginatedJobs()
+                                                        End Select
                                                     Catch ex As Exception
                                                         MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                     End Try

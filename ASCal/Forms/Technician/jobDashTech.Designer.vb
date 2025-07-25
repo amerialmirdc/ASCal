@@ -157,7 +157,7 @@ Partial Class jobDashTech
         'logoBox
         '
         Me.logoBox.Image = Global.ASCal.My.Resources.Resources._31
-        Me.logoBox.Location = New System.Drawing.Point(57, 18)
+        Me.logoBox.Location = New System.Drawing.Point(56, 24)
         Me.logoBox.Name = "logoBox"
         Me.logoBox.Size = New System.Drawing.Size(192, 66)
         Me.logoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage

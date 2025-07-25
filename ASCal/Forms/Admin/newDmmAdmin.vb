@@ -31,7 +31,7 @@ Public Class newDMMAdmin
     End Sub
 
     ' 🔁 Handles deletion of selected range (RadioButton) or nominal (ListViewItem) per section
-    Private Sub DelClick(sender As Object, e As EventArgs) Handles delBtnRan.Click, delBtnRanDCV.Click, delBtnRanACC.Click, delBtnRanDCC.Click, delBtnRanRES.Click, delBtnNomDCV.Click, delBtnNomDCC.Click, delBtnNomRES.Click
+    Private Sub DelClick(sender As Object, e As EventArgs) Handles delBtnRan.Click, delBtnRanDCV.Click, delBtnRanACC.Click, delBtnRanDCC.Click, delBtnRanRES.Click, delBtnNomDCV.Click, delBtnNomDCC.Click, delBtnNomRES.Click, delBtnFreqACV.Click, delBtnFreqACC.Click
         Select Case True
             ' 🗑 DELETE RANGE RadioButton
             Case sender Is delBtnRan
@@ -47,10 +47,18 @@ Public Class newDMMAdmin
 
                 ' 🗑 DELETE NOMINAL VALUE ListView row
             Case sender Is delBtnFreqACV
+                If listViewParams.SelectedItems.Count = 0 Then
+                    MessageBox.Show("Please select a nominal/frequency entry to delete.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Exit Sub
+                End If
                 DeleteSelectedItemFromList(listViewParams)
             Case sender Is delBtnNomDCV
                 DeleteSelectedItemFromList(listViewParamsDCV)
             Case sender Is delBtnFreqACC
+                If listViewParams.SelectedItems.Count = 0 Then
+                    MessageBox.Show("Please select a nominal/frequency entry to delete.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Exit Sub
+                End If
                 DeleteSelectedItemFromList(listViewParamsACC)
             Case sender Is delBtnNomDCC
                 DeleteSelectedItemFromList(listViewParamsDCC)
@@ -66,7 +74,7 @@ Public Class newDMMAdmin
     End Sub
 
     ' ✅ Adds a nominal value under the selected range group
-    Private Sub HandleNominalClick(sender As Object, e As EventArgs) Handles btnAddNominalDCV.Click, btnAddNominalDCC.Click, btnAddNominalRES.Click
+    Private Sub HandleNominalClick(sender As Object, e As EventArgs) Handles btnAddNominalDCV.Click, btnAddNominalDCC.Click, btnAddNominalRES.Click, btnAddFreqACV.Click, btnAddFreqACC.Click
         AddNominal(sender)
     End Sub
 
@@ -429,40 +437,49 @@ Public Class newDMMAdmin
 
     ' ✅ Adds a nominal value (with unit) under the currently selected range group in the respective ListView
     Private Sub AddNominal(sender As Object)
-        ' 🔍 Step 1: Identify which button was clicked
         Dim btn As Button = TryCast(sender, Button)
         If btn Is Nothing Then Exit Sub
 
-        ' 🧩 Step 2: Prepare variables for the relevant controls
-        Dim txtBox As TextBox = Nothing
-        Dim cmbUnit As ComboBox = Nothing
+        ' Common variables
+        Dim txtNominal As TextBox = Nothing
+        Dim txtFrequency As TextBox = Nothing
         Dim listView As ListView = Nothing
         Dim radioPanel As Panel = Nothing
+        Dim isACWithFreq As Boolean = False
 
-        ' 🔀 Step 3: Determine which section (AC/DC Voltage, Current, etc.) the button belongs to
+        ' Decide which button triggered
         Select Case btn.Name
-            Case "btnAddNominal"
-                txtBox = txtNominalValue
+        ' ✅ ACV with frequency
+            Case "btnAddFreqACV"
+                txtNominal = txtNominalValue
+                txtFrequency = txtFreqValueACV
                 listView = listViewParams
                 radioPanel = rangeRadioPanel
+                isACWithFreq = True
 
+        ' ✅ ACC with frequency
+            Case "btnAddFreqACC"
+                txtNominal = txtNominalValueACC
+                txtFrequency = txtFreqValueACC
+                listView = listViewParamsACC
+                radioPanel = rangeRadioPanelACC
+                isACWithFreq = True
+
+        ' ✅ DCV (no frequency)
             Case "btnAddNominalDCV"
-                txtBox = txtNominalValueDCV
+                txtNominal = txtNominalValueDCV
                 listView = listViewParamsDCV
                 radioPanel = rangeRadioPanelDCV
 
-            Case "btnAddNominalACC"
-                txtBox = txtNominalValueACC
-                listView = listViewParamsACC
-                radioPanel = rangeRadioPanelACC
-
+        ' ✅ DCC (no frequency)
             Case "btnAddNominalDCC"
-                txtBox = txtNominalValueDCC
+                txtNominal = txtNominalValueDCC
                 listView = listViewParamsDCC
                 radioPanel = rangeRadioPanelDCC
 
+        ' ✅ RES (no frequency)
             Case "btnAddNominalRES"
-                txtBox = txtNominalValueRES
+                txtNominal = txtNominalValueRES
                 listView = listViewParamsRES
                 radioPanel = rangeRadioPanelRES
 
@@ -471,44 +488,68 @@ Public Class newDMMAdmin
                 Exit Sub
         End Select
 
-        ' ✏️ Step 4: Validate input fields
-        Dim nominalText As String = txtBox.Text.Trim()
-        Dim unit As String = cmbUnit.Text.Trim()
-        If String.IsNullOrWhiteSpace(nominalText) OrElse nominalText = "#####" OrElse String.IsNullOrWhiteSpace(unit) Then
-            MessageBox.Show("Please enter both nominal value and unit correctly.", "Missing Info", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        ' Validate nominal
+        Dim nominalText As String = txtNominal.Text.Trim()
+        If String.IsNullOrWhiteSpace(nominalText) OrElse nominalText = "#####" Then
+            MessageBox.Show("Please enter a nominal value.", "Missing Info", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Exit Sub
         End If
 
-        ' 📻 Step 5: Ensure a range (radio button) is selected
+        ' Validate frequency for ACV/ACC
+        Dim freqText As String = ""
+        If isACWithFreq Then
+            freqText = txtFrequency.Text.Trim()
+            If String.IsNullOrWhiteSpace(freqText) Then
+                MessageBox.Show("Please enter a frequency value.", "Missing Info", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Exit Sub
+            End If
+        End If
+
+        ' Get selected range RadioButton
         Dim selectedRadio As RadioButton = radioPanel.Controls.OfType(Of RadioButton)().FirstOrDefault(Function(r) r.Checked)
         If selectedRadio Is Nothing Then
             MessageBox.Show("Please select a range before adding a nominal value.", "No Range Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Exit Sub
         End If
 
-        ' 🧷 Step 6: Extract the range group and listView from the radio button’s Tag
+        ' Extract unit from RadioButton text (e.g. "500mV" → "mV")
+        Dim unitPart As String = New String(selectedRadio.Text.Reverse().TakeWhile(Function(c) Not Char.IsDigit(c)).Reverse().ToArray()).Trim()
+
+        ' Get ListView group
         Dim tagPair As KeyValuePair(Of ListViewGroup, ListView) = CType(selectedRadio.Tag, KeyValuePair(Of ListViewGroup, ListView))
         Dim group As ListViewGroup = tagPair.Key
         listView = tagPair.Value
 
-        Dim fullNominal As String = nominalText & unit
-
-        ' 🚫 Step 7: Prevent duplicate nominal values under the same range group
+        ' Check duplicates
         For Each item As ListViewItem In listView.Items
-            If item.Group Is group AndAlso item.Text = nominalText AndAlso item.SubItems(1).Text = unit Then
-                MessageBox.Show("This nominal value already exists under the selected range.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Exit Sub
+            If isACWithFreq Then
+                If item.Group Is group AndAlso item.Text = (nominalText & unitPart) AndAlso item.SubItems(1).Text = freqText Then
+                    MessageBox.Show("This nominal/frequency combination already exists.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Exit Sub
+                End If
+            Else
+                If item.Group Is group AndAlso item.Text = nominalText AndAlso item.SubItems(1).Text = unitPart Then
+                    MessageBox.Show("This nominal value already exists under the selected range.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Exit Sub
+                End If
             End If
         Next
 
-        ' ➕ Step 8: Add new nominal value to the list
-        Dim newItem As New ListViewItem(nominalText)
-        newItem.SubItems.Add(unit)
+        ' Add to ListView
+        Dim newItem As ListViewItem
+        If isACWithFreq Then
+            newItem = New ListViewItem(nominalText & unitPart) ' first column shows value+unit
+            newItem.SubItems.Add(freqText)                     ' second column shows frequency
+        Else
+            newItem = New ListViewItem(nominalText)            ' first column is value
+            newItem.SubItems.Add(unitPart)                     ' second column is unit
+        End If
         newItem.Group = group
         listView.Items.Add(newItem)
 
-        ' 🧼 Step 9: Clear input fields
-        txtBox.Clear()
+        ' Clear inputs
+        txtNominal.Clear()
+        If isACWithFreq AndAlso txtFrequency IsNot Nothing Then txtFrequency.Clear()
     End Sub
 
     ' Allow digits, backspace, and +/- signs in Range input
@@ -728,76 +769,19 @@ Public Class newDMMAdmin
         End Try
     End Sub
 
-    Private Sub btnAddFreqACV_Click(sender As Object, e As EventArgs) Handles btnAddFreqACV.Click
-
-        Dim nominalText As String = txtFreqValueACV.Text.Trim()
-        Dim unit As String = cmbRangeUnit.Text.Trim()
-        Dim frequency As String = txtFreqValueACV.Text.Trim()
-
-        If String.IsNullOrWhiteSpace(nominalText) OrElse String.IsNullOrWhiteSpace(frequency) Then
-            MessageBox.Show("Please fill in Nominal and Frequency fields.", "Missing Data", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Exit Sub
-        End If
-
-        Dim fullNominal As String = nominalText & unit
-        Dim fullFrequency As String = frequency & unit
-
-        Dim item As New ListViewItem(fullNominal)
-        item.SubItems.Add(fullFrequency)
-        listViewParams.Items.Add(item)
-
-        txtFreqValueACV.Clear()
-        txtFreqValueACV.Clear()
-    End Sub
-
-    Private Sub btnAddFreqACC_Click(sender As Object, e As EventArgs) Handles btnAddFreqACC.Click
-
-        Dim nominalText As String = txtFreqValueACC.Text.Trim()
-        Dim unit As String = cmbRangeUnitACC.Text.Trim()
-        Dim frequency As String = txtFreqValueACC.Text.Trim()
-
-        If String.IsNullOrWhiteSpace(frequency) OrElse String.IsNullOrWhiteSpace(nominalText) Then
-            MessageBox.Show("Please fill in Nominal and Frequency fields.", "Missing Data", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Exit Sub
-        End If
-
-        Dim fullNominal As String = nominalText & unit
-        Dim fullFrequency As String = frequency & unit
-
-        Dim item As New ListViewItem(fullNominal)
-        item.SubItems.Add(fullFrequency)
-        listViewParamsACC.Items.Add(item)
-
-        txtFreqValueACC.Clear()
-        txtFreqValueACC.Clear()
-    End Sub
-
     ' Handles Enter key on TextBox2 to add Nominal+Frequency to listViewParamsACC
     Private Sub txtFreqValueACC_KeyDown(sender As Object, e As KeyEventArgs) Handles txtFreqValueACC.KeyDown
         If e.KeyCode = Keys.Enter Then
             e.SuppressKeyPress = True ' prevent ding sound
 
-            ' Retrieve input values
-            Dim nominalText As String = txtFreqValueACC.Text.Trim()
-            Dim frequency As String = txtFreqValueACC.Text.Trim()
-
-            ' Validate Nominal and Unit
-            If String.IsNullOrWhiteSpace(nominalText) OrElse String.IsNullOrWhiteSpace(frequency) Then
-                MessageBox.Show("Please enter both nominal value and unit.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            ' Optional: you can still trim and validate if you want
+            Dim freqText As String = txtFreqValueACC.Text.Trim()
+            If String.IsNullOrWhiteSpace(freqText) Then
+                MessageBox.Show("Please enter a frequency value.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Exit Sub
             End If
 
-            ' Compose nominal + unit string
-            Dim fullNominal As String = nominalText
-
-            ' Add entry to listViewParamsACC
-            Dim item As New ListViewItem(fullNominal)
-            item.SubItems.Add(frequency)
-            listViewParamsACC.Items.Add(item)
-
-            ' Clear input fields for next entry
-            txtFreqValueACC.Clear()
-            txtFreqValueACV.Clear()
+            txtNominalValueACC.Focus() ' optional: move to nominal input after typing freq
         End If
     End Sub
 
@@ -806,27 +790,13 @@ Public Class newDMMAdmin
         If e.KeyCode = Keys.Enter Then
             e.SuppressKeyPress = True ' prevent ding sound
 
-            ' Retrieve input values
-            Dim nominalText As String = txtFreqValueACV.Text.Trim()
-            Dim frequency As String = txtFreqValueACV.Text.Trim()
-
-            ' Validate Nominal and Unit
-            If String.IsNullOrWhiteSpace(nominalText) Then
-                MessageBox.Show("Please enter both nominal value.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Dim freqText As String = txtFreqValueACV.Text.Trim()
+            If String.IsNullOrWhiteSpace(freqText) Then
+                MessageBox.Show("Please enter a frequency value.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Exit Sub
             End If
 
-            ' Compose nominal + unit string
-            Dim fullNominal As String = nominalText + frequency
-
-            ' Add entry to listViewParamsACC
-            Dim item As New ListViewItem(fullNominal)
-            item.SubItems.Add(frequency)
-            listViewParams.Items.Add(item)
-
-            ' Clear input fields for next entry
-            txtFreqValueACV.Clear()
-            txtFreqValueACV.Clear()
+            txtNominalValue.Focus() ' optional: move to nominal input after typing freq
         End If
     End Sub
 

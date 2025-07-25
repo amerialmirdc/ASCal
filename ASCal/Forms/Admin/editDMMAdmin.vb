@@ -72,11 +72,8 @@ Public Class editDMMAdmin
             lv.Columns.Add("Nominal Value(s)", col2Width)
 
             If lv Is listViewParams OrElse lv Is listViewParamsACC Then
-                ' AC Voltage or AC Current → show Frequency
+                ' Only AC Voltage or AC Current → show Frequency as third column
                 lv.Columns.Add("Frequency", col3Width)
-            Else
-                ' Others → no 3rd column
-                lv.Columns.Add("✏️ Edit", col3Width)
             End If
         Next
 
@@ -118,13 +115,23 @@ Public Class editDMMAdmin
                     rbtn.Text = rangeVal
                     rbtn.AutoSize = True
                     targetRadioPanel.Controls.Add(rbtn)
+                    Dim targetGroup = targetList.Groups.Cast(Of ListViewGroup)().FirstOrDefault(Function(g) g.Header = rangeVal)
+                    If targetGroup IsNot Nothing Then
+                        rbtn.Tag = New KeyValuePair(Of ListViewGroup, ListView)(targetGroup, targetList)
+                    End If
+
                 End If
 
                 ' Add parameter items
                 For Each nominalVal In groupedParams(category)(rangeVal)
                     Dim item As New ListViewItem(rangeVal)
                     item.SubItems.Add(nominalVal)
-                    item.SubItems.Add("") ' ✏️ Edit spacer
+
+                    If targetList Is listViewParams OrElse targetList Is listViewParamsACC Then
+                        ' For AC lists, add frequency if available (or placeholder)
+                        item.SubItems.Add("") ' frequency placeholder
+                    End If
+
                     targetList.Items.Add(item)
                 Next
             Next
@@ -135,33 +142,67 @@ Public Class editDMMAdmin
         Dim lv As ListView = CType(sender, ListView)
         Dim hit As ListViewHitTestInfo = lv.HitTest(e.Location)
 
-        If hit.Item IsNot Nothing Then
-            Dim rangeVal As String = hit.Item.SubItems(0).Text
-            Dim nominalVal As String = If(hit.Item.SubItems.Count > 1, hit.Item.SubItems(1).Text, "")
-            Dim freqVal As String = If(hit.Item.SubItems.Count > 2, hit.Item.SubItems(2).Text, "-")
+        If hit.Item Is Nothing Then Exit Sub
 
-            ' Prompt for Range
-            Dim newRange As String = InputBox("Edit Range Value:", "Edit Parameter", rangeVal)
-            If newRange = "" Then Exit Sub
+        ' ======== RANGE ========
+        Dim currentRange As String = hit.Item.SubItems(0).Text
+        Dim rangeNumeric As String = New String(currentRange.TakeWhile(Function(c) Char.IsDigit(c)).ToArray())
+        Dim rangeUnit As String = currentRange.Substring(rangeNumeric.Length)
+        Dim newRangeNumeric As String = InputBox("Edit Range value (digits only):", "Edit Parameter", rangeNumeric)
+        If newRangeNumeric = "" Then Exit Sub
+        If Not System.Text.RegularExpressions.Regex.IsMatch(newRangeNumeric, "^\d+$") Then
+            MessageBox.Show("Range value must be digits only.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+        Dim newRange As String = newRangeNumeric & rangeUnit
 
-            ' Prompt for Nominal Value
-            Dim newNominal As String = InputBox("Edit Nominal Value:", "Edit Parameter", nominalVal)
-            If newNominal = "" Then Exit Sub
+        ' ======== NOMINAL ========
+        Dim currentNominal As String = hit.Item.SubItems(1).Text
+        Dim nominalNumeric As String = New String(currentNominal.TakeWhile(Function(c) Char.IsDigit(c)).ToArray())
+        Dim nominalUnit As String = currentNominal.Substring(nominalNumeric.Length)
+        Dim newNominalNumeric As String = InputBox("Edit Nominal value (digits only):", "Edit Parameter", nominalNumeric)
+        If newNominalNumeric = "" Then Exit Sub
+        If Not System.Text.RegularExpressions.Regex.IsMatch(newNominalNumeric, "^\d+$") Then
+            MessageBox.Show("Nominal value must be digits only.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+        Dim newNominal As String = newNominalNumeric & nominalUnit
 
-            ' Prompt for Frequency (optional)
-            Dim newFreq As String = freqVal
-            If lv Is listViewParams OrElse lv Is listViewParamsACC Then ' Only AC params
-                newFreq = InputBox("Edit Frequency (if applicable):", "Edit Parameter", freqVal)
-                If newFreq = "" Then newFreq = "-"
+        ' ======== FREQUENCY ========
+        Dim newFreq As String = ""
+        If hit.Item.SubItems.Count > 2 Then
+            Dim currentFreq As String = hit.Item.SubItems(2).Text
+            Dim freqNumeric As String = New String(currentFreq.TakeWhile(Function(c) Char.IsDigit(c)).ToArray())
+            Dim newFreqNumeric As String = InputBox("Edit Frequency (digits only):", "Edit Parameter", freqNumeric)
+            If newFreqNumeric = "" Then Exit Sub
+            If Not System.Text.RegularExpressions.Regex.IsMatch(newFreqNumeric, "^\d+$") Then
+                MessageBox.Show("Frequency value must be digits only.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Exit Sub
             End If
+            newFreq = newFreqNumeric & "Ω"
+        End If
 
-            ' Update values in ListViewItem
-            hit.Item.SubItems(0).Text = newRange
-            hit.Item.SubItems(1).Text = newNominal
+        ' ======== DUPLICATE CHECK ========
+        For Each item As ListViewItem In lv.Items
+            ' Skip the item we are currently editing
+            If item Is hit.Item Then Continue For
 
-            If hit.Item.SubItems.Count > 2 Then
-                hit.Item.SubItems(2).Text = newFreq
+            Dim existingRange As String = item.SubItems(0).Text
+            Dim existingNominal As String = item.SubItems(1).Text
+            Dim existingFreq As String = If(item.SubItems.Count > 2, item.SubItems(2).Text, "")
+
+            ' Compare all three
+            If existingRange = newRange AndAlso existingNominal = newNominal AndAlso existingFreq = newFreq Then
+                MessageBox.Show("Another entry with the same Range, Nominal, and Frequency already exists.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Exit Sub
             End If
+        Next
+
+        ' ======== APPLY CHANGES ========
+        hit.Item.SubItems(0).Text = newRange
+        hit.Item.SubItems(1).Text = newNominal
+        If hit.Item.SubItems.Count > 2 Then
+            hit.Item.SubItems(2).Text = newFreq
         End If
     End Sub
 
@@ -259,7 +300,7 @@ Public Class editDMMAdmin
         End If
     End Sub
 
-    Private Sub delBtnNom_Click(sender As Object, e As EventArgs)
+    Private Sub delBtnNom_Click(sender As Object, e As EventArgs) Handles delBtnFreqACV.Click
         ConfirmAndDeleteSelectedItems(listViewParams)
     End Sub
 
@@ -267,7 +308,7 @@ Public Class editDMMAdmin
         ConfirmAndDeleteSelectedItems(listViewParamsDCV)
     End Sub
 
-    Private Sub delBtnNomACC_Click(sender As Object, e As EventArgs)
+    Private Sub delBtnNomACC_Click(sender As Object, e As EventArgs) Handles delBtnFreqACC.Click
         ConfirmAndDeleteSelectedItems(listViewParamsACC)
     End Sub
 
@@ -303,31 +344,51 @@ Public Class editDMMAdmin
         End Using
     End Sub
 
-    ' ➕ Add Nominal + Frequency for AC Voltage
-    Private Sub btnAddNomFreqACV_Click(sender As Object, e As EventArgs) Handles btnAddNomFreqACV.Click
-        Dim selectedRange As String = ""
-        Dim nominalVal As String = txtNominalValue.Text.Trim()
-        Dim freqVal As String = txtFreqValueACV.Text.Trim()
+    ' ➕ Add Nominal + Frequency for AC Voltage and AC Current
+    Private Sub HandleAddNomFreq(sender As Object, e As EventArgs) _
+    Handles btnAddNomFreqACV.Click, btnAddNomFreqACC.Click
 
-        ' Get selected range from radio buttons
-        For Each ctrl As Control In rangeRadioPanel.Controls
+        Dim btn As Button = CType(sender, Button)
+
+        ' Common variables
+        Dim selectedRange As String = ""
+        Dim nominalVal As String = ""
+        Dim freqVal As String = ""
+        Dim rangePanel As Panel = Nothing
+        Dim targetList As ListView = Nothing
+
+        ' Decide which button
+        Select Case btn.Name
+            Case "btnAddNomFreqACV"
+                nominalVal = txtNominalValue.Text.Trim()
+                freqVal = txtFreqValueACV.Text.Trim()
+                rangePanel = rangeRadioPanel
+                targetList = listViewParams
+
+            Case "btnAddNomFreqACC"
+                nominalVal = txtNominalValueACC.Text.Trim()
+                freqVal = txtFreqValueACC.Text.Trim()
+                rangePanel = rangeRadioPanelACC
+                targetList = listViewParamsACC
+        End Select
+
+        ' Get selected range
+        For Each ctrl As Control In rangePanel.Controls
             If TypeOf ctrl Is RadioButton AndAlso CType(ctrl, RadioButton).Checked Then
                 selectedRange = ctrl.Text.Trim()
                 Exit For
             End If
         Next
 
-        ' Validation
+        ' Validate
         If selectedRange = "" OrElse nominalVal = "" Then
-            MessageBox.Show("Please select a Range and enter a Nominal Value for AC Voltage.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("Please select a Range and enter a Nominal Value.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
-        ' Extract unit from selected range
+        ' Append unit if missing
         Dim unitMatch = System.Text.RegularExpressions.Regex.Match(selectedRange, "[a-zA-Z]+$")
         Dim unit As String = If(unitMatch.Success, unitMatch.Value, "")
-
-        ' Append unit to nominal value if not already included
         If Not nominalVal.EndsWith(unit) Then
             nominalVal &= unit
         End If
@@ -339,68 +400,42 @@ Public Class editDMMAdmin
             freqVal &= " Hz"
         End If
 
-        ' Create and add ListViewItem under selected group
-        Dim listItem As New ListViewItem(nominalVal)
-        listItem.SubItems.Add(freqVal)
+        ' Find group
+        Dim targetGroup As ListViewGroup = targetList.Groups.Cast(Of ListViewGroup)().
+        FirstOrDefault(Function(g) g.Header = selectedRange)
 
-        Dim targetGroup As ListViewGroup = listViewParams.Groups.Cast(Of ListViewGroup)().
-            FirstOrDefault(Function(g) g.Header = selectedRange)
-
-        If targetGroup IsNot Nothing Then
-            listItem.Group = targetGroup
-            listViewParams.Items.Add(listItem)
-        Else
+        If targetGroup Is Nothing Then
             MessageBox.Show("The selected range was not found in the list. Please add the range first.", "Missing Range", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        End If
-    End Sub
-
-    ' ➕ Add Nominal + Frequency for AC Current with Unit Normalization
-    Private Sub btnAddNomFreqACC_Click(sender As Object, e As EventArgs) Handles btnAddNomFreqACC.Click
-        Dim selectedRange As String = ""
-        Dim nominalVal As String = txtNominalValueACC.Text.Trim()
-        Dim freqVal As String = txtFreqValueACC.Text.Trim()
-
-        ' Get selected range from radio buttons
-        For Each ctrl As Control In rangeRadioPanel.Controls
-            If TypeOf ctrl Is RadioButton AndAlso CType(ctrl, RadioButton).Checked Then
-                selectedRange = ctrl.Text.Trim()
-                Exit For
-            End If
-        Next
-
-        ' Validation
-        If selectedRange = "" OrElse nominalVal = "" Then
-            MessageBox.Show("Please select a Range and enter a Nominal Value for AC Current.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
-        ' Append unit to nominal value if missing
-        Dim unitMatch = System.Text.RegularExpressions.Regex.Match(selectedRange, "[a-zA-Z]+$")
-        Dim unit As String = If(unitMatch.Success, unitMatch.Value, "")
-        If Not nominalVal.EndsWith(unit) Then
-            nominalVal &= unit
-        End If
+        ' Duplicate check
+        For Each item As ListViewItem In targetList.Items
+            If item.Group Is targetGroup AndAlso item.Text = nominalVal AndAlso item.SubItems(1).Text = freqVal Then
+                MessageBox.Show("This nominal/frequency already exists.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+        Next
 
-        ' Ensure frequency ends with "Hz"
-        If freqVal = "" Then
-            freqVal = "-"
-        ElseIf Not freqVal.ToLower().EndsWith("hz") Then
-            freqVal &= " Hz"
-        End If
-
-        ' Create and add ListViewItem under selected group
+        ' Add item
         Dim listItem As New ListViewItem(nominalVal)
         listItem.SubItems.Add(freqVal)
+        listItem.Group = targetGroup
+        targetList.Items.Add(listItem)
 
-        Dim targetGroup As ListViewGroup = listViewParamsACC.Groups.Cast(Of ListViewGroup)().
-            FirstOrDefault(Function(g) g.Header = selectedRange)
+        ' 👉 Sort after adding
+        targetList.Sorting = SortOrder.Ascending
+        targetList.Sort()
 
-        If targetGroup IsNot Nothing Then
-            listItem.Group = targetGroup
-            listViewParamsACC.Items.Add(listItem)
+        ' Clear inputs
+        If btn.Name = "btnAddNomFreqACV" Then
+            txtNominalValue.Clear()
+            txtFreqValueACV.Clear()
         Else
-            MessageBox.Show("The selected range was not found in the list. Please add the range first.", "Missing Range", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            txtNominalValueACC.Clear()
+            txtFreqValueACC.Clear()
         End If
+
     End Sub
 
     Private Sub delBtnFreqACV_Click(sender As Object, e As EventArgs) Handles delBtnFreqACV.Click

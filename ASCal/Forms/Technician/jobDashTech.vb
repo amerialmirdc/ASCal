@@ -99,7 +99,7 @@ Public Class jobDashTech
         headerPanel.Controls.Add(headerLabel)
         jobPrevPanel.Controls.Add(headerPanel)
 
-        If jobList.Count = 0 Then
+        If userJobs.Count = 0 Then
             jobPrevPanel.Controls.Add(New Label With {
                 .Text = "No jobs found.",
                 .Font = New Font("Courier New", 12, FontStyle.Italic),
@@ -185,11 +185,23 @@ Public Class jobDashTech
 
                                                          MessageBox.Show("Job status updated to 'for review'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-                                                         ' 🔄 Call the refresh logic for the view here
-                                                         currentPage = 1
+                                                         ' 🔄 Refresh main list
                                                          jobList = LoadAllJobsFromDatabase()
                                                          UpdateStatusCounts()
-                                                         DisplayPaginatedJobs()
+
+                                                         Select Case activeCategory
+                                                             Case "forreview"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for review" AndAlso j.TechnicianInitials = CurrentUser.Initials).ToList()
+                                                                 DisplayJobs("For Review", filtered, Color.Orange)
+                                                             Case "forapproval", "forrevision"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for revision" AndAlso j.TechnicianInitials = CurrentUser.Initials).ToList()
+                                                                 DisplayJobs("For Revision", filtered, Color.Cyan)
+                                                             Case "approved"
+                                                                 Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "approved" AndAlso j.TechnicianInitials = CurrentUser.Initials).ToList()
+                                                                 DisplayJobs("Approved", filtered, Color.Lime)
+                                                             Case Else
+                                                                 DisplayPaginatedJobs()
+                                                         End Select
                                                      Catch ex As Exception
                                                          MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                      End Try
@@ -212,6 +224,9 @@ Public Class jobDashTech
 
     ' ========== Filtered Display ==========
     Private Sub DisplayJobs(title As String, jobs As List(Of Job), headerColor As Color)
+
+        Dim userInitials = CurrentUser.Initials
+        Dim userJobs = jobList.Where(Function(j) j.TechnicianInitials = userInitials).ToList()
         jobPrevPanel.Controls.Clear()
 
         Dim headerPanel As New Panel With {
@@ -232,7 +247,7 @@ Public Class jobDashTech
         jobPrevPanel.Controls.Add(headerPanel)
 
         For i As Integer = 0 To jobs.Count - 1
-            Dim job = jobs(i)
+            Dim job = jobs(i)  ' ✅ use the filtered list passed to DisplayJobs
 
             Dim panel As New Panel With {
                 .Height = 50,
@@ -314,11 +329,23 @@ Public Class jobDashTech
 
                                                         MessageBox.Show("Job status updated to 'for review'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-                                                        ' 🔄 Call the refresh logic for the view here
-                                                        currentPage = 1
+                                                        ' 🔄 Refresh main list
                                                         jobList = LoadAllJobsFromDatabase()
                                                         UpdateStatusCounts()
-                                                        DisplayPaginatedJobs()
+
+                                                        Select Case activeCategory
+                                                            Case "forreview"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for review" AndAlso j.TechnicianInitials = CurrentUser.Initials).ToList()
+                                                                DisplayJobs("For Review", filtered, Color.Orange)
+                                                            Case "forapproval", "forrevision"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "for revision" AndAlso j.TechnicianInitials = CurrentUser.Initials).ToList()
+                                                                DisplayJobs("For Revision", filtered, Color.Cyan)
+                                                            Case "approved"
+                                                                Dim filtered = jobList.Where(Function(j) j.Status.ToLower() = "approved" AndAlso j.TechnicianInitials = CurrentUser.Initials).ToList()
+                                                                DisplayJobs("Approved", filtered, Color.Lime)
+                                                            Case Else
+                                                                DisplayPaginatedJobs()
+                                                        End Select
                                                     Catch ex As Exception
                                                         MessageBox.Show("Error updating job: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                                     End Try
