@@ -23,7 +23,6 @@ Partial Class landingPageAdmin
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.userName = New System.Windows.Forms.Label()
-        'Me.LineShape2 = New Microsoft.VisualBasic.PowerPacks.LineShape()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
@@ -49,8 +48,6 @@ Partial Class landingPageAdmin
         Me.logoBox = New System.Windows.Forms.PictureBox()
         Me.Panel7 = New System.Windows.Forms.Panel()
         Me.accountType = New System.Windows.Forms.Label()
-        'Me.ShapeContainer2 = New Microsoft.VisualBasic.PowerPacks.ShapeContainer()
-        'Me.LineShape1 = New Microsoft.VisualBasic.PowerPacks.LineShape()
         Me.Panel1.SuspendLayout()
         Me.Panel6.SuspendLayout()
         Me.Panel3.SuspendLayout()
@@ -66,22 +63,12 @@ Partial Class landingPageAdmin
         '
         Me.userName.AutoSize = True
         Me.userName.Font = New System.Drawing.Font("Courier10 BT", 40.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.userName.Location = New System.Drawing.Point(24, 104)
+        Me.userName.Location = New System.Drawing.Point(66, 82)
         Me.userName.Margin = New System.Windows.Forms.Padding(0)
         Me.userName.Name = "userName"
         Me.userName.Size = New System.Drawing.Size(212, 46)
         Me.userName.TabIndex = 2
         Me.userName.Text = "USERNAME"
-        '
-        'LineShape2
-        '
-        'Me.LineShape2.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
-        'Me.LineShape2.Enabled = False
-        'Me.LineShape2.Name = "LineShape2"
-        'Me.LineShape2.X1 = 28
-        'Me.LineShape2.X2 = 1465
-        'Me.LineShape2.Y1 = 224
-        'Me.LineShape2.Y2 = 224
         '
         'Label1
         '
@@ -363,7 +350,6 @@ Partial Class landingPageAdmin
         Me.Panel7.Controls.Add(Me.userMobile)
         Me.Panel7.Controls.Add(Me.userBirthday)
         Me.Panel7.Controls.Add(Me.userName)
-        'Me.Panel7.Controls.Add(Me.ShapeContainer2)
         Me.Panel7.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel7.Location = New System.Drawing.Point(300, 0)
         Me.Panel7.Name = "Panel7"
@@ -381,26 +367,6 @@ Partial Class landingPageAdmin
         Me.accountType.TabIndex = 20
         Me.accountType.Text = "(ACCOUNT TYPE)"
         Me.accountType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'ShapeContainer2
-        '
-        'Me.ShapeContainer2.Location = New System.Drawing.Point(0, 0)
-        'Me.ShapeContainer2.Margin = New System.Windows.Forms.Padding(0)
-        'Me.ShapeContainer2.Name = "ShapeContainer2"
-        'Me.ShapeContainer2.Shapes.AddRange(New Microsoft.VisualBasic.PowerPacks.Shape() {Me.LineShape1, Me.LineShape2})
-        'Me.ShapeContainer2.Size = New System.Drawing.Size(1624, 1061)
-        'Me.ShapeContainer2.TabIndex = 3
-        'Me.ShapeContainer2.TabStop = False
-        '
-        'LineShape1
-        '
-        'Me.LineShape1.AccessibleRole = System.Windows.Forms.AccessibleRole.Separator
-        'Me.LineShape1.Enabled = False
-        'Me.LineShape1.Name = "LineShape1"
-        'Me.LineShape1.X1 = 28
-        'Me.LineShape1.X2 = 1465
-        'Me.LineShape1.Y1 = 522
-        'Me.LineShape1.Y2 = 522
         '
         'landingPageAdmin
         '

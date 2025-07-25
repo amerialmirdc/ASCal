@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class jobDashAdmin
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class jobDashAdmin
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Panel6 = New System.Windows.Forms.Panel()
@@ -50,7 +50,6 @@ Partial Class jobDashAdmin
         Me.Label1 = New System.Windows.Forms.Label()
         Me.forRevBtn = New System.Windows.Forms.Button()
         Me.userName = New System.Windows.Forms.Label()
-        Me.EntityCommand1 = New System.Data.Entity.Core.EntityClient.EntityCommand()
         Me.Panel1.SuspendLayout()
         Me.Panel6.SuspendLayout()
         Me.Panel3.SuspendLayout()
@@ -78,16 +77,16 @@ Partial Class jobDashAdmin
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Left
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(300, 991)
+        Me.Panel1.Size = New System.Drawing.Size(300, 1061)
         Me.Panel1.TabIndex = 22
         '
         'Panel6
         '
         Me.Panel6.Controls.Add(Me.Button1)
         Me.Panel6.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel6.Location = New System.Drawing.Point(0, 281)
+        Me.Panel6.Location = New System.Drawing.Point(0, 304)
         Me.Panel6.Name = "Panel6"
-        Me.Panel6.Size = New System.Drawing.Size(300, 63)
+        Me.Panel6.Size = New System.Drawing.Size(300, 68)
         Me.Panel6.TabIndex = 13
         '
         'Button1
@@ -99,7 +98,7 @@ Partial Class jobDashAdmin
         Me.Button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.Button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Button1.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Button1.Location = New System.Drawing.Point(26, 6)
+        Me.Button1.Location = New System.Drawing.Point(32, 16)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(245, 41)
         Me.Button1.TabIndex = 0
@@ -110,9 +109,9 @@ Partial Class jobDashAdmin
         '
         Me.Panel3.Controls.Add(Me.compMan)
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel3.Location = New System.Drawing.Point(0, 218)
+        Me.Panel3.Location = New System.Drawing.Point(0, 236)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(300, 63)
+        Me.Panel3.Size = New System.Drawing.Size(300, 68)
         Me.Panel3.TabIndex = 7
         '
         'compMan
@@ -123,7 +122,7 @@ Partial Class jobDashAdmin
         Me.compMan.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.compMan.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.compMan.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.compMan.Location = New System.Drawing.Point(26, 16)
+        Me.compMan.Location = New System.Drawing.Point(32, 16)
         Me.compMan.Name = "compMan"
         Me.compMan.Size = New System.Drawing.Size(245, 41)
         Me.compMan.TabIndex = 0
@@ -134,9 +133,9 @@ Partial Class jobDashAdmin
         '
         Me.Panel8.Controls.Add(Me.logoutBtn)
         Me.Panel8.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel8.Location = New System.Drawing.Point(0, 928)
+        Me.Panel8.Location = New System.Drawing.Point(0, 993)
         Me.Panel8.Name = "Panel8"
-        Me.Panel8.Size = New System.Drawing.Size(300, 63)
+        Me.Panel8.Size = New System.Drawing.Size(300, 68)
         Me.Panel8.TabIndex = 4
         '
         'logoutBtn
@@ -147,7 +146,7 @@ Partial Class jobDashAdmin
         Me.logoutBtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.logoutBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.logoutBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.logoutBtn.Location = New System.Drawing.Point(26, 9)
+        Me.logoutBtn.Location = New System.Drawing.Point(32, 16)
         Me.logoutBtn.Name = "logoutBtn"
         Me.logoutBtn.Size = New System.Drawing.Size(245, 41)
         Me.logoutBtn.TabIndex = 0
@@ -158,9 +157,9 @@ Partial Class jobDashAdmin
         '
         Me.Panel5.Controls.Add(Me.userManagementBtn)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel5.Location = New System.Drawing.Point(0, 155)
+        Me.Panel5.Location = New System.Drawing.Point(0, 168)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(300, 63)
+        Me.Panel5.Size = New System.Drawing.Size(300, 68)
         Me.Panel5.TabIndex = 3
         '
         'userManagementBtn
@@ -171,7 +170,7 @@ Partial Class jobDashAdmin
         Me.userManagementBtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Aqua
         Me.userManagementBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.userManagementBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.userManagementBtn.Location = New System.Drawing.Point(37, 15)
+        Me.userManagementBtn.Location = New System.Drawing.Point(32, 16)
         Me.userManagementBtn.Name = "userManagementBtn"
         Me.userManagementBtn.Size = New System.Drawing.Size(245, 41)
         Me.userManagementBtn.TabIndex = 0
@@ -182,9 +181,9 @@ Partial Class jobDashAdmin
         '
         Me.Panel4.Controls.Add(Me.Button2)
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel4.Location = New System.Drawing.Point(0, 92)
+        Me.Panel4.Location = New System.Drawing.Point(0, 100)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(300, 63)
+        Me.Panel4.Size = New System.Drawing.Size(300, 68)
         Me.Panel4.TabIndex = 2
         '
         'Button2
@@ -208,13 +207,13 @@ Partial Class jobDashAdmin
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel2.Location = New System.Drawing.Point(0, 0)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(300, 92)
+        Me.Panel2.Size = New System.Drawing.Size(300, 100)
         Me.Panel2.TabIndex = 0
         '
         'logoBox
         '
         Me.logoBox.Image = Global.ASCal.My.Resources.Resources._31
-        Me.logoBox.Location = New System.Drawing.Point(46, 12)
+        Me.logoBox.Location = New System.Drawing.Point(56, 24)
         Me.logoBox.Name = "logoBox"
         Me.logoBox.Size = New System.Drawing.Size(192, 66)
         Me.logoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
@@ -236,7 +235,7 @@ Partial Class jobDashAdmin
         Me.Panel7.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel7.Location = New System.Drawing.Point(300, 0)
         Me.Panel7.Name = "Panel7"
-        Me.Panel7.Size = New System.Drawing.Size(1602, 991)
+        Me.Panel7.Size = New System.Drawing.Size(1624, 1061)
         Me.Panel7.TabIndex = 25
         '
         'pageLabel
@@ -244,7 +243,7 @@ Partial Class jobDashAdmin
         Me.pageLabel.AutoSize = True
         Me.pageLabel.BackColor = System.Drawing.Color.White
         Me.pageLabel.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.pageLabel.Location = New System.Drawing.Point(1412, 944)
+        Me.pageLabel.Location = New System.Drawing.Point(1215, 903)
         Me.pageLabel.Name = "pageLabel"
         Me.pageLabel.Size = New System.Drawing.Size(107, 17)
         Me.pageLabel.TabIndex = 16
@@ -255,7 +254,7 @@ Partial Class jobDashAdmin
         'prevBtn
         '
         Me.prevBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.prevBtn.Location = New System.Drawing.Point(1324, 937)
+        Me.prevBtn.Location = New System.Drawing.Point(1051, 896)
         Me.prevBtn.Name = "prevBtn"
         Me.prevBtn.Size = New System.Drawing.Size(84, 30)
         Me.prevBtn.TabIndex = 15
@@ -265,7 +264,7 @@ Partial Class jobDashAdmin
         'nextBtn
         '
         Me.nextBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.nextBtn.Location = New System.Drawing.Point(1538, 937)
+        Me.nextBtn.Location = New System.Drawing.Point(1492, 896)
         Me.nextBtn.Name = "nextBtn"
         Me.nextBtn.Size = New System.Drawing.Size(84, 30)
         Me.nextBtn.TabIndex = 14
@@ -274,19 +273,17 @@ Partial Class jobDashAdmin
         '
         'jobPrevPanel
         '
-        Me.jobPrevPanel.AutoScroll = True
-        Me.jobPrevPanel.AutoScrollMinSize = New System.Drawing.Size(1671, 650)
         Me.jobPrevPanel.BackColor = System.Drawing.Color.White
-        Me.jobPrevPanel.Location = New System.Drawing.Point(14, 214)
+        Me.jobPrevPanel.Location = New System.Drawing.Point(23, 214)
         Me.jobPrevPanel.Name = "jobPrevPanel"
-        Me.jobPrevPanel.Size = New System.Drawing.Size(1666, 717)
+        Me.jobPrevPanel.Size = New System.Drawing.Size(1573, 658)
         Me.jobPrevPanel.TabIndex = 11
         '
         'Panel9
         '
         Me.Panel9.Controls.Add(Me.Label3)
         Me.Panel9.Controls.Add(Me.completeBtn)
-        Me.Panel9.Location = New System.Drawing.Point(1283, 74)
+        Me.Panel9.Location = New System.Drawing.Point(1237, 88)
         Me.Panel9.Name = "Panel9"
         Me.Panel9.Size = New System.Drawing.Size(359, 103)
         Me.Panel9.TabIndex = 10
@@ -322,7 +319,7 @@ Partial Class jobDashAdmin
         '
         Me.Panel10.Controls.Add(Me.Label2)
         Me.Panel10.Controls.Add(Me.forReviBtn)
-        Me.Panel10.Location = New System.Drawing.Point(872, 74)
+        Me.Panel10.Location = New System.Drawing.Point(826, 88)
         Me.Panel10.Name = "Panel10"
         Me.Panel10.Size = New System.Drawing.Size(359, 103)
         Me.Panel10.TabIndex = 9
@@ -358,7 +355,7 @@ Partial Class jobDashAdmin
         '
         Me.Panel11.Controls.Add(Me.Label1)
         Me.Panel11.Controls.Add(Me.forRevBtn)
-        Me.Panel11.Location = New System.Drawing.Point(452, 74)
+        Me.Panel11.Location = New System.Drawing.Point(406, 88)
         Me.Panel11.Name = "Panel11"
         Me.Panel11.Size = New System.Drawing.Size(359, 103)
         Me.Panel11.TabIndex = 8
@@ -394,26 +391,18 @@ Partial Class jobDashAdmin
         '
         Me.userName.AutoSize = True
         Me.userName.Font = New System.Drawing.Font("Courier10 BT", 40.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.userName.Location = New System.Drawing.Point(15, 113)
+        Me.userName.Location = New System.Drawing.Point(31, 122)
         Me.userName.Margin = New System.Windows.Forms.Padding(0)
         Me.userName.Name = "userName"
         Me.userName.Size = New System.Drawing.Size(332, 46)
         Me.userName.TabIndex = 7
         Me.userName.Text = "JOB DASHBOARD"
         '
-        'EntityCommand1
-        '
-        Me.EntityCommand1.CommandTimeout = 0
-        Me.EntityCommand1.CommandTree = Nothing
-        Me.EntityCommand1.Connection = Nothing
-        Me.EntityCommand1.EnablePlanCaching = True
-        Me.EntityCommand1.Transaction = Nothing
-        '
         'jobDashAdmin
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1902, 991)
+        Me.ClientSize = New System.Drawing.Size(1924, 1061)
         Me.Controls.Add(Me.Panel7)
         Me.Controls.Add(Me.Panel1)
         Me.Font = New System.Drawing.Font("Courier10 BT", 8.25!)
@@ -463,5 +452,4 @@ Partial Class jobDashAdmin
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents forRevBtn As System.Windows.Forms.Button
     Friend WithEvents userName As System.Windows.Forms.Label
-    Friend WithEvents EntityCommand1 As Entity.Core.EntityClient.EntityCommand
 End Class

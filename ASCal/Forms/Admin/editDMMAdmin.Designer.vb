@@ -48,10 +48,7 @@ Partial Class editDMMAdmin
         Me.Label8 = New System.Windows.Forms.Label()
         Me.modelDMM = New System.Windows.Forms.TextBox()
         Me.Label9 = New System.Windows.Forms.Label()
-        Me.CheckBox6 = New System.Windows.Forms.CheckBox()
         Me.manuDMM = New System.Windows.Forms.TextBox()
-        Me.CheckBox7 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox8 = New System.Windows.Forms.CheckBox()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.Panel6 = New System.Windows.Forms.Panel()
         Me.Label4 = New System.Windows.Forms.Label()
@@ -94,7 +91,6 @@ Partial Class editDMMAdmin
         Me.listViewParamsRES = New System.Windows.Forms.ListView()
         Me.cmbRangeUnitRES = New System.Windows.Forms.ComboBox()
         Me.txtRangeValueRES = New System.Windows.Forms.TextBox()
-        Me.CheckBoxRES = New System.Windows.Forms.CheckBox()
         Me.rangeRadioPanelDCC = New System.Windows.Forms.FlowLayoutPanel()
         Me.cmbNominalUnitDCC = New System.Windows.Forms.ComboBox()
         Me.txtNominalValueDCC = New System.Windows.Forms.TextBox()
@@ -114,6 +110,7 @@ Partial Class editDMMAdmin
         Me.txtRangeValueDCV = New System.Windows.Forms.TextBox()
         Me.CheckBoxDCV = New System.Windows.Forms.CheckBox()
         Me.Label11 = New System.Windows.Forms.Label()
+        Me.CheckBoxRES = New System.Windows.Forms.CheckBox()
         Me.Panel1.SuspendLayout()
         Me.Panel3.SuspendLayout()
         Me.Panel10.SuspendLayout()
@@ -334,10 +331,7 @@ Partial Class editDMMAdmin
         Me.Panel5.Controls.Add(Me.Label8)
         Me.Panel5.Controls.Add(Me.modelDMM)
         Me.Panel5.Controls.Add(Me.Label9)
-        Me.Panel5.Controls.Add(Me.CheckBox6)
         Me.Panel5.Controls.Add(Me.manuDMM)
-        Me.Panel5.Controls.Add(Me.CheckBox7)
-        Me.Panel5.Controls.Add(Me.CheckBox8)
         Me.Panel5.Controls.Add(Me.Label10)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel5.Font = New System.Drawing.Font("Courier10 BT", 8.25!)
@@ -452,16 +446,7 @@ Partial Class editDMMAdmin
         Me.Label9.TabIndex = 26
         Me.Label9.Text = "Model:"
         '
-        'CheckBox6
-        '
-        Me.CheckBox6.AutoSize = True
-        Me.CheckBox6.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBox6.Location = New System.Drawing.Point(224, 552)
-        Me.CheckBox6.Name = "CheckBox6"
-        Me.CheckBox6.Size = New System.Drawing.Size(161, 27)
-        Me.CheckBox6.TabIndex = 57
-        Me.CheckBox6.Text = "RESISTANCE:"
-        Me.CheckBox6.UseVisualStyleBackColor = True
+
         '
         'manuDMM
         '
@@ -472,27 +457,6 @@ Partial Class editDMMAdmin
         Me.manuDMM.Size = New System.Drawing.Size(312, 31)
         Me.manuDMM.TabIndex = 25
         '
-        'CheckBox7
-        '
-        Me.CheckBox7.AutoSize = True
-        Me.CheckBox7.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBox7.Location = New System.Drawing.Point(240, 480)
-        Me.CheckBox7.Name = "CheckBox7"
-        Me.CheckBox7.Size = New System.Drawing.Size(161, 27)
-        Me.CheckBox7.TabIndex = 55
-        Me.CheckBox7.Text = "AC CURRENT:"
-        Me.CheckBox7.UseVisualStyleBackColor = True
-        '
-        'CheckBox8
-        '
-        Me.CheckBox8.AutoSize = True
-        Me.CheckBox8.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBox8.Location = New System.Drawing.Point(240, 440)
-        Me.CheckBox8.Name = "CheckBox8"
-        Me.CheckBox8.Size = New System.Drawing.Size(161, 27)
-        Me.CheckBox8.TabIndex = 56
-        Me.CheckBox8.Text = "DC CURRENT:"
-        Me.CheckBox8.UseVisualStyleBackColor = True
         '
         'Label10
         '
@@ -677,6 +641,7 @@ Partial Class editDMMAdmin
         '
         Me.listViewParamsACC.BackColor = System.Drawing.Color.Cyan
         Me.listViewParamsACC.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.listViewParamsACC.HideSelection = False
         Me.listViewParamsACC.Location = New System.Drawing.Point(637, 456)
         Me.listViewParamsACC.Name = "listViewParamsACC"
         Me.listViewParamsACC.Size = New System.Drawing.Size(290, 272)
@@ -817,6 +782,7 @@ Partial Class editDMMAdmin
         '
         Me.listViewParams.BackColor = System.Drawing.Color.Cyan
         Me.listViewParams.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.listViewParams.HideSelection = False
         Me.listViewParams.Location = New System.Drawing.Point(24, 455)
         Me.listViewParams.Name = "listViewParams"
         Me.listViewParams.Size = New System.Drawing.Size(288, 264)
@@ -983,6 +949,7 @@ Partial Class editDMMAdmin
         '
         Me.listViewParamsRES.BackColor = System.Drawing.Color.Cyan
         Me.listViewParamsRES.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.listViewParamsRES.HideSelection = False
         Me.listViewParamsRES.Location = New System.Drawing.Point(1248, 399)
         Me.listViewParamsRES.Name = "listViewParamsRES"
         Me.listViewParamsRES.Size = New System.Drawing.Size(304, 328)
@@ -1010,17 +977,6 @@ Partial Class editDMMAdmin
         Me.txtRangeValueRES.Name = "txtRangeValueRES"
         Me.txtRangeValueRES.Size = New System.Drawing.Size(144, 31)
         Me.txtRangeValueRES.TabIndex = 106
-        '
-        'CheckBoxRES
-        '
-        Me.CheckBoxRES.AutoSize = True
-        Me.CheckBoxRES.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxRES.Location = New System.Drawing.Point(1248, 72)
-        Me.CheckBoxRES.Name = "CheckBoxRES"
-        Me.CheckBoxRES.Size = New System.Drawing.Size(161, 27)
-        Me.CheckBoxRES.TabIndex = 105
-        Me.CheckBoxRES.Text = "RESISTANCE:"
-        Me.CheckBoxRES.UseVisualStyleBackColor = True
         '
         'rangeRadioPanelDCC
         '
@@ -1083,6 +1039,7 @@ Partial Class editDMMAdmin
         '
         Me.listViewParamsDCC.BackColor = System.Drawing.Color.Cyan
         Me.listViewParamsDCC.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.listViewParamsDCC.HideSelection = False
         Me.listViewParamsDCC.Location = New System.Drawing.Point(940, 399)
         Me.listViewParamsDCC.Name = "listViewParamsDCC"
         Me.listViewParamsDCC.Size = New System.Drawing.Size(296, 328)
@@ -1183,6 +1140,7 @@ Partial Class editDMMAdmin
         '
         Me.listViewParamsDCV.BackColor = System.Drawing.Color.Cyan
         Me.listViewParamsDCV.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.listViewParamsDCV.HideSelection = False
         Me.listViewParamsDCV.Location = New System.Drawing.Point(326, 399)
         Me.listViewParamsDCV.Name = "listViewParamsDCV"
         Me.listViewParamsDCV.Size = New System.Drawing.Size(298, 328)
@@ -1233,14 +1191,25 @@ Partial Class editDMMAdmin
         Me.Label11.TabIndex = 47
         Me.Label11.Text = "PARAMETERS"
         '
-        'editDMMForm
+        'CheckBoxRES
+        '
+        Me.CheckBoxRES.AutoSize = True
+        Me.CheckBoxRES.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.CheckBoxRES.Location = New System.Drawing.Point(1248, 72)
+        Me.CheckBoxRES.Name = "CheckBoxRES"
+        Me.CheckBoxRES.Size = New System.Drawing.Size(161, 27)
+        Me.CheckBoxRES.TabIndex = 105
+        Me.CheckBoxRES.Text = "RESISTANCE:"
+        Me.CheckBoxRES.UseVisualStyleBackColor = True
+        '
+        'editDMMAdmin
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1924, 1061)
         Me.Controls.Add(Me.Panel4)
         Me.Controls.Add(Me.Panel1)
-        Me.Name = "editDMMForm"
+        Me.Name = "editDMMAdmin"
         Me.Text = "editDMMForm"
         Me.Panel1.ResumeLayout(False)
         Me.Panel3.ResumeLayout(False)
@@ -1287,10 +1256,7 @@ Partial Class editDMMAdmin
     Friend WithEvents Label8 As System.Windows.Forms.Label
     Friend WithEvents modelDMM As System.Windows.Forms.TextBox
     Friend WithEvents Label9 As System.Windows.Forms.Label
-    Friend WithEvents CheckBox6 As System.Windows.Forms.CheckBox
     Friend WithEvents manuDMM As System.Windows.Forms.TextBox
-    Friend WithEvents CheckBox7 As System.Windows.Forms.CheckBox
-    Friend WithEvents CheckBox8 As System.Windows.Forms.CheckBox
     Friend WithEvents Label10 As System.Windows.Forms.Label
     Friend WithEvents Panel6 As System.Windows.Forms.Panel
     Friend WithEvents delBtnRanRES As System.Windows.Forms.Button
@@ -1307,7 +1273,6 @@ Partial Class editDMMAdmin
     Friend WithEvents listViewParamsRES As System.Windows.Forms.ListView
     Friend WithEvents cmbRangeUnitRES As System.Windows.Forms.ComboBox
     Friend WithEvents txtRangeValueRES As System.Windows.Forms.TextBox
-    Friend WithEvents CheckBoxRES As System.Windows.Forms.CheckBox
     Friend WithEvents rangeRadioPanelDCC As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents cmbNominalUnitDCC As System.Windows.Forms.ComboBox
     Friend WithEvents txtNominalValueDCC As System.Windows.Forms.TextBox
@@ -1354,4 +1319,5 @@ Partial Class editDMMAdmin
     Friend WithEvents cmbRangeUnitACC As System.Windows.Forms.ComboBox
     Friend WithEvents txtRangeValueACC As System.Windows.Forms.TextBox
     Friend WithEvents CheckBoxACC As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckBoxRES As CheckBox
 End Class

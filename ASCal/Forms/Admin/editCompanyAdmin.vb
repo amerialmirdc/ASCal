@@ -3,7 +3,7 @@
 Public Class editCompanyAdmin
 
     ' ✅ Unified navigation handler
-    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, Button2.Click, userManagementBtn.Click, compMan.Click, logoutBtn.Click, Button1.Click
+    Private Sub HandleNavbarClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, Button2.Click, userManagementBtn.Click, logoutBtn.Click, Button1.Click
 
         calibrate.RefreshData()
 
@@ -16,9 +16,6 @@ Public Class editCompanyAdmin
                 Me.Close()
             Case sender Is userManagementBtn
                 userManagementAdmin.Show()
-                Me.Close()
-            Case sender Is compMan
-                compManagementAdmin.Show()
                 Me.Close()
             Case sender Is logoutBtn
                 login.Show()

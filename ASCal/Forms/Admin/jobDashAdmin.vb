@@ -88,6 +88,45 @@
         End Select
     End Sub
 
+    Private Sub ResetButtonColors()
+        forRevBtn.BackColor = Color.Salmon
+        forReviBtn.BackColor = Color.Cyan
+        completeBtn.BackColor = Color.Lime
+    End Sub
+
+    Private Function GetStatusColor(status As String) As Color
+        Select Case status.ToLower()
+            Case "for review"
+                Return Color.Orange
+            Case "for revision"
+                Return Color.Cyan
+            Case "approved"
+                Return Color.Green
+            Case Else
+                Return Color.Gray
+        End Select
+    End Function
+
+    Private Sub PreviewJob(job As SQLiteHelper.Job)
+        Dim details As String = ""
+        details &= "JOB #: " & job.WorkOrderNumber & Environment.NewLine
+        details &= "Date: " & Convert.ToDateTime(job.CalibrationDate).ToString("MMM dd, yyyy") & Environment.NewLine
+        details &= "Status: " & job.Status & Environment.NewLine
+        details &= "Model: " & job.Model & Environment.NewLine
+        details &= "Serial #: " & job.SerialNumber & Environment.NewLine
+        details &= "Customer: " & job.CompanyName & Environment.NewLine
+        details &= "Address: " & job.CompanyAddress & Environment.NewLine
+        details &= "Technician: " & job.TechnicianName & " (" & job.TechnicianInitials & ")" & Environment.NewLine
+        details &= "Signatory: " & job.SignatoryName & " (" & job.SignatoryInitials & ")" & Environment.NewLine
+        details &= "Manufacturer: " & job.Manufacturer & Environment.NewLine
+        details &= "Calibration Type: " & job.CalibrationType & Environment.NewLine
+        details &= "Specific Site: " & job.SpecificSite & Environment.NewLine
+        details &= "Remarks: " & job.Description & Environment.NewLine
+        details &= "Last Updated By: " & job.LastUpdatedBy & Environment.NewLine
+
+        MessageBox.Show(details, "Job Details", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+
     Private Sub forRevBtn_Click(sender As Object, e As EventArgs) Handles forRevBtn.Click
         activeCategory = If(activeCategory = "forreview", "", "forreview")
         ResetButtonColors()
@@ -109,160 +148,134 @@
         DisplayActiveCategory()
     End Sub
 
-    Private Sub ResetButtonColors()
-        forRevBtn.BackColor = Color.Salmon
-        forReviBtn.BackColor = Color.Cyan
-        completeBtn.BackColor = Color.Lime
-    End Sub
+    Private Function BuildJobPanel(job As SQLiteHelper.Job) As Panel
+        Dim jobPanel As New Panel With {
+        .Width = jobPrevPanel.ClientSize.Width - jobPrevPanel.Padding.Horizontal,
+        .Height = 50,
+        .BackColor = Color.White,
+        .BorderStyle = BorderStyle.FixedSingle,
+        .Margin = New Padding(5)
+    }
 
-    Private Sub DisplayPaginatedJobs()
-        jobPrevPanel.Controls.Clear()
+        Dim infoLbl As New Label With {
+        .Text = job.WorkOrderNumber & " | " & job.Model & " | " & job.Status.ToUpper() & " (" & job.TechnicianInitials & ")",
+        .Font = New Font("Courier New", 10, FontStyle.Bold),
+        .AutoSize = True,
+        .Location = New Point(10, 15)
+    }
 
-        ' Calculate current page subset
-        Dim startIdx As Integer = (currentPage - 1) * jobsPerPage
-        Dim paginatedJobs = jobList.Skip(startIdx).Take(jobsPerPage).ToList()
+        Dim previewBtn As New Button With {
+        .Text = "PREVIEW JOB",
+        .Width = 120,
+        .Height = 30,
+        .FlatStyle = FlatStyle.Flat,
+        .Font = New Font("Courier New", 8),
+        .Tag = job
+    }
+        previewBtn.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        previewBtn.Location = New Point(jobPanel.Width - previewBtn.Width - 10, 10)
 
-        ' Display each job
-        For Each job In paginatedJobs
-            Dim jobPanel As New Panel With {
-                .Width = jobPrevPanel.Width - 30,
-                .Height = 90,
-                .BackColor = Color.White,
-                .BorderStyle = BorderStyle.FixedSingle,
-                .Margin = New Padding(5)
-            }
+        Dim dateLbl As New Label With {
+        .Text = job.DateCreated,
+        .Font = New Font("Courier New", 8),
+        .AutoSize = True
+    }
+        dateLbl.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        Dim dateX As Integer = previewBtn.Left - dateLbl.PreferredWidth - 10
+        dateLbl.Location = New Point(dateX, 18)
 
-            Dim header As New Label With {
-                .Text = "JOB #" & job.WorkOrderNumber,
-                .Font = New Font("Courier10 BT", 11, FontStyle.Bold),
-                .AutoSize = True,
-                .Location = New Point(10, 10)
-            }
-
-            Dim dateLbl As New Label With {
-                .Text = "Date: " & Convert.ToDateTime(job.CalibrationDate).ToString("MMM dd, yyyy"),
-                .Font = New Font("Courier10 BT", 9),
-                .AutoSize = True,
-                .Location = New Point(10, 35)
-            }
-
-            Dim statusLbl As New Label With {
-                .Text = "Status: " & job.Status,
-                .Font = New Font("Courier10 BT", 9, FontStyle.Bold),
-                .ForeColor = GetStatusColor(job.Status),
-                .AutoSize = True,
-                .Location = New Point(10, 60)
-            }
-
-            ' Optional: preview or edit button for admin
-            Dim previewBtn As New Button With {
-                .Text = "Preview",
-                .Size = New Size(80, 30),
-                .Location = New Point(jobPanel.Width - 90, 25),
-                .BackColor = Color.LightGray
-            }
-            AddHandler previewBtn.Click, Sub() PreviewJob(job)
-
-            ' Add controls to panel
-            jobPanel.Controls.Add(header)
-            jobPanel.Controls.Add(dateLbl)
-            jobPanel.Controls.Add(statusLbl)
-            jobPanel.Controls.Add(previewBtn)
-
-            jobPrevPanel.Controls.Add(jobPanel)
-        Next
-
-        ' Update pagination label
-        pageLabel.Text = String.Format("{0}/{1}", currentPage, totalPages)
-
-    End Sub
-
-    Private Function GetStatusColor(status As String) As Color
-        Select Case status.ToLower()
-            Case "for review"
-                Return Color.Orange
-            Case "for revision"
-                Return Color.Cyan
-            Case "approved"
-                Return Color.Green
-            Case Else
-                Return Color.Gray
+        Select Case job.Status.ToLower()
+            Case "for review" : previewBtn.BackColor = Color.Orange
+            Case "for revision" : previewBtn.BackColor = Color.Cyan
+            Case "approved" : previewBtn.BackColor = Color.Lime
+            Case Else : previewBtn.BackColor = Color.LightGray
         End Select
+
+        AddHandler previewBtn.Click,
+        Sub(senderObj As Object, args As EventArgs)
+            Dim j As SQLiteHelper.Job = CType(CType(senderObj, Button).Tag, SQLiteHelper.Job)
+            PreviewJob(j)
+        End Sub
+
+        jobPanel.Controls.Add(infoLbl)
+        jobPanel.Controls.Add(dateLbl)
+        jobPanel.Controls.Add(previewBtn)
+        Return jobPanel
     End Function
 
-    Private Sub PreviewJob(job As Job)
-        MessageBox.Show("Previewing Job #" & job.WorkOrderNumber, "Preview", MessageBoxButtons.OK, MessageBoxIcon.Information)
-        ' Optional: Load preview  form or detailed job window
-    End Sub
-
-    Private Sub DisplayJobs(title As String, jobs As List(Of Job), headerColor As Color)
+    Private Sub DisplayPaginatedJobs()
+        ' Clear previous controls
         jobPrevPanel.Controls.Clear()
 
-        ' Header panel
+        ' 🔹 Build and add header panel
         Dim headerPanel As New Panel With {
-            .Height = 40,
-            .Dock = DockStyle.Top,
-            .BackColor = headerColor
+        .Height = 35,
+        .Width = jobPrevPanel.ClientSize.Width,
+        .BackColor = Color.LightSteelBlue,
+        .Margin = New Padding(0),
+        .Padding = New Padding(10, 5, 0, 0)
+    }
+
+        Dim headerLabel As New Label With {
+        .Text = "ALL JOBS",
+        .Font = New Font("Courier New", 15, FontStyle.Bold),
+        .Dock = DockStyle.Fill,
+        .TextAlign = ContentAlignment.MiddleLeft
+    }
+
+        headerPanel.Controls.Add(headerLabel)
+        jobPrevPanel.Controls.Add(headerPanel)
+
+        ' 🔹 Get jobs for the current page
+        Dim takeCount As Integer = currentPage * jobsPerPage
+        If takeCount > jobList.Count Then takeCount = jobList.Count
+        Dim paginatedJobs = jobList.Take(takeCount).ToList()
+
+        ' 🔹 Add each job panel
+        For Each job As SQLiteHelper.Job In paginatedJobs
+            jobPrevPanel.Controls.Add(BuildJobPanel(job))
+        Next
+
+        ' 🔹 Update page label with counts
+        pageLabel.Text = $"Showing {paginatedJobs.Count} of {jobList.Count}  |  Page {currentPage}/{totalPages}"
+
+        ' 🔹 Enable or disable navigation buttons
+        prevBtn.Enabled = (currentPage > 1)
+        nextBtn.Enabled = (currentPage < totalPages AndAlso jobList.Count > jobsPerPage)
+    End Sub
+
+    Private Sub DisplayJobs(title As String, jobs As List(Of SQLiteHelper.Job), headerColor As Color)
+        jobPrevPanel.Controls.Clear()
+
+        Dim headerPanel As New Panel With {
+            .Height = 35,
+            .Width = jobPrevPanel.ClientSize.Width,
+            .BackColor = headerColor,
+            .Margin = New Padding(0),
+            .Padding = New Padding(10, 5, 0, 0)
         }
 
         Dim headerLabel As New Label With {
-            .Text = title,
-            .Font = New Font("Courier10 BT", 11, FontStyle.Bold),
-            .ForeColor = Color.White,
-            .AutoSize = True,
-            .Location = New Point(10, 10)
+            .Text = title.ToUpper(),
+            .Font = New Font("Courier New", 15, FontStyle.Bold),
+            .Dock = DockStyle.Fill,
+            .TextAlign = ContentAlignment.MiddleLeft
         }
 
         headerPanel.Controls.Add(headerLabel)
         jobPrevPanel.Controls.Add(headerPanel)
 
-        ' Display each job
-        For Each job As Job In jobs
-            Dim jobPanel As New Panel With {
-                .Width = jobPrevPanel.Width - 30,
-                .Height = 90,
-                .BackColor = Color.White,
-                .BorderStyle = BorderStyle.FixedSingle,
-                .Margin = New Padding(5)
-            }
-
-            Dim header As New Label With {
-                .Text = "JOB #" & job.WorkOrderNumber,
-                .Font = New Font("CCourier10 BT", 11, FontStyle.Bold),
-                .AutoSize = True,
-                .Location = New Point(10, 10)
-            }
-
-            Dim dateLbl As New Label With {
-                .Text = "Date: " & Convert.ToDateTime(job.CalibrationDate).ToString("MMM dd, yyyy"),
-                .Font = New Font("Courier10 BT", 9),
-                .AutoSize = True,
-                .Location = New Point(10, 35)
-            }
-
-            Dim statusLbl As New Label With {
-                .Text = "Status: " & job.Status,
-                .Font = New Font("CCourier10 BT", 9, FontStyle.Bold),
-                .ForeColor = GetStatusColor(job.Status),
-                .AutoSize = True,
-                .Location = New Point(10, 60)
-            }
-
-            Dim previewBtn As New Button With {
-                .Text = "Preview",
-                .Size = New Size(80, 30),
-                .Location = New Point(jobPanel.Width - 90, 25),
-                .BackColor = Color.LightGray
-            }
-            AddHandler previewBtn.Click, Sub() PreviewJob(job)
-
-            jobPanel.Controls.Add(header)
-            jobPanel.Controls.Add(dateLbl)
-            jobPanel.Controls.Add(statusLbl)
-            jobPanel.Controls.Add(previewBtn)
-
-            jobPrevPanel.Controls.Add(jobPanel)
+        ' Add each job panel
+        For Each job As SQLiteHelper.Job In jobs
+            jobPrevPanel.Controls.Add(BuildJobPanel(job))
         Next
+
+        ' ✅ Update pageLabel with filtered count
+        pageLabel.Text = $"Showing {jobs.Count} job(s)"
+
+        ' ✅ Disable navigation buttons when filtering
+        prevBtn.Enabled = False
+        nextBtn.Enabled = False
     End Sub
 
 End Class

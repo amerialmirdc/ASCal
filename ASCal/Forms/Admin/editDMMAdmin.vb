@@ -63,18 +63,23 @@ Public Class editDMMAdmin
             lv.FullRowSelect = True
             lv.GridLines = True
 
-            Dim totalWidth As Integer = lv.ClientSize.Width
-            Dim col1Width As Integer = CInt(totalWidth * 0.3)
-            Dim col2Width As Integer = CInt(totalWidth * 0.4)
-            Dim col3Width As Integer = totalWidth - col1Width - col2Width
-
-            lv.Columns.Add("Range", col1Width)
-            lv.Columns.Add("Nominal Value(s)", col2Width)
-
+            ' Decide how many columns this ListView will have
+            Dim columnCount As Integer = 2
             If lv Is listViewParams OrElse lv Is listViewParamsACC Then
-                ' Only AC Voltage or AC Current → show Frequency as third column
-                lv.Columns.Add("Frequency", col3Width)
+                columnCount = 3
             End If
+
+            ' Calculate equal width
+            Dim totalWidth As Integer = lv.ClientSize.Width
+            Dim colWidth As Integer = CInt(totalWidth / columnCount)
+
+            ' Add columns with equal width
+            lv.Columns.Add("Range", colWidth)
+            lv.Columns.Add("Nominal Value(s)", colWidth)
+            If columnCount = 3 Then
+                lv.Columns.Add("Frequency", colWidth)
+            End If
+
         Next
 
         ' Load grouped DMM parameters from DB
@@ -136,6 +141,16 @@ Public Class editDMMAdmin
                 Next
             Next
         Next
+        ' After filling all ListViews:
+        RefreshCheckBoxesFromLists()
+
+        ' 👉 Apply visibility according to the checked state
+        ToggleSectionVisibility("V", CheckBox.Checked)
+        ToggleSectionVisibility("DCV", CheckBoxDCV.Checked)
+        ToggleSectionVisibility("ACC", CheckBoxACC.Checked)
+        ToggleSectionVisibility("DCC", CheckBoxDCC.Checked)
+        ToggleSectionVisibility("RES", CheckBoxRES.Checked)
+
     End Sub
 
     Private Sub ListView_MouseClick(sender As Object, e As MouseEventArgs)
@@ -249,11 +264,22 @@ Public Class editDMMAdmin
             ' Step 1: Build new parameter dictionary from all ListViews
             Dim paramDict As New Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String))))()
 
-            AddParamsToDict(listViewParams, "AC Voltage", paramDict)
-            AddParamsToDict(listViewParamsDCV, "DC Voltage", paramDict)
-            AddParamsToDict(listViewParamsACC, "AC Current", paramDict)
-            AddParamsToDict(listViewParamsDCC, "DC Current", paramDict)
-            AddParamsToDict(listViewParamsRES, "Resistance", paramDict)
+            ' After: only add if the CheckBox is checked
+            If CheckBox.Checked Then
+                AddParamsToDict(listViewParams, "AC Voltage", paramDict)
+            End If
+            If CheckBoxDCV.Checked Then
+                AddParamsToDict(listViewParamsDCV, "DC Voltage", paramDict)
+            End If
+            If CheckBoxACC.Checked Then
+                AddParamsToDict(listViewParamsACC, "AC Current", paramDict)
+            End If
+            If CheckBoxDCC.Checked Then
+                AddParamsToDict(listViewParamsDCC, "DC Current", paramDict)
+            End If
+            If CheckBoxRES.Checked Then
+                AddParamsToDict(listViewParamsRES, "Resistance", paramDict)
+            End If
 
             ' Step 2: Call the unified InsertOrUpdate method
             SQLiteHelper.InsertOrUpdateDMM(originalModelName, newModel, newManufacturer, newDescription, paramDict)
@@ -264,6 +290,100 @@ Public Class editDMMAdmin
         Catch ex As Exception
             MessageBox.Show("Error updating DMM: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub RefreshCheckBoxesFromLists()
+        CheckBox.Checked = (listViewParams.Items.Count > 0)
+        CheckBoxDCV.Checked = (listViewParamsDCV.Items.Count > 0)
+        CheckBoxACC.Checked = (listViewParamsACC.Items.Count > 0)
+        CheckBoxDCC.Checked = (listViewParamsDCC.Items.Count > 0)
+        CheckBoxRES.Checked = (listViewParamsRES.Items.Count > 0)
+    End Sub
+
+    Private Sub SectionCheckbox_CheckedChanged(sender As Object, e As EventArgs) _
+    Handles CheckBox.CheckedChanged, CheckBoxDCV.CheckedChanged, CheckBoxACC.CheckedChanged, CheckBoxDCC.CheckedChanged, CheckBoxRES.CheckedChanged
+
+        Dim cb As CheckBox = DirectCast(sender, CheckBox)
+        Dim section As String = ""
+
+        Select Case cb.Name
+            Case "CheckBox" : section = "V"
+            Case "CheckBoxDCV" : section = "DCV"
+            Case "CheckBoxACC" : section = "ACC"
+            Case "CheckBoxDCC" : section = "DCC"
+            Case "CheckBoxRES" : section = "RES"
+        End Select
+
+        ToggleSectionVisibility(section, cb.Checked)
+    End Sub
+
+    Private Sub ToggleSectionVisibility(section As String, visible As Boolean)
+        Select Case section
+            Case "V"
+                txtRangeValue.Visible = visible
+                cmbRangeUnit.Visible = visible
+                rangeRadioPanel.Visible = visible
+                txtNominalValue.Visible = visible
+                listViewParams.Visible = visible
+                btnAddRange.Visible = visible
+                delBtnRan.Visible = visible
+                Label1.Visible = visible
+                Label2.Visible = visible
+                Label3.Visible = visible
+                txtFreqValueACV.Visible = visible
+                btnAddNomFreqACV.Visible = visible
+                delBtnFreqACV.Visible = visible
+
+            Case "DCV"
+                txtRangeValueDCV.Visible = visible
+                cmbRangeUnitDCV.Visible = visible
+                rangeRadioPanelDCV.Visible = visible
+                txtNominalValueDCV.Visible = visible
+                cmbNominalUnitDCV.Visible = visible
+                listViewParamsDCV.Visible = visible
+                btnAddRangeDCV.Visible = visible
+                btnAddNominalDCV.Visible = visible
+                delBtnNomDCV.Visible = visible
+                delBtnRanDCV.Visible = visible
+
+            Case "ACC"
+                txtRangeValueACC.Visible = visible
+                cmbRangeUnitACC.Visible = visible
+                rangeRadioPanelACC.Visible = visible
+                txtNominalValueACC.Visible = visible
+                listViewParamsACC.Visible = visible
+                btnAddRangeACC.Visible = visible
+                delBtnRanACC.Visible = visible
+                Label5.Visible = visible
+                Label4.Visible = visible
+                txtFreqValueACC.Visible = visible
+                btnAddNomFreqACC.Visible = visible
+                delBtnFreqACC.Visible = visible
+
+            Case "DCC"
+                txtRangeValueDCC.Visible = visible
+                cmbRangeUnitDCC.Visible = visible
+                rangeRadioPanelDCC.Visible = visible
+                txtNominalValueDCC.Visible = visible
+                listViewParamsDCC.Visible = visible
+                btnAddRangeDCC.Visible = visible
+                btnAddNominalDCC.Visible = visible
+                delBtnNomDCC.Visible = visible
+                delBtnRanDCC.Visible = visible
+                cmbNominalUnitDCC.Visible = visible
+
+            Case "RES"
+                txtRangeValueRES.Visible = visible
+                cmbRangeUnitRES.Visible = visible
+                rangeRadioPanelRES.Visible = visible
+                txtNominalValueRES.Visible = visible
+                listViewParamsRES.Visible = visible
+                btnAddRangeRES.Visible = visible
+                btnAddNominalRES.Visible = visible
+                delBtnNomRES.Visible = visible
+                delBtnRanRES.Visible = visible
+                cmbNominalUnitRES.Visible = visible
+        End Select
     End Sub
 
     ' Helper for building frequency-aware parameter dict
@@ -292,10 +412,17 @@ Public Class editDMMAdmin
 
     Private Sub ConfirmAndDeleteSelectedItems(listView As ListView)
         If listView.SelectedItems.Count > 0 Then
-            If MessageBox.Show("Are you sure you want to delete the selected parameter(s)?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) = DialogResult.Yes Then
+            If MessageBox.Show("Are you sure you want to delete the selected parameter(s)?",
+                           "Confirm Delete",
+                           MessageBoxButtons.YesNo,
+                           MessageBoxIcon.Warning) = DialogResult.Yes Then
+
                 For Each item As ListViewItem In listView.SelectedItems
                     listView.Items.Remove(item)
                 Next
+
+                ' ✅ Refresh checkboxes after deletion
+                RefreshCheckBoxesFromLists()
             End If
         End If
     End Sub
@@ -345,8 +472,7 @@ Public Class editDMMAdmin
     End Sub
 
     ' ➕ Add Nominal + Frequency for AC Voltage and AC Current
-    Private Sub HandleAddNomFreq(sender As Object, e As EventArgs) _
-    Handles btnAddNomFreqACV.Click, btnAddNomFreqACC.Click
+    Private Sub HandleAddNomFreq(sender As Object, e As EventArgs) Handles btnAddNomFreqACV.Click, btnAddNomFreqACC.Click
 
         Dim btn As Button = CType(sender, Button)
 
@@ -435,6 +561,9 @@ Public Class editDMMAdmin
             txtNominalValueACC.Clear()
             txtFreqValueACC.Clear()
         End If
+
+        ' After clearing input boxes:
+        RefreshCheckBoxesFromLists()
 
     End Sub
 
@@ -532,6 +661,10 @@ Public Class editDMMAdmin
                 txtRangeValueRES.Clear()
                 cmbRangeUnitRES.SelectedIndex = -1
         End Select
+
+        ' After adding the range and radio button:
+        RefreshCheckBoxesFromLists()
+
     End Sub
 
     ' Generic function to delete a selected range
