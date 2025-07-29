@@ -1,0 +1,78 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\dbneri\\Documents\\Visual Studio 2010\\Projects\\ASCal\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F6B664F9-709C-42CB-8833-6436A81C4547}|ASCal\\ASCal.vbproj|c:\\users\\dbneri\\documents\\visual studio 2010\\projects\\ascal\\ascal\\forms\\technician\\calibrate.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form",
+      "RelativeMoniker": "D:0:0:{F6B664F9-709C-42CB-8833-6436A81C4547}|ASCal\\ASCal.vbproj|solutionrelative:ascal\\forms\\technician\\calibrate.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6B664F9-709C-42CB-8833-6436A81C4547}|ASCal\\ASCal.vbproj|c:\\users\\dbneri\\documents\\visual studio 2010\\projects\\ascal\\ascal\\forms\\technician\\calibrate.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{F6B664F9-709C-42CB-8833-6436A81C4547}|ASCal\\ASCal.vbproj|solutionrelative:ascal\\forms\\technician\\calibrate.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F6B664F9-709C-42CB-8833-6436A81C4547}|ASCal\\ASCal.vbproj|c:\\users\\dbneri\\documents\\visual studio 2010\\projects\\ascal\\ascal\\module\\sqlitehelper.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
+      "RelativeMoniker": "D:0:0:{F6B664F9-709C-42CB-8833-6436A81C4547}|ASCal\\ASCal.vbproj|solutionrelative:ascal\\module\\sqlitehelper.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "calibrate.vb",
+              "DocumentMoniker": "C:\\Users\\dbneri\\Documents\\Visual Studio 2010\\Projects\\ASCal\\ASCal\\Forms\\Technician\\calibrate.vb",
+              "RelativeDocumentMoniker": "ASCal\\Forms\\Technician\\calibrate.vb",
+              "ToolTip": "C:\\Users\\dbneri\\Documents\\Visual Studio 2010\\Projects\\ASCal\\ASCal\\Forms\\Technician\\calibrate.vb",
+              "RelativeToolTip": "ASCal\\Forms\\Technician\\calibrate.vb",
+              "ViewState": "AgIAAIoAAAAAAAAAAADwv58AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2025-07-29T07:19:27.356Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "calibrate.vb [Design]",
+              "DocumentMoniker": "C:\\Users\\dbneri\\Documents\\Visual Studio 2010\\Projects\\ASCal\\ASCal\\Forms\\Technician\\calibrate.vb",
+              "RelativeDocumentMoniker": "ASCal\\Forms\\Technician\\calibrate.vb",
+              "ToolTip": "C:\\Users\\dbneri\\Documents\\Visual Studio 2010\\Projects\\ASCal\\ASCal\\Forms\\Technician\\calibrate.vb [Design]",
+              "RelativeToolTip": "ASCal\\Forms\\Technician\\calibrate.vb [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2025-07-29T07:17:38.585Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SQLiteHelper.vb",
+              "DocumentMoniker": "C:\\Users\\dbneri\\Documents\\Visual Studio 2010\\Projects\\ASCal\\ASCal\\Module\\SQLiteHelper.vb",
+              "RelativeDocumentMoniker": "ASCal\\Module\\SQLiteHelper.vb",
+              "ToolTip": "C:\\Users\\dbneri\\Documents\\Visual Studio 2010\\Projects\\ASCal\\ASCal\\Module\\SQLiteHelper.vb",
+              "RelativeToolTip": "ASCal\\Module\\SQLiteHelper.vb",
+              "ViewState": "AgIAAOABAAAAAAAAAAAuwFoBAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
+              "WhenOpened": "2025-07-29T07:08:04.094Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

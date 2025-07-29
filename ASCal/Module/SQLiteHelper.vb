@@ -244,7 +244,16 @@ Module SQLiteHelper
         Public Property DateCreated As String
         Public Property SerialNumber As String
         Public Property LastUpdatedBy As String
-        Public Property x As String
+        Public Property revisionCount As String
+        Public Property range As String
+        Public Property se_readability As String
+        Public Property pre_ses_cal_cert As String
+        Public Property receivedDate As String
+        Public Property optionsInstalled As String
+        Public Property customerPO As String
+        Public Property assetNumber As String
+        Public Property accuracy As String
+
     End Class
 
     ' 🔍 Loads jobs filtered by company name
@@ -277,7 +286,15 @@ Module SQLiteHelper
                                 .CalibrationType = reader("calibration_type").ToString(),
                                 .SpecificSite = reader("specific_site").ToString(),
                                 .Parameters = reader("parameters").ToString(),
-                                .LastUpdatedBy = reader("last_updated_by").ToString()
+                                .LastUpdatedBy = reader("last_updated_by").ToString(),
+                                .range = reader("range").ToString(),
+                                .se_readability = reader("se_readability").ToString(),
+                                .pre_ses_cal_cert = reader("pre_ses_cal_cert").ToString(),
+                                .receivedDate = reader("received_date").ToString(),
+                                .optionsInstalled = reader("options_installed").ToString(),
+                                .customerPO = reader("customer_po").ToString(),
+                                .assetNumber = reader("asset_number").ToString(),
+                                .accuracy = reader("accuracy").ToString()
                             })
                         End While
                     End Using
@@ -318,7 +335,15 @@ Module SQLiteHelper
                             .CalibrationType = reader("calibration_type").ToString(),
                             .SpecificSite = reader("specific_site").ToString(),
                             .Parameters = reader("parameters").ToString(),
-                            .LastUpdatedBy = reader("last_updated_by").ToString()
+                            .LastUpdatedBy = reader("last_updated_by").ToString(),
+                            .range = reader("range").ToString(),
+                            .se_readability = reader("se_readability").ToString(),
+                            .pre_ses_cal_cert = reader("pre_ses_cal_cert").ToString(),
+                            .receivedDate = reader("received_date").ToString(),
+                            .optionsInstalled = reader("options_installed").ToString(),
+                            .customerPO = reader("customer_po").ToString(),
+                            .assetNumber = reader("asset_number").ToString(),
+                            .accuracy = reader("accuracy").ToString()
                         })
                     End While
                 End Using
@@ -358,7 +383,15 @@ Module SQLiteHelper
                             .CalibrationType = reader("calibration_type").ToString(),
                             .SpecificSite = reader("specific_site").ToString(),
                             .Parameters = reader("parameters").ToString(),
-                            .LastUpdatedBy = reader("last_updated_by").ToString()
+                            .LastUpdatedBy = reader("last_updated_by").ToString(),
+                            .range = reader("range").ToString(),
+                            .se_readability = reader("se_readability").ToString(),
+                            .pre_ses_cal_cert = reader("pre_ses_cal_cert").ToString(),
+                            .receivedDate = reader("received_date").ToString(),
+                            .optionsInstalled = reader("options_installed").ToString(),
+                            .customerPO = reader("customer_po").ToString(),
+                            .assetNumber = reader("asset_number").ToString(),
+                            .accuracy = reader("accuracy").ToString()
                         })
                     End While
                 End Using
@@ -398,7 +431,15 @@ Module SQLiteHelper
                                 .CalibrationType = reader("calibration_type").ToString(),
                                 .SpecificSite = reader("specific_site").ToString(),
                                 .Parameters = reader("parameters").ToString(),
-                                .LastUpdatedBy = reader("last_updated_by").ToString()
+                                .LastUpdatedBy = reader("last_updated_by").ToString(),
+                                .range = reader("range").ToString(),
+                                .se_readability = reader("se_readability").ToString(),
+                                .pre_ses_cal_cert = reader("pre_ses_cal_cert").ToString(),
+                                .receivedDate = reader("received_date").ToString(),
+                                .optionsInstalled = reader("options_installed").ToString(),
+                                .customerPO = reader("customer_po").ToString(),
+                                .assetNumber = reader("asset_number").ToString(),
+                                .accuracy = reader("accuracy").ToString()
                             })
                         End While
                     End Using

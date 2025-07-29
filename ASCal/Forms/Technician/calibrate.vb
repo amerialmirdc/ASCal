@@ -186,7 +186,7 @@ Public Class calibrate
         technicalID.Text = landingPageTechnician.TechnicianInitials
 
         ' ✅ Generate and fill Work Order Number
-        TextBox1.Text = GenerateNextWorkOrderNumber(technicalID.Text.Trim())
+        workOrderNo.Text = GenerateNextWorkOrderNumber(technicalID.Text.Trim())
 
         dataGridResult.ColumnCount = 2
         dataGridResult.Columns(0).Name = "MODEL"
@@ -284,9 +284,9 @@ Public Class calibrate
             Exit Sub
         End If
 
-        TextBox10.Text = dmm.Item1
-        TextBox6.Text = dmm.Item2
-        TextBox4.Text = dmm.Item3
+        model.Text = dmm.Item1
+        manufaacturer.Text = dmm.Item2
+        description.Text = dmm.Item3
 
         ' Clear all parameter lists
         For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
@@ -353,9 +353,9 @@ Public Class calibrate
             ' Auto-fill manufacturer and description
             Dim selectedItem As Tuple(Of String, String, String) = dmmItems.FirstOrDefault(Function(i) i.Item1 = selectedModel)
             If selectedItem IsNot Nothing Then
-                TextBox10.Text = selectedItem.Item1
-                TextBox6.Text = selectedItem.Item2
-                TextBox4.Text = selectedItem.Item3
+                model.Text = selectedItem.Item1
+                manufaacturer.Text = selectedItem.Item2
+                description.Text = selectedItem.Item3
             End If
             ' Clear old data
             cLParamACV.Items.Clear()
@@ -496,13 +496,13 @@ Public Class calibrate
             Dim technicianName As String = CurrentUser.Name
             Dim signatoryInitials As String = "ALL"
             Dim signatoryName As String = "All Signatories"
-            Dim selectedDate As String = TextBox3.Value.ToString("yyyy-MM-dd")
+            Dim selectedDate As String = receivedDate.Value.ToString("yyyy-MM-dd")
 
             Dim company As String = contextMenuCompanies.Text.Trim()
             Dim address As String = compAdd.Text.Trim()
-            Dim model As String = TextBox10.Text.Trim()
-            Dim manufacturer As String = TextBox6.Text.Trim()
-            Dim description As String = TextBox4.Text.Trim()
+            Dim model As String = Me.model.Text.Trim()
+            Dim manufacturer As String = manufaacturer.Text.Trim()
+            Dim description As String = Me.description.Text.Trim()
             Dim calibDate As String = DateTimePicker1.Value.ToString("yyyy-MM-dd")
             Dim calibType As String = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), "")
             Dim site As String = specificSite.Text.Trim()
@@ -512,7 +512,7 @@ Public Class calibrate
             Dim lastUpdatedBy As String = CurrentUser.Username
 
             Dim serialNumber As Integer = New Random().Next(100000, 999999)
-            TextBox1.Text = serialNumber.ToString()
+            workOrderNo.Text = serialNumber.ToString()
 
             Try
                 Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
