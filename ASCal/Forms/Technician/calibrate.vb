@@ -185,6 +185,10 @@ Public Class calibrate
 
         technicalID.Text = landingPageTechnician.TechnicianInitials
 
+        range.Text = "See Specification Sheet"
+        readability.Text = "See Specification Sheet"
+        accuracy.Text = "See Specification Sheet"
+
         ' ✅ Generate and fill Work Order Number
         workOrderNo.Text = GenerateNextWorkOrderNumber(technicalID.Text.Trim())
 
@@ -197,11 +201,11 @@ Public Class calibrate
 
         PopulateDataGrid()
         dataGridResult.ClearSelection()
-        cLParamACV.Font = New Font("Courier New", 14, FontStyle.Regular)
-        cLParamDCV.Font = New Font("Courier New", 14, FontStyle.Regular)
-        cLParamACC.Font = New Font("Courier New", 14, FontStyle.Regular)
-        cLParamDCC.Font = New Font("Courier New", 14, FontStyle.Regular)
-        cLParamRES.Font = New Font("Courier New", 14, FontStyle.Regular)
+        cLParamACV.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
+        cLParamDCV.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
+        cLParamACC.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
+        cLParamDCC.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
+        cLParamRES.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
 
         For Each row As DataGridViewRow In dataGridResult.Rows
             If Not row.IsNewRow Then ' Skip the new row placeholder if present
@@ -243,6 +247,45 @@ Public Class calibrate
             Next
         Next
 
+    End Sub
+
+    Private Sub serialNumber_change(sender As Object, e As EventArgs) Handles serialNumber.Leave
+        Dim selectedCompany As String = contextMenuCompanies.Text.Trim()
+        If companyDict.ContainsKey(selectedCompany) Then
+            compAdd.Text = companyDict(selectedCompany)
+        Else
+            compAdd.Clear()
+        End If
+
+        ' --- Lookup last calibration job for this serial number ---
+        Dim sn As String = serialNumber.Text.Trim()
+        If sn = "" Then
+            prevCalCert.Text = "NA"
+            prevTech.Text = "NA"
+            Exit Sub
+        End If
+
+        Try
+            Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+                conn.Open()
+                Dim query As String = "SELECT preSESCalCert, technician_name FROM calibration_jobs WHERE serial_number = @sn ORDER BY calibration_date DESC LIMIT 1"
+                Using cmd As New SQLiteCommand(query, conn)
+                    cmd.Parameters.AddWithValue("@sn", sn)
+                    Using reader As SQLiteDataReader = cmd.ExecuteReader()
+                        If reader.Read() Then
+                            prevCalCert.Text = reader("preSESCalCert").ToString()
+                            prevTech.Text = reader("technician_name").ToString()
+                        Else
+                            prevCalCert.Text = "NA"
+                            prevTech.Text = "NA"
+                        End If
+                    End Using
+                End Using
+            End Using
+        Catch ex As Exception
+            prevCalCert.Text = "NA"
+            prevTech.Text = "NA"
+        End Try
     End Sub
 
     Private Sub contextMenuCompanies_SelectedIndexChanged(sender As Object, e As EventArgs) Handles contextMenuCompanies.SelectedIndexChanged
@@ -303,12 +346,14 @@ Public Class calibrate
             clb.Items.Add("[" & category.ToUpper() & "]")
             clb.SetItemCheckState(clb.Items.Count - 1, CheckState.Indeterminate)
 
-            For Each range In grouped(category).Keys
-                clb.Items.Add("  • Range: " & range)
-                For Each nominal In grouped(category)(range)
-                    clb.Items.Add("     → Nominal: " & nominal)
+            For Each rangeKey As Object In grouped(category).Keys
+                clb.Items.Add("  → Range: " & rangeKey.ToString())
+
+                For Each nominal As Object In grouped(category)(rangeKey)
+                    clb.Items.Add("      → Nominal: " & nominal.ToString())
                 Next
             Next
+
         Next
     End Sub
 
@@ -367,16 +412,17 @@ Public Class calibrate
                 ' Add category (all caps, bracketed, prefixed)
                 cLParamACV.Items.Add("🟦 [" & category.ToUpper() & "]")
                 cLParamACV.SetItemCheckState(cLParamACV.Items.Count - 1, CheckState.Indeterminate)
-
-                For Each range In grouped(category).Keys
-                    cLParamACV.Items.Add("   🔹 Range: " & range)
+                For Each rangeKey As Object In grouped(category).Keys
+                    cLParamACV.Items.Add("   🔹 Range: " & rangeKey.ToString())
                     cLParamACV.SetItemCheckState(cLParamACV.Items.Count - 1, CheckState.Indeterminate)
-                    For Each nominal In grouped(category)(range)
-                        cLParamACV.Items.Add("      ➤ Nominal: " & nominal)
+
+                    For Each nominalValue As Object In grouped(category)(rangeKey)
+                        cLParamACV.Items.Add("      ➤ Nominal: " & nominalValue.ToString())
                         cLParamACV.SetItemChecked(cLParamACV.Items.Count - 1, False)
                     Next
                 Next
             Next
+
             ' Add spacing for readability
             cLParamACV.Items.Add(" ")
 
@@ -511,8 +557,8 @@ Public Class calibrate
             Dim dateCreated As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
             Dim lastUpdatedBy As String = CurrentUser.Username
 
-            Dim serialNumber As Integer = New Random().Next(100000, 999999)
-            workOrderNo.Text = serialNumber.ToString()
+            Dim serialFormat As String = SQLiteHelper.GenerateShortWorkOrderNumber(initials)
+            workOrderNo.Text = serialFormat & initials
 
             Try
                 Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
@@ -520,6 +566,7 @@ Public Class calibrate
                     Dim cmd As New SQLiteCommand("INSERT INTO calibration_jobs (job_id, technician_initials, technician_name,signatory_initials, signatory_name, company_name, company_address, model, manufacturer, description, calibration_date, calibration_type,specific_site, parameters, status, date_created, serial_number, last_updated_by) VALUES (@job_id, @technician_initials, @technician_name, @signatory_initials, @signatory_name, @company_name, @company_address, @model, @manufacturer, @description, @calibration_date, @calibration_type, @specific_site, @parameters, @status, @date_created, @serial_number, @last_updated_by)", conn)
 
                     cmd.Parameters.AddWithValue("@job_id", jobID)
+                    cmd.Parameters.AddWithValue("@workOrderNumber", jobID)
                     cmd.Parameters.AddWithValue("@technician_initials", initials)
                     cmd.Parameters.AddWithValue("@technician_name", technicianName)
                     cmd.Parameters.AddWithValue("@signatory_initials", "NULL")
@@ -543,7 +590,7 @@ Public Class calibrate
                 End Using
 
                 MessageBox.Show("Calibration job successfully saved!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                MessageBox.Show("Calibration job saved! Serial Number (Work Order No.): " & serialNumber)
+                MessageBox.Show("Calibration job saved! Serial Number (Work Order No.): " & serialFormat)
                 Me.Hide()
                 landingPageTechnician.Show()
             Catch ex As Exception

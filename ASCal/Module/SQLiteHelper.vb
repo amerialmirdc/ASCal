@@ -223,8 +223,9 @@ Module SQLiteHelper
 
     ' 📋 Represents a job entry in the system (calibration jobs)
     Public Class Job
+        Public Property ID As Integer
         Public Property JobID As Integer
-        Public Property WorkOrderNumber As Integer
+        Public Property WorkOrderNumber As String
         Public Property TechnicianInitials As String
         Public Property TechnicianName As String
         Public Property SignatoryInitials As String
@@ -268,8 +269,9 @@ Module SQLiteHelper
                     Using reader = cmd.ExecuteReader()
                         While reader.Read()
                             jobs.Add(New Job With {
-                                .JobID = Convert.ToInt32(reader("id")),
-                                .WorkOrderNumber = reader("job_id").ToString(),
+                                .ID = Convert.ToInt32(reader("id")),
+                                .JobID = reader("job_id").ToString(),
+                                .WorkOrderNumber = reader("workOrderNumber").ToString(),
                                 .Model = reader("model").ToString(),
                                 .SerialNumber = reader("serial_number").ToString(),
                                 .TechnicianInitials = reader("technician_initials").ToString(),
@@ -317,8 +319,9 @@ Module SQLiteHelper
                 Using reader = cmd.ExecuteReader()
                     While reader.Read()
                         jobs.Add(New Job With {
-                            .JobID = Convert.ToInt32(reader("id")),
-                            .WorkOrderNumber = reader("job_id").ToString(),
+                                .ID = Convert.ToInt32(reader("id")),
+                                .JobID = reader("job_id").ToString(),
+                                .WorkOrderNumber = reader("workOrderNumber").ToString(),
                             .Model = reader("model").ToString(),
                             .SerialNumber = reader("serial_number").ToString(),
                             .TechnicianInitials = reader("technician_initials").ToString(),
@@ -365,8 +368,9 @@ Module SQLiteHelper
                 Using reader = cmd.ExecuteReader()
                     While reader.Read()
                         jobs.Add(New Job With {
-                            .JobID = Convert.ToInt32(reader("id")),
-                            .WorkOrderNumber = reader("job_id").ToString(),
+                                .ID = Convert.ToInt32(reader("id")),
+                                .JobID = reader("job_id").ToString(),
+                                .WorkOrderNumber = reader("workOrderNumber").ToString(),
                             .TechnicianInitials = reader("technician_initials").ToString(),
                             .TechnicianName = reader("technician_name").ToString(),
                             .SignatoryInitials = reader("signatory_initials").ToString(),
@@ -413,8 +417,9 @@ Module SQLiteHelper
                     Using reader As SQLiteDataReader = cmd.ExecuteReader()
                         While reader.Read()
                             jobs.Add(New Job With {
-                                .JobID = Convert.ToInt32(reader("id")),
-                                .WorkOrderNumber = reader("job_id").ToString(),
+                                .ID = Convert.ToInt32(reader("id")),
+                                .JobID = reader("job_id").ToString(),
+                                .WorkOrderNumber = reader("workOrderNumber").ToString(),
                                 .TechnicianInitials = reader("technician_initials").ToString(),
                                 .TechnicianName = reader("technician_name").ToString(),
                                 .SignatoryInitials = reader("signatory_initials").ToString(),
@@ -742,17 +747,28 @@ Module SQLiteHelper
 
         Using conn = GetConnection()
             conn.Open()
-            Dim sql = "SELECT serial_number FROM calibration_jobs WHERE technician_initials = @initials ORDER BY date_created DESC LIMIT 1"
+            ' Get the highest serial number for the given technician
+            Dim sql = "SELECT serial_number FROM calibration_jobs WHERE technician_initials = @initials ORDER BY serial_number DESC LIMIT 1"
             Using cmd As New SQLiteCommand(sql, conn)
                 cmd.Parameters.AddWithValue("@initials", initials)
                 Using reader = cmd.ExecuteReader()
                     If reader.Read() Then
-                        Dim sn = reader("serial_number").ToString()
-                        Dim parts = sn.Split("-"c)
-                        If parts.Length >= 3 Then
-                            Integer.TryParse(parts(1), mainCounter)
-                            Integer.TryParse(parts(2).Substring(0, 2), subCounter)
-                            If subCounter < 10 Then
+                        Dim sn As String = reader("serial_number").ToString()
+                        Dim parts As String() = sn.Split("-"c)
+
+                        If parts.Length >= 2 Then
+                            ' Example serial_number: "0005-03AB"
+                            ' main = 0005, sub = 03, suffix = AB
+                            Integer.TryParse(parts(0), mainCounter)
+
+                            ' Strip initials (e.g., "03AB" -> "03")
+                            Dim subPart As String = parts(1)
+                            If subPart.Length >= 2 Then
+                                Integer.TryParse(subPart.Substring(0, 2), subCounter)
+                            End If
+
+                            ' Increment logic
+                            If subCounter < 99 Then
                                 subCounter += 1
                             Else
                                 subCounter = 1
@@ -764,6 +780,7 @@ Module SQLiteHelper
             End Using
         End Using
 
+        ' Return without initials — append them in calling code
         Return mainCounter.ToString("D4") & "-" & subCounter.ToString("D2")
     End Function
 

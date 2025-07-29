@@ -365,7 +365,7 @@ Partial Class calibrate
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.49621!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.50379!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 341.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 442.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 444.0!))
         Me.TableLayoutPanel1.Controls.Add(Me.Label37, 3, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Label36, 2, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Label35, 1, 0)
@@ -390,9 +390,9 @@ Partial Class calibrate
         Me.Label37.BackColor = System.Drawing.Color.Cyan
         Me.Label37.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Label37.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label37.Location = New System.Drawing.Point(1048, 0)
+        Me.Label37.Location = New System.Drawing.Point(1046, 0)
         Me.Label37.Name = "Label37"
-        Me.Label37.Size = New System.Drawing.Size(437, 20)
+        Me.Label37.Size = New System.Drawing.Size(439, 20)
         Me.Label37.TabIndex = 15
         Me.Label37.Text = "Due Date"
         Me.Label37.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -403,7 +403,7 @@ Partial Class calibrate
         Me.Label36.BackColor = System.Drawing.Color.Cyan
         Me.Label36.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Label36.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label36.Location = New System.Drawing.Point(707, 0)
+        Me.Label36.Location = New System.Drawing.Point(705, 0)
         Me.Label36.Name = "Label36"
         Me.Label36.Size = New System.Drawing.Size(335, 20)
         Me.Label36.TabIndex = 14
@@ -416,9 +416,9 @@ Partial Class calibrate
         Me.Label35.BackColor = System.Drawing.Color.Cyan
         Me.Label35.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Label35.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label35.Location = New System.Drawing.Point(337, 0)
+        Me.Label35.Location = New System.Drawing.Point(336, 0)
         Me.Label35.Name = "Label35"
-        Me.Label35.Size = New System.Drawing.Size(364, 20)
+        Me.Label35.Size = New System.Drawing.Size(363, 20)
         Me.Label35.TabIndex = 13
         Me.Label35.Text = "Serial No."
         Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -431,7 +431,7 @@ Partial Class calibrate
         Me.Label34.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.Label34.Location = New System.Drawing.Point(3, 0)
         Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(328, 20)
+        Me.Label34.Size = New System.Drawing.Size(327, 20)
         Me.Label34.TabIndex = 12
         Me.Label34.Text = "Description"
         Me.Label34.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -440,7 +440,7 @@ Partial Class calibrate
         '
         Me.refstand3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.refstand3.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.refstand3.Location = New System.Drawing.Point(707, 23)
+        Me.refstand3.Location = New System.Drawing.Point(705, 23)
         Me.refstand3.Multiline = True
         Me.refstand3.Name = "refstand3"
         Me.refstand3.Size = New System.Drawing.Size(335, 118)
@@ -450,10 +450,10 @@ Partial Class calibrate
         '
         Me.refstand2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.refstand2.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.refstand2.Location = New System.Drawing.Point(337, 23)
+        Me.refstand2.Location = New System.Drawing.Point(336, 23)
         Me.refstand2.Multiline = True
         Me.refstand2.Name = "refstand2"
-        Me.refstand2.Size = New System.Drawing.Size(364, 118)
+        Me.refstand2.Size = New System.Drawing.Size(363, 118)
         Me.refstand2.TabIndex = 5
         '
         'refstand1
@@ -463,7 +463,7 @@ Partial Class calibrate
         Me.refstand1.Location = New System.Drawing.Point(3, 23)
         Me.refstand1.Multiline = True
         Me.refstand1.Name = "refstand1"
-        Me.refstand1.Size = New System.Drawing.Size(328, 118)
+        Me.refstand1.Size = New System.Drawing.Size(327, 118)
         Me.refstand1.TabIndex = 4
         '
         'DateTimePicker1
@@ -471,9 +471,9 @@ Partial Class calibrate
         Me.DateTimePicker1.Cursor = System.Windows.Forms.Cursors.Default
         Me.DateTimePicker1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DateTimePicker1.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.DateTimePicker1.Location = New System.Drawing.Point(1048, 23)
+        Me.DateTimePicker1.Location = New System.Drawing.Point(1046, 23)
         Me.DateTimePicker1.Name = "DateTimePicker1"
-        Me.DateTimePicker1.Size = New System.Drawing.Size(437, 25)
+        Me.DateTimePicker1.Size = New System.Drawing.Size(439, 25)
         Me.DateTimePicker1.TabIndex = 11
         '
         'addAccUsed
@@ -637,7 +637,7 @@ Partial Class calibrate
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.62516!))
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.37484!))
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 341.0!))
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 442.0!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 444.0!))
         Me.TableLayoutPanel2.Controls.Add(Me.TextBox31, 3, 1)
         Me.TableLayoutPanel2.Controls.Add(Me.Label27, 3, 0)
         Me.TableLayoutPanel2.Controls.Add(Me.Label30, 2, 0)
@@ -659,10 +659,10 @@ Partial Class calibrate
         '
         Me.TextBox31.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TextBox31.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox31.Location = New System.Drawing.Point(1056, 23)
+        Me.TextBox31.Location = New System.Drawing.Point(1054, 23)
         Me.TextBox31.Multiline = True
         Me.TextBox31.Name = "TextBox31"
-        Me.TextBox31.Size = New System.Drawing.Size(437, 126)
+        Me.TextBox31.Size = New System.Drawing.Size(439, 126)
         Me.TextBox31.TabIndex = 183
         '
         'Label27
@@ -671,9 +671,9 @@ Partial Class calibrate
         Me.Label27.BackColor = System.Drawing.Color.Cyan
         Me.Label27.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Label27.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label27.Location = New System.Drawing.Point(1056, 0)
+        Me.Label27.Location = New System.Drawing.Point(1054, 0)
         Me.Label27.Name = "Label27"
-        Me.Label27.Size = New System.Drawing.Size(437, 20)
+        Me.Label27.Size = New System.Drawing.Size(439, 20)
         Me.Label27.TabIndex = 15
         Me.Label27.Text = "Model"
         Me.Label27.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -684,7 +684,7 @@ Partial Class calibrate
         Me.Label30.BackColor = System.Drawing.Color.Cyan
         Me.Label30.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Label30.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label30.Location = New System.Drawing.Point(715, 0)
+        Me.Label30.Location = New System.Drawing.Point(713, 0)
         Me.Label30.Name = "Label30"
         Me.Label30.Size = New System.Drawing.Size(335, 20)
         Me.Label30.TabIndex = 14
@@ -697,9 +697,9 @@ Partial Class calibrate
         Me.Label32.BackColor = System.Drawing.Color.Cyan
         Me.Label32.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Label32.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label32.Location = New System.Drawing.Point(342, 0)
+        Me.Label32.Location = New System.Drawing.Point(341, 0)
         Me.Label32.Name = "Label32"
-        Me.Label32.Size = New System.Drawing.Size(367, 20)
+        Me.Label32.Size = New System.Drawing.Size(366, 20)
         Me.Label32.TabIndex = 13
         Me.Label32.Text = "Serial No."
         Me.Label32.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -712,7 +712,7 @@ Partial Class calibrate
         Me.Label33.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.Label33.Location = New System.Drawing.Point(3, 0)
         Me.Label33.Name = "Label33"
-        Me.Label33.Size = New System.Drawing.Size(333, 20)
+        Me.Label33.Size = New System.Drawing.Size(332, 20)
         Me.Label33.TabIndex = 12
         Me.Label33.Text = "Description"
         Me.Label33.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -721,7 +721,7 @@ Partial Class calibrate
         '
         Me.TextBox27.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TextBox27.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox27.Location = New System.Drawing.Point(715, 23)
+        Me.TextBox27.Location = New System.Drawing.Point(713, 23)
         Me.TextBox27.Multiline = True
         Me.TextBox27.Name = "TextBox27"
         Me.TextBox27.Size = New System.Drawing.Size(335, 126)
@@ -731,10 +731,10 @@ Partial Class calibrate
         '
         Me.TextBox28.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TextBox28.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox28.Location = New System.Drawing.Point(342, 23)
+        Me.TextBox28.Location = New System.Drawing.Point(341, 23)
         Me.TextBox28.Multiline = True
         Me.TextBox28.Name = "TextBox28"
-        Me.TextBox28.Size = New System.Drawing.Size(367, 126)
+        Me.TextBox28.Size = New System.Drawing.Size(366, 126)
         Me.TextBox28.TabIndex = 5
         '
         'TextBox29
@@ -744,7 +744,7 @@ Partial Class calibrate
         Me.TextBox29.Location = New System.Drawing.Point(3, 23)
         Me.TextBox29.Multiline = True
         Me.TextBox29.Name = "TextBox29"
-        Me.TextBox29.Size = New System.Drawing.Size(333, 126)
+        Me.TextBox29.Size = New System.Drawing.Size(332, 126)
         Me.TextBox29.TabIndex = 4
         '
         'Label38
