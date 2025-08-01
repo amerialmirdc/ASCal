@@ -1,4 +1,6 @@
 ﻿Imports System.Data.SQLite
+Imports System.Windows.Forms.Design.AxImporter
+Imports ClosedXML.Excel
 
 Public Class calibrate
 
@@ -300,9 +302,9 @@ Public Class calibrate
             Exit Sub
         End If
 
-        model.Text = dmm.Item1
+        dmmmodel.Text = dmm.Item1
         manufaacturer.Text = dmm.Item2
-        description.Text = dmm.Item3
+        dmmdescription.Text = dmm.Item3
 
         ' Clear all parameter lists
         For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
@@ -371,9 +373,9 @@ Public Class calibrate
             ' Auto-fill manufacturer and description
             Dim selectedItem As Tuple(Of String, String, String) = dmmItems.FirstOrDefault(Function(i) i.Item1 = selectedModel)
             If selectedItem IsNot Nothing Then
-                model.Text = selectedItem.Item1
+                dmmmodel.Text = selectedItem.Item1
                 manufaacturer.Text = selectedItem.Item2
-                description.Text = selectedItem.Item3
+                dmmdescription.Text = selectedItem.Item3
             End If
             ' Clear old data
             cLParamACV.Items.Clear()
@@ -519,9 +521,9 @@ Public Class calibrate
 
             Dim company As String = contextMenuCompanies.Text.Trim()
             Dim address As String = compAdd.Text.Trim()
-            Dim model As String = Me.model.Text.Trim()
+            Dim model As String = Me.dmmmodel.Text.Trim()
             Dim manufacturer As String = manufaacturer.Text.Trim()
-            Dim description As String = Me.description.Text.Trim()
+            Dim description As String = Me.dmmdescription.Text.Trim()
             Dim calibDate As String = DateTimePicker1.Value.ToString("yyyy-MM-dd")
             Dim calibType As String = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), "")
             Dim site As String = specificSite.Text.Trim()
@@ -531,6 +533,7 @@ Public Class calibrate
             Dim lastUpdatedBy As String = CurrentUser.Username
 
             Dim serialFormat As String = SQLiteHelper.GenerateShortWorkOrderNumber(initials)
+
             workOrderNo.Text = serialFormat & initials
 
             Try
@@ -560,6 +563,40 @@ Public Class calibrate
                     cmd.Parameters.AddWithValue("@parameters", parameters)
 
                     cmd.ExecuteNonQuery()
+                End Using
+
+                Using openFileDialog As New OpenFileDialog()
+                    openFileDialog.Title = "Select Excel Template"
+                    openFileDialog.Filter = "Excel Files|*.xlsx;*.xls"
+
+                    If openFileDialog.ShowDialog() = DialogResult.OK Then
+                        Dim selectedPath As String = openFileDialog.FileName
+                        ' Load dictionary from Excel
+                        Dim data As Dictionary(Of String, String) = SQLiteHelper.LoadExcelValuesForCalibration(selectedPath)
+
+                        If data.Count > 0 Then
+                            ' Fill individual form fields
+                            workOrderNo.Text = data("workOrderNumber")
+                            technicalID.Text = data("technicalID")
+                            dmmdescription.Text = data("description")
+                            manufaacturer.Text = data("manufacturer")
+                            dmmmodel.Text = data("model")
+                            serialNumber.Text = data("serialNumber")
+                            range.Text = data("range")
+                            readability.Text = data("readability")
+                            prevCalCert.Text = data("prevCalCert")
+                            receivedDate.Value = DateTime.Parse(data("receivedDate"))
+                            DateTimePicker1.Value = DateTime.Parse(data("calibrationDate"))
+                            optionsInstalled.Text = data("optionsInstalled")
+                            customerPO.Text = data("customerPO")
+                            assetNumber.Text = data("assetNumber")
+                            accuracy.Text = data("accuracy")
+                            prevTech.Text = data("previousTechnician")
+                        End If
+                    Else
+                        MessageBox.Show("Excel file selection cancelled.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        Return
+                    End If
                 End Using
 
                 MessageBox.Show("Calibration job successfully saved!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)

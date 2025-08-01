@@ -1,4 +1,8 @@
-﻿Imports System.Data.SQLite
+﻿Imports System.Data.OleDb
+Imports System.Data.SQLite
+Imports ClosedXML.Excel
+Imports System.Data
+Imports System.Windows.Forms
 
 ' 🧩 Module to encapsulate all SQLite database logic for user, job, company, and DMM operations.
 
@@ -526,6 +530,70 @@ Module SQLiteHelper
         End Using
 
         Return nextNumber.ToString("D4") & "-" & currentMonth
+    End Function
+
+    Public Function LoadExcelData(filePath As String) As Dictionary(Of String, String)
+        Dim data As New Dictionary(Of String, String)()
+
+        Try
+            Using workbook As New XLWorkbook(filePath)
+                Dim ws = workbook.Worksheet(1)
+
+                ' Adjusted to your specified Excel cell references
+                data("workOrderNumber") = ws.Cell("L7").GetValue(Of String)()
+                data("technicalID") = ws.Cell("AN7").GetValue(Of String)()
+                data("description") = ws.Cell("K9").GetValue(Of String)()
+                data("manufacturer") = ws.Cell("K10").GetValue(Of String)()
+                data("model") = ws.Cell("K11").GetValue(Of String)()
+                data("serialNumber") = ws.Cell("K12").GetValue(Of String)()
+                data("range") = ws.Cell("K13").GetValue(Of String)()
+                data("readability") = ws.Cell("K14").GetValue(Of String)()
+                data("prevCalCert") = ws.Cell("K15").GetValue(Of String)()
+
+                data("receivedDate") = ws.Cell("A9").GetValue(Of String)()
+                data("calibrationDate") = ws.Cell("A10").GetValue(Of String)()
+                data("optionsInstalled") = ws.Cell("A11").GetValue(Of String)()
+                data("customerPO") = ws.Cell("A12").GetValue(Of String)()
+                data("assetNumber") = ws.Cell("A13").GetValue(Of String)()
+                data("accuracy") = ws.Cell("A14").GetValue(Of String)()
+                data("previousTechnician") = ws.Cell("A15").GetValue(Of String)()
+            End Using
+        Catch ex As Exception
+            MessageBox.Show("Failed to load Excel data: " & ex.Message)
+        End Try
+
+        Return data
+    End Function
+
+    Public Function LoadExcelValuesForCalibration(filePath As String) As Dictionary(Of String, String)
+        Dim data As New Dictionary(Of String, String)()
+
+        Try
+            Using workbook As New XLWorkbook(filePath)
+                Dim ws = workbook.Worksheet(1)
+
+                data("workOrderNumber") = ws.Cell("L7").GetValue(Of String)()
+                data("technicalID") = ws.Cell("AN7").GetValue(Of String)()
+                data("description") = ws.Cell("K9").GetValue(Of String)()
+                data("manufacturer") = ws.Cell("K10").GetValue(Of String)()
+                data("model") = ws.Cell("K11").GetValue(Of String)()
+                data("serialNumber") = ws.Cell("K12").GetValue(Of String)()
+                data("range") = ws.Cell("K13").GetValue(Of String)()
+                data("readability") = ws.Cell("K14").GetValue(Of String)()
+                data("prevCalCert") = ws.Cell("K15").GetValue(Of String)()
+                data("receivedDate") = ws.Cell("A9").GetValue(Of String)()
+                data("calibrationDate") = ws.Cell("A10").GetValue(Of String)()
+                data("optionsInstalled") = ws.Cell("A11").GetValue(Of String)()
+                data("customerPO") = ws.Cell("A12").GetValue(Of String)()
+                data("assetNumber") = ws.Cell("A13").GetValue(Of String)()
+                data("accuracy") = ws.Cell("A14").GetValue(Of String)()
+                data("previousTechnician") = ws.Cell("A15").GetValue(Of String)()
+            End Using
+        Catch ex As Exception
+            MessageBox.Show("Failed to load Excel data: " & ex.Message, "Excel Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+
+        Return data
     End Function
 
     ' ===================== DMM FUNCTIONS =====================
