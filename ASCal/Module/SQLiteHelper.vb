@@ -504,6 +504,30 @@ Module SQLiteHelper
         Return result
     End Function
 
+    Public Function GenerateNextWorkOrderNumber() As String
+        Dim nextNumber As Integer = 1
+        Dim currentMonth = DateTime.Now.ToString("MM")
+
+        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+            conn.Open()
+            Dim query As String = "SELECT workOrderNumber FROM calibration_jobs ORDER BY id DESC LIMIT 1"
+            Using cmd As New SQLiteCommand(query, conn)
+                Dim result = cmd.ExecuteScalar()
+                If result IsNot Nothing Then
+                    Dim parts = result.ToString().Split("-"c)
+                    If parts.Length > 0 Then
+                        Dim numericPart As Integer
+                        If Integer.TryParse(parts(0), numericPart) Then
+                            nextNumber = numericPart + 1
+                        End If
+                    End If
+                End If
+            End Using
+        End Using
+
+        Return nextNumber.ToString("D4") & "-" & currentMonth
+    End Function
+
     ' ===================== DMM FUNCTIONS =====================
 
     ' 📐 Represents a DMM parameter entry (Category → Range → Nominal + Frequency)

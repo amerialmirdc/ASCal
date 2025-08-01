@@ -129,33 +129,6 @@ Public Class calibrate
         End Try
     End Sub
 
-    Private Function GenerateNextWorkOrderNumber(initials As String) As String
-        Dim mainCount As Integer = 1
-        Dim subCount As Integer = 1
-        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
-            conn.Open()
-            Dim sql As String = "SELECT serial_number FROM calibration_jobs WHERE technician_initials = @initials ORDER BY date_created DESC LIMIT 1"
-            Using cmd As New SQLiteCommand(sql, conn)
-                cmd.Parameters.AddWithValue("@initials", initials)
-                Dim result = cmd.ExecuteScalar()
-                If result IsNot Nothing Then
-                    Dim prevWON As String = result.ToString()
-                    Dim parts = prevWON.Split("-"c)
-                    If parts.Length = 2 AndAlso parts(0).Length = 4 AndAlso parts(1).Length = 2 Then
-                        Integer.TryParse(parts(0), mainCount)
-                        Integer.TryParse(parts(1), subCount)
-                        subCount += 1
-                        If subCount > 10 Then
-                            mainCount += 1
-                            subCount = 1
-                        End If
-                    End If
-                End If
-            End Using
-        End Using
-        Return mainCount.ToString("D4") & "-" & subCount.ToString("D2")
-    End Function
-
     Private Sub calibrate_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Make sure start position is manual
         Me.StartPosition = FormStartPosition.Manual
@@ -190,7 +163,7 @@ Public Class calibrate
         accuracy.Text = "See Specification Sheet"
 
         ' ✅ Generate and fill Work Order Number
-        workOrderNo.Text = GenerateNextWorkOrderNumber(technicalID.Text.Trim())
+        workOrderNo.Text = SQLiteHelper.GenerateNextWorkOrderNumber()
 
         dataGridResult.ColumnCount = 2
         dataGridResult.Columns(0).Name = "MODEL"

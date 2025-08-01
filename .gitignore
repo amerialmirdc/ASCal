@@ -1,0 +1,45 @@
+ECHO is on.
+
+# Ignore Visual Studio temporary files, build results, and user-specific files
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# VS Code directories
+.vscode/
+.vs/
+
+# SQLite or DB files
+*.db
+
+# Backup files
+*.bak
+*.backup
+
+# Cache and log files
+*.log
+*.cache
+
+# Auto-generated files
+*.g.*
+GeneratedFiles/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+
+# Others
+*.swp
+*.tmp
