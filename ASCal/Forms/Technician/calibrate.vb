@@ -472,9 +472,9 @@ Public Class calibrate
     End Sub
 
     ' ========== Date picker resets sa today ==========
-    Private Sub DateTimePicker1_ValueChanged(sender As Object, e As EventArgs) Handles DateTimePicker1.ValueChanged
-        DateTimePicker1.Value = DateTime.Today
-    End Sub
+    'Private Sub DateTimePicker1_ValueChanged(sender As Object, e As EventArgs)
+    '   DateTimePicker1.Value = DateTime.Today
+    'End Sub
 
     ' ========== Function to check if all required fields are filled ==========
     Private Function AllInputsFilledInPanel(panel As Panel) As Boolean
@@ -524,7 +524,6 @@ Public Class calibrate
             Dim model As String = Me.dmmmodel.Text.Trim()
             Dim manufacturer As String = manufaacturer.Text.Trim()
             Dim description As String = Me.dmmdescription.Text.Trim()
-            Dim calibDate As String = DateTimePicker1.Value.ToString("yyyy-MM-dd")
             Dim calibType As String = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), "")
             Dim site As String = specificSite.Text.Trim()
             Dim parameters As String = String.Join(", ", cLParamACV.CheckedItems.Cast(Of String))
@@ -533,49 +532,69 @@ Public Class calibrate
             Dim lastUpdatedBy As String = CurrentUser.Username
 
             Dim serialFormat As String = SQLiteHelper.GenerateShortWorkOrderNumber(initials)
-
             workOrderNo.Text = serialFormat & initials
 
             Try
                 Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                     conn.Open()
-                    Dim cmd As New SQLiteCommand("INSERT INTO calibration_jobs (job_id, technician_initials, technician_name,signatory_initials, signatory_name, company_name, company_address, model, manufacturer, description, calibration_date, calibration_type,specific_site, parameters, status, date_created, serial_number, last_updated_by) VALUES (@job_id, @technician_initials, @technician_name, @signatory_initials, @signatory_name, @company_name, @company_address, @model, @manufacturer, @description, @calibration_date, @calibration_type, @specific_site, @parameters, @status, @date_created, @serial_number, @last_updated_by)", conn)
+
+                    Dim cmd As New SQLiteCommand("INSERT INTO calibration_jobs (job_id, technician_initials, technician_name, signatory_initials, signatory_name, company_name, company_address, model, manufacturer, description, calibration_date, calibration_type, specific_site, parameters, status, date_created, serial_number, last_updated_by) VALUES (@job_id, @technician_initials, @technician_name, @signatory_initials, @signatory_name, @company_name, @company_address, @model, @manufacturer, @description, @calibration_date, @calibration_type, @specific_site, @parameters, @status, @date_created, @serial_number, @last_updated_by)", conn)
 
                     cmd.Parameters.AddWithValue("@job_id", jobID)
-                    cmd.Parameters.AddWithValue("@workOrderNumber", jobID)
                     cmd.Parameters.AddWithValue("@technician_initials", initials)
                     cmd.Parameters.AddWithValue("@technician_name", technicianName)
-                    cmd.Parameters.AddWithValue("@signatory_initials", "NULL")
-                    cmd.Parameters.AddWithValue("@signatory_name", "All Signatories")
+                    cmd.Parameters.AddWithValue("@signatory_initials", signatoryInitials)
+                    cmd.Parameters.AddWithValue("@signatory_name", signatoryName)
                     cmd.Parameters.AddWithValue("@company_name", company)
                     cmd.Parameters.AddWithValue("@company_address", address)
-                    cmd.Parameters.AddWithValue("@calibration_date", calibDate)
-                    cmd.Parameters.AddWithValue("@calibration_type", calibType)
-                    cmd.Parameters.AddWithValue("@specific_site", site)
-                    cmd.Parameters.AddWithValue("@status", status)
-                    cmd.Parameters.AddWithValue("@date_created", dateCreated)
-                    cmd.Parameters.AddWithValue("@last_updated_by", lastUpdatedBy)
-
                     cmd.Parameters.AddWithValue("@model", model)
                     cmd.Parameters.AddWithValue("@manufacturer", manufacturer)
                     cmd.Parameters.AddWithValue("@description", description)
-                    cmd.Parameters.AddWithValue("@serial_number", serialNumber)
+                    cmd.Parameters.AddWithValue("@calibration_date", selectedDate)
+                    cmd.Parameters.AddWithValue("@calibration_type", calibType)
+                    cmd.Parameters.AddWithValue("@specific_site", site)
                     cmd.Parameters.AddWithValue("@parameters", parameters)
+                    cmd.Parameters.AddWithValue("@status", status)
+                    cmd.Parameters.AddWithValue("@date_created", dateCreated)
+                    cmd.Parameters.AddWithValue("@serial_number", serialNumber.Text.Trim())
+                    cmd.Parameters.AddWithValue("@last_updated_by", lastUpdatedBy)
 
                     cmd.ExecuteNonQuery()
                 End Using
 
+                ' ✅ Save Reference Standards
+                Dim refStandards As New List(Of ReferenceStandard)
+                For row As Integer = 1 To TableLayoutPanel1.RowCount - 1
+                    Dim desc = TryCast(TableLayoutPanel1.GetControlFromPosition(0, row), TextBox)
+                    Dim serial = TryCast(TableLayoutPanel1.GetControlFromPosition(1, row), TextBox)
+                    Dim calRef = TryCast(TableLayoutPanel1.GetControlFromPosition(2, row), TextBox)
+                    Dim dueDate = TryCast(TableLayoutPanel1.GetControlFromPosition(3, row), DateTimePicker)
+
+                    If desc IsNot Nothing AndAlso serial IsNot Nothing AndAlso calRef IsNot Nothing AndAlso dueDate IsNot Nothing Then
+                        refStandards.Add(New ReferenceStandard With {
+                        .CalibrationID = jobID,
+                        .Description = desc.Text,
+                        .SerialNo = serial.Text,
+                        .CalReportRef = calRef.Text,
+                        .DueDate = dueDate.Value.ToString("yyyy-MM-dd")
+                    })
+                    End If
+                Next
+
+                If refStandards.Count > 0 Then
+                    SQLiteHelper.InsertReferenceStandards(jobID, refStandards)
+                End If
+
+                ' Excel prompt (unchanged)
                 Using openFileDialog As New OpenFileDialog()
                     openFileDialog.Title = "Select Excel Template"
                     openFileDialog.Filter = "Excel Files|*.xlsx;*.xls"
 
                     If openFileDialog.ShowDialog() = DialogResult.OK Then
                         Dim selectedPath As String = openFileDialog.FileName
-                        ' Load dictionary from Excel
                         Dim data As Dictionary(Of String, String) = SQLiteHelper.LoadExcelValuesForCalibration(selectedPath)
 
                         If data.Count > 0 Then
-                            ' Fill individual form fields
                             workOrderNo.Text = data("workOrderNumber")
                             technicalID.Text = data("technicalID")
                             dmmdescription.Text = data("description")
@@ -586,7 +605,6 @@ Public Class calibrate
                             readability.Text = data("readability")
                             prevCalCert.Text = data("prevCalCert")
                             receivedDate.Value = DateTime.Parse(data("receivedDate"))
-                            DateTimePicker1.Value = DateTime.Parse(data("calibrationDate"))
                             optionsInstalled.Text = data("optionsInstalled")
                             customerPO.Text = data("customerPO")
                             assetNumber.Text = data("assetNumber")
@@ -644,28 +662,110 @@ Public Class calibrate
     End Sub
 
     Private Sub addRefStandard_Click(sender As Object, e As EventArgs) Handles addRefStandard.Click
-        ' 🧮 Determine new row index (starting after initial row 0)
-        Dim currentRow As Integer = TableLayoutPanel1.RowCount
+        Dim insertAtRow As Integer = TableLayoutPanel1.RowCount
 
-        ' ➕ Add new row style definition
         TableLayoutPanel1.RowCount += 1
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.AutoSize))
 
-        ' 🧾 Dynamically add TextBoxes for columns 0 to 2 (leave column 3 blank)
-        For col As Integer = 0 To 2
-            Dim txtBox As New TextBox With {
-                .Dock = DockStyle.Fill,
-                .Margin = New Padding(5),
-                .Font = New Font("Courier New", 10),
-                .Name = "refstand_" & currentRow.ToString() & "_" & col.ToString()
-            }
-            TableLayoutPanel1.Controls.Add(txtBox, col, currentRow)
-        Next
-        ' ⬇️ Ensure scroll brings new row into view
-        Dim lastTextbox As Control = TableLayoutPanel1.GetControlFromPosition(0, currentRow)
-        If lastTextbox IsNot Nothing Then
-            TableLayoutPanel1.ScrollControlIntoView(lastTextbox)
+        ' Ensure row style is added and top-anchored if first content row
+        If insertAtRow = 1 Then
+            TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.AutoSize))
+        Else
+            TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.AutoSize))
         End If
+
+        ' Create controls
+        Dim txtDescription As New TextBox With {
+        .Dock = DockStyle.Fill,
+        .Margin = New Padding(5),
+        .Font = New Font("Courier New", 10, FontStyle.Regular),
+        .Multiline = True,
+        .WordWrap = True,
+        .ScrollBars = ScrollBars.Vertical
+    }
+
+        Dim txtSerial As New TextBox With {
+        .Dock = DockStyle.Fill,
+        .Margin = New Padding(5),
+        .Font = New Font("Courier New", 10, FontStyle.Regular),
+        .Multiline = True,
+        .WordWrap = True,
+        .ScrollBars = ScrollBars.Vertical
+    }
+
+        Dim txtCalRef As New TextBox With {
+        .Dock = DockStyle.Fill,
+        .Margin = New Padding(5),
+        .Font = New Font("Courier New", 10, FontStyle.Regular),
+        .Multiline = True,
+        .WordWrap = True,
+        .ScrollBars = ScrollBars.Vertical
+    }
+
+        Dim dtDueDate As New DateTimePicker With {
+        .Dock = DockStyle.Fill,
+        .Margin = New Padding(5),
+        .Font = New Font("Courier New", 10, FontStyle.Regular),
+        .Format = DateTimePickerFormat.Long
+    }
+
+        TableLayoutPanel1.Controls.Add(txtDescription, 0, insertAtRow)
+        TableLayoutPanel1.Controls.Add(txtSerial, 1, insertAtRow)
+        TableLayoutPanel1.Controls.Add(txtCalRef, 2, insertAtRow)
+        TableLayoutPanel1.Controls.Add(dtDueDate, 3, insertAtRow)
+    End Sub
+
+    Private Sub addAccUsed_Click(sender As Object, e As EventArgs) Handles addAccUsed.Click
+        Dim insertAtRow As Integer = TableLayoutPanel2.RowCount
+        TableLayoutPanel2.RowCount += 1
+
+        If insertAtRow = 1 Then
+            TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.AutoSize))
+        Else
+            TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.AutoSize))
+        End If
+
+        ' Create new controls
+        Dim txtDescription As New TextBox With {
+        .Dock = DockStyle.Fill,
+        .Margin = New Padding(5),
+        .Font = New Font("Courier New", 10, FontStyle.Regular),
+        .Multiline = True,
+        .WordWrap = True,
+        .ScrollBars = ScrollBars.Vertical
+    }
+
+        Dim txtSerial As New TextBox With {
+        .Dock = DockStyle.Fill,
+        .Margin = New Padding(5),
+        .Font = New Font("Courier New", 10, FontStyle.Regular),
+        .Multiline = True,
+        .WordWrap = True,
+        .ScrollBars = ScrollBars.Vertical
+    }
+
+        Dim txtCalRef As New TextBox With {
+        .Dock = DockStyle.Fill,
+        .Margin = New Padding(5),
+        .Font = New Font("Courier New", 10, FontStyle.Regular),
+        .Multiline = True,
+        .WordWrap = True,
+        .ScrollBars = ScrollBars.Vertical
+    }
+
+        Dim model As New TextBox With {
+        .Dock = DockStyle.Fill,
+        .Margin = New Padding(5),
+        .Font = New Font("Courier New", 10, FontStyle.Regular),
+        .Multiline = True,
+        .WordWrap = True,
+        .ScrollBars = ScrollBars.Vertical
+    }
+
+        ' Add to correct panel (TableLayoutPanel2)
+        TableLayoutPanel2.Controls.Add(txtDescription, 0, insertAtRow)
+        TableLayoutPanel2.Controls.Add(txtSerial, 1, insertAtRow)
+        TableLayoutPanel2.Controls.Add(txtCalRef, 2, insertAtRow)
+        TableLayoutPanel2.Controls.Add(model, 3, insertAtRow)
     End Sub
 
 End Class

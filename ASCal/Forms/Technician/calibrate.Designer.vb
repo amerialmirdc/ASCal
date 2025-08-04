@@ -35,14 +35,9 @@ Partial Class calibrate
         Me.mainPanelCalibrateInp = New System.Windows.Forms.Panel()
         Me.panelRefContainer = New System.Windows.Forms.Panel()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.Label37 = New System.Windows.Forms.Label()
         Me.Label36 = New System.Windows.Forms.Label()
         Me.Label35 = New System.Windows.Forms.Label()
         Me.Label34 = New System.Windows.Forms.Label()
-        Me.refstand3 = New System.Windows.Forms.TextBox()
-        Me.refstand2 = New System.Windows.Forms.TextBox()
-        Me.refstand1 = New System.Windows.Forms.TextBox()
-        Me.DateTimePicker1 = New System.Windows.Forms.DateTimePicker()
         Me.addAccUsed = New System.Windows.Forms.Button()
         Me.addRefStandard = New System.Windows.Forms.Button()
         Me.calibrationDate = New System.Windows.Forms.DateTimePicker()
@@ -57,15 +52,6 @@ Partial Class calibrate
         Me.cLParamACC = New System.Windows.Forms.CheckedListBox()
         Me.cLParamDCV = New System.Windows.Forms.CheckedListBox()
         Me.cLParamACV = New System.Windows.Forms.CheckedListBox()
-        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
-        Me.TextBox31 = New System.Windows.Forms.TextBox()
-        Me.Label27 = New System.Windows.Forms.Label()
-        Me.Label30 = New System.Windows.Forms.Label()
-        Me.Label32 = New System.Windows.Forms.Label()
-        Me.Label33 = New System.Windows.Forms.Label()
-        Me.TextBox27 = New System.Windows.Forms.TextBox()
-        Me.TextBox28 = New System.Windows.Forms.TextBox()
-        Me.TextBox29 = New System.Windows.Forms.TextBox()
         Me.Label38 = New System.Windows.Forms.Label()
         Me.TextBox20 = New System.Windows.Forms.TextBox()
         Me.Label31 = New System.Windows.Forms.Label()
@@ -135,6 +121,13 @@ Partial Class calibrate
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label37 = New System.Windows.Forms.Label()
+        Me.Panel5 = New System.Windows.Forms.Panel()
+        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
+        Me.Label27 = New System.Windows.Forms.Label()
+        Me.Label30 = New System.Windows.Forms.Label()
+        Me.Label32 = New System.Windows.Forms.Label()
+        Me.Label33 = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout()
         Me.Panel8.SuspendLayout()
         Me.Panel4.SuspendLayout()
@@ -145,11 +138,12 @@ Partial Class calibrate
         Me.panelRefContainer.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.parameterPanel.SuspendLayout()
-        Me.TableLayoutPanel2.SuspendLayout()
         Me.Panel6.SuspendLayout()
         CType(Me.dataGridResult, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel7.SuspendLayout()
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Panel5.SuspendLayout()
+        Me.TableLayoutPanel2.SuspendLayout()
         Me.SuspendLayout()
         '
         'Panel1
@@ -265,6 +259,7 @@ Partial Class calibrate
         '
         Me.mainPanelCalibrateInp.AutoScroll = True
         Me.mainPanelCalibrateInp.AutoScrollMinSize = New System.Drawing.Size(1680, 2100)
+        Me.mainPanelCalibrateInp.Controls.Add(Me.Panel5)
         Me.mainPanelCalibrateInp.Controls.Add(Me.panelRefContainer)
         Me.mainPanelCalibrateInp.Controls.Add(Me.addAccUsed)
         Me.mainPanelCalibrateInp.Controls.Add(Me.addRefStandard)
@@ -275,7 +270,6 @@ Partial Class calibrate
         Me.mainPanelCalibrateInp.Controls.Add(Me.btnUnselectAll)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label39)
         Me.mainPanelCalibrateInp.Controls.Add(Me.parameterPanel)
-        Me.mainPanelCalibrateInp.Controls.Add(Me.TableLayoutPanel2)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label38)
         Me.mainPanelCalibrateInp.Controls.Add(Me.TextBox20)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label31)
@@ -355,7 +349,7 @@ Partial Class calibrate
         Me.panelRefContainer.Controls.Add(Me.TableLayoutPanel1)
         Me.panelRefContainer.Location = New System.Drawing.Point(56, 856)
         Me.panelRefContainer.Name = "panelRefContainer"
-        Me.panelRefContainer.Size = New System.Drawing.Size(1488, 144)
+        Me.panelRefContainer.Size = New System.Drawing.Size(1488, 181)
         Me.panelRefContainer.TabIndex = 194
         '
         'TableLayoutPanel1
@@ -365,47 +359,28 @@ Partial Class calibrate
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.49621!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.50379!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 341.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 447.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 455.0!))
         Me.TableLayoutPanel1.Controls.Add(Me.Label37, 3, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Label36, 2, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Label35, 1, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Label34, 0, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.refstand3, 2, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.refstand2, 1, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.refstand1, 0, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.DateTimePicker1, 3, 1)
-        Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top
         Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 0)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 1
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(1488, 144)
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(1488, 181)
         Me.TableLayoutPanel1.TabIndex = 155
-        '
-        'Label37
-        '
-        Me.Label37.AutoSize = True
-        Me.Label37.BackColor = System.Drawing.Color.Cyan
-        Me.Label37.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label37.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label37.Location = New System.Drawing.Point(1043, 0)
-        Me.Label37.Name = "Label37"
-        Me.Label37.Size = New System.Drawing.Size(442, 20)
-        Me.Label37.TabIndex = 15
-        Me.Label37.Text = "Due Date"
-        Me.Label37.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Label36
         '
         Me.Label36.AutoSize = True
         Me.Label36.BackColor = System.Drawing.Color.Cyan
-        Me.Label36.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label36.Dock = System.Windows.Forms.DockStyle.Top
         Me.Label36.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label36.Location = New System.Drawing.Point(702, 0)
+        Me.Label36.Location = New System.Drawing.Point(694, 0)
         Me.Label36.Name = "Label36"
-        Me.Label36.Size = New System.Drawing.Size(335, 20)
+        Me.Label36.Size = New System.Drawing.Size(335, 18)
         Me.Label36.TabIndex = 14
         Me.Label36.Text = "Cal Report Ref."
         Me.Label36.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -414,11 +389,11 @@ Partial Class calibrate
         '
         Me.Label35.AutoSize = True
         Me.Label35.BackColor = System.Drawing.Color.Cyan
-        Me.Label35.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label35.Dock = System.Windows.Forms.DockStyle.Top
         Me.Label35.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label35.Location = New System.Drawing.Point(335, 0)
+        Me.Label35.Location = New System.Drawing.Point(331, 0)
         Me.Label35.Name = "Label35"
-        Me.Label35.Size = New System.Drawing.Size(361, 20)
+        Me.Label35.Size = New System.Drawing.Size(357, 18)
         Me.Label35.TabIndex = 13
         Me.Label35.Text = "Serial No."
         Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -427,54 +402,14 @@ Partial Class calibrate
         '
         Me.Label34.AutoSize = True
         Me.Label34.BackColor = System.Drawing.Color.Cyan
-        Me.Label34.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label34.Dock = System.Windows.Forms.DockStyle.Top
         Me.Label34.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.Label34.Location = New System.Drawing.Point(3, 0)
         Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(326, 20)
+        Me.Label34.Size = New System.Drawing.Size(322, 18)
         Me.Label34.TabIndex = 12
         Me.Label34.Text = "Description"
         Me.Label34.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'refstand3
-        '
-        Me.refstand3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.refstand3.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.refstand3.Location = New System.Drawing.Point(702, 23)
-        Me.refstand3.Multiline = True
-        Me.refstand3.Name = "refstand3"
-        Me.refstand3.Size = New System.Drawing.Size(335, 118)
-        Me.refstand3.TabIndex = 6
-        '
-        'refstand2
-        '
-        Me.refstand2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.refstand2.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.refstand2.Location = New System.Drawing.Point(335, 23)
-        Me.refstand2.Multiline = True
-        Me.refstand2.Name = "refstand2"
-        Me.refstand2.Size = New System.Drawing.Size(361, 118)
-        Me.refstand2.TabIndex = 5
-        '
-        'refstand1
-        '
-        Me.refstand1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.refstand1.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.refstand1.Location = New System.Drawing.Point(3, 23)
-        Me.refstand1.Multiline = True
-        Me.refstand1.Name = "refstand1"
-        Me.refstand1.Size = New System.Drawing.Size(326, 118)
-        Me.refstand1.TabIndex = 4
-        '
-        'DateTimePicker1
-        '
-        Me.DateTimePicker1.Cursor = System.Windows.Forms.Cursors.Default
-        Me.DateTimePicker1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.DateTimePicker1.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.DateTimePicker1.Location = New System.Drawing.Point(1043, 23)
-        Me.DateTimePicker1.Name = "DateTimePicker1"
-        Me.DateTimePicker1.Size = New System.Drawing.Size(442, 25)
-        Me.DateTimePicker1.TabIndex = 11
         '
         'addAccUsed
         '
@@ -630,122 +565,6 @@ Partial Class calibrate
         Me.cLParamACV.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cLParamACV.Size = New System.Drawing.Size(286, 502)
         Me.cLParamACV.TabIndex = 0
-        '
-        'TableLayoutPanel2
-        '
-        Me.TableLayoutPanel2.ColumnCount = 4
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.62516!))
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.37484!))
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 341.0!))
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 447.0!))
-        Me.TableLayoutPanel2.Controls.Add(Me.TextBox31, 3, 1)
-        Me.TableLayoutPanel2.Controls.Add(Me.Label27, 3, 0)
-        Me.TableLayoutPanel2.Controls.Add(Me.Label30, 2, 0)
-        Me.TableLayoutPanel2.Controls.Add(Me.Label32, 1, 0)
-        Me.TableLayoutPanel2.Controls.Add(Me.Label33, 0, 0)
-        Me.TableLayoutPanel2.Controls.Add(Me.TextBox27, 2, 1)
-        Me.TableLayoutPanel2.Controls.Add(Me.TextBox28, 1, 1)
-        Me.TableLayoutPanel2.Controls.Add(Me.TextBox29, 0, 1)
-        Me.TableLayoutPanel2.Location = New System.Drawing.Point(56, 1080)
-        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
-        Me.TableLayoutPanel2.RowCount = 1
-        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel2.Size = New System.Drawing.Size(1496, 152)
-        Me.TableLayoutPanel2.TabIndex = 182
-        '
-        'TextBox31
-        '
-        Me.TextBox31.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBox31.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox31.Location = New System.Drawing.Point(1051, 23)
-        Me.TextBox31.Multiline = True
-        Me.TextBox31.Name = "TextBox31"
-        Me.TextBox31.Size = New System.Drawing.Size(442, 126)
-        Me.TextBox31.TabIndex = 183
-        '
-        'Label27
-        '
-        Me.Label27.AutoSize = True
-        Me.Label27.BackColor = System.Drawing.Color.Cyan
-        Me.Label27.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label27.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label27.Location = New System.Drawing.Point(1051, 0)
-        Me.Label27.Name = "Label27"
-        Me.Label27.Size = New System.Drawing.Size(442, 20)
-        Me.Label27.TabIndex = 15
-        Me.Label27.Text = "Model"
-        Me.Label27.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label30
-        '
-        Me.Label30.AutoSize = True
-        Me.Label30.BackColor = System.Drawing.Color.Cyan
-        Me.Label30.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label30.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label30.Location = New System.Drawing.Point(710, 0)
-        Me.Label30.Name = "Label30"
-        Me.Label30.Size = New System.Drawing.Size(335, 20)
-        Me.Label30.TabIndex = 14
-        Me.Label30.Text = "Cal Report Ref."
-        Me.Label30.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label32
-        '
-        Me.Label32.AutoSize = True
-        Me.Label32.BackColor = System.Drawing.Color.Cyan
-        Me.Label32.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label32.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label32.Location = New System.Drawing.Point(340, 0)
-        Me.Label32.Name = "Label32"
-        Me.Label32.Size = New System.Drawing.Size(364, 20)
-        Me.Label32.TabIndex = 13
-        Me.Label32.Text = "Serial No."
-        Me.Label32.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label33
-        '
-        Me.Label33.AutoSize = True
-        Me.Label33.BackColor = System.Drawing.Color.Cyan
-        Me.Label33.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label33.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label33.Location = New System.Drawing.Point(3, 0)
-        Me.Label33.Name = "Label33"
-        Me.Label33.Size = New System.Drawing.Size(331, 20)
-        Me.Label33.TabIndex = 12
-        Me.Label33.Text = "Description"
-        Me.Label33.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'TextBox27
-        '
-        Me.TextBox27.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBox27.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox27.Location = New System.Drawing.Point(710, 23)
-        Me.TextBox27.Multiline = True
-        Me.TextBox27.Name = "TextBox27"
-        Me.TextBox27.Size = New System.Drawing.Size(335, 126)
-        Me.TextBox27.TabIndex = 6
-        '
-        'TextBox28
-        '
-        Me.TextBox28.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBox28.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox28.Location = New System.Drawing.Point(340, 23)
-        Me.TextBox28.Multiline = True
-        Me.TextBox28.Name = "TextBox28"
-        Me.TextBox28.Size = New System.Drawing.Size(364, 126)
-        Me.TextBox28.TabIndex = 5
-        '
-        'TextBox29
-        '
-        Me.TextBox29.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TextBox29.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox29.Location = New System.Drawing.Point(3, 23)
-        Me.TextBox29.Multiline = True
-        Me.TextBox29.Name = "TextBox29"
-        Me.TextBox29.Size = New System.Drawing.Size(331, 126)
-        Me.TextBox29.TabIndex = 4
         '
         'Label38
         '
@@ -1416,6 +1235,100 @@ Partial Class calibrate
         Me.Label3.TabIndex = 37
         Me.Label3.Text = "Preview Report"
         '
+        'Label37
+        '
+        Me.Label37.AutoSize = True
+        Me.Label37.BackColor = System.Drawing.Color.Cyan
+        Me.Label37.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label37.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label37.Location = New System.Drawing.Point(1035, 0)
+        Me.Label37.Name = "Label37"
+        Me.Label37.Size = New System.Drawing.Size(450, 18)
+        Me.Label37.TabIndex = 15
+        Me.Label37.Text = "Due Date"
+        Me.Label37.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Panel5
+        '
+        Me.Panel5.AutoScroll = True
+        Me.Panel5.Controls.Add(Me.TableLayoutPanel2)
+        Me.Panel5.Location = New System.Drawing.Point(56, 1085)
+        Me.Panel5.Name = "Panel5"
+        Me.Panel5.Size = New System.Drawing.Size(1488, 181)
+        Me.Panel5.TabIndex = 195
+        '
+        'TableLayoutPanel2
+        '
+        Me.TableLayoutPanel2.AutoScroll = True
+        Me.TableLayoutPanel2.ColumnCount = 4
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.49621!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.50379!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 341.0!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 455.0!))
+        Me.TableLayoutPanel2.Controls.Add(Me.Label27, 3, 0)
+        Me.TableLayoutPanel2.Controls.Add(Me.Label30, 2, 0)
+        Me.TableLayoutPanel2.Controls.Add(Me.Label32, 1, 0)
+        Me.TableLayoutPanel2.Controls.Add(Me.Label33, 0, 0)
+        Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top
+        Me.TableLayoutPanel2.Location = New System.Drawing.Point(0, 0)
+        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
+        Me.TableLayoutPanel2.RowCount = 1
+        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(1488, 181)
+        Me.TableLayoutPanel2.TabIndex = 155
+        '
+        'Label27
+        '
+        Me.Label27.AutoSize = True
+        Me.Label27.BackColor = System.Drawing.Color.Cyan
+        Me.Label27.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label27.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label27.Location = New System.Drawing.Point(1035, 0)
+        Me.Label27.Name = "Label27"
+        Me.Label27.Size = New System.Drawing.Size(450, 18)
+        Me.Label27.TabIndex = 15
+        Me.Label27.Text = "model"
+        Me.Label27.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label30
+        '
+        Me.Label30.AutoSize = True
+        Me.Label30.BackColor = System.Drawing.Color.Cyan
+        Me.Label30.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label30.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label30.Location = New System.Drawing.Point(694, 0)
+        Me.Label30.Name = "Label30"
+        Me.Label30.Size = New System.Drawing.Size(335, 18)
+        Me.Label30.TabIndex = 14
+        Me.Label30.Text = "Cal Report Ref."
+        Me.Label30.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label32
+        '
+        Me.Label32.AutoSize = True
+        Me.Label32.BackColor = System.Drawing.Color.Cyan
+        Me.Label32.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label32.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label32.Location = New System.Drawing.Point(331, 0)
+        Me.Label32.Name = "Label32"
+        Me.Label32.Size = New System.Drawing.Size(357, 18)
+        Me.Label32.TabIndex = 13
+        Me.Label32.Text = "Serial No."
+        Me.Label32.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label33
+        '
+        Me.Label33.AutoSize = True
+        Me.Label33.BackColor = System.Drawing.Color.Cyan
+        Me.Label33.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label33.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label33.Location = New System.Drawing.Point(3, 0)
+        Me.Label33.Name = "Label33"
+        Me.Label33.Size = New System.Drawing.Size(322, 18)
+        Me.Label33.TabIndex = 12
+        Me.Label33.Text = "Description"
+        Me.Label33.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'calibrate
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1437,12 +1350,13 @@ Partial Class calibrate
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
         Me.parameterPanel.ResumeLayout(False)
-        Me.TableLayoutPanel2.ResumeLayout(False)
-        Me.TableLayoutPanel2.PerformLayout()
         Me.Panel6.ResumeLayout(False)
         CType(Me.dataGridResult, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel7.ResumeLayout(False)
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Panel5.ResumeLayout(False)
+        Me.TableLayoutPanel2.ResumeLayout(False)
+        Me.TableLayoutPanel2.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1509,30 +1423,16 @@ Partial Class calibrate
     'Friend WithEvents LineShape5 As Microsoft.VisualBasic.PowerPacks.LineShape
     'Friend WithEvents LineShape4 As Microsoft.VisualBasic.PowerPacks.LineShape
     Friend WithEvents TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents refstand3 As System.Windows.Forms.TextBox
-    Friend WithEvents refstand2 As System.Windows.Forms.TextBox
-    Friend WithEvents refstand1 As System.Windows.Forms.TextBox
-    Friend WithEvents DateTimePicker1 As System.Windows.Forms.DateTimePicker
     Friend WithEvents Panel7 As System.Windows.Forms.Panel
     Friend WithEvents PictureBox2 As System.Windows.Forms.PictureBox
     Friend WithEvents btnStartCalibration As System.Windows.Forms.Button
     Friend WithEvents Label29 As System.Windows.Forms.Label
     Friend WithEvents dmmSearch As System.Windows.Forms.TextBox
-    Friend WithEvents Label37 As System.Windows.Forms.Label
     Friend WithEvents Label36 As System.Windows.Forms.Label
     Friend WithEvents Label35 As System.Windows.Forms.Label
     Friend WithEvents Label34 As System.Windows.Forms.Label
     Friend WithEvents Panel6 As System.Windows.Forms.Panel
     Friend WithEvents dataGridResult As System.Windows.Forms.DataGridView
-    Friend WithEvents TableLayoutPanel2 As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents TextBox31 As System.Windows.Forms.TextBox
-    Friend WithEvents Label27 As System.Windows.Forms.Label
-    Friend WithEvents Label30 As System.Windows.Forms.Label
-    Friend WithEvents Label32 As System.Windows.Forms.Label
-    Friend WithEvents Label33 As System.Windows.Forms.Label
-    Friend WithEvents TextBox27 As System.Windows.Forms.TextBox
-    Friend WithEvents TextBox28 As System.Windows.Forms.TextBox
-    Friend WithEvents TextBox29 As System.Windows.Forms.TextBox
     Friend WithEvents Label38 As System.Windows.Forms.Label
     Friend WithEvents TextBox20 As System.Windows.Forms.TextBox
     Friend WithEvents Label31 As System.Windows.Forms.Label
@@ -1570,4 +1470,11 @@ Partial Class calibrate
     Friend WithEvents addAccUsed As System.Windows.Forms.Button
     Friend WithEvents addRefStandard As System.Windows.Forms.Button
     Friend WithEvents panelRefContainer As System.Windows.Forms.Panel
+    Friend WithEvents Label37 As Label
+    Friend WithEvents Panel5 As Panel
+    Friend WithEvents TableLayoutPanel2 As TableLayoutPanel
+    Friend WithEvents Label27 As Label
+    Friend WithEvents Label30 As Label
+    Friend WithEvents Label32 As Label
+    Friend WithEvents Label33 As Label
 End Class

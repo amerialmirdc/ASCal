@@ -830,6 +830,63 @@ Module SQLiteHelper
         End Try
     End Sub
 
+    Public Class ReferenceStandard
+        Public Property ID As Integer
+        Public Property CalibrationID As Integer
+        Public Property Description As String
+        Public Property SerialNo As String
+        Public Property CalReportRef As String
+        Public Property DueDate As String
+    End Class
+
+    ' 💾 Insert reference standards used into the database
+    Public Sub InsertReferenceStandards(calibrationId As Integer, standards As List(Of ReferenceStandard))
+        Using conn = GetConnection()
+            conn.Open()
+            Dim query As String = "INSERT INTO ReferenceStandardUsed (calibrationId, description, serialNo, calReportRef, dueDate) " &
+                              "VALUES (@calibrationId, @description, @serialNo, @calReportRef, @dueDate)"
+
+            For Each std In standards
+                Using cmd As New SQLiteCommand(query, conn)
+                    cmd.Parameters.AddWithValue("@calibrationId", calibrationId)
+                    cmd.Parameters.AddWithValue("@description", std.Description)
+                    cmd.Parameters.AddWithValue("@serialNo", std.SerialNo)
+                    cmd.Parameters.AddWithValue("@calReportRef", std.CalReportRef)
+                    cmd.Parameters.AddWithValue("@dueDate", std.DueDate)
+                    cmd.ExecuteNonQuery()
+                End Using
+            Next
+        End Using
+    End Sub
+
+    Public Class AccessoryUsed
+        Public Property ID As Integer
+        Public Property CalibrationID As Integer
+        Public Property Description As String
+        Public Property SerialNo As String
+        Public Property CalReportRef As String
+        Public Property Model As String
+    End Class
+
+    Public Sub InsertAccessoryUsed(calibrationId As Integer, accessories As List(Of AccessoryUsed))
+        Using conn = GetConnection()
+            conn.Open()
+            Dim query As String = "INSERT INTO AccessoryUsed (calibrationId, description, serialNo, calReportRef, dueDate) " &
+                              "VALUES (@calibrationId, @description, @serialNo, @calReportRef, @dueDate)"
+
+            For Each acc In accessories
+                Using cmd As New SQLiteCommand(query, conn)
+                    cmd.Parameters.AddWithValue("@calibrationId", calibrationId)
+                    cmd.Parameters.AddWithValue("@description", acc.Description)
+                    cmd.Parameters.AddWithValue("@serialNo", acc.SerialNo)
+                    cmd.Parameters.AddWithValue("@calReportRef", acc.CalReportRef)
+                    cmd.Parameters.AddWithValue("@model", acc.Model)
+                    cmd.ExecuteNonQuery()
+                End Using
+            Next
+        End Using
+    End Sub
+
     ' ===================== WORK ORDER / SERIAL FUNCTIONS =====================
 
     ' 🔢 Generates short-form work order number for display
