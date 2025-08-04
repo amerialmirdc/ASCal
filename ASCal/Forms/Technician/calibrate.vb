@@ -616,7 +616,7 @@ Public Class calibrate
                     SQLiteHelper.InsertAccessoryUsed(jobID, accessories)
                 End If
 
-                ' 🔄 Load Excel if selected
+                ' Excel prompt (updated references)
                 Using openFileDialog As New OpenFileDialog()
                     openFileDialog.Title = "Select Excel Template"
                     openFileDialog.Filter = "Excel Files|*.xlsx;*.xls"
@@ -626,21 +626,22 @@ Public Class calibrate
                         Dim data As Dictionary(Of String, String) = SQLiteHelper.LoadExcelValuesForCalibration(selectedPath)
 
                         If data.Count > 0 Then
-                            workOrderNo = data("workOrderNumber")
-                            technicalID.Text = data("technicalID")
-                            dmmdescription.Text = data("description")
-                            manufaacturer.Text = data("manufacturer")
-                            dmmmodel.Text = data("model")
-                            serialNumber.Text = data("serialNumber")
-                            range.Text = data("range")
-                            readability.Text = data("readability")
-                            prevCalCert.Text = data("prevCalCert")
-                            receivedDate.Value = DateTime.Parse(data("receivedDate"))
-                            optionsInstalled.Text = data("optionsInstalled")
-                            customerPO.Text = data("customerPO")
-                            assetNumber.Text = data("assetNumber")
-                            accuracy.Text = data("accuracy")
-                            prevTech.Text = data("previousTechnician")
+                            workOrderNo = data("workOrderNumber")             ' L7
+                            technicalID.Text = data("technicalID")                 ' AN7
+                            dmmdescription.Text = data("description")              ' K9
+                            manufaacturer.Text = data("manufacturer")              ' K10
+                            dmmmodel.Text = data("model")                          ' K11
+                            serialNumber.Text = data("serialNumber")              ' K12
+                            range.Text = data("range")                             ' K13
+                            readability.Text = data("readability")                 ' K14
+                            prevCalCert.Text = data("prevCalCert")                 ' K15
+                            receivedDate.Value = DateTime.Parse(data("receivedDate")) ' A9
+                            calibrationDate.Value = DateTime.Parse(data("calibrationDate")) ' A10
+                            optionsInstalled.Text = data("optionsInstalled")       ' A11
+                            customerPO.Text = data("customerPO")                   ' A12
+                            assetNumber.Text = data("assetNumber")                 ' A13
+                            accuracy.Text = data("accuracy")                       ' A14
+                            prevTech.Text = data("previousTechnician")             ' A15
                         End If
                     Else
                         MessageBox.Show("Excel file selection cancelled.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Information)
