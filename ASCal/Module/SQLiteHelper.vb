@@ -510,26 +510,26 @@ Module SQLiteHelper
 
     Public Function GenerateNextWorkOrderNumber() As String
         Dim nextNumber As Integer = 1
-        Dim currentMonth = DateTime.Now.ToString("MM")
 
         Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
             conn.Open()
-            Dim query As String = "SELECT workOrderNumber FROM calibration_jobs ORDER BY id DESC LIMIT 1"
+
+            ' Extract the leftmost 4-digit numeric part of serial_number and get the max
+            Dim query As String = "
+            SELECT MAX(CAST(SUBSTR(serial_number, 1, 4) AS INTEGER))
+            FROM calibration_jobs
+            WHERE LENGTH(serial_number) >= 4"
+
             Using cmd As New SQLiteCommand(query, conn)
                 Dim result = cmd.ExecuteScalar()
-                If result IsNot Nothing Then
-                    Dim parts = result.ToString().Split("-"c)
-                    If parts.Length > 0 Then
-                        Dim numericPart As Integer
-                        If Integer.TryParse(parts(0), numericPart) Then
-                            nextNumber = numericPart + 1
-                        End If
-                    End If
+                If result IsNot DBNull.Value AndAlso result IsNot Nothing Then
+                    nextNumber = Convert.ToInt32(result) + 1
                 End If
             End Using
         End Using
 
-        Return nextNumber.ToString("D4") & "-" & currentMonth
+        ' Return the padded 4-digit string (e.g., 0021)
+        Return nextNumber.ToString("D4") & "-" & DateTime.Now.ToString("MM")
     End Function
 
     Public Function LoadExcelData(filePath As String) As Dictionary(Of String, String)
@@ -868,14 +868,11 @@ Module SQLiteHelper
         Public Property Model As String
     End Class
 
-    Public Sub InsertAccessoryUsed(calibrationId As Integer, accessories As List(Of AccessoryUsed))
-        Using conn = GetConnection()
+    Public Sub InsertAccessoryUsed(calibrationId As Integer, items As List(Of AccessoryUsed))
+        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
             conn.Open()
-            Dim query As String = "INSERT INTO AccessoryUsed (calibrationId, description, serialNo, calReportRef, dueDate) " &
-                              "VALUES (@calibrationId, @description, @serialNo, @calReportRef, @dueDate)"
-
-            For Each acc In accessories
-                Using cmd As New SQLiteCommand(query, conn)
+            For Each acc In items
+                Using cmd As New SQLiteCommand("INSERT INTO AccessoryUsed (calibrationId, description, serialNo, calReportRef, model) VALUES (@calibrationId, @description, @serialNo, @calReportRef, @model)", conn)
                     cmd.Parameters.AddWithValue("@calibrationId", calibrationId)
                     cmd.Parameters.AddWithValue("@description", acc.Description)
                     cmd.Parameters.AddWithValue("@serialNo", acc.SerialNo)

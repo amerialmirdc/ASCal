@@ -521,9 +521,9 @@ Public Class calibrate
 
             Dim company As String = contextMenuCompanies.Text.Trim()
             Dim address As String = compAdd.Text.Trim()
-            Dim model As String = Me.dmmmodel.Text.Trim()
+            Dim model As String = dmmmodel.Text.Trim()
             Dim manufacturer As String = manufaacturer.Text.Trim()
-            Dim description As String = Me.dmmdescription.Text.Trim()
+            Dim description As String = dmmdescription.Text.Trim()
             Dim calibType As String = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), "")
             Dim site As String = specificSite.Text.Trim()
             Dim parameters As String = String.Join(", ", cLParamACV.CheckedItems.Cast(Of String))
@@ -531,33 +531,45 @@ Public Class calibrate
             Dim dateCreated As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
             Dim lastUpdatedBy As String = CurrentUser.Username
 
-            Dim serialFormat As String = SQLiteHelper.GenerateShortWorkOrderNumber(initials)
-            workOrderNo.Text = serialFormat & initials
+            Dim serialFormat As String = SQLiteHelper.GenerateNextWorkOrderNumber()
+            Dim workOrderNo = serialFormat & "-" & DateTime.Now.ToString("MM")
 
             Try
+                ' 🔄 Save main job
                 Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                     conn.Open()
 
-                    Dim cmd As New SQLiteCommand("INSERT INTO calibration_jobs (job_id, technician_initials, technician_name, signatory_initials, signatory_name, company_name, company_address, model, manufacturer, description, calibration_date, calibration_type, specific_site, parameters, status, date_created, serial_number, last_updated_by) VALUES (@job_id, @technician_initials, @technician_name, @signatory_initials, @signatory_name, @company_name, @company_address, @model, @manufacturer, @description, @calibration_date, @calibration_type, @specific_site, @parameters, @status, @date_created, @serial_number, @last_updated_by)", conn)
+                    Dim cmd As New SQLiteCommand("
+                    INSERT INTO calibration_jobs
+                    (job_id, technician_initials, technician_name, signatory_initials, signatory_name,
+                    company_name, company_address, model, manufacturer, description, calibration_date,
+                    calibration_type, specific_site, parameters, status, date_created, serial_number, last_updated_by)
+                    VALUES
+                    (@job_id, @technician_initials, @technician_name, @signatory_initials, @signatory_name,
+                    @company_name, @company_address, @model, @manufacturer, @description, @calibration_date,
+                    @calibration_type, @specific_site, @parameters, @status, @date_created, @serial_number, @last_updated_by, @workOrderNumber)", conn)
 
-                    cmd.Parameters.AddWithValue("@job_id", jobID)
-                    cmd.Parameters.AddWithValue("@technician_initials", initials)
-                    cmd.Parameters.AddWithValue("@technician_name", technicianName)
-                    cmd.Parameters.AddWithValue("@signatory_initials", signatoryInitials)
-                    cmd.Parameters.AddWithValue("@signatory_name", signatoryName)
-                    cmd.Parameters.AddWithValue("@company_name", company)
-                    cmd.Parameters.AddWithValue("@company_address", address)
-                    cmd.Parameters.AddWithValue("@model", model)
-                    cmd.Parameters.AddWithValue("@manufacturer", manufacturer)
-                    cmd.Parameters.AddWithValue("@description", description)
-                    cmd.Parameters.AddWithValue("@calibration_date", selectedDate)
-                    cmd.Parameters.AddWithValue("@calibration_type", calibType)
-                    cmd.Parameters.AddWithValue("@specific_site", site)
-                    cmd.Parameters.AddWithValue("@parameters", parameters)
-                    cmd.Parameters.AddWithValue("@status", status)
-                    cmd.Parameters.AddWithValue("@date_created", dateCreated)
-                    cmd.Parameters.AddWithValue("@serial_number", serialNumber.Text.Trim())
-                    cmd.Parameters.AddWithValue("@last_updated_by", lastUpdatedBy)
+                    With cmd.Parameters
+                        .AddWithValue("@job_id", jobID)
+                        .AddWithValue("@technician_initials", initials)
+                        .AddWithValue("@technician_name", technicianName)
+                        .AddWithValue("@signatory_initials", signatoryInitials)
+                        .AddWithValue("@signatory_name", signatoryName)
+                        .AddWithValue("@company_name", company)
+                        .AddWithValue("@company_address", address)
+                        .AddWithValue("@model", model)
+                        .AddWithValue("@manufacturer", manufacturer)
+                        .AddWithValue("@description", description)
+                        .AddWithValue("@calibration_date", selectedDate)
+                        .AddWithValue("@calibration_type", calibType)
+                        .AddWithValue("@specific_site", site)
+                        .AddWithValue("@parameters", parameters)
+                        .AddWithValue("@status", status)
+                        .AddWithValue("@date_created", dateCreated)
+                        .AddWithValue("@serial_number", serialNumber.Text.Trim())
+                        .AddWithValue("@last_updated_by", lastUpdatedBy)
+                        .AddWithValue("@workOrderNumber", serialFormat)
+                    End With
 
                     cmd.ExecuteNonQuery()
                 End Using
@@ -580,12 +592,33 @@ Public Class calibrate
                     })
                     End If
                 Next
-
                 If refStandards.Count > 0 Then
                     SQLiteHelper.InsertReferenceStandards(jobID, refStandards)
                 End If
 
-                ' Excel prompt (unchanged)
+                ' ✅ Save Accessories Used
+                Dim accessories As New List(Of AccessoryUsed)
+                For row As Integer = 1 To TableLayoutPanel2.RowCount - 1
+                    Dim descBox = TryCast(TableLayoutPanel2.GetControlFromPosition(0, row), TextBox)
+                    Dim serialBox = TryCast(TableLayoutPanel2.GetControlFromPosition(1, row), TextBox)
+                    Dim calRefBox = TryCast(TableLayoutPanel2.GetControlFromPosition(2, row), TextBox)
+                    Dim modelBox = TryCast(TableLayoutPanel2.GetControlFromPosition(3, row), TextBox)
+
+                    If descBox IsNot Nothing AndAlso serialBox IsNot Nothing AndAlso calRefBox IsNot Nothing AndAlso modelBox IsNot Nothing Then
+                        accessories.Add(New AccessoryUsed With {
+                        .CalibrationID = jobID,
+                        .Description = descBox.Text,
+                        .SerialNo = serialBox.Text,
+                        .CalReportRef = calRefBox.Text,
+                        .Model = modelBox.Text
+                    })
+                    End If
+                Next
+                If accessories.Count > 0 Then
+                    SQLiteHelper.InsertAccessoryUsed(jobID, accessories)
+                End If
+
+                ' 🔄 Load Excel if selected
                 Using openFileDialog As New OpenFileDialog()
                     openFileDialog.Title = "Select Excel Template"
                     openFileDialog.Filter = "Excel Files|*.xlsx;*.xls"
@@ -595,7 +628,7 @@ Public Class calibrate
                         Dim data As Dictionary(Of String, String) = SQLiteHelper.LoadExcelValuesForCalibration(selectedPath)
 
                         If data.Count > 0 Then
-                            workOrderNo.Text = data("workOrderNumber")
+                            workOrderNo = data("workOrderNumber")
                             technicalID.Text = data("technicalID")
                             dmmdescription.Text = data("description")
                             manufaacturer.Text = data("manufacturer")
@@ -617,8 +650,10 @@ Public Class calibrate
                     End If
                 End Using
 
+                ' 🎉 Success Message
                 MessageBox.Show("Calibration job successfully saved!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 MessageBox.Show("Calibration job saved! Serial Number (Work Order No.): " & serialFormat)
+
                 Me.Hide()
                 landingPageTechnician.Show()
             Catch ex As Exception
