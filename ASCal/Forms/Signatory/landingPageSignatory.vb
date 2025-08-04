@@ -1,6 +1,4 @@
-﻿Imports System.Data.SQLite
-
-Public Class landingPageSignatory
+﻿Public Class landingPageSignatory
 
     Public Shared SignatoryInitials As String = ""
     Dim currentPage As Integer = 1

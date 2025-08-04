@@ -1,8 +1,5 @@
-﻿Imports System.Data.OleDb
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 Imports ClosedXML.Excel
-Imports System.Data
-Imports System.Windows.Forms
 
 ' 🧩 Module to encapsulate all SQLite database logic for user, job, company, and DMM operations.
 
@@ -508,30 +505,6 @@ Module SQLiteHelper
         Return result
     End Function
 
-    Public Function GenerateNextWorkOrderNumber() As String
-        Dim nextNumber As Integer = 1
-
-        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
-            conn.Open()
-
-            ' Extract the leftmost 4-digit numeric part of serial_number and get the max
-            Dim query As String = "
-            SELECT MAX(CAST(SUBSTR(serial_number, 1, 4) AS INTEGER))
-            FROM calibration_jobs
-            WHERE LENGTH(serial_number) >= 4"
-
-            Using cmd As New SQLiteCommand(query, conn)
-                Dim result = cmd.ExecuteScalar()
-                If result IsNot DBNull.Value AndAlso result IsNot Nothing Then
-                    nextNumber = Convert.ToInt32(result) + 1
-                End If
-            End Using
-        End Using
-
-        ' Return the padded 4-digit string (e.g., 0021)
-        Return nextNumber.ToString("D4") & "-" & DateTime.Now.ToString("MM")
-    End Function
-
     Public Function LoadExcelData(filePath As String) As Dictionary(Of String, String)
         Dim data As New Dictionary(Of String, String)()
 
@@ -886,50 +859,6 @@ Module SQLiteHelper
 
     ' ===================== WORK ORDER / SERIAL FUNCTIONS =====================
 
-    ' 🔢 Generates short-form work order number for display
-    Public Function GenerateShortWorkOrderNumber(initials As String) As String
-        Dim mainCounter As Integer = 1
-        Dim subCounter As Integer = 1
-
-        Using conn = GetConnection()
-            conn.Open()
-            ' Get the highest serial number for the given technician
-            Dim sql = "SELECT serial_number FROM calibration_jobs WHERE technician_initials = @initials ORDER BY serial_number DESC LIMIT 1"
-            Using cmd As New SQLiteCommand(sql, conn)
-                cmd.Parameters.AddWithValue("@initials", initials)
-                Using reader = cmd.ExecuteReader()
-                    If reader.Read() Then
-                        Dim sn As String = reader("serial_number").ToString()
-                        Dim parts As String() = sn.Split("-"c)
-
-                        If parts.Length >= 2 Then
-                            ' Example serial_number: "0005-03AB"
-                            ' main = 0005, sub = 03, suffix = AB
-                            Integer.TryParse(parts(0), mainCounter)
-
-                            ' Strip initials (e.g., "03AB" -> "03")
-                            Dim subPart As String = parts(1)
-                            If subPart.Length >= 2 Then
-                                Integer.TryParse(subPart.Substring(0, 2), subCounter)
-                            End If
-
-                            ' Increment logic
-                            If subCounter < 99 Then
-                                subCounter += 1
-                            Else
-                                subCounter = 1
-                                mainCounter += 1
-                            End If
-                        End If
-                    End If
-                End Using
-            End Using
-        End Using
-
-        ' Return without initials — append them in calling code
-        Return mainCounter.ToString("D4") & "-" & subCounter.ToString("D2")
-    End Function
-
     ' 🔢 Gets the next job_id for a new calibration job entry
     Public Function GenerateNextJobID() As Integer
         Dim nextID As Integer = 1
@@ -954,6 +883,30 @@ Module SQLiteHelper
             End If
         Next
         Return initials
+    End Function
+
+    Public Function GenerateNextWorkOrderNumber() As String
+        Dim nextNumber As Integer = 1
+
+        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+            conn.Open()
+
+            ' Extract the leftmost 4-digit numeric part of serial_number and get the max
+            Dim query As String = "
+            SELECT MAX(CAST(SUBSTR(serial_number, 1, 4) AS INTEGER))
+            FROM calibration_jobs
+            WHERE LENGTH(serial_number) >= 4"
+
+            Using cmd As New SQLiteCommand(query, conn)
+                Dim result = cmd.ExecuteScalar()
+                If result IsNot DBNull.Value AndAlso result IsNot Nothing Then
+                    nextNumber = Convert.ToInt32(result) + 1
+                End If
+            End Using
+        End Using
+
+        ' Return the padded 4-digit string (e.g., 0021)
+        Return nextNumber.ToString("D4") & "-" & DateTime.Now.ToString("MM")
     End Function
 
 End Module

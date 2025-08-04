@@ -1,6 +1,4 @@
 ﻿Imports System.Data.SQLite
-Imports System.Windows.Forms.Design.AxImporter
-Imports ClosedXML.Excel
 
 Public Class calibrate
 
