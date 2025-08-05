@@ -244,6 +244,7 @@
     <Compile Include="Forms\Admin\newCompanyForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Module\excelHelper.vb" />
     <Compile Include="Module\UIHelper.vb" />
     <Compile Include="Module\SessionManager.vb" />
     <Compile Include="Module\SQLiteHelper.vb" />

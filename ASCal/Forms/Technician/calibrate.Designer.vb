@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class calibrate
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class calibrate
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(calibrate))
         Me.Panel1 = New System.Windows.Forms.Panel()
@@ -33,8 +33,15 @@ Partial Class calibrate
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.logoBtn = New System.Windows.Forms.PictureBox()
         Me.mainPanelCalibrateInp = New System.Windows.Forms.Panel()
+        Me.Panel5 = New System.Windows.Forms.Panel()
+        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
+        Me.Label27 = New System.Windows.Forms.Label()
+        Me.Label30 = New System.Windows.Forms.Label()
+        Me.Label32 = New System.Windows.Forms.Label()
+        Me.Label33 = New System.Windows.Forms.Label()
         Me.panelRefContainer = New System.Windows.Forms.Panel()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.Label37 = New System.Windows.Forms.Label()
         Me.Label36 = New System.Windows.Forms.Label()
         Me.Label35 = New System.Windows.Forms.Label()
         Me.Label34 = New System.Windows.Forms.Label()
@@ -59,16 +66,16 @@ Partial Class calibrate
         Me.Label47 = New System.Windows.Forms.Label()
         Me.Label48 = New System.Windows.Forms.Label()
         Me.Label49 = New System.Windows.Forms.Label()
-        Me.TextBox21 = New System.Windows.Forms.TextBox()
+        Me.txtHumidityEnd = New System.Windows.Forms.TextBox()
         Me.Label50 = New System.Windows.Forms.Label()
         Me.Label51 = New System.Windows.Forms.Label()
-        Me.TextBox22 = New System.Windows.Forms.TextBox()
+        Me.txtHumidityStart = New System.Windows.Forms.TextBox()
         Me.Label52 = New System.Windows.Forms.Label()
         Me.Label53 = New System.Windows.Forms.Label()
-        Me.TextBox23 = New System.Windows.Forms.TextBox()
+        Me.txtTempEnd = New System.Windows.Forms.TextBox()
         Me.Label54 = New System.Windows.Forms.Label()
         Me.Label55 = New System.Windows.Forms.Label()
-        Me.TextBox24 = New System.Windows.Forms.TextBox()
+        Me.txtTempStart = New System.Windows.Forms.TextBox()
         Me.Label56 = New System.Windows.Forms.Label()
         Me.Panel6 = New System.Windows.Forms.Panel()
         Me.dataGridResult = New System.Windows.Forms.DataGridView()
@@ -121,13 +128,6 @@ Partial Class calibrate
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label37 = New System.Windows.Forms.Label()
-        Me.Panel5 = New System.Windows.Forms.Panel()
-        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
-        Me.Label27 = New System.Windows.Forms.Label()
-        Me.Label30 = New System.Windows.Forms.Label()
-        Me.Label32 = New System.Windows.Forms.Label()
-        Me.Label33 = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout()
         Me.Panel8.SuspendLayout()
         Me.Panel4.SuspendLayout()
@@ -135,6 +135,8 @@ Partial Class calibrate
         Me.Panel2.SuspendLayout()
         CType(Me.logoBtn, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.mainPanelCalibrateInp.SuspendLayout()
+        Me.Panel5.SuspendLayout()
+        Me.TableLayoutPanel2.SuspendLayout()
         Me.panelRefContainer.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.parameterPanel.SuspendLayout()
@@ -142,8 +144,6 @@ Partial Class calibrate
         CType(Me.dataGridResult, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel7.SuspendLayout()
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.Panel5.SuspendLayout()
-        Me.TableLayoutPanel2.SuspendLayout()
         Me.SuspendLayout()
         '
         'Panel1
@@ -277,16 +277,16 @@ Partial Class calibrate
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label47)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label48)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label49)
-        Me.mainPanelCalibrateInp.Controls.Add(Me.TextBox21)
+        Me.mainPanelCalibrateInp.Controls.Add(Me.txtHumidityEnd)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label50)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label51)
-        Me.mainPanelCalibrateInp.Controls.Add(Me.TextBox22)
+        Me.mainPanelCalibrateInp.Controls.Add(Me.txtHumidityStart)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label52)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label53)
-        Me.mainPanelCalibrateInp.Controls.Add(Me.TextBox23)
+        Me.mainPanelCalibrateInp.Controls.Add(Me.txtTempEnd)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label54)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label55)
-        Me.mainPanelCalibrateInp.Controls.Add(Me.TextBox24)
+        Me.mainPanelCalibrateInp.Controls.Add(Me.txtTempStart)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label56)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Panel6)
         Me.mainPanelCalibrateInp.Controls.Add(Me.Label29)
@@ -343,6 +343,87 @@ Partial Class calibrate
         Me.mainPanelCalibrateInp.Size = New System.Drawing.Size(1624, 1061)
         Me.mainPanelCalibrateInp.TabIndex = 34
         '
+        'Panel5
+        '
+        Me.Panel5.AutoScroll = True
+        Me.Panel5.Controls.Add(Me.TableLayoutPanel2)
+        Me.Panel5.Location = New System.Drawing.Point(56, 1085)
+        Me.Panel5.Name = "Panel5"
+        Me.Panel5.Size = New System.Drawing.Size(1488, 181)
+        Me.Panel5.TabIndex = 195
+        '
+        'TableLayoutPanel2
+        '
+        Me.TableLayoutPanel2.AutoScroll = True
+        Me.TableLayoutPanel2.ColumnCount = 4
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.49621!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.50379!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 341.0!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 457.0!))
+        Me.TableLayoutPanel2.Controls.Add(Me.Label27, 3, 0)
+        Me.TableLayoutPanel2.Controls.Add(Me.Label30, 2, 0)
+        Me.TableLayoutPanel2.Controls.Add(Me.Label32, 1, 0)
+        Me.TableLayoutPanel2.Controls.Add(Me.Label33, 0, 0)
+        Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top
+        Me.TableLayoutPanel2.Location = New System.Drawing.Point(0, 0)
+        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
+        Me.TableLayoutPanel2.RowCount = 1
+        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(1488, 181)
+        Me.TableLayoutPanel2.TabIndex = 155
+        '
+        'Label27
+        '
+        Me.Label27.AutoSize = True
+        Me.Label27.BackColor = System.Drawing.Color.Cyan
+        Me.Label27.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label27.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label27.Location = New System.Drawing.Point(1033, 0)
+        Me.Label27.Name = "Label27"
+        Me.Label27.Size = New System.Drawing.Size(452, 18)
+        Me.Label27.TabIndex = 15
+        Me.Label27.Text = "Model"
+        Me.Label27.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label30
+        '
+        Me.Label30.AutoSize = True
+        Me.Label30.BackColor = System.Drawing.Color.Cyan
+        Me.Label30.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label30.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label30.Location = New System.Drawing.Point(692, 0)
+        Me.Label30.Name = "Label30"
+        Me.Label30.Size = New System.Drawing.Size(335, 18)
+        Me.Label30.TabIndex = 14
+        Me.Label30.Text = "Cal Report Ref."
+        Me.Label30.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label32
+        '
+        Me.Label32.AutoSize = True
+        Me.Label32.BackColor = System.Drawing.Color.Cyan
+        Me.Label32.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label32.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label32.Location = New System.Drawing.Point(330, 0)
+        Me.Label32.Name = "Label32"
+        Me.Label32.Size = New System.Drawing.Size(356, 18)
+        Me.Label32.TabIndex = 13
+        Me.Label32.Text = "Serial No."
+        Me.Label32.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label33
+        '
+        Me.Label33.AutoSize = True
+        Me.Label33.BackColor = System.Drawing.Color.Cyan
+        Me.Label33.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label33.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label33.Location = New System.Drawing.Point(3, 0)
+        Me.Label33.Name = "Label33"
+        Me.Label33.Size = New System.Drawing.Size(321, 18)
+        Me.Label33.TabIndex = 12
+        Me.Label33.Text = "Description"
+        Me.Label33.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'panelRefContainer
         '
         Me.panelRefContainer.AutoScroll = True
@@ -359,7 +440,7 @@ Partial Class calibrate
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.49621!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.50379!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 341.0!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 455.0!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 457.0!))
         Me.TableLayoutPanel1.Controls.Add(Me.Label37, 3, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Label36, 2, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Label35, 1, 0)
@@ -372,13 +453,26 @@ Partial Class calibrate
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(1488, 181)
         Me.TableLayoutPanel1.TabIndex = 155
         '
+        'Label37
+        '
+        Me.Label37.AutoSize = True
+        Me.Label37.BackColor = System.Drawing.Color.Cyan
+        Me.Label37.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Label37.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label37.Location = New System.Drawing.Point(1033, 0)
+        Me.Label37.Name = "Label37"
+        Me.Label37.Size = New System.Drawing.Size(452, 18)
+        Me.Label37.TabIndex = 15
+        Me.Label37.Text = "Due Date"
+        Me.Label37.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'Label36
         '
         Me.Label36.AutoSize = True
         Me.Label36.BackColor = System.Drawing.Color.Cyan
         Me.Label36.Dock = System.Windows.Forms.DockStyle.Top
         Me.Label36.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label36.Location = New System.Drawing.Point(694, 0)
+        Me.Label36.Location = New System.Drawing.Point(692, 0)
         Me.Label36.Name = "Label36"
         Me.Label36.Size = New System.Drawing.Size(335, 18)
         Me.Label36.TabIndex = 14
@@ -391,9 +485,9 @@ Partial Class calibrate
         Me.Label35.BackColor = System.Drawing.Color.Cyan
         Me.Label35.Dock = System.Windows.Forms.DockStyle.Top
         Me.Label35.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label35.Location = New System.Drawing.Point(331, 0)
+        Me.Label35.Location = New System.Drawing.Point(330, 0)
         Me.Label35.Name = "Label35"
-        Me.Label35.Size = New System.Drawing.Size(357, 18)
+        Me.Label35.Size = New System.Drawing.Size(356, 18)
         Me.Label35.TabIndex = 13
         Me.Label35.Text = "Serial No."
         Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -406,7 +500,7 @@ Partial Class calibrate
         Me.Label34.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.Label34.Location = New System.Drawing.Point(3, 0)
         Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(322, 18)
+        Me.Label34.Size = New System.Drawing.Size(321, 18)
         Me.Label34.TabIndex = 12
         Me.Label34.Text = "Description"
         Me.Label34.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -636,14 +730,15 @@ Partial Class calibrate
         Me.Label49.TabIndex = 175
         Me.Label49.Text = "End"
         '
-        'TextBox21
+        'txtHumidityEnd
         '
-        Me.TextBox21.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox21.Location = New System.Drawing.Point(440, 1408)
-        Me.TextBox21.Name = "TextBox21"
-        Me.TextBox21.ReadOnly = True
-        Me.TextBox21.Size = New System.Drawing.Size(141, 25)
-        Me.TextBox21.TabIndex = 174
+        Me.txtHumidityEnd.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.txtHumidityEnd.Location = New System.Drawing.Point(440, 1408)
+        Me.txtHumidityEnd.Name = "txtHumidityEnd"
+        Me.txtHumidityEnd.ReadOnly = True
+        Me.txtHumidityEnd.Size = New System.Drawing.Size(141, 25)
+        Me.txtHumidityEnd.TabIndex = 174
+        Me.txtHumidityEnd.Text = "12"
         '
         'Label50
         '
@@ -665,14 +760,15 @@ Partial Class calibrate
         Me.Label51.TabIndex = 172
         Me.Label51.Text = "Start"
         '
-        'TextBox22
+        'txtHumidityStart
         '
-        Me.TextBox22.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox22.Location = New System.Drawing.Point(440, 1368)
-        Me.TextBox22.Name = "TextBox22"
-        Me.TextBox22.ReadOnly = True
-        Me.TextBox22.Size = New System.Drawing.Size(141, 25)
-        Me.TextBox22.TabIndex = 171
+        Me.txtHumidityStart.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.txtHumidityStart.Location = New System.Drawing.Point(440, 1368)
+        Me.txtHumidityStart.Name = "txtHumidityStart"
+        Me.txtHumidityStart.ReadOnly = True
+        Me.txtHumidityStart.Size = New System.Drawing.Size(141, 25)
+        Me.txtHumidityStart.TabIndex = 171
+        Me.txtHumidityStart.Text = "2"
         '
         'Label52
         '
@@ -694,14 +790,15 @@ Partial Class calibrate
         Me.Label53.TabIndex = 169
         Me.Label53.Text = "End"
         '
-        'TextBox23
+        'txtTempEnd
         '
-        Me.TextBox23.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox23.Location = New System.Drawing.Point(160, 1408)
-        Me.TextBox23.Name = "TextBox23"
-        Me.TextBox23.ReadOnly = True
-        Me.TextBox23.Size = New System.Drawing.Size(141, 25)
-        Me.TextBox23.TabIndex = 168
+        Me.txtTempEnd.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.txtTempEnd.Location = New System.Drawing.Point(160, 1408)
+        Me.txtTempEnd.Name = "txtTempEnd"
+        Me.txtTempEnd.ReadOnly = True
+        Me.txtTempEnd.Size = New System.Drawing.Size(141, 25)
+        Me.txtTempEnd.TabIndex = 168
+        Me.txtTempEnd.Text = "10"
         '
         'Label54
         '
@@ -723,14 +820,15 @@ Partial Class calibrate
         Me.Label55.TabIndex = 166
         Me.Label55.Text = "Start"
         '
-        'TextBox24
+        'txtTempStart
         '
-        Me.TextBox24.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.TextBox24.Location = New System.Drawing.Point(160, 1368)
-        Me.TextBox24.Name = "TextBox24"
-        Me.TextBox24.ReadOnly = True
-        Me.TextBox24.Size = New System.Drawing.Size(141, 25)
-        Me.TextBox24.TabIndex = 165
+        Me.txtTempStart.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.txtTempStart.Location = New System.Drawing.Point(160, 1368)
+        Me.txtTempStart.Name = "txtTempStart"
+        Me.txtTempStart.ReadOnly = True
+        Me.txtTempStart.Size = New System.Drawing.Size(141, 25)
+        Me.txtTempStart.TabIndex = 165
+        Me.txtTempStart.Text = "1"
         '
         'Label56
         '
@@ -1235,100 +1333,6 @@ Partial Class calibrate
         Me.Label3.TabIndex = 37
         Me.Label3.Text = "Preview Report"
         '
-        'Label37
-        '
-        Me.Label37.AutoSize = True
-        Me.Label37.BackColor = System.Drawing.Color.Cyan
-        Me.Label37.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Label37.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label37.Location = New System.Drawing.Point(1035, 0)
-        Me.Label37.Name = "Label37"
-        Me.Label37.Size = New System.Drawing.Size(450, 18)
-        Me.Label37.TabIndex = 15
-        Me.Label37.Text = "Due Date"
-        Me.Label37.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Panel5
-        '
-        Me.Panel5.AutoScroll = True
-        Me.Panel5.Controls.Add(Me.TableLayoutPanel2)
-        Me.Panel5.Location = New System.Drawing.Point(56, 1085)
-        Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(1488, 181)
-        Me.Panel5.TabIndex = 195
-        '
-        'TableLayoutPanel2
-        '
-        Me.TableLayoutPanel2.AutoScroll = True
-        Me.TableLayoutPanel2.ColumnCount = 4
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.49621!))
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.50379!))
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 341.0!))
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 455.0!))
-        Me.TableLayoutPanel2.Controls.Add(Me.Label27, 3, 0)
-        Me.TableLayoutPanel2.Controls.Add(Me.Label30, 2, 0)
-        Me.TableLayoutPanel2.Controls.Add(Me.Label32, 1, 0)
-        Me.TableLayoutPanel2.Controls.Add(Me.Label33, 0, 0)
-        Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top
-        Me.TableLayoutPanel2.Location = New System.Drawing.Point(0, 0)
-        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
-        Me.TableLayoutPanel2.RowCount = 1
-        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanel2.Size = New System.Drawing.Size(1488, 181)
-        Me.TableLayoutPanel2.TabIndex = 155
-        '
-        'Label27
-        '
-        Me.Label27.AutoSize = True
-        Me.Label27.BackColor = System.Drawing.Color.Cyan
-        Me.Label27.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Label27.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label27.Location = New System.Drawing.Point(1035, 0)
-        Me.Label27.Name = "Label27"
-        Me.Label27.Size = New System.Drawing.Size(450, 18)
-        Me.Label27.TabIndex = 15
-        Me.Label27.Text = "model"
-        Me.Label27.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label30
-        '
-        Me.Label30.AutoSize = True
-        Me.Label30.BackColor = System.Drawing.Color.Cyan
-        Me.Label30.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Label30.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label30.Location = New System.Drawing.Point(694, 0)
-        Me.Label30.Name = "Label30"
-        Me.Label30.Size = New System.Drawing.Size(335, 18)
-        Me.Label30.TabIndex = 14
-        Me.Label30.Text = "Cal Report Ref."
-        Me.Label30.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label32
-        '
-        Me.Label32.AutoSize = True
-        Me.Label32.BackColor = System.Drawing.Color.Cyan
-        Me.Label32.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Label32.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label32.Location = New System.Drawing.Point(331, 0)
-        Me.Label32.Name = "Label32"
-        Me.Label32.Size = New System.Drawing.Size(357, 18)
-        Me.Label32.TabIndex = 13
-        Me.Label32.Text = "Serial No."
-        Me.Label32.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label33
-        '
-        Me.Label33.AutoSize = True
-        Me.Label33.BackColor = System.Drawing.Color.Cyan
-        Me.Label33.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Label33.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label33.Location = New System.Drawing.Point(3, 0)
-        Me.Label33.Name = "Label33"
-        Me.Label33.Size = New System.Drawing.Size(322, 18)
-        Me.Label33.TabIndex = 12
-        Me.Label33.Text = "Description"
-        Me.Label33.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
         'calibrate
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1346,6 +1350,9 @@ Partial Class calibrate
         CType(Me.logoBtn, System.ComponentModel.ISupportInitialize).EndInit()
         Me.mainPanelCalibrateInp.ResumeLayout(False)
         Me.mainPanelCalibrateInp.PerformLayout()
+        Me.Panel5.ResumeLayout(False)
+        Me.TableLayoutPanel2.ResumeLayout(False)
+        Me.TableLayoutPanel2.PerformLayout()
         Me.panelRefContainer.ResumeLayout(False)
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
@@ -1354,9 +1361,6 @@ Partial Class calibrate
         CType(Me.dataGridResult, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel7.ResumeLayout(False)
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.Panel5.ResumeLayout(False)
-        Me.TableLayoutPanel2.ResumeLayout(False)
-        Me.TableLayoutPanel2.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1440,16 +1444,16 @@ Partial Class calibrate
     Friend WithEvents Label47 As System.Windows.Forms.Label
     Friend WithEvents Label48 As System.Windows.Forms.Label
     Friend WithEvents Label49 As System.Windows.Forms.Label
-    Friend WithEvents TextBox21 As System.Windows.Forms.TextBox
+    Friend WithEvents txtHumidityEnd As System.Windows.Forms.TextBox
     Friend WithEvents Label50 As System.Windows.Forms.Label
     Friend WithEvents Label51 As System.Windows.Forms.Label
-    Friend WithEvents TextBox22 As System.Windows.Forms.TextBox
+    Friend WithEvents txtHumidityStart As System.Windows.Forms.TextBox
     Friend WithEvents Label52 As System.Windows.Forms.Label
     Friend WithEvents Label53 As System.Windows.Forms.Label
-    Friend WithEvents TextBox23 As System.Windows.Forms.TextBox
+    Friend WithEvents txtTempEnd As System.Windows.Forms.TextBox
     Friend WithEvents Label54 As System.Windows.Forms.Label
     Friend WithEvents Label55 As System.Windows.Forms.Label
-    Friend WithEvents TextBox24 As System.Windows.Forms.TextBox
+    Friend WithEvents txtTempStart As System.Windows.Forms.TextBox
     Friend WithEvents Label56 As System.Windows.Forms.Label
     ' WithEvents LineShape7 As Microsoft.VisualBasic.PowerPacks.LineShape
     'Friend WithEvents LineShape8 As Microsoft.VisualBasic.PowerPacks.LineShape
