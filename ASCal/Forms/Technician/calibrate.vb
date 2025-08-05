@@ -648,118 +648,8 @@ Public Class calibrate
                     SQLiteHelper.InsertAccessoryUsed(jobID, accessories)
                 End If
 
-                ' Excel prompt (updated references)
-                Using openFileDialog As New OpenFileDialog()
-                    openFileDialog.Title = "Select Excel Template"
-                    openFileDialog.Filter = "Excel Files|*.xlsx;*.xls"
-
-                    If openFileDialog.ShowDialog() = DialogResult.OK Then
-                        Dim selectedPath As String = openFileDialog.FileName
-                        Dim data As Dictionary(Of String, String) = excelHelper.LoadExcelValuesForCalibration(selectedPath)
-
-                        If data.Count > 0 Then
-                            ' --- Basic Info ---
-                            workOrderNo = data("workOrderNumber") ' L7
-                            technicalID.Text = data("technicalID") ' AN7
-                            dmmdescription.Text = data("description") ' K9
-                            manufaacturer.Text = data("manufacturer") ' K10
-                            dmmmodel.Text = data("model") ' K11
-                            serialNumber.Text = data("serialNumber") ' K12
-                            range.Text = data("range") ' K13
-                            readability.Text = data("readability") ' K14
-                            prevCalCert.Text = data("prevCalCert") ' K15
-
-                            'receivedDate.Value = DateTime.Parse(data("receivedDate")) ' A9
-                            'calibrationDate.Value = DateTime.Parse(data("calibrationDate")) ' A10
-
-                            Dim parsedReceived As Date
-                            If DateTime.TryParse(data("receivedDate"), parsedReceived) Then
-                                receivedDate.Value = parsedReceived
-                            Else
-                                receivedDate.Value = DateTime.Today ' Or any fallback date
-                            End If
-
-                            Dim parsedCalDate As Date
-                            If DateTime.TryParse(data("calibrationDate"), parsedCalDate) Then
-                                calibrationDate.Value = parsedCalDate
-                            Else
-                                calibrationDate.Value = DateTime.Today ' Or any fallback date
-                            End If
-
-                            optionsInstalled.Text = data("optionsInstalled") ' A11
-                            customerPO.Text = data("customerPO") ' A12
-                            assetNumber.Text = data("assetNumber") ' A13
-                            accuracy.Text = data("accuracy") ' A14
-                            prevTech.Text = data("previousTechnician") ' A15
-
-                            ' --- Company Info ---
-                            contextMenuCompanies.Text = data("companyName") ' AG29
-                            compAdd.Text = data("companyAddress") ' H27
-
-                            ' --- Calibration Type / Location ---
-                            If data("isInhouse1").ToLower().Trim() = "x" OrElse data("isInhouse2").ToLower().Trim() = "x" Then
-                                CheckedListBox1.SetItemChecked(0, True) ' In-house
-                                specificSite.Enabled = False
-                                specificSite.Clear()
-                            Else
-                                CheckedListBox1.SetItemChecked(1, True) ' On-site
-                                specificSite.Enabled = True
-                                specificSite.Text = data("onsiteAddress")
-                            End If
-
-                            ' --- Environmental Conditions ---
-                            txtTempStart.Text = data("tempStart")
-                            txtTempEnd.Text = data("tempEnd")
-                            txtHumidityStart.Text = data("humidityStart")
-                            txtHumidityEnd.Text = data("humidityEnd")
-
-                            ' --- Reference Standards (2 rows) ---
-                            TableLayoutPanel1.RowCount = 1 ' Reset
-                            TableLayoutPanel1.Controls.Clear()
-                            For i As Integer = 1 To 2
-                                addRefStandard.PerformClick()
-                                Dim desc = TableLayoutPanel1.GetControlFromPosition(0, i)
-                                Dim serial = TableLayoutPanel1.GetControlFromPosition(1, i)
-                                Dim calref = TableLayoutPanel1.GetControlFromPosition(2, i)
-                                Dim due = TableLayoutPanel1.GetControlFromPosition(3, i)
-
-                                If TypeOf desc Is TextBox Then CType(desc, TextBox).Text = data($"refDesc{i}")
-                                If TypeOf serial Is TextBox Then CType(serial, TextBox).Text = data($"refSerial{i}")
-                                If TypeOf calref Is TextBox Then CType(calref, TextBox).Text = data($"refCalRef{i}")
-                                If TypeOf due Is DateTimePicker Then
-                                    Dim parsedDueDate As Date
-                                    If DateTime.TryParse(data($"refDue{i}"), parsedDueDate) Then
-                                        CType(due, DateTimePicker).Value = parsedDueDate
-                                    Else
-                                        CType(due, DateTimePicker).Value = DateTime.Today
-                                    End If
-                                End If
-
-                            Next
-
-                            ' --- Accessories Used (2 rows) ---
-                            TableLayoutPanel2.RowCount = 1 ' Reset
-                            TableLayoutPanel2.Controls.Clear()
-                            For i As Integer = 1 To 2
-                                addAccUsed.PerformClick()
-                                Dim desc = TableLayoutPanel2.GetControlFromPosition(0, i)
-                                Dim serial = TableLayoutPanel2.GetControlFromPosition(1, i)
-                                Dim calref = TableLayoutPanel2.GetControlFromPosition(2, i)
-                                Dim modelAccessory = TableLayoutPanel2.GetControlFromPosition(3, i)
-
-                                If TypeOf desc Is TextBox Then CType(desc, TextBox).Text = data($"accDesc{i}")
-                                If TypeOf serial Is TextBox Then CType(serial, TextBox).Text = data($"accSerial{i}")
-                                If TypeOf calref Is TextBox Then CType(calref, TextBox).Text = data($"accCalRef{i}")
-                                If TypeOf modelAccessory Is TextBox Then CType(modelAccessory, TextBox).Text = "" ' Or set to something if available
-                            Next
-                        End If
-                    Else
-                        MessageBox.Show("Excel file selection cancelled.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                        Return
-                    End If
-                End Using
-
                 ' 🎉 Success Message
+
                 MessageBox.Show("Calibration job successfully saved!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 MessageBox.Show("Calibration job saved! Serial Number (Work Order No.): " & serialFormat)
 
@@ -806,6 +696,7 @@ Public Class calibrate
                         {"companyAddress", compAdd.Text},
                         {"isInhouse1", If(CheckedListBox1.GetItemChecked(0), "x", "")},
                         {"isInhouse2", If(CheckedListBox1.GetItemChecked(1), "x", "")},
+                        {"onsiteAddress", specificSite.Text},
                         {"refDesc1", GetTableText(TableLayoutPanel1, 0, 1)},
                         {"refDesc2", GetTableText(TableLayoutPanel1, 0, 2)},
                         {"refSerial1", GetTableText(TableLayoutPanel1, 1, 1)},
@@ -827,6 +718,10 @@ Public Class calibrate
                         {"humidityStart", txtHumidityStart.Text},
                         {"humidityEnd", txtHumidityEnd.Text}
                     }
+
+                    For Each kvp As KeyValuePair(Of String, String) In excelData
+                        Console.WriteLine($"{kvp.Key} = {kvp.Value}")
+                    Next
 
                     ' --- Export to Excel using helper function
                     excelHelper.SaveCalibrationToExcel(templatePath, savePath, excelData)
