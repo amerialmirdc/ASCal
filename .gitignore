@@ -15,12 +15,6 @@ bin/*
 !bin/Debug/
 !bin/Debug/**
 
-obj/
-*.exe
-*.dll
-*.pdb
-
-
 # VS Code directories
 .vscode/
 .vs/
