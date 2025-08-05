@@ -10,18 +10,20 @@ ECHO is on.
 *.sln.docstates
 
 # Build results
-bin/
+# Ignore everything in bin/ except bin/Debug/
+bin/*
+!bin/Debug/
+!bin/Debug/**
+
 obj/
 *.exe
 *.dll
 *.pdb
 
+
 # VS Code directories
 .vscode/
 .vs/
-
-# SQLite or DB files
-*.db
 
 # Backup files
 *.bak
@@ -34,11 +36,6 @@ obj/
 # Auto-generated files
 *.g.*
 GeneratedFiles/
-
-# NuGet packages
-*.nupkg
-*.snupkg
-packages/
 
 # Others
 *.swp
