@@ -2,6 +2,109 @@
 
 Public Class newDMMAdmin
 
+    Private defaultParameterValues As New Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String)))) From {
+    {"DC Voltage", New Dictionary(Of String, List(Of Tuple(Of String, String))) From {
+        {"600mV", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("60 mV", "-"), Tuple.Create("540 mV", "-"), Tuple.Create("-540 mV", "-")
+        }},
+        {"6V", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("0.6 V", "-"), Tuple.Create("5.4 V", "-"), Tuple.Create("-5.4 V", "-")
+        }},
+        {"60V", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("6 V", "-"), Tuple.Create("30 V", "-"), Tuple.Create("54 V", "-"), Tuple.Create("-6 V", "-"), Tuple.Create("-54 V", "-")
+        }},
+        {"600V", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("60 V", "-"), Tuple.Create("540 V", "-"), Tuple.Create("-540 V", "-")
+        }},
+        {"1000V", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("100 V", "-"), Tuple.Create("900 V", "-"), Tuple.Create("-900 V", "-")
+        }}
+    }},
+    {"AC Voltage", New Dictionary(Of String, List(Of Tuple(Of String, String))) From {
+        {"600mV", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("60 mV", "50Hz"), Tuple.Create("60 mV", "1Hz"),
+            Tuple.Create("540 mV", "50Hz"), Tuple.Create("540 mV", "1Hz")
+        }},
+        {"6V", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("0.6 V", "50Hz"), Tuple.Create("0.6 V", "1Hz"),
+            Tuple.Create("5.4 V", "50Hz"), Tuple.Create("5.4 V", "1Hz")
+        }},
+        {"60V", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("6 V", "50Hz"), Tuple.Create("6 V", "1Hz"),
+            Tuple.Create("30 V", "50Hz"), Tuple.Create("30 V", "1Hz"),
+            Tuple.Create("54 V", "50Hz"), Tuple.Create("54 V", "1Hz")
+        }},
+        {"600V", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("60 V", "50Hz"), Tuple.Create("60 V", "1Hz"),
+            Tuple.Create("540 V", "50Hz"), Tuple.Create("540 V", "1Hz")
+        }},
+        {"1000V", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("100 V", "50Hz"), Tuple.Create("100 V", "1Hz"),
+            Tuple.Create("900 V", "50Hz"), Tuple.Create("900 V", "1Hz")
+        }}
+    }},
+    {"Resistance", New Dictionary(Of String, List(Of Tuple(Of String, String))) From {
+        {"600Ω", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("0Ω", "-"), Tuple.Create("540Ω", "-")
+        }},
+        {"6kΩ", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("5.4Ω", "-")
+        }},
+        {"60kΩ", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("54Ω", "-")
+        }},
+        {"600kΩ", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("540Ω", "-")
+        }},
+        {"6MΩ", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("5.4Ω", "-")
+        }},
+        {"60MΩ", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("45Ω", "-")
+        }}
+    }},
+    {"DC Current", New Dictionary(Of String, List(Of Tuple(Of String, String))) From {
+        {"600µA", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("540µA", "-")
+        }},
+        {"6000µA", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("5400µA", "-")
+        }},
+        {"60mA", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("54mA", "-"), Tuple.Create("-54mA", "-")
+        }},
+        {"400mA", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("360mA", "-")
+        }},
+        {"6A", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("3A", "-"), Tuple.Create("5.4A", "-")
+        }},
+        {"10A", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("5A", "-"), Tuple.Create("9A", "-")
+        }}
+    }},
+    {"AC Current", New Dictionary(Of String, List(Of Tuple(Of String, String))) From {
+        {"600µA", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("540µA", "50Hz"), Tuple.Create("540µA", "1Hz")
+        }},
+        {"6000µA", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("5400µA", "50Hz"), Tuple.Create("5400µA", "1Hz")
+        }},
+        {"60mA", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("54mA", "50Hz"), Tuple.Create("54mA", "1Hz")
+        }},
+        {"400mA", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("360mA", "50Hz"), Tuple.Create("360mA", "1Hz")
+        }},
+        {"6A", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("5.4A", "50Hz"), Tuple.Create("5.4A", "1Hz")
+        }},
+        {"10A", New List(Of Tuple(Of String, String)) From {
+            Tuple.Create("9A", "50Hz"), Tuple.Create("9A", "1Hz")
+        }}
+    }}
+}
+
     ' ✅ Handles all top-level navigation clicks from the admin panel
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, button1.Click, backBtn.Click
 
@@ -410,6 +513,27 @@ Public Class newDMMAdmin
         radioPanel.Controls.Add(rbtn)
         rbtn.Checked = True
 
+        ' Step 6: Load default nominal values if available
+        Dim categoryName As String = ""
+        Select Case btn.Name
+            Case "btnAddRange" : categoryName = "AC Voltage"
+            Case "btnAddRangeDCV" : categoryName = "DC Voltage"
+            Case "btnAddRangeACC" : categoryName = "AC Current"
+            Case "btnAddRangeDCC" : categoryName = "DC Current"
+            Case "btnAddRangeRES" : categoryName = "Resistance"
+        End Select
+
+        If defaultParameterValues.ContainsKey(categoryName) AndAlso defaultParameterValues(categoryName).ContainsKey(fullRange) Then
+            For Each pair In defaultParameterValues(categoryName)(fullRange)
+                Dim nominalVal = pair.Item1
+                Dim freqOrUnit = pair.Item2
+                Dim item As New ListViewItem(nominalVal)
+                item.SubItems.Add(freqOrUnit)
+                item.Group = group
+                targetListView.Items.Add(item)
+            Next
+        End If
+
         ' Step 7: Scroll to bottom of target ListView
         If targetListView.Items.Count > 0 Then
             targetListView.EnsureVisible(targetListView.Items.Count - 1)
@@ -799,5 +923,38 @@ Public Class newDMMAdmin
             txtNominalValue.Focus() ' optional: move to nominal input after typing freq
         End If
     End Sub
+
+    Private Function ParseDefaultParameters(filePath As String) As Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String))))
+        Dim result As New Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String))))()
+        Dim currentCategory As String = ""
+        Dim currentRange As String = ""
+
+        For Each line In System.IO.File.ReadLines(filePath)
+            line = line.Trim()
+
+            If line.EndsWith("Test") Then
+                currentCategory = line.Replace(" Test", "").Trim()
+                If Not result.ContainsKey(currentCategory) Then
+                    result(currentCategory) = New Dictionary(Of String, List(Of Tuple(Of String, String)))()
+                End If
+            ElseIf line.StartsWith("Range:") Then
+                currentRange = line.Replace("Range:", "").Trim()
+                If Not result(currentCategory).ContainsKey(currentRange) Then
+                    result(currentCategory)(currentRange) = New List(Of Tuple(Of String, String))()
+                End If
+            ElseIf line.StartsWith("Nominal:") Then
+                Dim nominal = line.Replace("Nominal:", "").Trim()
+                result(currentCategory)(currentRange).Add(Tuple.Create(nominal, "-")) ' default frequency placeholder
+            ElseIf line.StartsWith("Frequency:") Then
+                Dim freq = line.Replace("Frequency:", "").Trim()
+                If result(currentCategory)(currentRange).Count > 0 Then
+                    Dim last = result(currentCategory)(currentRange).Count - 1
+                    result(currentCategory)(currentRange)(last) = Tuple.Create(result(currentCategory)(currentRange)(last).Item1, freq)
+                End If
+            End If
+        Next
+
+        Return result
+    End Function
 
 End Class

@@ -1,0 +1,140 @@
+DC Voltage Test
+Range: 600mV
+	Nominal: 60 mV
+	Nominal: 540 mV
+	Nominal: -540 mV
+Range: 6V
+	Nominal: 0.6 V
+	Nominal: 5.4 V
+	Nominal: -5.4 V
+Range: 60V
+	Nominal: 6 V
+	Nominal: 30 V
+	Nominal: 54 V
+	Nominal: -6 V
+	Nominal: -54 V
+Range: 600V
+	Nominal: 60 V
+	Nominal: 540 V
+	Nominal: -540 V
+Range: 1000V
+	Nominal: 100 V
+	Nominal: 900 V
+	Nominal: -900 V
+
+AC Voltage Test
+Range: 600mV
+	Nominal: 60 mV
+		Frequency: 50Hz
+	Nominal: 60 mV
+		Frequency: 1Hz
+	Nominal: 540 mV
+		Frequency: 50Hz
+	Nominal: 540 mV
+		Frequency: 1Hz
+Range: 6V
+	Nominal: 0.6 V
+		Frequency: 50Hz
+	Nominal: 0.6 V
+		Frequency: 1Hz
+	Nominal: 5.4 V
+		Frequency: 50Hz
+	Nominal: 5.4 V
+		Frequency: 1Hz
+Range: 60V
+	Nominal: 6 V
+		Frequency: 50Hz
+	Nominal: 6 V
+		Frequency: 1Hz
+	Nominal: 30 V
+		Frequency: 50Hz
+	Nominal: 30 V
+		Frequency: 1Hz
+	Nominal: 54 V
+		Frequency: 50Hz
+	Nominal: 54 V
+		Frequency: 1Hz
+Range: 600V
+	Nominal: 60 V
+		Frequency: 50Hz
+	Nominal: 60 V
+		Frequency: 1Hz
+	Nominal: 540 V
+		Frequency: 50Hz
+	Nominal: 540 V
+		Frequency: 1Hz
+Range: 1000V
+	Nominal: 100 V
+		Frequency: 50Hz
+	Nominal: 100 V
+		Frequency: 1Hz
+	Nominal: 900 V
+		Frequency: 50Hz
+	Nominal: 900 V
+		Frequency: 1Hz
+
+Resistance Test
+
+Range: 600Ω
+	Nominal: 0Ω
+	Nominal: 540Ω
+Range: 6kΩ
+	Nominal: 5.4Ω
+Range: 60kΩ
+	Nominal: 54Ω
+Range: 600kΩ
+	Nominal: 540Ω
+Range: 6MΩ
+	Nominal: 5.4Ω
+Range: 60MΩ
+	Nominal: 45Ω
+
+DC Current Test
+Range: 600µA
+	Nominal: 540µA
+Range: 6000µA
+	Nominal: 5400µA
+Range: 60mA
+	Nominal: 54mA
+	Nominal: -54mA
+Range: 400mA
+	Nominal: 360mA
+Range: 6A
+	Nominal: 3A
+	Nominal: 5.4A
+Range: 10A
+	Nominal: 5A
+	Nominal: 9A
+
+AC Current Test
+Range: 600µA
+	Nominal: 540µA
+		Frequency: 50Hz
+	Nominal: 540µA
+		Frequency: 1Hz
+Range: 6000µA
+	Nominal: 5400µA 
+		Frequency: 50Hz
+	Nominal: 5400µA 
+		Frequency: 1Hz
+Range: 60mA
+	Nominal: 54mA
+		Frequency: 50Hz
+	Nominal: 54mA
+		Frequency: 1Hz
+Range: 400mA
+	Nominal: 360mA
+		Frequency: 50Hz
+	Nominal: 360mA
+		Frequency: 1Hz
+Range: 6A
+	Nominal: 5.4A
+		Frequency: 50Hz
+	Nominal: 5.4A
+	Frequency: 1Hz
+Range: 10A
+	Nominal: 9A
+		Frequency: 50Hz
+	Nominal: 9A
+		Frequency: 1Hz
+
