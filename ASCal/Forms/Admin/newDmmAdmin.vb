@@ -763,7 +763,8 @@ Public Class newDMMAdmin
         Try
             SQLiteHelper.InsertOrUpdateDMM("", modelText, manufacturerText, descriptionText, paramDict)
             MessageBox.Show("New DMM and parameters successfully saved!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Me.Close()
+            'Me.Close()
+            backBtn.PerformClick()
         Catch ex As Exception
             MessageBox.Show("Error inserting DMM: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try

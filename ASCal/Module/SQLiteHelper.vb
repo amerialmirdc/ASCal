@@ -749,24 +749,24 @@ Module SQLiteHelper
     End Class
 
     ' 💾 Insert reference standards used into the database
-    Public Sub InsertReferenceStandards(calibrationId As Integer, standards As List(Of ReferenceStandard))
-        Using conn = GetConnection()
-            conn.Open()
-            Dim query As String = "INSERT INTO ReferenceStandardUsed (calibrationId, description, serialNo, calReportRef, dueDate) " &
-                              "VALUES (@calibrationId, @description, @serialNo, @calReportRef, @dueDate)"
+    'Public Sub InsertReferenceStandards(calibrationId As Integer, standards As List(Of ReferenceStandard))
+    '    Using conn = GetConnection()
+    '        conn.Open()
+    '        Dim query As String = "INSERT INTO ReferenceStandardUsed (calibrationId, description, serialNo, calReportRef, dueDate) " &
+    '                          "VALUES (@calibrationId, @description, @serialNo, @calReportRef, @dueDate)"
 
-            For Each std In standards
-                Using cmd As New SQLiteCommand(query, conn)
-                    cmd.Parameters.AddWithValue("@calibrationId", calibrationId)
-                    cmd.Parameters.AddWithValue("@description", std.Description)
-                    cmd.Parameters.AddWithValue("@serialNo", std.SerialNo)
-                    cmd.Parameters.AddWithValue("@calReportRef", std.CalReportRef)
-                    cmd.Parameters.AddWithValue("@dueDate", std.DueDate)
-                    cmd.ExecuteNonQuery()
-                End Using
-            Next
-        End Using
-    End Sub
+    '        For Each std In standards
+    '            Using cmd As New SQLiteCommand(query, conn)
+    '                cmd.Parameters.AddWithValue("@calibrationId", calibrationId)
+    '                cmd.Parameters.AddWithValue("@description", std.Description)
+    '                cmd.Parameters.AddWithValue("@serialNo", std.SerialNo)
+    '                cmd.Parameters.AddWithValue("@calReportRef", std.CalReportRef)
+    '                cmd.Parameters.AddWithValue("@dueDate", std.DueDate)
+    '                cmd.ExecuteNonQuery()
+    '            End Using
+    '        Next
+    '    End Using
+    'End Sub
 
     Public Class AccessoryUsed
         Public Property ID As Integer

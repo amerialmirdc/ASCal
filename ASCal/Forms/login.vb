@@ -8,51 +8,53 @@
 
     ' Login button click
     Private Sub loginBtn_Click(sender As Object, e As EventArgs) Handles loginBtn.Click
-        Dim username As String = usernameTextbox.Text.Trim()
-        Dim password As String = passwordTextbox.Text.Trim()
+        frmMain.Show()
+        Me.Close()
+        'Dim username As String = usernameTextbox.Text.Trim()
+        'Dim password As String = passwordTextbox.Text.Trim()
 
-        ' Check from SQLite personnel table
-        Dim users As List(Of userManagementAdmin.Personnel) = LoadAllUsers()
-        Dim matchedUser = users.FirstOrDefault(Function(u) u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) AndAlso u.Password = password)
+        '' Check from SQLite personnel table
+        'Dim users As List(Of userManagementAdmin.Personnel) = LoadAllUsers()
+        'Dim matchedUser = users.FirstOrDefault(Function(u) u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) AndAlso u.Password = password)
 
-        If matchedUser IsNot Nothing Then
-            ' Store user data into session
-            CurrentUser = matchedUser
-            SessionManager.LoggedInUser = matchedUser
+        'If matchedUser IsNot Nothing Then
+        '    ' Store user data into session
+        '    CurrentUser = matchedUser
+        '    SessionManager.LoggedInUser = matchedUser
 
-            ' Clear fields
-            usernameTextbox.Clear()
-            passwordTextbox.Clear()
+        '    ' Clear fields
+        '    usernameTextbox.Clear()
+        '    passwordTextbox.Clear()
 
-            ' Navigate to correct landing page based on AccountType
-            Select Case matchedUser.AccountType.ToLower()
-                Case "administrator"
-                    landingPageAdmin.Show()
-                    landingPageAdmin.RefreshData()
-                Case "technician"
-                    landingPageTechnician.Show()
-                    landingPageTechnician.RefreshData()
-                Case "signatory"
-                    landingPageSignatory.Show()
-                    landingPageSignatory.RefreshData()
-                Case Else
-                    MessageBox.Show("Account type not recognized.", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                    Exit Sub
-            End Select
+        '    ' Navigate to correct landing page based on AccountType
+        '    Select Case matchedUser.AccountType.ToLower()
+        '        Case "administrator"
+        '            landingPageAdmin.Show()
+        '            landingPageAdmin.RefreshData()
+        '        Case "technician"
+        '            landingPageTechnician.Show()
+        '            landingPageTechnician.RefreshData()
+        '        Case "signatory"
+        '            landingPageSignatory.Show()
+        '            landingPageSignatory.RefreshData()
+        '        Case Else
+        '            MessageBox.Show("Account type not recognized.", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        '            Exit Sub
+        '    End Select
 
-            ' Refresh shared forms after login
-            calibrate.RefreshData()
-            jobDashTech.RefreshData()
+        '    ' Refresh shared forms after login
+        '    calibrate.RefreshData()
+        '    jobDashTech.RefreshData()
 
-            ' Close login form
-            Me.Close()
-        Else
-            ' If login failed
-            MessageBox.Show("Invalid credentials. Please try again.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            usernameTextbox.Clear()
-            passwordTextbox.Clear()
-            usernameTextbox.Focus()
-        End If
+        '    ' Close login form
+        '    Me.Close()
+        'Else
+        '    ' If login failed
+        '    MessageBox.Show("Invalid credentials. Please try again.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        '    usernameTextbox.Clear()
+        '    passwordTextbox.Clear()
+        '    usernameTextbox.Focus()
+        'End If
     End Sub
 
     ' Optional: clear fields when form loads
