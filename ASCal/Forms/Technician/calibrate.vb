@@ -622,9 +622,9 @@ Public Class calibrate
                     })
                     End If
                 Next
-                If refStandards.Count > 0 Then
-                    SQLiteHelper.InsertReferenceStandards(jobID, refStandards)
-                End If
+                'If refStandards.Count > 0 Then
+                '    SQLiteHelper.InsertReferenceStandards(jobID, refStandards)
+                'End If
 
                 ' ✅ Save Accessories Used
                 Dim accessories As New List(Of AccessoryUsed)
@@ -657,7 +657,7 @@ Public Class calibrate
 
                 If result = DialogResult.Yes Then
                     ' --- Use fixed template path
-                    Dim templatePath As String = "C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\template.xlsx"
+                    Dim templatePath As String = "C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\template.xlsx"
 
                     If Not File.Exists(templatePath) Then
                         MessageBox.Show("Template file not found at: " & templatePath, "Template Missing", MessageBoxButtons.OK, MessageBoxIcon.Error)
