@@ -188,9 +188,6 @@ Partial Class calibratingResult
         Me.Label422 = New System.Windows.Forms.Label()
         Me.Label423 = New System.Windows.Forms.Label()
         Me.Label424 = New System.Windows.Forms.Label()
-        Me.Label435 = New System.Windows.Forms.Label()
-        Me.Label436 = New System.Windows.Forms.Label()
-        Me.Label437 = New System.Windows.Forms.Label()
         Me.Label438 = New System.Windows.Forms.Label()
         Me.Label439 = New System.Windows.Forms.Label()
         Me.Label440 = New System.Windows.Forms.Label()
@@ -388,6 +385,30 @@ Partial Class calibratingResult
         Me.Label583 = New System.Windows.Forms.Label()
         Me.Panel10 = New System.Windows.Forms.Panel()
         Me.Panel9 = New System.Windows.Forms.Panel()
+        Me.Label617 = New System.Windows.Forms.Label()
+        Me.Label618 = New System.Windows.Forms.Label()
+        Me.Label619 = New System.Windows.Forms.Label()
+        Me.Label620 = New System.Windows.Forms.Label()
+        Me.Label621 = New System.Windows.Forms.Label()
+        Me.Label622 = New System.Windows.Forms.Label()
+        Me.Label623 = New System.Windows.Forms.Label()
+        Me.Label624 = New System.Windows.Forms.Label()
+        Me.Label625 = New System.Windows.Forms.Label()
+        Me.Label626 = New System.Windows.Forms.Label()
+        Me.Label627 = New System.Windows.Forms.Label()
+        Me.Label628 = New System.Windows.Forms.Label()
+        Me.Label557 = New System.Windows.Forms.Label()
+        Me.Label558 = New System.Windows.Forms.Label()
+        Me.Label559 = New System.Windows.Forms.Label()
+        Me.Label560 = New System.Windows.Forms.Label()
+        Me.Label561 = New System.Windows.Forms.Label()
+        Me.Label616 = New System.Windows.Forms.Label()
+        Me.Label554 = New System.Windows.Forms.Label()
+        Me.Label555 = New System.Windows.Forms.Label()
+        Me.Label556 = New System.Windows.Forms.Label()
+        Me.Label544 = New System.Windows.Forms.Label()
+        Me.Label552 = New System.Windows.Forms.Label()
+        Me.Label553 = New System.Windows.Forms.Label()
         Me.Label612 = New System.Windows.Forms.Label()
         Me.Label613 = New System.Windows.Forms.Label()
         Me.Label614 = New System.Windows.Forms.Label()
@@ -396,9 +417,6 @@ Partial Class calibratingResult
         Me.TextBox314 = New System.Windows.Forms.TextBox()
         Me.TextBox315 = New System.Windows.Forms.TextBox()
         Me.TextBox319 = New System.Windows.Forms.TextBox()
-        Me.TextBox320 = New System.Windows.Forms.TextBox()
-        Me.TextBox321 = New System.Windows.Forms.TextBox()
-        Me.TextBox322 = New System.Windows.Forms.TextBox()
         Me.TextBox327 = New System.Windows.Forms.TextBox()
         Me.TextBox328 = New System.Windows.Forms.TextBox()
         Me.TextBox329 = New System.Windows.Forms.TextBox()
@@ -434,9 +452,6 @@ Partial Class calibratingResult
         Me.TextBox688 = New System.Windows.Forms.TextBox()
         Me.TextBox689 = New System.Windows.Forms.TextBox()
         Me.TextBox690 = New System.Windows.Forms.TextBox()
-        Me.TextBox691 = New System.Windows.Forms.TextBox()
-        Me.TextBox692 = New System.Windows.Forms.TextBox()
-        Me.TextBox693 = New System.Windows.Forms.TextBox()
         Me.TextBox694 = New System.Windows.Forms.TextBox()
         Me.TextBox695 = New System.Windows.Forms.TextBox()
         Me.TextBox696 = New System.Windows.Forms.TextBox()
@@ -444,9 +459,6 @@ Partial Class calibratingResult
         Me.TextBox702 = New System.Windows.Forms.TextBox()
         Me.TextBox703 = New System.Windows.Forms.TextBox()
         Me.TextBox704 = New System.Windows.Forms.TextBox()
-        Me.TextBox705 = New System.Windows.Forms.TextBox()
-        Me.TextBox706 = New System.Windows.Forms.TextBox()
-        Me.TextBox707 = New System.Windows.Forms.TextBox()
         Me.TextBox708 = New System.Windows.Forms.TextBox()
         Me.TextBox709 = New System.Windows.Forms.TextBox()
         Me.TextBox710 = New System.Windows.Forms.TextBox()
@@ -454,9 +466,6 @@ Partial Class calibratingResult
         Me.TextBox716 = New System.Windows.Forms.TextBox()
         Me.TextBox717 = New System.Windows.Forms.TextBox()
         Me.TextBox718 = New System.Windows.Forms.TextBox()
-        Me.TextBox719 = New System.Windows.Forms.TextBox()
-        Me.TextBox720 = New System.Windows.Forms.TextBox()
-        Me.TextBox721 = New System.Windows.Forms.TextBox()
         Me.TextBox722 = New System.Windows.Forms.TextBox()
         Me.TextBox723 = New System.Windows.Forms.TextBox()
         Me.TextBox724 = New System.Windows.Forms.TextBox()
@@ -464,9 +473,6 @@ Partial Class calibratingResult
         Me.TextBox730 = New System.Windows.Forms.TextBox()
         Me.TextBox731 = New System.Windows.Forms.TextBox()
         Me.TextBox732 = New System.Windows.Forms.TextBox()
-        Me.TextBox733 = New System.Windows.Forms.TextBox()
-        Me.TextBox734 = New System.Windows.Forms.TextBox()
-        Me.TextBox735 = New System.Windows.Forms.TextBox()
         Me.TextBox736 = New System.Windows.Forms.TextBox()
         Me.TextBox737 = New System.Windows.Forms.TextBox()
         Me.TextBox738 = New System.Windows.Forms.TextBox()
@@ -474,9 +480,6 @@ Partial Class calibratingResult
         Me.TextBox744 = New System.Windows.Forms.TextBox()
         Me.TextBox745 = New System.Windows.Forms.TextBox()
         Me.TextBox746 = New System.Windows.Forms.TextBox()
-        Me.TextBox747 = New System.Windows.Forms.TextBox()
-        Me.TextBox748 = New System.Windows.Forms.TextBox()
-        Me.TextBox749 = New System.Windows.Forms.TextBox()
         Me.TextBox750 = New System.Windows.Forms.TextBox()
         Me.TextBox751 = New System.Windows.Forms.TextBox()
         Me.TextBox752 = New System.Windows.Forms.TextBox()
@@ -484,9 +487,6 @@ Partial Class calibratingResult
         Me.TextBox758 = New System.Windows.Forms.TextBox()
         Me.TextBox759 = New System.Windows.Forms.TextBox()
         Me.TextBox760 = New System.Windows.Forms.TextBox()
-        Me.TextBox761 = New System.Windows.Forms.TextBox()
-        Me.TextBox762 = New System.Windows.Forms.TextBox()
-        Me.TextBox763 = New System.Windows.Forms.TextBox()
         Me.TextBox764 = New System.Windows.Forms.TextBox()
         Me.TextBox765 = New System.Windows.Forms.TextBox()
         Me.TextBox766 = New System.Windows.Forms.TextBox()
@@ -499,11 +499,8 @@ Partial Class calibratingResult
         Me.Label36 = New System.Windows.Forms.Label()
         Me.TextBox774 = New System.Windows.Forms.TextBox()
         Me.Label37 = New System.Windows.Forms.Label()
-        Me.TextBox775 = New System.Windows.Forms.TextBox()
         Me.Label38 = New System.Windows.Forms.Label()
-        Me.TextBox776 = New System.Windows.Forms.TextBox()
         Me.Label39 = New System.Windows.Forms.Label()
-        Me.TextBox777 = New System.Windows.Forms.TextBox()
         Me.Label40 = New System.Windows.Forms.Label()
         Me.Label41 = New System.Windows.Forms.Label()
         Me.TextBox778 = New System.Windows.Forms.TextBox()
@@ -1142,6 +1139,10 @@ Partial Class calibratingResult
         Me.Label3 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.cameraPanel = New System.Windows.Forms.Panel()
+        Me.Label435 = New System.Windows.Forms.Label()
+        Me.Label436 = New System.Windows.Forms.Label()
+        Me.Label437 = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout
         Me.Panel8.SuspendLayout
         Me.Panel4.SuspendLayout
@@ -1275,10 +1276,10 @@ Partial Class calibratingResult
         Me.Panel5.Controls.Add(Me.Panel9)
         Me.Panel5.Controls.Add(Me.Panel7)
         Me.Panel5.Controls.Add(Me.Panel6)
-        Me.Panel5.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel5.Location = New System.Drawing.Point(300, 0)
+        Me.Panel5.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.Panel5.Location = New System.Drawing.Point(300, 242)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(1624, 1061)
+        Me.Panel5.Size = New System.Drawing.Size(1624, 819)
         Me.Panel5.TabIndex = 24
         '
         'Panel12
@@ -1426,7 +1427,7 @@ Partial Class calibratingResult
         Me.Panel12.Controls.Add(Me.Label530)
         Me.Panel12.Controls.Add(Me.Label535)
         Me.Panel12.Controls.Add(Me.Label536)
-        Me.Panel12.Location = New System.Drawing.Point(6, 1992)
+        Me.Panel12.Location = New System.Drawing.Point(6, 1880)
         Me.Panel12.Name = "Panel12"
         Me.Panel12.Size = New System.Drawing.Size(1591, 372)
         Me.Panel12.TabIndex = 6
@@ -1435,7 +1436,7 @@ Partial Class calibratingResult
         '
         Me.Label442.AutoSize = True
         Me.Label442.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label442.Location = New System.Drawing.Point(209, 300)
+        Me.Label442.Location = New System.Drawing.Point(293, 300)
         Me.Label442.Name = "Label442"
         Me.Label442.Size = New System.Drawing.Size(19, 19)
         Me.Label442.TabIndex = 512
@@ -1445,7 +1446,7 @@ Partial Class calibratingResult
         '
         Me.Label444.AutoSize = True
         Me.Label444.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label444.Location = New System.Drawing.Point(209, 172)
+        Me.Label444.Location = New System.Drawing.Point(293, 172)
         Me.Label444.Name = "Label444"
         Me.Label444.Size = New System.Drawing.Size(29, 19)
         Me.Label444.TabIndex = 511
@@ -1455,7 +1456,7 @@ Partial Class calibratingResult
         '
         Me.Label446.AutoSize = True
         Me.Label446.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label446.Location = New System.Drawing.Point(209, 332)
+        Me.Label446.Location = New System.Drawing.Point(293, 332)
         Me.Label446.Name = "Label446"
         Me.Label446.Size = New System.Drawing.Size(19, 19)
         Me.Label446.TabIndex = 510
@@ -1465,7 +1466,7 @@ Partial Class calibratingResult
         '
         Me.Label447.AutoSize = True
         Me.Label447.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label447.Location = New System.Drawing.Point(209, 268)
+        Me.Label447.Location = New System.Drawing.Point(293, 268)
         Me.Label447.Name = "Label447"
         Me.Label447.Size = New System.Drawing.Size(19, 19)
         Me.Label447.TabIndex = 509
@@ -1475,7 +1476,7 @@ Partial Class calibratingResult
         '
         Me.Label457.AutoSize = True
         Me.Label457.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label457.Location = New System.Drawing.Point(209, 236)
+        Me.Label457.Location = New System.Drawing.Point(293, 236)
         Me.Label457.Name = "Label457"
         Me.Label457.Size = New System.Drawing.Size(19, 19)
         Me.Label457.TabIndex = 508
@@ -1485,7 +1486,7 @@ Partial Class calibratingResult
         '
         Me.Label458.AutoSize = True
         Me.Label458.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label458.Location = New System.Drawing.Point(209, 204)
+        Me.Label458.Location = New System.Drawing.Point(293, 204)
         Me.Label458.Name = "Label458"
         Me.Label458.Size = New System.Drawing.Size(29, 19)
         Me.Label458.TabIndex = 507
@@ -1495,7 +1496,7 @@ Partial Class calibratingResult
         '
         Me.Label459.AutoSize = True
         Me.Label459.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label459.Location = New System.Drawing.Point(209, 140)
+        Me.Label459.Location = New System.Drawing.Point(293, 140)
         Me.Label459.Name = "Label459"
         Me.Label459.Size = New System.Drawing.Size(29, 19)
         Me.Label459.TabIndex = 506
@@ -1505,7 +1506,7 @@ Partial Class calibratingResult
         '
         Me.Label460.AutoSize = True
         Me.Label460.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label460.Location = New System.Drawing.Point(209, 108)
+        Me.Label460.Location = New System.Drawing.Point(293, 108)
         Me.Label460.Name = "Label460"
         Me.Label460.Size = New System.Drawing.Size(29, 19)
         Me.Label460.TabIndex = 505
@@ -1515,7 +1516,7 @@ Partial Class calibratingResult
         '
         Me.Label461.AutoSize = True
         Me.Label461.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label461.Location = New System.Drawing.Point(209, 76)
+        Me.Label461.Location = New System.Drawing.Point(293, 76)
         Me.Label461.Name = "Label461"
         Me.Label461.Size = New System.Drawing.Size(29, 19)
         Me.Label461.TabIndex = 504
@@ -1795,7 +1796,7 @@ Partial Class calibratingResult
         '
         Me.Label443.AutoSize = True
         Me.Label443.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label443.Location = New System.Drawing.Point(128, 108)
+        Me.Label443.Location = New System.Drawing.Point(212, 108)
         Me.Label443.Name = "Label443"
         Me.Label443.Size = New System.Drawing.Size(49, 19)
         Me.Label443.TabIndex = 414
@@ -1805,7 +1806,7 @@ Partial Class calibratingResult
         '
         Me.Label445.AutoSize = True
         Me.Label445.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label445.Location = New System.Drawing.Point(128, 204)
+        Me.Label445.Location = New System.Drawing.Point(212, 204)
         Me.Label445.Name = "Label445"
         Me.Label445.Size = New System.Drawing.Size(39, 19)
         Me.Label445.TabIndex = 412
@@ -1815,7 +1816,7 @@ Partial Class calibratingResult
         '
         Me.Label462.AutoSize = True
         Me.Label462.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label462.Location = New System.Drawing.Point(128, 332)
+        Me.Label462.Location = New System.Drawing.Point(212, 332)
         Me.Label462.Name = "Label462"
         Me.Label462.Size = New System.Drawing.Size(19, 19)
         Me.Label462.TabIndex = 376
@@ -1825,7 +1826,7 @@ Partial Class calibratingResult
         '
         Me.Label463.AutoSize = True
         Me.Label463.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label463.Location = New System.Drawing.Point(128, 300)
+        Me.Label463.Location = New System.Drawing.Point(212, 300)
         Me.Label463.Name = "Label463"
         Me.Label463.Size = New System.Drawing.Size(19, 19)
         Me.Label463.TabIndex = 375
@@ -1835,7 +1836,7 @@ Partial Class calibratingResult
         '
         Me.Label464.AutoSize = True
         Me.Label464.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label464.Location = New System.Drawing.Point(128, 268)
+        Me.Label464.Location = New System.Drawing.Point(212, 268)
         Me.Label464.Name = "Label464"
         Me.Label464.Size = New System.Drawing.Size(39, 19)
         Me.Label464.TabIndex = 374
@@ -1845,7 +1846,7 @@ Partial Class calibratingResult
         '
         Me.Label465.AutoSize = True
         Me.Label465.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label465.Location = New System.Drawing.Point(128, 236)
+        Me.Label465.Location = New System.Drawing.Point(212, 236)
         Me.Label465.Name = "Label465"
         Me.Label465.Size = New System.Drawing.Size(19, 19)
         Me.Label465.TabIndex = 373
@@ -1855,7 +1856,7 @@ Partial Class calibratingResult
         '
         Me.Label466.AutoSize = True
         Me.Label466.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label466.Location = New System.Drawing.Point(128, 172)
+        Me.Label466.Location = New System.Drawing.Point(212, 172)
         Me.Label466.Name = "Label466"
         Me.Label466.Size = New System.Drawing.Size(39, 19)
         Me.Label466.TabIndex = 372
@@ -1865,7 +1866,7 @@ Partial Class calibratingResult
         '
         Me.Label467.AutoSize = True
         Me.Label467.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label467.Location = New System.Drawing.Point(128, 140)
+        Me.Label467.Location = New System.Drawing.Point(212, 140)
         Me.Label467.Name = "Label467"
         Me.Label467.Size = New System.Drawing.Size(29, 19)
         Me.Label467.TabIndex = 371
@@ -1875,7 +1876,7 @@ Partial Class calibratingResult
         '
         Me.Label468.AutoSize = True
         Me.Label468.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label468.Location = New System.Drawing.Point(128, 76)
+        Me.Label468.Location = New System.Drawing.Point(212, 76)
         Me.Label468.Name = "Label468"
         Me.Label468.Size = New System.Drawing.Size(39, 19)
         Me.Label468.TabIndex = 370
@@ -1885,7 +1886,7 @@ Partial Class calibratingResult
         '
         Me.Label469.AutoSize = True
         Me.Label469.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label469.Location = New System.Drawing.Point(209, 51)
+        Me.Label469.Location = New System.Drawing.Point(293, 51)
         Me.Label469.Name = "Label469"
         Me.Label469.Size = New System.Drawing.Size(49, 19)
         Me.Label469.TabIndex = 369
@@ -1895,7 +1896,7 @@ Partial Class calibratingResult
         '
         Me.Label483.AutoSize = True
         Me.Label483.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label483.Location = New System.Drawing.Point(128, 51)
+        Me.Label483.Location = New System.Drawing.Point(212, 51)
         Me.Label483.Name = "Label483"
         Me.Label483.Size = New System.Drawing.Size(79, 19)
         Me.Label483.TabIndex = 368
@@ -1905,7 +1906,7 @@ Partial Class calibratingResult
         '
         Me.Label484.AutoSize = True
         Me.Label484.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label484.Location = New System.Drawing.Point(76, 300)
+        Me.Label484.Location = New System.Drawing.Point(160, 300)
         Me.Label484.Name = "Label484"
         Me.Label484.Size = New System.Drawing.Size(19, 19)
         Me.Label484.TabIndex = 361
@@ -1915,7 +1916,7 @@ Partial Class calibratingResult
         '
         Me.Label485.AutoSize = True
         Me.Label485.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label485.Location = New System.Drawing.Point(14, 300)
+        Me.Label485.Location = New System.Drawing.Point(98, 300)
         Me.Label485.Name = "Label485"
         Me.Label485.Size = New System.Drawing.Size(29, 19)
         Me.Label485.TabIndex = 360
@@ -1925,7 +1926,7 @@ Partial Class calibratingResult
         '
         Me.Label486.AutoSize = True
         Me.Label486.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label486.Location = New System.Drawing.Point(76, 172)
+        Me.Label486.Location = New System.Drawing.Point(160, 172)
         Me.Label486.Name = "Label486"
         Me.Label486.Size = New System.Drawing.Size(29, 19)
         Me.Label486.TabIndex = 359
@@ -1935,7 +1936,7 @@ Partial Class calibratingResult
         '
         Me.Label487.AutoSize = True
         Me.Label487.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label487.Location = New System.Drawing.Point(14, 172)
+        Me.Label487.Location = New System.Drawing.Point(98, 172)
         Me.Label487.Name = "Label487"
         Me.Label487.Size = New System.Drawing.Size(29, 19)
         Me.Label487.TabIndex = 358
@@ -1945,7 +1946,7 @@ Partial Class calibratingResult
         '
         Me.Label488.AutoSize = True
         Me.Label488.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label488.Location = New System.Drawing.Point(76, 332)
+        Me.Label488.Location = New System.Drawing.Point(160, 332)
         Me.Label488.Name = "Label488"
         Me.Label488.Size = New System.Drawing.Size(19, 19)
         Me.Label488.TabIndex = 347
@@ -1955,7 +1956,7 @@ Partial Class calibratingResult
         '
         Me.Label489.AutoSize = True
         Me.Label489.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label489.Location = New System.Drawing.Point(76, 268)
+        Me.Label489.Location = New System.Drawing.Point(160, 268)
         Me.Label489.Name = "Label489"
         Me.Label489.Size = New System.Drawing.Size(19, 19)
         Me.Label489.TabIndex = 346
@@ -1965,7 +1966,7 @@ Partial Class calibratingResult
         '
         Me.Label490.AutoSize = True
         Me.Label490.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label490.Location = New System.Drawing.Point(76, 236)
+        Me.Label490.Location = New System.Drawing.Point(160, 236)
         Me.Label490.Name = "Label490"
         Me.Label490.Size = New System.Drawing.Size(19, 19)
         Me.Label490.TabIndex = 345
@@ -1975,7 +1976,7 @@ Partial Class calibratingResult
         '
         Me.Label491.AutoSize = True
         Me.Label491.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label491.Location = New System.Drawing.Point(76, 204)
+        Me.Label491.Location = New System.Drawing.Point(160, 204)
         Me.Label491.Name = "Label491"
         Me.Label491.Size = New System.Drawing.Size(29, 19)
         Me.Label491.TabIndex = 344
@@ -1985,7 +1986,7 @@ Partial Class calibratingResult
         '
         Me.Label492.AutoSize = True
         Me.Label492.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label492.Location = New System.Drawing.Point(76, 140)
+        Me.Label492.Location = New System.Drawing.Point(160, 140)
         Me.Label492.Name = "Label492"
         Me.Label492.Size = New System.Drawing.Size(29, 19)
         Me.Label492.TabIndex = 343
@@ -1995,7 +1996,7 @@ Partial Class calibratingResult
         '
         Me.Label493.AutoSize = True
         Me.Label493.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label493.Location = New System.Drawing.Point(76, 108)
+        Me.Label493.Location = New System.Drawing.Point(160, 108)
         Me.Label493.Name = "Label493"
         Me.Label493.Size = New System.Drawing.Size(29, 19)
         Me.Label493.TabIndex = 342
@@ -2005,7 +2006,7 @@ Partial Class calibratingResult
         '
         Me.Label494.AutoSize = True
         Me.Label494.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label494.Location = New System.Drawing.Point(76, 76)
+        Me.Label494.Location = New System.Drawing.Point(160, 76)
         Me.Label494.Name = "Label494"
         Me.Label494.Size = New System.Drawing.Size(29, 19)
         Me.Label494.TabIndex = 341
@@ -2015,7 +2016,7 @@ Partial Class calibratingResult
         '
         Me.Label495.AutoSize = True
         Me.Label495.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label495.Location = New System.Drawing.Point(14, 332)
+        Me.Label495.Location = New System.Drawing.Point(98, 332)
         Me.Label495.Name = "Label495"
         Me.Label495.Size = New System.Drawing.Size(29, 19)
         Me.Label495.TabIndex = 330
@@ -2025,7 +2026,7 @@ Partial Class calibratingResult
         '
         Me.Label496.AutoSize = True
         Me.Label496.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label496.Location = New System.Drawing.Point(14, 268)
+        Me.Label496.Location = New System.Drawing.Point(98, 268)
         Me.Label496.Name = "Label496"
         Me.Label496.Size = New System.Drawing.Size(19, 19)
         Me.Label496.TabIndex = 329
@@ -2035,7 +2036,7 @@ Partial Class calibratingResult
         '
         Me.Label497.AutoSize = True
         Me.Label497.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label497.Location = New System.Drawing.Point(14, 236)
+        Me.Label497.Location = New System.Drawing.Point(98, 236)
         Me.Label497.Name = "Label497"
         Me.Label497.Size = New System.Drawing.Size(19, 19)
         Me.Label497.TabIndex = 328
@@ -2045,7 +2046,7 @@ Partial Class calibratingResult
         '
         Me.Label498.AutoSize = True
         Me.Label498.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label498.Location = New System.Drawing.Point(14, 204)
+        Me.Label498.Location = New System.Drawing.Point(98, 204)
         Me.Label498.Name = "Label498"
         Me.Label498.Size = New System.Drawing.Size(39, 19)
         Me.Label498.TabIndex = 327
@@ -2055,7 +2056,7 @@ Partial Class calibratingResult
         '
         Me.Label499.AutoSize = True
         Me.Label499.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label499.Location = New System.Drawing.Point(14, 140)
+        Me.Label499.Location = New System.Drawing.Point(98, 140)
         Me.Label499.Name = "Label499"
         Me.Label499.Size = New System.Drawing.Size(29, 19)
         Me.Label499.TabIndex = 326
@@ -2065,7 +2066,7 @@ Partial Class calibratingResult
         '
         Me.Label507.AutoSize = True
         Me.Label507.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label507.Location = New System.Drawing.Point(14, 108)
+        Me.Label507.Location = New System.Drawing.Point(98, 108)
         Me.Label507.Name = "Label507"
         Me.Label507.Size = New System.Drawing.Size(49, 19)
         Me.Label507.TabIndex = 325
@@ -2075,7 +2076,7 @@ Partial Class calibratingResult
         '
         Me.Label508.AutoSize = True
         Me.Label508.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label508.Location = New System.Drawing.Point(14, 76)
+        Me.Label508.Location = New System.Drawing.Point(98, 76)
         Me.Label508.Name = "Label508"
         Me.Label508.Size = New System.Drawing.Size(39, 19)
         Me.Label508.TabIndex = 324
@@ -2699,7 +2700,7 @@ Partial Class calibratingResult
         '
         Me.Label530.AutoSize = True
         Me.Label530.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label530.Location = New System.Drawing.Point(75, 51)
+        Me.Label530.Location = New System.Drawing.Point(159, 51)
         Me.Label530.Name = "Label530"
         Me.Label530.Size = New System.Drawing.Size(49, 19)
         Me.Label530.TabIndex = 4
@@ -2709,7 +2710,7 @@ Partial Class calibratingResult
         '
         Me.Label535.AutoSize = True
         Me.Label535.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label535.Location = New System.Drawing.Point(13, 51)
+        Me.Label535.Location = New System.Drawing.Point(97, 51)
         Me.Label535.Name = "Label535"
         Me.Label535.Size = New System.Drawing.Size(59, 19)
         Me.Label535.TabIndex = 3
@@ -2728,6 +2729,9 @@ Partial Class calibratingResult
         'Panel11
         '
         Me.Panel11.BackColor = System.Drawing.Color.LightGray
+        Me.Panel11.Controls.Add(Me.Label437)
+        Me.Panel11.Controls.Add(Me.Label435)
+        Me.Panel11.Controls.Add(Me.Label436)
         Me.Panel11.Controls.Add(Me.Label404)
         Me.Panel11.Controls.Add(Me.Label405)
         Me.Panel11.Controls.Add(Me.Label406)
@@ -2740,9 +2744,6 @@ Partial Class calibratingResult
         Me.Panel11.Controls.Add(Me.Label422)
         Me.Panel11.Controls.Add(Me.Label423)
         Me.Panel11.Controls.Add(Me.Label424)
-        Me.Panel11.Controls.Add(Me.Label435)
-        Me.Panel11.Controls.Add(Me.Label436)
-        Me.Panel11.Controls.Add(Me.Label437)
         Me.Panel11.Controls.Add(Me.Label438)
         Me.Panel11.Controls.Add(Me.Label439)
         Me.Panel11.Controls.Add(Me.Label440)
@@ -2938,7 +2939,7 @@ Partial Class calibratingResult
         Me.Panel11.Controls.Add(Me.Label581)
         Me.Panel11.Controls.Add(Me.Label582)
         Me.Panel11.Controls.Add(Me.Label583)
-        Me.Panel11.Location = New System.Drawing.Point(6, 2381)
+        Me.Panel11.Location = New System.Drawing.Point(6, 2282)
         Me.Panel11.Name = "Panel11"
         Me.Panel11.Size = New System.Drawing.Size(1591, 480)
         Me.Panel11.TabIndex = 5
@@ -3063,41 +3064,11 @@ Partial Class calibratingResult
         Me.Label424.TabIndex = 540
         Me.Label424.Text = "Hz"
         '
-        'Label435
-        '
-        Me.Label435.AutoSize = True
-        Me.Label435.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label435.Location = New System.Drawing.Point(273, 428)
-        Me.Label435.Name = "Label435"
-        Me.Label435.Size = New System.Drawing.Size(29, 19)
-        Me.Label435.TabIndex = 539
-        Me.Label435.Text = "50"
-        '
-        'Label436
-        '
-        Me.Label436.AutoSize = True
-        Me.Label436.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label436.Location = New System.Drawing.Point(273, 396)
-        Me.Label436.Name = "Label436"
-        Me.Label436.Size = New System.Drawing.Size(19, 19)
-        Me.Label436.TabIndex = 538
-        Me.Label436.Text = "1"
-        '
-        'Label437
-        '
-        Me.Label437.AutoSize = True
-        Me.Label437.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label437.Location = New System.Drawing.Point(273, 364)
-        Me.Label437.Name = "Label437"
-        Me.Label437.Size = New System.Drawing.Size(29, 19)
-        Me.Label437.TabIndex = 537
-        Me.Label437.Text = "50"
-        '
         'Label438
         '
         Me.Label438.AutoSize = True
         Me.Label438.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label438.Location = New System.Drawing.Point(209, 428)
+        Me.Label438.Location = New System.Drawing.Point(216, 428)
         Me.Label438.Name = "Label438"
         Me.Label438.Size = New System.Drawing.Size(19, 19)
         Me.Label438.TabIndex = 536
@@ -3107,7 +3078,7 @@ Partial Class calibratingResult
         '
         Me.Label439.AutoSize = True
         Me.Label439.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label439.Location = New System.Drawing.Point(209, 396)
+        Me.Label439.Location = New System.Drawing.Point(216, 396)
         Me.Label439.Name = "Label439"
         Me.Label439.Size = New System.Drawing.Size(19, 19)
         Me.Label439.TabIndex = 535
@@ -3117,7 +3088,7 @@ Partial Class calibratingResult
         '
         Me.Label440.AutoSize = True
         Me.Label440.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label440.Location = New System.Drawing.Point(209, 364)
+        Me.Label440.Location = New System.Drawing.Point(216, 364)
         Me.Label440.Name = "Label440"
         Me.Label440.Size = New System.Drawing.Size(19, 19)
         Me.Label440.TabIndex = 534
@@ -3131,7 +3102,7 @@ Partial Class calibratingResult
         Me.Label441.Name = "Label441"
         Me.Label441.Size = New System.Drawing.Size(19, 19)
         Me.Label441.TabIndex = 533
-        Me.Label441.Text = "6"
+        Me.Label441.Text = "9"
         '
         'Label529
         '
@@ -3139,9 +3110,9 @@ Partial Class calibratingResult
         Me.Label529.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label529.Location = New System.Drawing.Point(127, 396)
         Me.Label529.Name = "Label529"
-        Me.Label529.Size = New System.Drawing.Size(39, 19)
+        Me.Label529.Size = New System.Drawing.Size(19, 19)
         Me.Label529.TabIndex = 532
-        Me.Label529.Text = "5.4"
+        Me.Label529.Text = "9"
         '
         'Label537
         '
@@ -3169,9 +3140,9 @@ Partial Class calibratingResult
         Me.Label539.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label539.Location = New System.Drawing.Point(13, 396)
         Me.Label539.Name = "Label539"
-        Me.Label539.Size = New System.Drawing.Size(19, 19)
+        Me.Label539.Size = New System.Drawing.Size(29, 19)
         Me.Label539.TabIndex = 529
-        Me.Label539.Text = "6"
+        Me.Label539.Text = "10"
         '
         'Label540
         '
@@ -3201,7 +3172,7 @@ Partial Class calibratingResult
         Me.Label542.Name = "Label542"
         Me.Label542.Size = New System.Drawing.Size(29, 19)
         Me.Label542.TabIndex = 526
-        Me.Label542.Text = "60"
+        Me.Label542.Text = "10"
         '
         'Label543
         '
@@ -3845,7 +3816,7 @@ Partial Class calibratingResult
         '
         Me.Label479.AutoSize = True
         Me.Label479.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label479.Location = New System.Drawing.Point(209, 108)
+        Me.Label479.Location = New System.Drawing.Point(216, 108)
         Me.Label479.Name = "Label479"
         Me.Label479.Size = New System.Drawing.Size(29, 19)
         Me.Label479.TabIndex = 415
@@ -3857,15 +3828,15 @@ Partial Class calibratingResult
         Me.Label480.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label480.Location = New System.Drawing.Point(127, 108)
         Me.Label480.Name = "Label480"
-        Me.Label480.Size = New System.Drawing.Size(29, 19)
+        Me.Label480.Size = New System.Drawing.Size(39, 19)
         Me.Label480.TabIndex = 414
-        Me.Label480.Text = "60"
+        Me.Label480.Text = "540"
         '
         'Label481
         '
         Me.Label481.AutoSize = True
         Me.Label481.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label481.Location = New System.Drawing.Point(209, 204)
+        Me.Label481.Location = New System.Drawing.Point(216, 204)
         Me.Label481.Name = "Label481"
         Me.Label481.Size = New System.Drawing.Size(19, 19)
         Me.Label481.TabIndex = 413
@@ -3877,15 +3848,15 @@ Partial Class calibratingResult
         Me.Label482.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label482.Location = New System.Drawing.Point(127, 204)
         Me.Label482.Name = "Label482"
-        Me.Label482.Size = New System.Drawing.Size(39, 19)
+        Me.Label482.Size = New System.Drawing.Size(29, 19)
         Me.Label482.TabIndex = 412
-        Me.Label482.Text = "0.6"
+        Me.Label482.Text = "54"
         '
         'Label500
         '
         Me.Label500.AutoSize = True
         Me.Label500.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label500.Location = New System.Drawing.Point(209, 332)
+        Me.Label500.Location = New System.Drawing.Point(216, 332)
         Me.Label500.Name = "Label500"
         Me.Label500.Size = New System.Drawing.Size(19, 19)
         Me.Label500.TabIndex = 393
@@ -3895,7 +3866,7 @@ Partial Class calibratingResult
         '
         Me.Label501.AutoSize = True
         Me.Label501.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label501.Location = New System.Drawing.Point(209, 300)
+        Me.Label501.Location = New System.Drawing.Point(216, 300)
         Me.Label501.Name = "Label501"
         Me.Label501.Size = New System.Drawing.Size(19, 19)
         Me.Label501.TabIndex = 392
@@ -3905,7 +3876,7 @@ Partial Class calibratingResult
         '
         Me.Label502.AutoSize = True
         Me.Label502.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label502.Location = New System.Drawing.Point(209, 268)
+        Me.Label502.Location = New System.Drawing.Point(216, 268)
         Me.Label502.Name = "Label502"
         Me.Label502.Size = New System.Drawing.Size(19, 19)
         Me.Label502.TabIndex = 391
@@ -3915,7 +3886,7 @@ Partial Class calibratingResult
         '
         Me.Label503.AutoSize = True
         Me.Label503.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label503.Location = New System.Drawing.Point(209, 236)
+        Me.Label503.Location = New System.Drawing.Point(216, 236)
         Me.Label503.Name = "Label503"
         Me.Label503.Size = New System.Drawing.Size(19, 19)
         Me.Label503.TabIndex = 390
@@ -3925,7 +3896,7 @@ Partial Class calibratingResult
         '
         Me.Label504.AutoSize = True
         Me.Label504.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label504.Location = New System.Drawing.Point(209, 172)
+        Me.Label504.Location = New System.Drawing.Point(216, 172)
         Me.Label504.Name = "Label504"
         Me.Label504.Size = New System.Drawing.Size(29, 19)
         Me.Label504.TabIndex = 389
@@ -3935,7 +3906,7 @@ Partial Class calibratingResult
         '
         Me.Label505.AutoSize = True
         Me.Label505.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label505.Location = New System.Drawing.Point(209, 140)
+        Me.Label505.Location = New System.Drawing.Point(216, 140)
         Me.Label505.Name = "Label505"
         Me.Label505.Size = New System.Drawing.Size(29, 19)
         Me.Label505.TabIndex = 388
@@ -3945,7 +3916,7 @@ Partial Class calibratingResult
         '
         Me.Label506.AutoSize = True
         Me.Label506.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label506.Location = New System.Drawing.Point(209, 76)
+        Me.Label506.Location = New System.Drawing.Point(216, 76)
         Me.Label506.Name = "Label506"
         Me.Label506.Size = New System.Drawing.Size(29, 19)
         Me.Label506.TabIndex = 387
@@ -3957,9 +3928,9 @@ Partial Class calibratingResult
         Me.Label516.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label516.Location = New System.Drawing.Point(127, 332)
         Me.Label516.Name = "Label516"
-        Me.Label516.Size = New System.Drawing.Size(19, 19)
+        Me.Label516.Size = New System.Drawing.Size(39, 19)
         Me.Label516.TabIndex = 376
-        Me.Label516.Text = "6"
+        Me.Label516.Text = "5.4"
         '
         'Label517
         '
@@ -3969,7 +3940,7 @@ Partial Class calibratingResult
         Me.Label517.Name = "Label517"
         Me.Label517.Size = New System.Drawing.Size(39, 19)
         Me.Label517.TabIndex = 375
-        Me.Label517.Text = "5.4"
+        Me.Label517.Text = "360"
         '
         'Label518
         '
@@ -3979,7 +3950,7 @@ Partial Class calibratingResult
         Me.Label518.Name = "Label518"
         Me.Label518.Size = New System.Drawing.Size(39, 19)
         Me.Label518.TabIndex = 374
-        Me.Label518.Text = "5.4"
+        Me.Label518.Text = "360"
         '
         'Label519
         '
@@ -3987,9 +3958,9 @@ Partial Class calibratingResult
         Me.Label519.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label519.Location = New System.Drawing.Point(127, 236)
         Me.Label519.Name = "Label519"
-        Me.Label519.Size = New System.Drawing.Size(39, 19)
+        Me.Label519.Size = New System.Drawing.Size(29, 19)
         Me.Label519.TabIndex = 373
-        Me.Label519.Text = "0.6"
+        Me.Label519.Text = "54"
         '
         'Label520
         '
@@ -3997,9 +3968,9 @@ Partial Class calibratingResult
         Me.Label520.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label520.Location = New System.Drawing.Point(127, 172)
         Me.Label520.Name = "Label520"
-        Me.Label520.Size = New System.Drawing.Size(39, 19)
+        Me.Label520.Size = New System.Drawing.Size(49, 19)
         Me.Label520.TabIndex = 372
-        Me.Label520.Text = "540"
+        Me.Label520.Text = "5400"
         '
         'Label521
         '
@@ -4007,9 +3978,9 @@ Partial Class calibratingResult
         Me.Label521.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label521.Location = New System.Drawing.Point(127, 140)
         Me.Label521.Name = "Label521"
-        Me.Label521.Size = New System.Drawing.Size(39, 19)
+        Me.Label521.Size = New System.Drawing.Size(49, 19)
         Me.Label521.TabIndex = 371
-        Me.Label521.Text = "540"
+        Me.Label521.Text = "5400"
         '
         'Label522
         '
@@ -4017,9 +3988,9 @@ Partial Class calibratingResult
         Me.Label522.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label522.Location = New System.Drawing.Point(127, 76)
         Me.Label522.Name = "Label522"
-        Me.Label522.Size = New System.Drawing.Size(29, 19)
+        Me.Label522.Size = New System.Drawing.Size(39, 19)
         Me.Label522.TabIndex = 370
-        Me.Label522.Text = "60"
+        Me.Label522.Text = "540"
         '
         'Label523
         '
@@ -4057,9 +4028,9 @@ Partial Class calibratingResult
         Me.Label532.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label532.Location = New System.Drawing.Point(13, 300)
         Me.Label532.Name = "Label532"
-        Me.Label532.Size = New System.Drawing.Size(19, 19)
+        Me.Label532.Size = New System.Drawing.Size(39, 19)
         Me.Label532.TabIndex = 360
-        Me.Label532.Text = "6"
+        Me.Label532.Text = "400"
         '
         'Label533
         '
@@ -4077,9 +4048,9 @@ Partial Class calibratingResult
         Me.Label534.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label534.Location = New System.Drawing.Point(13, 172)
         Me.Label534.Name = "Label534"
-        Me.Label534.Size = New System.Drawing.Size(39, 19)
+        Me.Label534.Size = New System.Drawing.Size(49, 19)
         Me.Label534.TabIndex = 358
-        Me.Label534.Text = "600"
+        Me.Label534.Text = "6000"
         '
         'Label545
         '
@@ -4157,9 +4128,9 @@ Partial Class calibratingResult
         Me.Label562.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label562.Location = New System.Drawing.Point(13, 332)
         Me.Label562.Name = "Label562"
-        Me.Label562.Size = New System.Drawing.Size(29, 19)
+        Me.Label562.Size = New System.Drawing.Size(19, 19)
         Me.Label562.TabIndex = 330
-        Me.Label562.Text = "60"
+        Me.Label562.Text = "6"
         '
         'Label563
         '
@@ -4167,9 +4138,9 @@ Partial Class calibratingResult
         Me.Label563.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label563.Location = New System.Drawing.Point(13, 268)
         Me.Label563.Name = "Label563"
-        Me.Label563.Size = New System.Drawing.Size(19, 19)
+        Me.Label563.Size = New System.Drawing.Size(39, 19)
         Me.Label563.TabIndex = 329
-        Me.Label563.Text = "6"
+        Me.Label563.Text = "400"
         '
         'Label564
         '
@@ -4177,9 +4148,9 @@ Partial Class calibratingResult
         Me.Label564.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label564.Location = New System.Drawing.Point(13, 236)
         Me.Label564.Name = "Label564"
-        Me.Label564.Size = New System.Drawing.Size(19, 19)
+        Me.Label564.Size = New System.Drawing.Size(29, 19)
         Me.Label564.TabIndex = 328
-        Me.Label564.Text = "6"
+        Me.Label564.Text = "60"
         '
         'Label565
         '
@@ -4187,9 +4158,9 @@ Partial Class calibratingResult
         Me.Label565.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label565.Location = New System.Drawing.Point(13, 204)
         Me.Label565.Name = "Label565"
-        Me.Label565.Size = New System.Drawing.Size(19, 19)
+        Me.Label565.Size = New System.Drawing.Size(29, 19)
         Me.Label565.TabIndex = 327
-        Me.Label565.Text = "6"
+        Me.Label565.Text = "60"
         '
         'Label566
         '
@@ -4197,9 +4168,9 @@ Partial Class calibratingResult
         Me.Label566.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label566.Location = New System.Drawing.Point(13, 140)
         Me.Label566.Name = "Label566"
-        Me.Label566.Size = New System.Drawing.Size(39, 19)
+        Me.Label566.Size = New System.Drawing.Size(49, 19)
         Me.Label566.TabIndex = 326
-        Me.Label566.Text = "600"
+        Me.Label566.Text = "6000"
         '
         'Label567
         '
@@ -4873,20 +4844,44 @@ Partial Class calibratingResult
         Me.Label583.Name = "Label583"
         Me.Label583.Size = New System.Drawing.Size(130, 23)
         Me.Label583.TabIndex = 0
-        Me.Label583.Text = "DC CURRENT"
+        Me.Label583.Text = "AC CURRENT"
         '
         'Panel10
         '
         Me.Panel10.BackColor = System.Drawing.Color.White
         Me.Panel10.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel10.Location = New System.Drawing.Point(0, 2861)
+        Me.Panel10.Location = New System.Drawing.Point(0, 2762)
         Me.Panel10.Name = "Panel10"
-        Me.Panel10.Size = New System.Drawing.Size(1607, 210)
+        Me.Panel10.Size = New System.Drawing.Size(1607, 86)
         Me.Panel10.TabIndex = 4
         '
         'Panel9
         '
         Me.Panel9.BackColor = System.Drawing.Color.LightGray
+        Me.Panel9.Controls.Add(Me.Label617)
+        Me.Panel9.Controls.Add(Me.Label618)
+        Me.Panel9.Controls.Add(Me.Label619)
+        Me.Panel9.Controls.Add(Me.Label620)
+        Me.Panel9.Controls.Add(Me.Label621)
+        Me.Panel9.Controls.Add(Me.Label622)
+        Me.Panel9.Controls.Add(Me.Label623)
+        Me.Panel9.Controls.Add(Me.Label624)
+        Me.Panel9.Controls.Add(Me.Label625)
+        Me.Panel9.Controls.Add(Me.Label626)
+        Me.Panel9.Controls.Add(Me.Label627)
+        Me.Panel9.Controls.Add(Me.Label628)
+        Me.Panel9.Controls.Add(Me.Label557)
+        Me.Panel9.Controls.Add(Me.Label558)
+        Me.Panel9.Controls.Add(Me.Label559)
+        Me.Panel9.Controls.Add(Me.Label560)
+        Me.Panel9.Controls.Add(Me.Label561)
+        Me.Panel9.Controls.Add(Me.Label616)
+        Me.Panel9.Controls.Add(Me.Label554)
+        Me.Panel9.Controls.Add(Me.Label555)
+        Me.Panel9.Controls.Add(Me.Label556)
+        Me.Panel9.Controls.Add(Me.Label544)
+        Me.Panel9.Controls.Add(Me.Label552)
+        Me.Panel9.Controls.Add(Me.Label553)
         Me.Panel9.Controls.Add(Me.Label612)
         Me.Panel9.Controls.Add(Me.Label613)
         Me.Panel9.Controls.Add(Me.Label614)
@@ -4895,9 +4890,6 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.TextBox314)
         Me.Panel9.Controls.Add(Me.TextBox315)
         Me.Panel9.Controls.Add(Me.TextBox319)
-        Me.Panel9.Controls.Add(Me.TextBox320)
-        Me.Panel9.Controls.Add(Me.TextBox321)
-        Me.Panel9.Controls.Add(Me.TextBox322)
         Me.Panel9.Controls.Add(Me.TextBox327)
         Me.Panel9.Controls.Add(Me.TextBox328)
         Me.Panel9.Controls.Add(Me.TextBox329)
@@ -4933,9 +4925,6 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.TextBox688)
         Me.Panel9.Controls.Add(Me.TextBox689)
         Me.Panel9.Controls.Add(Me.TextBox690)
-        Me.Panel9.Controls.Add(Me.TextBox691)
-        Me.Panel9.Controls.Add(Me.TextBox692)
-        Me.Panel9.Controls.Add(Me.TextBox693)
         Me.Panel9.Controls.Add(Me.TextBox694)
         Me.Panel9.Controls.Add(Me.TextBox695)
         Me.Panel9.Controls.Add(Me.TextBox696)
@@ -4943,9 +4932,6 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.TextBox702)
         Me.Panel9.Controls.Add(Me.TextBox703)
         Me.Panel9.Controls.Add(Me.TextBox704)
-        Me.Panel9.Controls.Add(Me.TextBox705)
-        Me.Panel9.Controls.Add(Me.TextBox706)
-        Me.Panel9.Controls.Add(Me.TextBox707)
         Me.Panel9.Controls.Add(Me.TextBox708)
         Me.Panel9.Controls.Add(Me.TextBox709)
         Me.Panel9.Controls.Add(Me.TextBox710)
@@ -4953,9 +4939,6 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.TextBox716)
         Me.Panel9.Controls.Add(Me.TextBox717)
         Me.Panel9.Controls.Add(Me.TextBox718)
-        Me.Panel9.Controls.Add(Me.TextBox719)
-        Me.Panel9.Controls.Add(Me.TextBox720)
-        Me.Panel9.Controls.Add(Me.TextBox721)
         Me.Panel9.Controls.Add(Me.TextBox722)
         Me.Panel9.Controls.Add(Me.TextBox723)
         Me.Panel9.Controls.Add(Me.TextBox724)
@@ -4963,9 +4946,6 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.TextBox730)
         Me.Panel9.Controls.Add(Me.TextBox731)
         Me.Panel9.Controls.Add(Me.TextBox732)
-        Me.Panel9.Controls.Add(Me.TextBox733)
-        Me.Panel9.Controls.Add(Me.TextBox734)
-        Me.Panel9.Controls.Add(Me.TextBox735)
         Me.Panel9.Controls.Add(Me.TextBox736)
         Me.Panel9.Controls.Add(Me.TextBox737)
         Me.Panel9.Controls.Add(Me.TextBox738)
@@ -4973,9 +4953,6 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.TextBox744)
         Me.Panel9.Controls.Add(Me.TextBox745)
         Me.Panel9.Controls.Add(Me.TextBox746)
-        Me.Panel9.Controls.Add(Me.TextBox747)
-        Me.Panel9.Controls.Add(Me.TextBox748)
-        Me.Panel9.Controls.Add(Me.TextBox749)
         Me.Panel9.Controls.Add(Me.TextBox750)
         Me.Panel9.Controls.Add(Me.TextBox751)
         Me.Panel9.Controls.Add(Me.TextBox752)
@@ -4983,9 +4960,6 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.TextBox758)
         Me.Panel9.Controls.Add(Me.TextBox759)
         Me.Panel9.Controls.Add(Me.TextBox760)
-        Me.Panel9.Controls.Add(Me.TextBox761)
-        Me.Panel9.Controls.Add(Me.TextBox762)
-        Me.Panel9.Controls.Add(Me.TextBox763)
         Me.Panel9.Controls.Add(Me.TextBox764)
         Me.Panel9.Controls.Add(Me.TextBox765)
         Me.Panel9.Controls.Add(Me.TextBox766)
@@ -4998,11 +4972,8 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.Label36)
         Me.Panel9.Controls.Add(Me.TextBox774)
         Me.Panel9.Controls.Add(Me.Label37)
-        Me.Panel9.Controls.Add(Me.TextBox775)
         Me.Panel9.Controls.Add(Me.Label38)
-        Me.Panel9.Controls.Add(Me.TextBox776)
         Me.Panel9.Controls.Add(Me.Label39)
-        Me.Panel9.Controls.Add(Me.TextBox777)
         Me.Panel9.Controls.Add(Me.Label40)
         Me.Panel9.Controls.Add(Me.Label41)
         Me.Panel9.Controls.Add(Me.TextBox778)
@@ -5015,16 +4986,256 @@ Partial Class calibratingResult
         Me.Panel9.Controls.Add(Me.Label46)
         Me.Panel9.Controls.Add(Me.Label47)
         Me.Panel9.Controls.Add(Me.Label48)
-        Me.Panel9.Location = New System.Drawing.Point(6, 1627)
+        Me.Panel9.Location = New System.Drawing.Point(6, 1504)
         Me.Panel9.Name = "Panel9"
         Me.Panel9.Size = New System.Drawing.Size(1591, 348)
         Me.Panel9.TabIndex = 3
+        '
+        'Label617
+        '
+        Me.Label617.AutoSize = True
+        Me.Label617.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label617.Location = New System.Drawing.Point(983, 300)
+        Me.Label617.Name = "Label617"
+        Me.Label617.Size = New System.Drawing.Size(119, 19)
+        Me.Label617.TabIndex = 519
+        Me.Label617.Text = "UNCERTAINTY"
+        '
+        'Label618
+        '
+        Me.Label618.AutoSize = True
+        Me.Label618.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label618.Location = New System.Drawing.Point(883, 300)
+        Me.Label618.Name = "Label618"
+        Me.Label618.Size = New System.Drawing.Size(59, 19)
+        Me.Label618.TabIndex = 518
+        Me.Label618.Text = "ERROR"
+        '
+        'Label619
+        '
+        Me.Label619.AutoSize = True
+        Me.Label619.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label619.Location = New System.Drawing.Point(767, 300)
+        Me.Label619.Name = "Label619"
+        Me.Label619.Size = New System.Drawing.Size(79, 19)
+        Me.Label619.TabIndex = 517
+        Me.Label619.Text = "AVERAGE"
+        '
+        'Label620
+        '
+        Me.Label620.AutoSize = True
+        Me.Label620.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label620.Location = New System.Drawing.Point(983, 268)
+        Me.Label620.Name = "Label620"
+        Me.Label620.Size = New System.Drawing.Size(119, 19)
+        Me.Label620.TabIndex = 516
+        Me.Label620.Text = "UNCERTAINTY"
+        '
+        'Label621
+        '
+        Me.Label621.AutoSize = True
+        Me.Label621.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label621.Location = New System.Drawing.Point(883, 268)
+        Me.Label621.Name = "Label621"
+        Me.Label621.Size = New System.Drawing.Size(59, 19)
+        Me.Label621.TabIndex = 515
+        Me.Label621.Text = "ERROR"
+        '
+        'Label622
+        '
+        Me.Label622.AutoSize = True
+        Me.Label622.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label622.Location = New System.Drawing.Point(767, 268)
+        Me.Label622.Name = "Label622"
+        Me.Label622.Size = New System.Drawing.Size(79, 19)
+        Me.Label622.TabIndex = 514
+        Me.Label622.Text = "AVERAGE"
+        '
+        'Label623
+        '
+        Me.Label623.AutoSize = True
+        Me.Label623.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label623.Location = New System.Drawing.Point(983, 236)
+        Me.Label623.Name = "Label623"
+        Me.Label623.Size = New System.Drawing.Size(119, 19)
+        Me.Label623.TabIndex = 513
+        Me.Label623.Text = "UNCERTAINTY"
+        '
+        'Label624
+        '
+        Me.Label624.AutoSize = True
+        Me.Label624.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label624.Location = New System.Drawing.Point(883, 236)
+        Me.Label624.Name = "Label624"
+        Me.Label624.Size = New System.Drawing.Size(59, 19)
+        Me.Label624.TabIndex = 512
+        Me.Label624.Text = "ERROR"
+        '
+        'Label625
+        '
+        Me.Label625.AutoSize = True
+        Me.Label625.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label625.Location = New System.Drawing.Point(767, 236)
+        Me.Label625.Name = "Label625"
+        Me.Label625.Size = New System.Drawing.Size(79, 19)
+        Me.Label625.TabIndex = 511
+        Me.Label625.Text = "AVERAGE"
+        '
+        'Label626
+        '
+        Me.Label626.AutoSize = True
+        Me.Label626.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label626.Location = New System.Drawing.Point(983, 204)
+        Me.Label626.Name = "Label626"
+        Me.Label626.Size = New System.Drawing.Size(119, 19)
+        Me.Label626.TabIndex = 510
+        Me.Label626.Text = "UNCERTAINTY"
+        '
+        'Label627
+        '
+        Me.Label627.AutoSize = True
+        Me.Label627.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label627.Location = New System.Drawing.Point(883, 204)
+        Me.Label627.Name = "Label627"
+        Me.Label627.Size = New System.Drawing.Size(59, 19)
+        Me.Label627.TabIndex = 509
+        Me.Label627.Text = "ERROR"
+        '
+        'Label628
+        '
+        Me.Label628.AutoSize = True
+        Me.Label628.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label628.Location = New System.Drawing.Point(767, 204)
+        Me.Label628.Name = "Label628"
+        Me.Label628.Size = New System.Drawing.Size(79, 19)
+        Me.Label628.TabIndex = 508
+        Me.Label628.Text = "AVERAGE"
+        '
+        'Label557
+        '
+        Me.Label557.AutoSize = True
+        Me.Label557.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label557.Location = New System.Drawing.Point(983, 172)
+        Me.Label557.Name = "Label557"
+        Me.Label557.Size = New System.Drawing.Size(119, 19)
+        Me.Label557.TabIndex = 507
+        Me.Label557.Text = "UNCERTAINTY"
+        '
+        'Label558
+        '
+        Me.Label558.AutoSize = True
+        Me.Label558.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label558.Location = New System.Drawing.Point(883, 172)
+        Me.Label558.Name = "Label558"
+        Me.Label558.Size = New System.Drawing.Size(59, 19)
+        Me.Label558.TabIndex = 506
+        Me.Label558.Text = "ERROR"
+        '
+        'Label559
+        '
+        Me.Label559.AutoSize = True
+        Me.Label559.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label559.Location = New System.Drawing.Point(767, 172)
+        Me.Label559.Name = "Label559"
+        Me.Label559.Size = New System.Drawing.Size(79, 19)
+        Me.Label559.TabIndex = 505
+        Me.Label559.Text = "AVERAGE"
+        '
+        'Label560
+        '
+        Me.Label560.AutoSize = True
+        Me.Label560.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label560.Location = New System.Drawing.Point(983, 140)
+        Me.Label560.Name = "Label560"
+        Me.Label560.Size = New System.Drawing.Size(119, 19)
+        Me.Label560.TabIndex = 504
+        Me.Label560.Text = "UNCERTAINTY"
+        '
+        'Label561
+        '
+        Me.Label561.AutoSize = True
+        Me.Label561.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label561.Location = New System.Drawing.Point(883, 140)
+        Me.Label561.Name = "Label561"
+        Me.Label561.Size = New System.Drawing.Size(59, 19)
+        Me.Label561.TabIndex = 503
+        Me.Label561.Text = "ERROR"
+        '
+        'Label616
+        '
+        Me.Label616.AutoSize = True
+        Me.Label616.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label616.Location = New System.Drawing.Point(767, 140)
+        Me.Label616.Name = "Label616"
+        Me.Label616.Size = New System.Drawing.Size(79, 19)
+        Me.Label616.TabIndex = 502
+        Me.Label616.Text = "AVERAGE"
+        '
+        'Label554
+        '
+        Me.Label554.AutoSize = True
+        Me.Label554.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label554.Location = New System.Drawing.Point(983, 108)
+        Me.Label554.Name = "Label554"
+        Me.Label554.Size = New System.Drawing.Size(119, 19)
+        Me.Label554.TabIndex = 501
+        Me.Label554.Text = "UNCERTAINTY"
+        '
+        'Label555
+        '
+        Me.Label555.AutoSize = True
+        Me.Label555.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label555.Location = New System.Drawing.Point(883, 108)
+        Me.Label555.Name = "Label555"
+        Me.Label555.Size = New System.Drawing.Size(59, 19)
+        Me.Label555.TabIndex = 500
+        Me.Label555.Text = "ERROR"
+        '
+        'Label556
+        '
+        Me.Label556.AutoSize = True
+        Me.Label556.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label556.Location = New System.Drawing.Point(767, 108)
+        Me.Label556.Name = "Label556"
+        Me.Label556.Size = New System.Drawing.Size(79, 19)
+        Me.Label556.TabIndex = 499
+        Me.Label556.Text = "AVERAGE"
+        '
+        'Label544
+        '
+        Me.Label544.AutoSize = True
+        Me.Label544.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label544.Location = New System.Drawing.Point(983, 76)
+        Me.Label544.Name = "Label544"
+        Me.Label544.Size = New System.Drawing.Size(119, 19)
+        Me.Label544.TabIndex = 498
+        Me.Label544.Text = "UNCERTAINTY"
+        '
+        'Label552
+        '
+        Me.Label552.AutoSize = True
+        Me.Label552.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label552.Location = New System.Drawing.Point(883, 76)
+        Me.Label552.Name = "Label552"
+        Me.Label552.Size = New System.Drawing.Size(59, 19)
+        Me.Label552.TabIndex = 497
+        Me.Label552.Text = "ERROR"
+        '
+        'Label553
+        '
+        Me.Label553.AutoSize = True
+        Me.Label553.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label553.Location = New System.Drawing.Point(767, 76)
+        Me.Label553.Name = "Label553"
+        Me.Label553.Size = New System.Drawing.Size(79, 19)
+        Me.Label553.TabIndex = 496
+        Me.Label553.Text = "AVERAGE"
         '
         'Label612
         '
         Me.Label612.AutoSize = True
         Me.Label612.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label612.Location = New System.Drawing.Point(229, 300)
+        Me.Label612.Location = New System.Drawing.Point(315, 304)
         Me.Label612.Name = "Label612"
         Me.Label612.Size = New System.Drawing.Size(29, 19)
         Me.Label612.TabIndex = 408
@@ -5034,7 +5245,7 @@ Partial Class calibratingResult
         '
         Me.Label613.AutoSize = True
         Me.Label613.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label613.Location = New System.Drawing.Point(147, 301)
+        Me.Label613.Location = New System.Drawing.Point(233, 305)
         Me.Label613.Name = "Label613"
         Me.Label613.Size = New System.Drawing.Size(39, 19)
         Me.Label613.TabIndex = 407
@@ -5044,7 +5255,7 @@ Partial Class calibratingResult
         '
         Me.Label614.AutoSize = True
         Me.Label614.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label614.Location = New System.Drawing.Point(75, 300)
+        Me.Label614.Location = New System.Drawing.Point(161, 304)
         Me.Label614.Name = "Label614"
         Me.Label614.Size = New System.Drawing.Size(29, 19)
         Me.Label614.TabIndex = 406
@@ -5054,7 +5265,7 @@ Partial Class calibratingResult
         '
         Me.Label615.AutoSize = True
         Me.Label615.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label615.Location = New System.Drawing.Point(13, 300)
+        Me.Label615.Location = New System.Drawing.Point(99, 304)
         Me.Label615.Name = "Label615"
         Me.Label615.Size = New System.Drawing.Size(39, 19)
         Me.Label615.TabIndex = 405
@@ -5092,30 +5303,6 @@ Partial Class calibratingResult
         Me.TextBox319.Size = New System.Drawing.Size(110, 26)
         Me.TextBox319.TabIndex = 401
         '
-        'TextBox320
-        '
-        Me.TextBox320.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox320.Location = New System.Drawing.Point(999, 297)
-        Me.TextBox320.Name = "TextBox320"
-        Me.TextBox320.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox320.TabIndex = 400
-        '
-        'TextBox321
-        '
-        Me.TextBox321.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox321.Location = New System.Drawing.Point(883, 297)
-        Me.TextBox321.Name = "TextBox321"
-        Me.TextBox321.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox321.TabIndex = 399
-        '
-        'TextBox322
-        '
-        Me.TextBox322.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox322.Location = New System.Drawing.Point(767, 297)
-        Me.TextBox322.Name = "TextBox322"
-        Me.TextBox322.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox322.TabIndex = 398
-        '
         'TextBox327
         '
         Me.TextBox327.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
@@ -5144,7 +5331,7 @@ Partial Class calibratingResult
         '
         Me.Label598.AutoSize = True
         Me.Label598.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label598.Location = New System.Drawing.Point(229, 268)
+        Me.Label598.Location = New System.Drawing.Point(315, 272)
         Me.Label598.Name = "Label598"
         Me.Label598.Size = New System.Drawing.Size(29, 19)
         Me.Label598.TabIndex = 394
@@ -5154,7 +5341,7 @@ Partial Class calibratingResult
         '
         Me.Label599.AutoSize = True
         Me.Label599.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label599.Location = New System.Drawing.Point(146, 268)
+        Me.Label599.Location = New System.Drawing.Point(232, 272)
         Me.Label599.Name = "Label599"
         Me.Label599.Size = New System.Drawing.Size(29, 19)
         Me.Label599.TabIndex = 393
@@ -5164,7 +5351,7 @@ Partial Class calibratingResult
         '
         Me.Label600.AutoSize = True
         Me.Label600.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label600.Location = New System.Drawing.Point(228, 236)
+        Me.Label600.Location = New System.Drawing.Point(314, 240)
         Me.Label600.Name = "Label600"
         Me.Label600.Size = New System.Drawing.Size(29, 19)
         Me.Label600.TabIndex = 392
@@ -5174,7 +5361,7 @@ Partial Class calibratingResult
         '
         Me.Label601.AutoSize = True
         Me.Label601.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label601.Location = New System.Drawing.Point(145, 236)
+        Me.Label601.Location = New System.Drawing.Point(231, 240)
         Me.Label601.Name = "Label601"
         Me.Label601.Size = New System.Drawing.Size(39, 19)
         Me.Label601.TabIndex = 391
@@ -5184,7 +5371,7 @@ Partial Class calibratingResult
         '
         Me.Label602.AutoSize = True
         Me.Label602.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label602.Location = New System.Drawing.Point(228, 204)
+        Me.Label602.Location = New System.Drawing.Point(314, 208)
         Me.Label602.Name = "Label602"
         Me.Label602.Size = New System.Drawing.Size(29, 19)
         Me.Label602.TabIndex = 390
@@ -5194,7 +5381,7 @@ Partial Class calibratingResult
         '
         Me.Label603.AutoSize = True
         Me.Label603.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label603.Location = New System.Drawing.Point(145, 204)
+        Me.Label603.Location = New System.Drawing.Point(231, 208)
         Me.Label603.Name = "Label603"
         Me.Label603.Size = New System.Drawing.Size(39, 19)
         Me.Label603.TabIndex = 389
@@ -5204,7 +5391,7 @@ Partial Class calibratingResult
         '
         Me.Label604.AutoSize = True
         Me.Label604.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label604.Location = New System.Drawing.Point(228, 172)
+        Me.Label604.Location = New System.Drawing.Point(314, 176)
         Me.Label604.Name = "Label604"
         Me.Label604.Size = New System.Drawing.Size(29, 19)
         Me.Label604.TabIndex = 388
@@ -5214,7 +5401,7 @@ Partial Class calibratingResult
         '
         Me.Label605.AutoSize = True
         Me.Label605.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label605.Location = New System.Drawing.Point(145, 172)
+        Me.Label605.Location = New System.Drawing.Point(231, 176)
         Me.Label605.Name = "Label605"
         Me.Label605.Size = New System.Drawing.Size(29, 19)
         Me.Label605.TabIndex = 387
@@ -5224,7 +5411,7 @@ Partial Class calibratingResult
         '
         Me.Label606.AutoSize = True
         Me.Label606.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label606.Location = New System.Drawing.Point(229, 140)
+        Me.Label606.Location = New System.Drawing.Point(315, 144)
         Me.Label606.Name = "Label606"
         Me.Label606.Size = New System.Drawing.Size(29, 19)
         Me.Label606.TabIndex = 386
@@ -5234,7 +5421,7 @@ Partial Class calibratingResult
         '
         Me.Label607.AutoSize = True
         Me.Label607.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label607.Location = New System.Drawing.Point(146, 140)
+        Me.Label607.Location = New System.Drawing.Point(232, 144)
         Me.Label607.Name = "Label607"
         Me.Label607.Size = New System.Drawing.Size(39, 19)
         Me.Label607.TabIndex = 385
@@ -5244,7 +5431,7 @@ Partial Class calibratingResult
         '
         Me.Label608.AutoSize = True
         Me.Label608.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label608.Location = New System.Drawing.Point(229, 108)
+        Me.Label608.Location = New System.Drawing.Point(315, 112)
         Me.Label608.Name = "Label608"
         Me.Label608.Size = New System.Drawing.Size(29, 19)
         Me.Label608.TabIndex = 384
@@ -5254,7 +5441,7 @@ Partial Class calibratingResult
         '
         Me.Label609.AutoSize = True
         Me.Label609.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label609.Location = New System.Drawing.Point(146, 108)
+        Me.Label609.Location = New System.Drawing.Point(232, 112)
         Me.Label609.Name = "Label609"
         Me.Label609.Size = New System.Drawing.Size(39, 19)
         Me.Label609.TabIndex = 383
@@ -5264,7 +5451,7 @@ Partial Class calibratingResult
         '
         Me.Label610.AutoSize = True
         Me.Label610.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label610.Location = New System.Drawing.Point(229, 76)
+        Me.Label610.Location = New System.Drawing.Point(315, 80)
         Me.Label610.Name = "Label610"
         Me.Label610.Size = New System.Drawing.Size(19, 19)
         Me.Label610.TabIndex = 382
@@ -5274,7 +5461,7 @@ Partial Class calibratingResult
         '
         Me.Label611.AutoSize = True
         Me.Label611.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label611.Location = New System.Drawing.Point(146, 76)
+        Me.Label611.Location = New System.Drawing.Point(232, 80)
         Me.Label611.Name = "Label611"
         Me.Label611.Size = New System.Drawing.Size(19, 19)
         Me.Label611.TabIndex = 381
@@ -5284,7 +5471,7 @@ Partial Class calibratingResult
         '
         Me.Label596.AutoSize = True
         Me.Label596.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label596.Location = New System.Drawing.Point(75, 268)
+        Me.Label596.Location = New System.Drawing.Point(161, 272)
         Me.Label596.Name = "Label596"
         Me.Label596.Size = New System.Drawing.Size(29, 19)
         Me.Label596.TabIndex = 380
@@ -5294,7 +5481,7 @@ Partial Class calibratingResult
         '
         Me.Label597.AutoSize = True
         Me.Label597.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label597.Location = New System.Drawing.Point(13, 268)
+        Me.Label597.Location = New System.Drawing.Point(99, 272)
         Me.Label597.Name = "Label597"
         Me.Label597.Size = New System.Drawing.Size(29, 19)
         Me.Label597.TabIndex = 379
@@ -5304,7 +5491,7 @@ Partial Class calibratingResult
         '
         Me.Label590.AutoSize = True
         Me.Label590.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label590.Location = New System.Drawing.Point(74, 236)
+        Me.Label590.Location = New System.Drawing.Point(160, 240)
         Me.Label590.Name = "Label590"
         Me.Label590.Size = New System.Drawing.Size(29, 19)
         Me.Label590.TabIndex = 378
@@ -5314,7 +5501,7 @@ Partial Class calibratingResult
         '
         Me.Label591.AutoSize = True
         Me.Label591.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label591.Location = New System.Drawing.Point(12, 236)
+        Me.Label591.Location = New System.Drawing.Point(98, 240)
         Me.Label591.Name = "Label591"
         Me.Label591.Size = New System.Drawing.Size(19, 19)
         Me.Label591.TabIndex = 377
@@ -5324,7 +5511,7 @@ Partial Class calibratingResult
         '
         Me.Label592.AutoSize = True
         Me.Label592.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label592.Location = New System.Drawing.Point(74, 204)
+        Me.Label592.Location = New System.Drawing.Point(160, 208)
         Me.Label592.Name = "Label592"
         Me.Label592.Size = New System.Drawing.Size(29, 19)
         Me.Label592.TabIndex = 376
@@ -5334,7 +5521,7 @@ Partial Class calibratingResult
         '
         Me.Label593.AutoSize = True
         Me.Label593.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label593.Location = New System.Drawing.Point(12, 204)
+        Me.Label593.Location = New System.Drawing.Point(98, 208)
         Me.Label593.Name = "Label593"
         Me.Label593.Size = New System.Drawing.Size(39, 19)
         Me.Label593.TabIndex = 375
@@ -5344,7 +5531,7 @@ Partial Class calibratingResult
         '
         Me.Label594.AutoSize = True
         Me.Label594.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label594.Location = New System.Drawing.Point(74, 172)
+        Me.Label594.Location = New System.Drawing.Point(160, 176)
         Me.Label594.Name = "Label594"
         Me.Label594.Size = New System.Drawing.Size(29, 19)
         Me.Label594.TabIndex = 374
@@ -5354,7 +5541,7 @@ Partial Class calibratingResult
         '
         Me.Label595.AutoSize = True
         Me.Label595.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label595.Location = New System.Drawing.Point(12, 172)
+        Me.Label595.Location = New System.Drawing.Point(98, 176)
         Me.Label595.Name = "Label595"
         Me.Label595.Size = New System.Drawing.Size(29, 19)
         Me.Label595.TabIndex = 373
@@ -5364,7 +5551,7 @@ Partial Class calibratingResult
         '
         Me.Label588.AutoSize = True
         Me.Label588.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label588.Location = New System.Drawing.Point(75, 140)
+        Me.Label588.Location = New System.Drawing.Point(161, 144)
         Me.Label588.Name = "Label588"
         Me.Label588.Size = New System.Drawing.Size(29, 19)
         Me.Label588.TabIndex = 372
@@ -5374,7 +5561,7 @@ Partial Class calibratingResult
         '
         Me.Label589.AutoSize = True
         Me.Label589.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label589.Location = New System.Drawing.Point(13, 140)
+        Me.Label589.Location = New System.Drawing.Point(99, 144)
         Me.Label589.Name = "Label589"
         Me.Label589.Size = New System.Drawing.Size(19, 19)
         Me.Label589.TabIndex = 371
@@ -5384,7 +5571,7 @@ Partial Class calibratingResult
         '
         Me.Label586.AutoSize = True
         Me.Label586.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label586.Location = New System.Drawing.Point(75, 108)
+        Me.Label586.Location = New System.Drawing.Point(161, 112)
         Me.Label586.Name = "Label586"
         Me.Label586.Size = New System.Drawing.Size(29, 19)
         Me.Label586.TabIndex = 370
@@ -5394,7 +5581,7 @@ Partial Class calibratingResult
         '
         Me.Label587.AutoSize = True
         Me.Label587.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label587.Location = New System.Drawing.Point(13, 108)
+        Me.Label587.Location = New System.Drawing.Point(99, 112)
         Me.Label587.Name = "Label587"
         Me.Label587.Size = New System.Drawing.Size(39, 19)
         Me.Label587.TabIndex = 369
@@ -5404,7 +5591,7 @@ Partial Class calibratingResult
         '
         Me.Label585.AutoSize = True
         Me.Label585.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label585.Location = New System.Drawing.Point(75, 76)
+        Me.Label585.Location = New System.Drawing.Point(161, 80)
         Me.Label585.Name = "Label585"
         Me.Label585.Size = New System.Drawing.Size(19, 19)
         Me.Label585.TabIndex = 368
@@ -5414,7 +5601,7 @@ Partial Class calibratingResult
         '
         Me.Label584.AutoSize = True
         Me.Label584.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label584.Location = New System.Drawing.Point(13, 76)
+        Me.Label584.Location = New System.Drawing.Point(99, 80)
         Me.Label584.Name = "Label584"
         Me.Label584.Size = New System.Drawing.Size(39, 19)
         Me.Label584.TabIndex = 367
@@ -5451,30 +5638,6 @@ Partial Class calibratingResult
         Me.TextBox690.Name = "TextBox690"
         Me.TextBox690.Size = New System.Drawing.Size(110, 26)
         Me.TextBox690.TabIndex = 110
-        '
-        'TextBox691
-        '
-        Me.TextBox691.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox691.Location = New System.Drawing.Point(999, 265)
-        Me.TextBox691.Name = "TextBox691"
-        Me.TextBox691.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox691.TabIndex = 109
-        '
-        'TextBox692
-        '
-        Me.TextBox692.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox692.Location = New System.Drawing.Point(883, 265)
-        Me.TextBox692.Name = "TextBox692"
-        Me.TextBox692.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox692.TabIndex = 108
-        '
-        'TextBox693
-        '
-        Me.TextBox693.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox693.Location = New System.Drawing.Point(767, 265)
-        Me.TextBox693.Name = "TextBox693"
-        Me.TextBox693.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox693.TabIndex = 107
         '
         'TextBox694
         '
@@ -5532,30 +5695,6 @@ Partial Class calibratingResult
         Me.TextBox704.Size = New System.Drawing.Size(110, 26)
         Me.TextBox704.TabIndex = 96
         '
-        'TextBox705
-        '
-        Me.TextBox705.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox705.Location = New System.Drawing.Point(999, 233)
-        Me.TextBox705.Name = "TextBox705"
-        Me.TextBox705.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox705.TabIndex = 95
-        '
-        'TextBox706
-        '
-        Me.TextBox706.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox706.Location = New System.Drawing.Point(883, 233)
-        Me.TextBox706.Name = "TextBox706"
-        Me.TextBox706.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox706.TabIndex = 94
-        '
-        'TextBox707
-        '
-        Me.TextBox707.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox707.Location = New System.Drawing.Point(767, 233)
-        Me.TextBox707.Name = "TextBox707"
-        Me.TextBox707.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox707.TabIndex = 93
-        '
         'TextBox708
         '
         Me.TextBox708.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
@@ -5611,30 +5750,6 @@ Partial Class calibratingResult
         Me.TextBox718.Name = "TextBox718"
         Me.TextBox718.Size = New System.Drawing.Size(110, 26)
         Me.TextBox718.TabIndex = 82
-        '
-        'TextBox719
-        '
-        Me.TextBox719.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox719.Location = New System.Drawing.Point(999, 201)
-        Me.TextBox719.Name = "TextBox719"
-        Me.TextBox719.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox719.TabIndex = 81
-        '
-        'TextBox720
-        '
-        Me.TextBox720.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox720.Location = New System.Drawing.Point(883, 201)
-        Me.TextBox720.Name = "TextBox720"
-        Me.TextBox720.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox720.TabIndex = 80
-        '
-        'TextBox721
-        '
-        Me.TextBox721.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox721.Location = New System.Drawing.Point(767, 201)
-        Me.TextBox721.Name = "TextBox721"
-        Me.TextBox721.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox721.TabIndex = 79
         '
         'TextBox722
         '
@@ -5692,30 +5807,6 @@ Partial Class calibratingResult
         Me.TextBox732.Size = New System.Drawing.Size(110, 26)
         Me.TextBox732.TabIndex = 68
         '
-        'TextBox733
-        '
-        Me.TextBox733.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox733.Location = New System.Drawing.Point(999, 169)
-        Me.TextBox733.Name = "TextBox733"
-        Me.TextBox733.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox733.TabIndex = 67
-        '
-        'TextBox734
-        '
-        Me.TextBox734.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox734.Location = New System.Drawing.Point(883, 169)
-        Me.TextBox734.Name = "TextBox734"
-        Me.TextBox734.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox734.TabIndex = 66
-        '
-        'TextBox735
-        '
-        Me.TextBox735.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox735.Location = New System.Drawing.Point(767, 169)
-        Me.TextBox735.Name = "TextBox735"
-        Me.TextBox735.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox735.TabIndex = 65
-        '
         'TextBox736
         '
         Me.TextBox736.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
@@ -5772,30 +5863,6 @@ Partial Class calibratingResult
         Me.TextBox746.Size = New System.Drawing.Size(110, 26)
         Me.TextBox746.TabIndex = 54
         '
-        'TextBox747
-        '
-        Me.TextBox747.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox747.Location = New System.Drawing.Point(999, 137)
-        Me.TextBox747.Name = "TextBox747"
-        Me.TextBox747.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox747.TabIndex = 53
-        '
-        'TextBox748
-        '
-        Me.TextBox748.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox748.Location = New System.Drawing.Point(883, 137)
-        Me.TextBox748.Name = "TextBox748"
-        Me.TextBox748.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox748.TabIndex = 52
-        '
-        'TextBox749
-        '
-        Me.TextBox749.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox749.Location = New System.Drawing.Point(767, 137)
-        Me.TextBox749.Name = "TextBox749"
-        Me.TextBox749.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox749.TabIndex = 51
-        '
         'TextBox750
         '
         Me.TextBox750.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
@@ -5851,30 +5918,6 @@ Partial Class calibratingResult
         Me.TextBox760.Name = "TextBox760"
         Me.TextBox760.Size = New System.Drawing.Size(110, 26)
         Me.TextBox760.TabIndex = 40
-        '
-        'TextBox761
-        '
-        Me.TextBox761.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox761.Location = New System.Drawing.Point(999, 105)
-        Me.TextBox761.Name = "TextBox761"
-        Me.TextBox761.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox761.TabIndex = 39
-        '
-        'TextBox762
-        '
-        Me.TextBox762.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox762.Location = New System.Drawing.Point(883, 105)
-        Me.TextBox762.Name = "TextBox762"
-        Me.TextBox762.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox762.TabIndex = 38
-        '
-        'TextBox763
-        '
-        Me.TextBox763.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox763.Location = New System.Drawing.Point(767, 105)
-        Me.TextBox763.Name = "TextBox763"
-        Me.TextBox763.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox763.TabIndex = 37
         '
         'TextBox764
         '
@@ -5982,14 +6025,6 @@ Partial Class calibratingResult
         Me.Label37.TabIndex = 21
         Me.Label37.Text = "FINAL " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "UNCERTAINTY " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "DECLARATION"
         '
-        'TextBox775
-        '
-        Me.TextBox775.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox775.Location = New System.Drawing.Point(999, 73)
-        Me.TextBox775.Name = "TextBox775"
-        Me.TextBox775.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox775.TabIndex = 20
-        '
         'Label38
         '
         Me.Label38.AutoSize = True
@@ -6000,14 +6035,6 @@ Partial Class calibratingResult
         Me.Label38.TabIndex = 19
         Me.Label38.Text = "ERROR"
         '
-        'TextBox776
-        '
-        Me.TextBox776.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox776.Location = New System.Drawing.Point(883, 73)
-        Me.TextBox776.Name = "TextBox776"
-        Me.TextBox776.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox776.TabIndex = 18
-        '
         'Label39
         '
         Me.Label39.AutoSize = True
@@ -6017,14 +6044,6 @@ Partial Class calibratingResult
         Me.Label39.Size = New System.Drawing.Size(79, 19)
         Me.Label39.TabIndex = 17
         Me.Label39.Text = "AVERAGE"
-        '
-        'TextBox777
-        '
-        Me.TextBox777.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.TextBox777.Location = New System.Drawing.Point(767, 73)
-        Me.TextBox777.Name = "TextBox777"
-        Me.TextBox777.Size = New System.Drawing.Size(110, 26)
-        Me.TextBox777.TabIndex = 16
         '
         'Label40
         '
@@ -6094,7 +6113,7 @@ Partial Class calibratingResult
         '
         Me.Label44.AutoSize = True
         Me.Label44.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label44.Location = New System.Drawing.Point(229, 51)
+        Me.Label44.Location = New System.Drawing.Point(315, 55)
         Me.Label44.Name = "Label44"
         Me.Label44.Size = New System.Drawing.Size(49, 19)
         Me.Label44.TabIndex = 8
@@ -6104,7 +6123,7 @@ Partial Class calibratingResult
         '
         Me.Label45.AutoSize = True
         Me.Label45.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label45.Location = New System.Drawing.Point(146, 51)
+        Me.Label45.Location = New System.Drawing.Point(232, 55)
         Me.Label45.Name = "Label45"
         Me.Label45.Size = New System.Drawing.Size(79, 19)
         Me.Label45.TabIndex = 6
@@ -6114,7 +6133,7 @@ Partial Class calibratingResult
         '
         Me.Label46.AutoSize = True
         Me.Label46.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label46.Location = New System.Drawing.Point(75, 51)
+        Me.Label46.Location = New System.Drawing.Point(161, 55)
         Me.Label46.Name = "Label46"
         Me.Label46.Size = New System.Drawing.Size(49, 19)
         Me.Label46.TabIndex = 4
@@ -6124,7 +6143,7 @@ Partial Class calibratingResult
         '
         Me.Label47.AutoSize = True
         Me.Label47.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label47.Location = New System.Drawing.Point(12, 51)
+        Me.Label47.Location = New System.Drawing.Point(98, 55)
         Me.Label47.Name = "Label47"
         Me.Label47.Size = New System.Drawing.Size(59, 19)
         Me.Label47.TabIndex = 3
@@ -6513,7 +6532,7 @@ Partial Class calibratingResult
         Me.Panel7.Controls.Add(Me.Label30)
         Me.Panel7.Controls.Add(Me.Label31)
         Me.Panel7.Controls.Add(Me.Label32)
-        Me.Panel7.Location = New System.Drawing.Point(6, 806)
+        Me.Panel7.Location = New System.Drawing.Point(6, 679)
         Me.Panel7.Name = "Panel7"
         Me.Panel7.Size = New System.Drawing.Size(1591, 798)
         Me.Panel7.TabIndex = 2
@@ -10167,7 +10186,7 @@ Partial Class calibratingResult
         Me.Panel6.Controls.Add(Me.Label3)
         Me.Panel6.Controls.Add(Me.Label2)
         Me.Panel6.Controls.Add(Me.Label1)
-        Me.Panel6.Location = New System.Drawing.Point(6, 149)
+        Me.Panel6.Location = New System.Drawing.Point(6, 13)
         Me.Panel6.Name = "Panel6"
         Me.Panel6.Size = New System.Drawing.Size(1591, 636)
         Me.Panel6.TabIndex = 1
@@ -12474,11 +12493,50 @@ Partial Class calibratingResult
         Me.Label1.TabIndex = 0
         Me.Label1.Text = "DC VOLTAGE"
         '
+        'cameraPanel
+        '
+        Me.cameraPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.cameraPanel.Location = New System.Drawing.Point(300, 0)
+        Me.cameraPanel.Name = "cameraPanel"
+        Me.cameraPanel.Size = New System.Drawing.Size(1624, 242)
+        Me.cameraPanel.TabIndex = 25
+        '
+        'Label435
+        '
+        Me.Label435.AutoSize = True
+        Me.Label435.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label435.Location = New System.Drawing.Point(273, 396)
+        Me.Label435.Name = "Label435"
+        Me.Label435.Size = New System.Drawing.Size(29, 19)
+        Me.Label435.TabIndex = 553
+        Me.Label435.Text = "50"
+        '
+        'Label436
+        '
+        Me.Label436.AutoSize = True
+        Me.Label436.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label436.Location = New System.Drawing.Point(273, 364)
+        Me.Label436.Name = "Label436"
+        Me.Label436.Size = New System.Drawing.Size(19, 19)
+        Me.Label436.TabIndex = 552
+        Me.Label436.Text = "1"
+        '
+        'Label437
+        '
+        Me.Label437.AutoSize = True
+        Me.Label437.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label437.Location = New System.Drawing.Point(273, 428)
+        Me.Label437.Name = "Label437"
+        Me.Label437.Size = New System.Drawing.Size(19, 19)
+        Me.Label437.TabIndex = 554
+        Me.Label437.Text = "1"
+        '
         'calibratingResult
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1924, 1061)
+        Me.Controls.Add(Me.cameraPanel)
         Me.Controls.Add(Me.Panel5)
         Me.Controls.Add(Me.Panel1)
         Me.Name = "calibratingResult"
@@ -12655,61 +12713,37 @@ Partial Class calibratingResult
     Friend WithEvents TextBox688 As TextBox
     Friend WithEvents TextBox689 As TextBox
     Friend WithEvents TextBox690 As TextBox
-    Friend WithEvents TextBox691 As TextBox
-    Friend WithEvents TextBox692 As TextBox
-    Friend WithEvents TextBox693 As TextBox
     Friend WithEvents TextBox694 As TextBox
-    Friend WithEvents TextBox695 As TextBox
     Friend WithEvents TextBox696 As TextBox
     Friend WithEvents TextBox701 As TextBox
     Friend WithEvents TextBox702 As TextBox
     Friend WithEvents TextBox703 As TextBox
     Friend WithEvents TextBox704 As TextBox
-    Friend WithEvents TextBox705 As TextBox
-    Friend WithEvents TextBox706 As TextBox
-    Friend WithEvents TextBox707 As TextBox
     Friend WithEvents TextBox708 As TextBox
-    Friend WithEvents TextBox709 As TextBox
     Friend WithEvents TextBox710 As TextBox
     Friend WithEvents TextBox715 As TextBox
     Friend WithEvents TextBox716 As TextBox
     Friend WithEvents TextBox717 As TextBox
     Friend WithEvents TextBox718 As TextBox
-    Friend WithEvents TextBox719 As TextBox
-    Friend WithEvents TextBox720 As TextBox
-    Friend WithEvents TextBox721 As TextBox
     Friend WithEvents TextBox722 As TextBox
-    Friend WithEvents TextBox723 As TextBox
     Friend WithEvents TextBox724 As TextBox
     Friend WithEvents TextBox729 As TextBox
     Friend WithEvents TextBox730 As TextBox
     Friend WithEvents TextBox731 As TextBox
     Friend WithEvents TextBox732 As TextBox
-    Friend WithEvents TextBox733 As TextBox
-    Friend WithEvents TextBox734 As TextBox
-    Friend WithEvents TextBox735 As TextBox
     Friend WithEvents TextBox736 As TextBox
-    Friend WithEvents TextBox737 As TextBox
     Friend WithEvents TextBox738 As TextBox
     Friend WithEvents TextBox743 As TextBox
     Friend WithEvents TextBox744 As TextBox
     Friend WithEvents TextBox745 As TextBox
     Friend WithEvents TextBox746 As TextBox
-    Friend WithEvents TextBox747 As TextBox
-    Friend WithEvents TextBox748 As TextBox
-    Friend WithEvents TextBox749 As TextBox
     Friend WithEvents TextBox750 As TextBox
-    Friend WithEvents TextBox751 As TextBox
     Friend WithEvents TextBox752 As TextBox
     Friend WithEvents TextBox757 As TextBox
     Friend WithEvents TextBox758 As TextBox
     Friend WithEvents TextBox759 As TextBox
     Friend WithEvents TextBox760 As TextBox
-    Friend WithEvents TextBox761 As TextBox
-    Friend WithEvents TextBox762 As TextBox
-    Friend WithEvents TextBox763 As TextBox
     Friend WithEvents TextBox764 As TextBox
-    Friend WithEvents TextBox765 As TextBox
     Friend WithEvents TextBox766 As TextBox
     Friend WithEvents Label33 As Label
     Friend WithEvents TextBox771 As TextBox
@@ -12720,16 +12754,12 @@ Partial Class calibratingResult
     Friend WithEvents Label36 As Label
     Friend WithEvents TextBox774 As TextBox
     Friend WithEvents Label37 As Label
-    Friend WithEvents TextBox775 As TextBox
     Friend WithEvents Label38 As Label
-    Friend WithEvents TextBox776 As TextBox
     Friend WithEvents Label39 As Label
-    Friend WithEvents TextBox777 As TextBox
     Friend WithEvents Label40 As Label
     Friend WithEvents Label41 As Label
     Friend WithEvents TextBox778 As TextBox
     Friend WithEvents Label42 As Label
-    Friend WithEvents TextBox779 As TextBox
     Friend WithEvents Label43 As Label
     Friend WithEvents TextBox780 As TextBox
     Friend WithEvents Label44 As Label
@@ -13420,11 +13450,7 @@ Partial Class calibratingResult
     Friend WithEvents TextBox314 As TextBox
     Friend WithEvents TextBox315 As TextBox
     Friend WithEvents TextBox319 As TextBox
-    Friend WithEvents TextBox320 As TextBox
-    Friend WithEvents TextBox321 As TextBox
-    Friend WithEvents TextBox322 As TextBox
     Friend WithEvents TextBox327 As TextBox
-    Friend WithEvents TextBox328 As TextBox
     Friend WithEvents TextBox329 As TextBox
     Friend WithEvents Panel12 As Panel
     Friend WithEvents Label368 As Label
@@ -13588,9 +13614,6 @@ Partial Class calibratingResult
     Friend WithEvents Label422 As Label
     Friend WithEvents Label423 As Label
     Friend WithEvents Label424 As Label
-    Friend WithEvents Label435 As Label
-    Friend WithEvents Label436 As Label
-    Friend WithEvents Label437 As Label
     Friend WithEvents Label438 As Label
     Friend WithEvents Label439 As Label
     Friend WithEvents Label440 As Label
@@ -13624,4 +13647,40 @@ Partial Class calibratingResult
     Friend WithEvents TextBox166 As TextBox
     Friend WithEvents TextBox167 As TextBox
     Friend WithEvents TextBox168 As TextBox
+    Friend WithEvents cameraPanel As Panel
+    Friend WithEvents TextBox328 As TextBox
+    Friend WithEvents TextBox695 As TextBox
+    Friend WithEvents TextBox709 As TextBox
+    Friend WithEvents TextBox723 As TextBox
+    Friend WithEvents TextBox737 As TextBox
+    Friend WithEvents TextBox751 As TextBox
+    Friend WithEvents TextBox765 As TextBox
+    Friend WithEvents TextBox779 As TextBox
+    Friend WithEvents Label617 As Label
+    Friend WithEvents Label618 As Label
+    Friend WithEvents Label619 As Label
+    Friend WithEvents Label620 As Label
+    Friend WithEvents Label621 As Label
+    Friend WithEvents Label622 As Label
+    Friend WithEvents Label623 As Label
+    Friend WithEvents Label624 As Label
+    Friend WithEvents Label625 As Label
+    Friend WithEvents Label626 As Label
+    Friend WithEvents Label627 As Label
+    Friend WithEvents Label628 As Label
+    Friend WithEvents Label557 As Label
+    Friend WithEvents Label558 As Label
+    Friend WithEvents Label559 As Label
+    Friend WithEvents Label560 As Label
+    Friend WithEvents Label561 As Label
+    Friend WithEvents Label616 As Label
+    Friend WithEvents Label554 As Label
+    Friend WithEvents Label555 As Label
+    Friend WithEvents Label556 As Label
+    Friend WithEvents Label544 As Label
+    Friend WithEvents Label552 As Label
+    Friend WithEvents Label553 As Label
+    Friend WithEvents Label435 As Label
+    Friend WithEvents Label436 As Label
+    Friend WithEvents Label437 As Label
 End Class
