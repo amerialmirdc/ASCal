@@ -32,7 +32,7 @@ Namespace My
         
         <Global.System.Diagnostics.DebuggerStepThroughAttribute()>  _
         Protected Overrides Sub OnCreateMainForm()
-            Me.MainForm = Global.ASCal.login
+            Me.MainForm = Global.ASCal.calibratingResult
         End Sub
         
         <Global.System.Diagnostics.DebuggerStepThroughAttribute()>  _

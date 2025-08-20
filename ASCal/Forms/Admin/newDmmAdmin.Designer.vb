@@ -52,63 +52,22 @@ Partial Class newDMMAdmin
         Me.CheckBox8 = New System.Windows.Forms.CheckBox()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.Panel5 = New System.Windows.Forms.Panel()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.btnAddRangeACC = New System.Windows.Forms.Button()
-        Me.btnAddRangeDCV = New System.Windows.Forms.Button()
         Me.delBtnFreqACC = New System.Windows.Forms.Button()
-        Me.txtFreqValueACC = New System.Windows.Forms.TextBox()
-        Me.btnAddFreqACC = New System.Windows.Forms.Button()
         Me.delBtnFreqACV = New System.Windows.Forms.Button()
-        Me.txtFreqValueACV = New System.Windows.Forms.TextBox()
-        Me.btnAddFreqACV = New System.Windows.Forms.Button()
-        Me.btnAddRange = New System.Windows.Forms.Button()
-        Me.delBtnRanRES = New System.Windows.Forms.Button()
-        Me.delBtnRanDCC = New System.Windows.Forms.Button()
-        Me.delBtnRanACC = New System.Windows.Forms.Button()
-        Me.delBtnRanDCV = New System.Windows.Forms.Button()
-        Me.delBtnRan = New System.Windows.Forms.Button()
         Me.delBtnNomRES = New System.Windows.Forms.Button()
         Me.delBtnNomDCC = New System.Windows.Forms.Button()
         Me.delBtnNomDCV = New System.Windows.Forms.Button()
-        Me.rangeRadioPanelRES = New System.Windows.Forms.FlowLayoutPanel()
-        Me.txtNominalValueRES = New System.Windows.Forms.TextBox()
-        Me.btnAddNominalRES = New System.Windows.Forms.Button()
-        Me.btnAddRangeRES = New System.Windows.Forms.Button()
         Me.listViewParamsRES = New System.Windows.Forms.ListView()
-        Me.cmbRangeUnitRES = New System.Windows.Forms.ComboBox()
-        Me.txtRangeValueRES = New System.Windows.Forms.TextBox()
         Me.CheckBoxRES = New System.Windows.Forms.CheckBox()
-        Me.rangeRadioPanelDCC = New System.Windows.Forms.FlowLayoutPanel()
-        Me.txtNominalValueDCC = New System.Windows.Forms.TextBox()
-        Me.btnAddNominalDCC = New System.Windows.Forms.Button()
-        Me.btnAddRangeDCC = New System.Windows.Forms.Button()
         Me.listViewParamsDCC = New System.Windows.Forms.ListView()
-        Me.cmbRangeUnitDCC = New System.Windows.Forms.ComboBox()
-        Me.txtRangeValueDCC = New System.Windows.Forms.TextBox()
         Me.CheckBoxDCC = New System.Windows.Forms.CheckBox()
-        Me.rangeRadioPanelACC = New System.Windows.Forms.FlowLayoutPanel()
-        Me.txtNominalValueACC = New System.Windows.Forms.TextBox()
         Me.listViewParamsACC = New System.Windows.Forms.ListView()
-        Me.cmbRangeUnitACC = New System.Windows.Forms.ComboBox()
-        Me.txtRangeValueACC = New System.Windows.Forms.TextBox()
         Me.CheckBoxACC = New System.Windows.Forms.CheckBox()
-        Me.rangeRadioPanelDCV = New System.Windows.Forms.FlowLayoutPanel()
-        Me.txtNominalValueDCV = New System.Windows.Forms.TextBox()
-        Me.btnAddNominalDCV = New System.Windows.Forms.Button()
         Me.listViewParamsDCV = New System.Windows.Forms.ListView()
-        Me.cmbRangeUnitDCV = New System.Windows.Forms.ComboBox()
-        Me.txtRangeValueDCV = New System.Windows.Forms.TextBox()
-        Me.rangeRadioPanel = New System.Windows.Forms.FlowLayoutPanel()
-        Me.txtNominalValue = New System.Windows.Forms.TextBox()
         Me.listViewParams = New System.Windows.Forms.ListView()
         Me.CheckBoxDCV = New System.Windows.Forms.CheckBox()
         Me.CheckBox = New System.Windows.Forms.CheckBox()
-        Me.cmbRangeUnit = New System.Windows.Forms.ComboBox()
         Me.Label11 = New System.Windows.Forms.Label()
-        Me.txtRangeValue = New System.Windows.Forms.TextBox()
         Me.Panel6 = New System.Windows.Forms.Panel()
         Me.Panel1.SuspendLayout()
         Me.Panel3.SuspendLayout()
@@ -480,270 +439,57 @@ Partial Class newDMMAdmin
         '
         Me.Panel5.AutoScroll = True
         Me.Panel5.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.Panel5.Controls.Add(Me.Label4)
-        Me.Panel5.Controls.Add(Me.Label5)
-        Me.Panel5.Controls.Add(Me.Label3)
-        Me.Panel5.Controls.Add(Me.Label2)
-        Me.Panel5.Controls.Add(Me.btnAddRangeACC)
-        Me.Panel5.Controls.Add(Me.btnAddRangeDCV)
         Me.Panel5.Controls.Add(Me.delBtnFreqACC)
-        Me.Panel5.Controls.Add(Me.txtFreqValueACC)
-        Me.Panel5.Controls.Add(Me.btnAddFreqACC)
         Me.Panel5.Controls.Add(Me.delBtnFreqACV)
-        Me.Panel5.Controls.Add(Me.txtFreqValueACV)
-        Me.Panel5.Controls.Add(Me.btnAddFreqACV)
-        Me.Panel5.Controls.Add(Me.btnAddRange)
-        Me.Panel5.Controls.Add(Me.delBtnRanRES)
-        Me.Panel5.Controls.Add(Me.delBtnRanDCC)
-        Me.Panel5.Controls.Add(Me.delBtnRanACC)
-        Me.Panel5.Controls.Add(Me.delBtnRanDCV)
-        Me.Panel5.Controls.Add(Me.delBtnRan)
         Me.Panel5.Controls.Add(Me.delBtnNomRES)
         Me.Panel5.Controls.Add(Me.delBtnNomDCC)
         Me.Panel5.Controls.Add(Me.delBtnNomDCV)
-        Me.Panel5.Controls.Add(Me.rangeRadioPanelRES)
-        Me.Panel5.Controls.Add(Me.txtNominalValueRES)
-        Me.Panel5.Controls.Add(Me.btnAddNominalRES)
-        Me.Panel5.Controls.Add(Me.btnAddRangeRES)
         Me.Panel5.Controls.Add(Me.listViewParamsRES)
-        Me.Panel5.Controls.Add(Me.cmbRangeUnitRES)
-        Me.Panel5.Controls.Add(Me.txtRangeValueRES)
         Me.Panel5.Controls.Add(Me.CheckBoxRES)
-        Me.Panel5.Controls.Add(Me.rangeRadioPanelDCC)
-        Me.Panel5.Controls.Add(Me.txtNominalValueDCC)
-        Me.Panel5.Controls.Add(Me.btnAddNominalDCC)
-        Me.Panel5.Controls.Add(Me.btnAddRangeDCC)
         Me.Panel5.Controls.Add(Me.listViewParamsDCC)
-        Me.Panel5.Controls.Add(Me.cmbRangeUnitDCC)
-        Me.Panel5.Controls.Add(Me.txtRangeValueDCC)
         Me.Panel5.Controls.Add(Me.CheckBoxDCC)
-        Me.Panel5.Controls.Add(Me.rangeRadioPanelACC)
-        Me.Panel5.Controls.Add(Me.txtNominalValueACC)
         Me.Panel5.Controls.Add(Me.listViewParamsACC)
-        Me.Panel5.Controls.Add(Me.cmbRangeUnitACC)
-        Me.Panel5.Controls.Add(Me.txtRangeValueACC)
         Me.Panel5.Controls.Add(Me.CheckBoxACC)
-        Me.Panel5.Controls.Add(Me.rangeRadioPanelDCV)
-        Me.Panel5.Controls.Add(Me.txtNominalValueDCV)
-        Me.Panel5.Controls.Add(Me.btnAddNominalDCV)
         Me.Panel5.Controls.Add(Me.listViewParamsDCV)
-        Me.Panel5.Controls.Add(Me.cmbRangeUnitDCV)
-        Me.Panel5.Controls.Add(Me.txtRangeValueDCV)
-        Me.Panel5.Controls.Add(Me.rangeRadioPanel)
-        Me.Panel5.Controls.Add(Me.txtNominalValue)
         Me.Panel5.Controls.Add(Me.listViewParams)
         Me.Panel5.Controls.Add(Me.CheckBoxDCV)
         Me.Panel5.Controls.Add(Me.CheckBox)
-        Me.Panel5.Controls.Add(Me.cmbRangeUnit)
         Me.Panel5.Controls.Add(Me.Label11)
-        Me.Panel5.Controls.Add(Me.txtRangeValue)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel5.Location = New System.Drawing.Point(0, 0)
         Me.Panel5.Name = "Panel5"
         Me.Panel5.Size = New System.Drawing.Size(1544, 746)
         Me.Panel5.TabIndex = 29
         '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.Font = New System.Drawing.Font("Courier New", 17.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(624, 352)
-        Me.Label4.Margin = New System.Windows.Forms.Padding(0)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(109, 20)
-        Me.Label4.TabIndex = 134
-        Me.Label4.Text = "Frequency:"
-        '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Font = New System.Drawing.Font("Courier New", 17.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(624, 312)
-        Me.Label5.Margin = New System.Windows.Forms.Padding(0)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(89, 20)
-        Me.Label5.TabIndex = 133
-        Me.Label5.Text = "Nominal:"
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Font = New System.Drawing.Font("Courier New", 17.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(24, 352)
-        Me.Label3.Margin = New System.Windows.Forms.Padding(0)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(109, 20)
-        Me.Label3.TabIndex = 132
-        Me.Label3.Text = "Frequency:"
-        '
-        'Label2
-        '
-        Me.Label2.AutoSize = True
-        Me.Label2.Font = New System.Drawing.Font("Courier New", 17.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(24, 312)
-        Me.Label2.Margin = New System.Windows.Forms.Padding(0)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(89, 20)
-        Me.Label2.TabIndex = 58
-        Me.Label2.Text = "Nominal:"
-        '
-        'btnAddRangeACC
-        '
-        Me.btnAddRangeACC.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddRangeACC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddRangeACC.Location = New System.Drawing.Point(736, 152)
-        Me.btnAddRangeACC.Name = "btnAddRangeACC"
-        Me.btnAddRangeACC.Size = New System.Drawing.Size(168, 24)
-        Me.btnAddRangeACC.TabIndex = 90
-        Me.btnAddRangeACC.Text = "Add range"
-        Me.btnAddRangeACC.UseVisualStyleBackColor = False
-        '
-        'btnAddRangeDCV
-        '
-        Me.btnAddRangeDCV.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddRangeDCV.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddRangeDCV.Location = New System.Drawing.Point(440, 152)
-        Me.btnAddRangeDCV.Name = "btnAddRangeDCV"
-        Me.btnAddRangeDCV.Size = New System.Drawing.Size(160, 24)
-        Me.btnAddRangeDCV.TabIndex = 81
-        Me.btnAddRangeDCV.Text = "Add range"
-        Me.btnAddRangeDCV.UseVisualStyleBackColor = False
-        '
         'delBtnFreqACC
         '
         Me.delBtnFreqACC.BackColor = System.Drawing.Color.Cyan
         Me.delBtnFreqACC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnFreqACC.Location = New System.Drawing.Point(624, 424)
+        Me.delBtnFreqACC.Location = New System.Drawing.Point(630, 99)
         Me.delBtnFreqACC.Name = "delBtnFreqACC"
-        Me.delBtnFreqACC.Size = New System.Drawing.Size(280, 24)
+        Me.delBtnFreqACC.Size = New System.Drawing.Size(297, 24)
         Me.delBtnFreqACC.TabIndex = 131
         Me.delBtnFreqACC.Text = "Delete"
         Me.delBtnFreqACC.UseVisualStyleBackColor = False
-        '
-        'txtFreqValueACC
-        '
-        Me.txtFreqValueACC.BackColor = System.Drawing.Color.White
-        Me.txtFreqValueACC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtFreqValueACC.Location = New System.Drawing.Point(736, 352)
-        Me.txtFreqValueACC.Name = "txtFreqValueACC"
-        Me.txtFreqValueACC.Size = New System.Drawing.Size(160, 31)
-        Me.txtFreqValueACC.TabIndex = 129
-        '
-        'btnAddFreqACC
-        '
-        Me.btnAddFreqACC.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddFreqACC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddFreqACC.Location = New System.Drawing.Point(624, 392)
-        Me.btnAddFreqACC.Name = "btnAddFreqACC"
-        Me.btnAddFreqACC.Size = New System.Drawing.Size(280, 24)
-        Me.btnAddFreqACC.TabIndex = 128
-        Me.btnAddFreqACC.Text = "Add Nominal and Frequency"
-        Me.btnAddFreqACC.UseVisualStyleBackColor = False
         '
         'delBtnFreqACV
         '
         Me.delBtnFreqACV.BackColor = System.Drawing.Color.Cyan
         Me.delBtnFreqACV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.delBtnFreqACV.Location = New System.Drawing.Point(16, 424)
+        Me.delBtnFreqACV.Location = New System.Drawing.Point(14, 99)
         Me.delBtnFreqACV.Name = "delBtnFreqACV"
-        Me.delBtnFreqACV.Size = New System.Drawing.Size(288, 24)
+        Me.delBtnFreqACV.Size = New System.Drawing.Size(297, 24)
         Me.delBtnFreqACV.TabIndex = 127
         Me.delBtnFreqACV.Text = "Delete"
         Me.delBtnFreqACV.UseVisualStyleBackColor = False
-        '
-        'txtFreqValueACV
-        '
-        Me.txtFreqValueACV.BackColor = System.Drawing.Color.White
-        Me.txtFreqValueACV.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtFreqValueACV.Location = New System.Drawing.Point(136, 352)
-        Me.txtFreqValueACV.Name = "txtFreqValueACV"
-        Me.txtFreqValueACV.Size = New System.Drawing.Size(160, 31)
-        Me.txtFreqValueACV.TabIndex = 125
-        '
-        'btnAddFreqACV
-        '
-        Me.btnAddFreqACV.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddFreqACV.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddFreqACV.Location = New System.Drawing.Point(16, 392)
-        Me.btnAddFreqACV.Name = "btnAddFreqACV"
-        Me.btnAddFreqACV.Size = New System.Drawing.Size(288, 24)
-        Me.btnAddFreqACV.TabIndex = 124
-        Me.btnAddFreqACV.Text = "Add Nominal and Frequency"
-        Me.btnAddFreqACV.UseVisualStyleBackColor = False
-        '
-        'btnAddRange
-        '
-        Me.btnAddRange.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddRange.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddRange.Location = New System.Drawing.Point(136, 152)
-        Me.btnAddRange.Name = "btnAddRange"
-        Me.btnAddRange.Size = New System.Drawing.Size(168, 24)
-        Me.btnAddRange.TabIndex = 51
-        Me.btnAddRange.Text = "Add range"
-        Me.btnAddRange.UseVisualStyleBackColor = False
-        '
-        'delBtnRanRES
-        '
-        Me.delBtnRanRES.BackColor = System.Drawing.Color.Cyan
-        Me.delBtnRanRES.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnRanRES.Location = New System.Drawing.Point(1216, 152)
-        Me.delBtnRanRES.Name = "delBtnRanRES"
-        Me.delBtnRanRES.Size = New System.Drawing.Size(104, 24)
-        Me.delBtnRanRES.TabIndex = 123
-        Me.delBtnRanRES.Text = "Delete"
-        Me.delBtnRanRES.UseVisualStyleBackColor = False
-        '
-        'delBtnRanDCC
-        '
-        Me.delBtnRanDCC.BackColor = System.Drawing.Color.Cyan
-        Me.delBtnRanDCC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnRanDCC.Location = New System.Drawing.Point(920, 152)
-        Me.delBtnRanDCC.Name = "delBtnRanDCC"
-        Me.delBtnRanDCC.Size = New System.Drawing.Size(104, 24)
-        Me.delBtnRanDCC.TabIndex = 122
-        Me.delBtnRanDCC.Text = "Delete"
-        Me.delBtnRanDCC.UseVisualStyleBackColor = False
-        '
-        'delBtnRanACC
-        '
-        Me.delBtnRanACC.BackColor = System.Drawing.Color.Cyan
-        Me.delBtnRanACC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnRanACC.Location = New System.Drawing.Point(624, 152)
-        Me.delBtnRanACC.Name = "delBtnRanACC"
-        Me.delBtnRanACC.Size = New System.Drawing.Size(104, 24)
-        Me.delBtnRanACC.TabIndex = 121
-        Me.delBtnRanACC.Text = "Delete"
-        Me.delBtnRanACC.UseVisualStyleBackColor = False
-        '
-        'delBtnRanDCV
-        '
-        Me.delBtnRanDCV.BackColor = System.Drawing.Color.Cyan
-        Me.delBtnRanDCV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnRanDCV.Location = New System.Drawing.Point(328, 152)
-        Me.delBtnRanDCV.Name = "delBtnRanDCV"
-        Me.delBtnRanDCV.Size = New System.Drawing.Size(104, 24)
-        Me.delBtnRanDCV.TabIndex = 120
-        Me.delBtnRanDCV.Text = "Delete"
-        Me.delBtnRanDCV.UseVisualStyleBackColor = False
-        '
-        'delBtnRan
-        '
-        Me.delBtnRan.BackColor = System.Drawing.Color.Cyan
-        Me.delBtnRan.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.delBtnRan.Location = New System.Drawing.Point(32, 152)
-        Me.delBtnRan.Name = "delBtnRan"
-        Me.delBtnRan.Size = New System.Drawing.Size(104, 24)
-        Me.delBtnRan.TabIndex = 119
-        Me.delBtnRan.Text = "Delete"
-        Me.delBtnRan.UseVisualStyleBackColor = False
         '
         'delBtnNomRES
         '
         Me.delBtnNomRES.BackColor = System.Drawing.Color.Cyan
         Me.delBtnNomRES.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnNomRES.Location = New System.Drawing.Point(1392, 368)
+        Me.delBtnNomRES.Location = New System.Drawing.Point(1236, 99)
         Me.delBtnNomRES.Name = "delBtnNomRES"
-        Me.delBtnNomRES.Size = New System.Drawing.Size(104, 24)
+        Me.delBtnNomRES.Size = New System.Drawing.Size(291, 24)
         Me.delBtnNomRES.TabIndex = 118
         Me.delBtnNomRES.Text = "Delete"
         Me.delBtnNomRES.UseVisualStyleBackColor = False
@@ -752,9 +498,9 @@ Partial Class newDMMAdmin
         '
         Me.delBtnNomDCC.BackColor = System.Drawing.Color.Cyan
         Me.delBtnNomDCC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnNomDCC.Location = New System.Drawing.Point(1088, 368)
+        Me.delBtnNomDCC.Location = New System.Drawing.Point(938, 99)
         Me.delBtnNomDCC.Name = "delBtnNomDCC"
-        Me.delBtnNomDCC.Size = New System.Drawing.Size(104, 24)
+        Me.delBtnNomDCC.Size = New System.Drawing.Size(288, 24)
         Me.delBtnNomDCC.TabIndex = 117
         Me.delBtnNomDCC.Text = "Delete"
         Me.delBtnNomDCC.UseVisualStyleBackColor = False
@@ -763,346 +509,98 @@ Partial Class newDMMAdmin
         '
         Me.delBtnNomDCV.BackColor = System.Drawing.Color.Cyan
         Me.delBtnNomDCV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnNomDCV.Location = New System.Drawing.Point(496, 368)
+        Me.delBtnNomDCV.Location = New System.Drawing.Point(322, 99)
         Me.delBtnNomDCV.Name = "delBtnNomDCV"
-        Me.delBtnNomDCV.Size = New System.Drawing.Size(104, 24)
+        Me.delBtnNomDCV.Size = New System.Drawing.Size(290, 24)
         Me.delBtnNomDCV.TabIndex = 115
         Me.delBtnNomDCV.Text = "Delete"
         Me.delBtnNomDCV.UseVisualStyleBackColor = False
-        '
-        'rangeRadioPanelRES
-        '
-        Me.rangeRadioPanelRES.AutoScroll = True
-        Me.rangeRadioPanelRES.BackColor = System.Drawing.Color.Cyan
-        Me.rangeRadioPanelRES.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.rangeRadioPanelRES.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.rangeRadioPanelRES.Location = New System.Drawing.Point(1208, 184)
-        Me.rangeRadioPanelRES.Name = "rangeRadioPanelRES"
-        Me.rangeRadioPanelRES.Padding = New System.Windows.Forms.Padding(3)
-        Me.rangeRadioPanelRES.Size = New System.Drawing.Size(288, 136)
-        Me.rangeRadioPanelRES.TabIndex = 113
-        Me.rangeRadioPanelRES.WrapContents = False
-        '
-        'txtNominalValueRES
-        '
-        Me.txtNominalValueRES.BackColor = System.Drawing.Color.White
-        Me.txtNominalValueRES.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtNominalValueRES.Location = New System.Drawing.Point(1208, 328)
-        Me.txtNominalValueRES.Name = "txtNominalValueRES"
-        Me.txtNominalValueRES.Size = New System.Drawing.Size(288, 31)
-        Me.txtNominalValueRES.TabIndex = 111
-        '
-        'btnAddNominalRES
-        '
-        Me.btnAddNominalRES.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddNominalRES.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddNominalRES.Location = New System.Drawing.Point(1216, 368)
-        Me.btnAddNominalRES.Name = "btnAddNominalRES"
-        Me.btnAddNominalRES.Size = New System.Drawing.Size(168, 24)
-        Me.btnAddNominalRES.TabIndex = 110
-        Me.btnAddNominalRES.Text = "Add Nominal"
-        Me.btnAddNominalRES.UseVisualStyleBackColor = False
-        '
-        'btnAddRangeRES
-        '
-        Me.btnAddRangeRES.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddRangeRES.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddRangeRES.Location = New System.Drawing.Point(1328, 152)
-        Me.btnAddRangeRES.Name = "btnAddRangeRES"
-        Me.btnAddRangeRES.Size = New System.Drawing.Size(168, 24)
-        Me.btnAddRangeRES.TabIndex = 108
-        Me.btnAddRangeRES.Text = "Add range"
-        Me.btnAddRangeRES.UseVisualStyleBackColor = False
         '
         'listViewParamsRES
         '
         Me.listViewParamsRES.BackColor = System.Drawing.Color.Cyan
         Me.listViewParamsRES.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParamsRES.Location = New System.Drawing.Point(1208, 400)
+        Me.listViewParamsRES.HideSelection = False
+        Me.listViewParamsRES.Location = New System.Drawing.Point(1236, 129)
         Me.listViewParamsRES.Name = "listViewParamsRES"
-        Me.listViewParamsRES.Size = New System.Drawing.Size(288, 328)
+        Me.listViewParamsRES.Size = New System.Drawing.Size(291, 599)
         Me.listViewParamsRES.TabIndex = 109
         Me.listViewParamsRES.UseCompatibleStateImageBehavior = False
-        '
-        'cmbRangeUnitRES
-        '
-        Me.cmbRangeUnitRES.BackColor = System.Drawing.SystemColors.Control
-        Me.cmbRangeUnitRES.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbRangeUnitRES.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.cmbRangeUnitRES.FormattingEnabled = True
-        Me.cmbRangeUnitRES.Items.AddRange(New Object() {"kΩ", "MΩ", "Ω"})
-        Me.cmbRangeUnitRES.Location = New System.Drawing.Point(1384, 104)
-        Me.cmbRangeUnitRES.Name = "cmbRangeUnitRES"
-        Me.cmbRangeUnitRES.Size = New System.Drawing.Size(112, 31)
-        Me.cmbRangeUnitRES.Sorted = True
-        Me.cmbRangeUnitRES.TabIndex = 107
-        '
-        'txtRangeValueRES
-        '
-        Me.txtRangeValueRES.BackColor = System.Drawing.Color.Cyan
-        Me.txtRangeValueRES.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtRangeValueRES.Location = New System.Drawing.Point(1232, 104)
-        Me.txtRangeValueRES.Name = "txtRangeValueRES"
-        Me.txtRangeValueRES.Size = New System.Drawing.Size(130, 31)
-        Me.txtRangeValueRES.TabIndex = 106
         '
         'CheckBoxRES
         '
         Me.CheckBoxRES.AutoSize = True
         Me.CheckBoxRES.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxRES.Location = New System.Drawing.Point(1208, 73)
+        Me.CheckBoxRES.Location = New System.Drawing.Point(1236, 73)
         Me.CheckBoxRES.Name = "CheckBoxRES"
         Me.CheckBoxRES.Size = New System.Drawing.Size(161, 27)
         Me.CheckBoxRES.TabIndex = 105
         Me.CheckBoxRES.Text = "RESISTANCE:"
         Me.CheckBoxRES.UseVisualStyleBackColor = True
         '
-        'rangeRadioPanelDCC
-        '
-        Me.rangeRadioPanelDCC.AutoScroll = True
-        Me.rangeRadioPanelDCC.BackColor = System.Drawing.Color.Cyan
-        Me.rangeRadioPanelDCC.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.rangeRadioPanelDCC.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.rangeRadioPanelDCC.Location = New System.Drawing.Point(912, 184)
-        Me.rangeRadioPanelDCC.Name = "rangeRadioPanelDCC"
-        Me.rangeRadioPanelDCC.Padding = New System.Windows.Forms.Padding(3)
-        Me.rangeRadioPanelDCC.Size = New System.Drawing.Size(288, 136)
-        Me.rangeRadioPanelDCC.TabIndex = 104
-        Me.rangeRadioPanelDCC.WrapContents = False
-        '
-        'txtNominalValueDCC
-        '
-        Me.txtNominalValueDCC.BackColor = System.Drawing.Color.White
-        Me.txtNominalValueDCC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtNominalValueDCC.Location = New System.Drawing.Point(912, 328)
-        Me.txtNominalValueDCC.Name = "txtNominalValueDCC"
-        Me.txtNominalValueDCC.Size = New System.Drawing.Size(288, 31)
-        Me.txtNominalValueDCC.TabIndex = 102
-        '
-        'btnAddNominalDCC
-        '
-        Me.btnAddNominalDCC.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddNominalDCC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddNominalDCC.Location = New System.Drawing.Point(912, 368)
-        Me.btnAddNominalDCC.Name = "btnAddNominalDCC"
-        Me.btnAddNominalDCC.Size = New System.Drawing.Size(168, 24)
-        Me.btnAddNominalDCC.TabIndex = 101
-        Me.btnAddNominalDCC.Text = "Add Nominal"
-        Me.btnAddNominalDCC.UseVisualStyleBackColor = False
-        '
-        'btnAddRangeDCC
-        '
-        Me.btnAddRangeDCC.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddRangeDCC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddRangeDCC.Location = New System.Drawing.Point(1032, 152)
-        Me.btnAddRangeDCC.Name = "btnAddRangeDCC"
-        Me.btnAddRangeDCC.Size = New System.Drawing.Size(168, 24)
-        Me.btnAddRangeDCC.TabIndex = 99
-        Me.btnAddRangeDCC.Text = "Add range"
-        Me.btnAddRangeDCC.UseVisualStyleBackColor = False
-        '
         'listViewParamsDCC
         '
         Me.listViewParamsDCC.BackColor = System.Drawing.Color.Cyan
         Me.listViewParamsDCC.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParamsDCC.Location = New System.Drawing.Point(912, 400)
+        Me.listViewParamsDCC.HideSelection = False
+        Me.listViewParamsDCC.Location = New System.Drawing.Point(938, 129)
         Me.listViewParamsDCC.Name = "listViewParamsDCC"
-        Me.listViewParamsDCC.Size = New System.Drawing.Size(288, 328)
+        Me.listViewParamsDCC.Size = New System.Drawing.Size(288, 599)
         Me.listViewParamsDCC.TabIndex = 100
         Me.listViewParamsDCC.UseCompatibleStateImageBehavior = False
-        '
-        'cmbRangeUnitDCC
-        '
-        Me.cmbRangeUnitDCC.BackColor = System.Drawing.SystemColors.Control
-        Me.cmbRangeUnitDCC.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbRangeUnitDCC.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.cmbRangeUnitDCC.FormattingEnabled = True
-        Me.cmbRangeUnitDCC.Items.AddRange(New Object() {"µA", "A", "mA"})
-        Me.cmbRangeUnitDCC.Location = New System.Drawing.Point(1080, 106)
-        Me.cmbRangeUnitDCC.Name = "cmbRangeUnitDCC"
-        Me.cmbRangeUnitDCC.Size = New System.Drawing.Size(112, 31)
-        Me.cmbRangeUnitDCC.Sorted = True
-        Me.cmbRangeUnitDCC.TabIndex = 98
-        '
-        'txtRangeValueDCC
-        '
-        Me.txtRangeValueDCC.BackColor = System.Drawing.Color.Cyan
-        Me.txtRangeValueDCC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtRangeValueDCC.Location = New System.Drawing.Point(928, 105)
-        Me.txtRangeValueDCC.Name = "txtRangeValueDCC"
-        Me.txtRangeValueDCC.Size = New System.Drawing.Size(130, 31)
-        Me.txtRangeValueDCC.TabIndex = 97
         '
         'CheckBoxDCC
         '
         Me.CheckBoxDCC.AutoSize = True
         Me.CheckBoxDCC.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxDCC.Location = New System.Drawing.Point(912, 73)
+        Me.CheckBoxDCC.Location = New System.Drawing.Point(938, 73)
         Me.CheckBoxDCC.Name = "CheckBoxDCC"
         Me.CheckBoxDCC.Size = New System.Drawing.Size(161, 27)
         Me.CheckBoxDCC.TabIndex = 96
         Me.CheckBoxDCC.Text = "DC CURRENT:"
         Me.CheckBoxDCC.UseVisualStyleBackColor = True
         '
-        'rangeRadioPanelACC
-        '
-        Me.rangeRadioPanelACC.AutoScroll = True
-        Me.rangeRadioPanelACC.BackColor = System.Drawing.Color.Cyan
-        Me.rangeRadioPanelACC.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.rangeRadioPanelACC.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.rangeRadioPanelACC.Location = New System.Drawing.Point(616, 184)
-        Me.rangeRadioPanelACC.Name = "rangeRadioPanelACC"
-        Me.rangeRadioPanelACC.Padding = New System.Windows.Forms.Padding(3)
-        Me.rangeRadioPanelACC.Size = New System.Drawing.Size(288, 120)
-        Me.rangeRadioPanelACC.TabIndex = 95
-        Me.rangeRadioPanelACC.WrapContents = False
-        '
-        'txtNominalValueACC
-        '
-        Me.txtNominalValueACC.BackColor = System.Drawing.Color.White
-        Me.txtNominalValueACC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtNominalValueACC.Location = New System.Drawing.Point(736, 312)
-        Me.txtNominalValueACC.Name = "txtNominalValueACC"
-        Me.txtNominalValueACC.Size = New System.Drawing.Size(160, 31)
-        Me.txtNominalValueACC.TabIndex = 93
-        '
         'listViewParamsACC
         '
         Me.listViewParamsACC.BackColor = System.Drawing.Color.Cyan
         Me.listViewParamsACC.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParamsACC.Location = New System.Drawing.Point(616, 456)
+        Me.listViewParamsACC.HideSelection = False
+        Me.listViewParamsACC.Location = New System.Drawing.Point(630, 129)
         Me.listViewParamsACC.Name = "listViewParamsACC"
-        Me.listViewParamsACC.Size = New System.Drawing.Size(288, 272)
+        Me.listViewParamsACC.Size = New System.Drawing.Size(297, 599)
         Me.listViewParamsACC.TabIndex = 91
         Me.listViewParamsACC.UseCompatibleStateImageBehavior = False
-        '
-        'cmbRangeUnitACC
-        '
-        Me.cmbRangeUnitACC.BackColor = System.Drawing.SystemColors.Control
-        Me.cmbRangeUnitACC.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbRangeUnitACC.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.cmbRangeUnitACC.FormattingEnabled = True
-        Me.cmbRangeUnitACC.Items.AddRange(New Object() {"µA", "A", "mA"})
-        Me.cmbRangeUnitACC.Location = New System.Drawing.Point(784, 106)
-        Me.cmbRangeUnitACC.Name = "cmbRangeUnitACC"
-        Me.cmbRangeUnitACC.Size = New System.Drawing.Size(112, 31)
-        Me.cmbRangeUnitACC.Sorted = True
-        Me.cmbRangeUnitACC.TabIndex = 89
-        '
-        'txtRangeValueACC
-        '
-        Me.txtRangeValueACC.BackColor = System.Drawing.Color.Cyan
-        Me.txtRangeValueACC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtRangeValueACC.Location = New System.Drawing.Point(634, 105)
-        Me.txtRangeValueACC.Name = "txtRangeValueACC"
-        Me.txtRangeValueACC.Size = New System.Drawing.Size(130, 31)
-        Me.txtRangeValueACC.TabIndex = 88
         '
         'CheckBoxACC
         '
         Me.CheckBoxACC.AutoSize = True
         Me.CheckBoxACC.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxACC.Location = New System.Drawing.Point(616, 73)
+        Me.CheckBoxACC.Location = New System.Drawing.Point(630, 73)
         Me.CheckBoxACC.Name = "CheckBoxACC"
         Me.CheckBoxACC.Size = New System.Drawing.Size(161, 27)
         Me.CheckBoxACC.TabIndex = 87
         Me.CheckBoxACC.Text = "AC CURRENT:"
         Me.CheckBoxACC.UseVisualStyleBackColor = True
         '
-        'rangeRadioPanelDCV
-        '
-        Me.rangeRadioPanelDCV.AutoScroll = True
-        Me.rangeRadioPanelDCV.BackColor = System.Drawing.Color.Cyan
-        Me.rangeRadioPanelDCV.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.rangeRadioPanelDCV.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.rangeRadioPanelDCV.Location = New System.Drawing.Point(318, 184)
-        Me.rangeRadioPanelDCV.Name = "rangeRadioPanelDCV"
-        Me.rangeRadioPanelDCV.Padding = New System.Windows.Forms.Padding(3)
-        Me.rangeRadioPanelDCV.Size = New System.Drawing.Size(288, 136)
-        Me.rangeRadioPanelDCV.TabIndex = 86
-        Me.rangeRadioPanelDCV.WrapContents = False
-        '
-        'txtNominalValueDCV
-        '
-        Me.txtNominalValueDCV.BackColor = System.Drawing.Color.White
-        Me.txtNominalValueDCV.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtNominalValueDCV.Location = New System.Drawing.Point(318, 328)
-        Me.txtNominalValueDCV.Name = "txtNominalValueDCV"
-        Me.txtNominalValueDCV.Size = New System.Drawing.Size(288, 31)
-        Me.txtNominalValueDCV.TabIndex = 84
-        '
-        'btnAddNominalDCV
-        '
-        Me.btnAddNominalDCV.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.btnAddNominalDCV.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.btnAddNominalDCV.Location = New System.Drawing.Point(320, 368)
-        Me.btnAddNominalDCV.Name = "btnAddNominalDCV"
-        Me.btnAddNominalDCV.Size = New System.Drawing.Size(168, 24)
-        Me.btnAddNominalDCV.TabIndex = 83
-        Me.btnAddNominalDCV.Text = "Add Nominal"
-        Me.btnAddNominalDCV.UseVisualStyleBackColor = False
-        '
         'listViewParamsDCV
         '
         Me.listViewParamsDCV.BackColor = System.Drawing.Color.Cyan
         Me.listViewParamsDCV.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParamsDCV.Location = New System.Drawing.Point(318, 400)
+        Me.listViewParamsDCV.HideSelection = False
+        Me.listViewParamsDCV.Location = New System.Drawing.Point(322, 129)
         Me.listViewParamsDCV.Name = "listViewParamsDCV"
-        Me.listViewParamsDCV.Size = New System.Drawing.Size(290, 328)
+        Me.listViewParamsDCV.Size = New System.Drawing.Size(290, 599)
         Me.listViewParamsDCV.TabIndex = 82
         Me.listViewParamsDCV.UseCompatibleStateImageBehavior = False
-        '
-        'cmbRangeUnitDCV
-        '
-        Me.cmbRangeUnitDCV.BackColor = System.Drawing.SystemColors.Control
-        Me.cmbRangeUnitDCV.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbRangeUnitDCV.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.cmbRangeUnitDCV.FormattingEnabled = True
-        Me.cmbRangeUnitDCV.Items.AddRange(New Object() {"mV", "V"})
-        Me.cmbRangeUnitDCV.Location = New System.Drawing.Point(486, 106)
-        Me.cmbRangeUnitDCV.Name = "cmbRangeUnitDCV"
-        Me.cmbRangeUnitDCV.Size = New System.Drawing.Size(112, 31)
-        Me.cmbRangeUnitDCV.Sorted = True
-        Me.cmbRangeUnitDCV.TabIndex = 80
-        '
-        'txtRangeValueDCV
-        '
-        Me.txtRangeValueDCV.BackColor = System.Drawing.Color.Cyan
-        Me.txtRangeValueDCV.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtRangeValueDCV.Location = New System.Drawing.Point(334, 105)
-        Me.txtRangeValueDCV.Name = "txtRangeValueDCV"
-        Me.txtRangeValueDCV.Size = New System.Drawing.Size(130, 31)
-        Me.txtRangeValueDCV.TabIndex = 79
-        '
-        'rangeRadioPanel
-        '
-        Me.rangeRadioPanel.AutoScroll = True
-        Me.rangeRadioPanel.BackColor = System.Drawing.Color.Cyan
-        Me.rangeRadioPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.rangeRadioPanel.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.rangeRadioPanel.Location = New System.Drawing.Point(16, 184)
-        Me.rangeRadioPanel.Name = "rangeRadioPanel"
-        Me.rangeRadioPanel.Padding = New System.Windows.Forms.Padding(3)
-        Me.rangeRadioPanel.Size = New System.Drawing.Size(288, 120)
-        Me.rangeRadioPanel.TabIndex = 78
-        Me.rangeRadioPanel.WrapContents = False
-        '
-        'txtNominalValue
-        '
-        Me.txtNominalValue.BackColor = System.Drawing.Color.White
-        Me.txtNominalValue.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtNominalValue.Location = New System.Drawing.Point(136, 312)
-        Me.txtNominalValue.Name = "txtNominalValue"
-        Me.txtNominalValue.Size = New System.Drawing.Size(160, 31)
-        Me.txtNominalValue.TabIndex = 76
         '
         'listViewParams
         '
         Me.listViewParams.BackColor = System.Drawing.Color.Cyan
         Me.listViewParams.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParams.Location = New System.Drawing.Point(16, 456)
+        Me.listViewParams.HideSelection = False
+        Me.listViewParams.Location = New System.Drawing.Point(14, 129)
         Me.listViewParams.Name = "listViewParams"
-        Me.listViewParams.Size = New System.Drawing.Size(288, 264)
+        Me.listViewParams.Size = New System.Drawing.Size(297, 599)
         Me.listViewParams.TabIndex = 58
         Me.listViewParams.UseCompatibleStateImageBehavior = False
         '
@@ -1110,7 +608,7 @@ Partial Class newDMMAdmin
         '
         Me.CheckBoxDCV.AutoSize = True
         Me.CheckBoxDCV.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxDCV.Location = New System.Drawing.Point(318, 73)
+        Me.CheckBoxDCV.Location = New System.Drawing.Point(322, 73)
         Me.CheckBoxDCV.Name = "CheckBoxDCV"
         Me.CheckBoxDCV.Size = New System.Drawing.Size(161, 27)
         Me.CheckBoxDCV.TabIndex = 54
@@ -1121,25 +619,12 @@ Partial Class newDMMAdmin
         '
         Me.CheckBox.AutoSize = True
         Me.CheckBox.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBox.Location = New System.Drawing.Point(24, 72)
+        Me.CheckBox.Location = New System.Drawing.Point(22, 72)
         Me.CheckBox.Name = "CheckBox"
         Me.CheckBox.Size = New System.Drawing.Size(161, 27)
         Me.CheckBox.TabIndex = 53
         Me.CheckBox.Text = "AC VOLTAGE:"
         Me.CheckBox.UseVisualStyleBackColor = True
-        '
-        'cmbRangeUnit
-        '
-        Me.cmbRangeUnit.BackColor = System.Drawing.SystemColors.Control
-        Me.cmbRangeUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbRangeUnit.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.cmbRangeUnit.FormattingEnabled = True
-        Me.cmbRangeUnit.Items.AddRange(New Object() {"mV", "V"})
-        Me.cmbRangeUnit.Location = New System.Drawing.Point(184, 106)
-        Me.cmbRangeUnit.Name = "cmbRangeUnit"
-        Me.cmbRangeUnit.Size = New System.Drawing.Size(112, 31)
-        Me.cmbRangeUnit.Sorted = True
-        Me.cmbRangeUnit.TabIndex = 49
         '
         'Label11
         '
@@ -1151,15 +636,6 @@ Partial Class newDMMAdmin
         Me.Label11.Size = New System.Drawing.Size(195, 35)
         Me.Label11.TabIndex = 47
         Me.Label11.Text = "PARAMETERS"
-        '
-        'txtRangeValue
-        '
-        Me.txtRangeValue.BackColor = System.Drawing.Color.Cyan
-        Me.txtRangeValue.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtRangeValue.Location = New System.Drawing.Point(32, 105)
-        Me.txtRangeValue.Name = "txtRangeValue"
-        Me.txtRangeValue.Size = New System.Drawing.Size(130, 31)
-        Me.txtRangeValue.TabIndex = 31
         '
         'Panel6
         '
@@ -1231,61 +707,20 @@ Partial Class newDMMAdmin
     Friend WithEvents Label10 As System.Windows.Forms.Label
     Friend WithEvents Panel6 As System.Windows.Forms.Panel
     Friend WithEvents Panel5 As System.Windows.Forms.Panel
-    Friend WithEvents btnAddRangeACC As System.Windows.Forms.Button
-    Friend WithEvents btnAddRangeDCV As System.Windows.Forms.Button
     Friend WithEvents delBtnFreqACC As System.Windows.Forms.Button
-    Friend WithEvents txtFreqValueACC As System.Windows.Forms.TextBox
-    Friend WithEvents btnAddFreqACC As System.Windows.Forms.Button
     Friend WithEvents delBtnFreqACV As System.Windows.Forms.Button
-    Friend WithEvents txtFreqValueACV As System.Windows.Forms.TextBox
-    Friend WithEvents btnAddFreqACV As System.Windows.Forms.Button
-    Friend WithEvents btnAddRange As System.Windows.Forms.Button
-    Friend WithEvents delBtnRanRES As System.Windows.Forms.Button
-    Friend WithEvents delBtnRanDCC As System.Windows.Forms.Button
-    Friend WithEvents delBtnRanACC As System.Windows.Forms.Button
-    Friend WithEvents delBtnRanDCV As System.Windows.Forms.Button
-    Friend WithEvents delBtnRan As System.Windows.Forms.Button
     Friend WithEvents delBtnNomRES As System.Windows.Forms.Button
     Friend WithEvents delBtnNomDCC As System.Windows.Forms.Button
     Friend WithEvents delBtnNomDCV As System.Windows.Forms.Button
-    Friend WithEvents rangeRadioPanelRES As System.Windows.Forms.FlowLayoutPanel
-    Friend WithEvents txtNominalValueRES As System.Windows.Forms.TextBox
-    Friend WithEvents btnAddNominalRES As System.Windows.Forms.Button
-    Friend WithEvents btnAddRangeRES As System.Windows.Forms.Button
     Friend WithEvents listViewParamsRES As System.Windows.Forms.ListView
-    Friend WithEvents cmbRangeUnitRES As System.Windows.Forms.ComboBox
-    Friend WithEvents txtRangeValueRES As System.Windows.Forms.TextBox
     Friend WithEvents CheckBoxRES As System.Windows.Forms.CheckBox
-    Friend WithEvents rangeRadioPanelDCC As System.Windows.Forms.FlowLayoutPanel
-    Friend WithEvents txtNominalValueDCC As System.Windows.Forms.TextBox
-    Friend WithEvents btnAddNominalDCC As System.Windows.Forms.Button
-    Friend WithEvents btnAddRangeDCC As System.Windows.Forms.Button
     Friend WithEvents listViewParamsDCC As System.Windows.Forms.ListView
-    Friend WithEvents cmbRangeUnitDCC As System.Windows.Forms.ComboBox
-    Friend WithEvents txtRangeValueDCC As System.Windows.Forms.TextBox
     Friend WithEvents CheckBoxDCC As System.Windows.Forms.CheckBox
-    Friend WithEvents rangeRadioPanelACC As System.Windows.Forms.FlowLayoutPanel
-    Friend WithEvents txtNominalValueACC As System.Windows.Forms.TextBox
     Friend WithEvents listViewParamsACC As System.Windows.Forms.ListView
-    Friend WithEvents cmbRangeUnitACC As System.Windows.Forms.ComboBox
-    Friend WithEvents txtRangeValueACC As System.Windows.Forms.TextBox
     Friend WithEvents CheckBoxACC As System.Windows.Forms.CheckBox
-    Friend WithEvents rangeRadioPanelDCV As System.Windows.Forms.FlowLayoutPanel
-    Friend WithEvents txtNominalValueDCV As System.Windows.Forms.TextBox
-    Friend WithEvents btnAddNominalDCV As System.Windows.Forms.Button
     Friend WithEvents listViewParamsDCV As System.Windows.Forms.ListView
-    Friend WithEvents cmbRangeUnitDCV As System.Windows.Forms.ComboBox
-    Friend WithEvents txtRangeValueDCV As System.Windows.Forms.TextBox
-    Friend WithEvents rangeRadioPanel As System.Windows.Forms.FlowLayoutPanel
-    Friend WithEvents txtNominalValue As System.Windows.Forms.TextBox
     Friend WithEvents listViewParams As System.Windows.Forms.ListView
     Friend WithEvents CheckBoxDCV As System.Windows.Forms.CheckBox
     Friend WithEvents CheckBox As System.Windows.Forms.CheckBox
-    Friend WithEvents cmbRangeUnit As System.Windows.Forms.ComboBox
     Friend WithEvents Label11 As System.Windows.Forms.Label
-    Friend WithEvents txtRangeValue As System.Windows.Forms.TextBox
-    Friend WithEvents Label4 As System.Windows.Forms.Label
-    Friend WithEvents Label5 As System.Windows.Forms.Label
-    Friend WithEvents Label3 As System.Windows.Forms.Label
-    Friend WithEvents Label2 As System.Windows.Forms.Label
 End Class
