@@ -176,6 +176,9 @@ Partial Class calibratingResult
         Me.Label535 = New System.Windows.Forms.Label()
         Me.Label536 = New System.Windows.Forms.Label()
         Me.Panel11 = New System.Windows.Forms.Panel()
+        Me.Label437 = New System.Windows.Forms.Label()
+        Me.Label435 = New System.Windows.Forms.Label()
+        Me.Label436 = New System.Windows.Forms.Label()
         Me.Label404 = New System.Windows.Forms.Label()
         Me.Label405 = New System.Windows.Forms.Label()
         Me.Label406 = New System.Windows.Forms.Label()
@@ -1140,9 +1143,6 @@ Partial Class calibratingResult
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.cameraPanel = New System.Windows.Forms.Panel()
-        Me.Label435 = New System.Windows.Forms.Label()
-        Me.Label436 = New System.Windows.Forms.Label()
-        Me.Label437 = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout
         Me.Panel8.SuspendLayout
         Me.Panel4.SuspendLayout
@@ -1277,9 +1277,9 @@ Partial Class calibratingResult
         Me.Panel5.Controls.Add(Me.Panel7)
         Me.Panel5.Controls.Add(Me.Panel6)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel5.Location = New System.Drawing.Point(300, 242)
+        Me.Panel5.Location = New System.Drawing.Point(300, 69)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(1624, 819)
+        Me.Panel5.Size = New System.Drawing.Size(1624, 992)
         Me.Panel5.TabIndex = 24
         '
         'Panel12
@@ -2943,6 +2943,36 @@ Partial Class calibratingResult
         Me.Panel11.Name = "Panel11"
         Me.Panel11.Size = New System.Drawing.Size(1591, 480)
         Me.Panel11.TabIndex = 5
+        '
+        'Label437
+        '
+        Me.Label437.AutoSize = True
+        Me.Label437.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label437.Location = New System.Drawing.Point(273, 428)
+        Me.Label437.Name = "Label437"
+        Me.Label437.Size = New System.Drawing.Size(19, 19)
+        Me.Label437.TabIndex = 554
+        Me.Label437.Text = "1"
+        '
+        'Label435
+        '
+        Me.Label435.AutoSize = True
+        Me.Label435.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label435.Location = New System.Drawing.Point(273, 396)
+        Me.Label435.Name = "Label435"
+        Me.Label435.Size = New System.Drawing.Size(29, 19)
+        Me.Label435.TabIndex = 553
+        Me.Label435.Text = "50"
+        '
+        'Label436
+        '
+        Me.Label436.AutoSize = True
+        Me.Label436.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label436.Location = New System.Drawing.Point(273, 364)
+        Me.Label436.Name = "Label436"
+        Me.Label436.Size = New System.Drawing.Size(19, 19)
+        Me.Label436.TabIndex = 552
+        Me.Label436.Text = "1"
         '
         'Label404
         '
@@ -6532,7 +6562,7 @@ Partial Class calibratingResult
         Me.Panel7.Controls.Add(Me.Label30)
         Me.Panel7.Controls.Add(Me.Label31)
         Me.Panel7.Controls.Add(Me.Label32)
-        Me.Panel7.Location = New System.Drawing.Point(6, 679)
+        Me.Panel7.Location = New System.Drawing.Point(6, 670)
         Me.Panel7.Name = "Panel7"
         Me.Panel7.Size = New System.Drawing.Size(1591, 798)
         Me.Panel7.TabIndex = 2
@@ -12498,38 +12528,8 @@ Partial Class calibratingResult
         Me.cameraPanel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.cameraPanel.Location = New System.Drawing.Point(300, 0)
         Me.cameraPanel.Name = "cameraPanel"
-        Me.cameraPanel.Size = New System.Drawing.Size(1624, 242)
+        Me.cameraPanel.Size = New System.Drawing.Size(1624, 69)
         Me.cameraPanel.TabIndex = 25
-        '
-        'Label435
-        '
-        Me.Label435.AutoSize = True
-        Me.Label435.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label435.Location = New System.Drawing.Point(273, 396)
-        Me.Label435.Name = "Label435"
-        Me.Label435.Size = New System.Drawing.Size(29, 19)
-        Me.Label435.TabIndex = 553
-        Me.Label435.Text = "50"
-        '
-        'Label436
-        '
-        Me.Label436.AutoSize = True
-        Me.Label436.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label436.Location = New System.Drawing.Point(273, 364)
-        Me.Label436.Name = "Label436"
-        Me.Label436.Size = New System.Drawing.Size(19, 19)
-        Me.Label436.TabIndex = 552
-        Me.Label436.Text = "1"
-        '
-        'Label437
-        '
-        Me.Label437.AutoSize = True
-        Me.Label437.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label437.Location = New System.Drawing.Point(273, 428)
-        Me.Label437.Name = "Label437"
-        Me.Label437.Size = New System.Drawing.Size(19, 19)
-        Me.Label437.TabIndex = 554
-        Me.Label437.Text = "1"
         '
         'calibratingResult
         '

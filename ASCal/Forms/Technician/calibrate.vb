@@ -3,9 +3,8 @@ Imports System.IO
 
 Public Class calibrate
 
-    ' ✅ Unified Navigation Handler for Technician
+    ' Unified Navigation Handler for Technician
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoBtn.Click, logoutBtn.Click, jobDashBtn.Click
-
         contextMenuCompanies.SelectedIndex = -1
         contextMenuCompanies.Text = ""
         dmmSearch.Clear()
@@ -21,7 +20,6 @@ Public Class calibrate
                 jobDashTech.Show()
                 Me.Close()
         End Select
-
     End Sub
 
     Private companyDict As New Dictionary(Of String, String)
@@ -60,20 +58,18 @@ Public Class calibrate
             Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
                 conn.Open()
 
-                ' === Step 1: Load all DMM Models ===
+                ' Step 1: Load all DMM Models
                 Dim modelCmd As New SQLiteCommand("SELECT DISTINCT model_name, manufacturer, description FROM dmm ORDER BY model_name ASC", conn)
                 Using reader As SQLiteDataReader = modelCmd.ExecuteReader()
                     While reader.Read()
                         Dim model As String = reader("model_name").ToString()
                         Dim manufacturer As String = reader("manufacturer").ToString()
                         Dim description As String = reader("description").ToString()
-
-                        ' Add to list
                         dmmItems.Add(New Tuple(Of String, String, String)(model, manufacturer, description))
                     End While
                 End Using
 
-                ' === Step 2: Load parameter categories from normalized schema ===
+                ' Step 2: Load parameter categories from normalized schema
                 Dim paramSql As String = ""
                 paramSql &= "SELECT dmm.model_name, parameter_categories.name AS category_name "
                 paramSql &= "FROM dmm_ranges "
@@ -89,8 +85,6 @@ Public Class calibrate
                         If Not dmmParametersDict.ContainsKey(model) Then
                             dmmParametersDict(model) = New List(Of String)
                         End If
-
-                        ' Avoid duplicates
                         If Not dmmParametersDict(model).Contains(category) Then
                             dmmParametersDict(model).Add(category)
                         End If
@@ -131,18 +125,10 @@ Public Class calibrate
     End Sub
 
     Private Sub calibrate_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' Make sure start position is manual
+        ' Window sizing/placement
         Me.StartPosition = FormStartPosition.Manual
-
-        ' Remove designer overrides
         Me.MaximumSize = New Size(0, 0)
         Me.MinimumSize = New Size(0, 0)
-
-        ' Get working area excluding the taskbar
-        Dim currentScreen As Screen = Screen.FromControl(Me)
-        Dim workingArea As Rectangle = currentScreen.WorkingArea
-
-        ' Apply correct size and location
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
         LoadDMMsAndParameters()
@@ -163,7 +149,7 @@ Public Class calibrate
         readability.Text = "See Specification Sheet"
         accuracy.Text = "See Specification Sheet"
 
-        ' ✅ Generate and fill Work Order Number
+        ' Display a work order number (read-only display only)
         workOrderNo.Text = SQLiteHelper.GenerateNextWorkOrderNumber()
 
         dataGridResult.ColumnCount = 2
@@ -182,7 +168,7 @@ Public Class calibrate
         cLParamRES.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
 
         For Each row As DataGridViewRow In dataGridResult.Rows
-            If Not row.IsNewRow Then ' Skip the new row placeholder if present
+            If Not row.IsNewRow Then
                 Dim modelValue = row.Cells("MODEL").Value
                 If modelValue IsNot Nothing AndAlso modelValue.ToString() = "UNI-T UT89XD" Then
                     row.Selected = True
@@ -202,7 +188,7 @@ Public Class calibrate
         contextMenuCompanies.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         contextMenuCompanies.AutoCompleteSource = AutoCompleteSource.ListItems
 
-        ' Standardize first 2 rows manually added (if any)
+        ' Standardize table layout controls
         For row As Integer = 0 To TableLayoutPanel1.RowCount - 1
             For col As Integer = 0 To 3
                 Dim ctrl As Control = TableLayoutPanel1.GetControlFromPosition(col, row)
@@ -220,17 +206,13 @@ Public Class calibrate
                 End If
             Next
         Next
-
     End Sub
 
-    ' Event handler for when the serial number field loses focus or Enter is pressed
+    ' Serial Number -> load last job + company address mapping
     Private Sub serialNumber_change(sender As Object, e As EventArgs) Handles serialNumber.Leave, serialNumber.KeyDown, serialNumber.TextChanged
-        ' Only trigger on Enter key or when focus leaves the field
         If TypeOf e Is KeyEventArgs Then
             Dim ke As KeyEventArgs = DirectCast(e, KeyEventArgs)
-            If ke.KeyCode <> Keys.Enter Then
-                Return
-            End If
+            If ke.KeyCode <> Keys.Enter Then Return
         End If
 
         Dim selectedCompany As String = contextMenuCompanies.Text.Trim()
@@ -240,7 +222,6 @@ Public Class calibrate
             compAdd.Clear()
         End If
 
-        ' --- Lookup last calibration job for this serial number ---
         Dim sn As String = serialNumber.Text.Trim()
         If sn = "" Then
             prevCalCert.Text = "NA"
@@ -296,9 +277,7 @@ Public Class calibrate
 
     Private Sub RadioOptionChanged(sender As Object, e As EventArgs)
         Dim rb As RadioButton = DirectCast(sender, RadioButton)
-
         If rb.Checked Then
-            ' You can expand here to filter further if needed in future
             Debug.Print("Filter selected: " & rb.Text)
         End If
     End Sub
@@ -308,6 +287,7 @@ Public Class calibrate
 
         Dim selectedRow As DataGridViewRow = dataGridResult.Rows(e.RowIndex)
         Dim selectedModel As String = selectedRow.Cells(0).Value.ToString()
+
         ' Autofill DMM info
         Dim dmm = dmmItems.FirstOrDefault(Function(i) i.Item1 = selectedModel)
         If dmm Is Nothing Then
@@ -336,12 +316,10 @@ Public Class calibrate
 
             For Each rangeKey As Object In grouped(category).Keys
                 clb.Items.Add("  → Range: " & rangeKey.ToString())
-
                 For Each nominal As Object In grouped(category)(rangeKey)
                     clb.Items.Add("      → Nominal: " & nominal.ToString())
                 Next
             Next
-
         Next
     End Sub
 
@@ -357,14 +335,10 @@ Public Class calibrate
     End Function
 
     Private Sub dataGridResult_CellMouseMove(sender As Object, e As DataGridViewCellMouseEventArgs) Handles dataGridResult.CellMouseMove
-        If e.RowIndex >= 0 Then
-            dataGridResult.Cursor = Cursors.Hand
-        Else
-            dataGridResult.Cursor = Cursors.Default
-        End If
+        dataGridResult.Cursor = If(e.RowIndex >= 0, Cursors.Hand, Cursors.Default)
     End Sub
 
-    ' ========== Populate dataGrid with optional filter (for search) ==========
+    ' Populate grid (optional filter)
     Private Sub PopulateDataGrid(Optional ByVal filter As String = "")
         dataGridResult.Rows.Clear()
         For Each item In dmmItems
@@ -374,73 +348,52 @@ Public Class calibrate
         Next
     End Sub
 
-    ' ========== Filter models habang nagta-type ==========
+    ' Filter models as you type
     Private Sub dmmSearch_TextChanged(sender As Object, e As EventArgs)
         PopulateDataGrid(dmmSearch.Text)
     End Sub
 
-    ' ========== Kapag pinili ang model sa grid, auto-fill fields ==========
+    ' Keep legacy SelectionChanged for model autofill compatibility
     Private Sub dataGridResult_SelectionChanged(sender As Object, e As EventArgs) Handles dataGridResult.SelectionChanged
         If dataGridResult.SelectedRows.Count > 0 Then
             Dim selectedModel As String = dataGridResult.SelectedRows(0).Cells(0).Value.ToString()
-            ' Auto-fill manufacturer and description
             Dim selectedItem As Tuple(Of String, String, String) = dmmItems.FirstOrDefault(Function(i) i.Item1 = selectedModel)
             If selectedItem IsNot Nothing Then
                 dmmmodel.Text = selectedItem.Item1
                 manufaacturer.Text = selectedItem.Item2
                 dmmdescription.Text = selectedItem.Item3
             End If
-            ' Clear old data
-            cLParamACV.Items.Clear()
-
-            ' Load structured parameters using LoadGroupedDMMParameters
-            Dim grouped As Dictionary(Of String, Dictionary(Of String, List(Of String))) = SQLiteHelper.LoadGroupedDMMParameters(selectedModel)
-
-            For Each category In grouped.Keys
-                ' Add category (all caps, bracketed, prefixed)
-                cLParamACV.Items.Add("🟦 [" & category.ToUpper() & "]")
-                cLParamACV.SetItemCheckState(cLParamACV.Items.Count - 1, CheckState.Indeterminate)
-                For Each rangeKey As Object In grouped(category).Keys
-                    cLParamACV.Items.Add("   🔹 Range: " & rangeKey.ToString())
-                    cLParamACV.SetItemCheckState(cLParamACV.Items.Count - 1, CheckState.Indeterminate)
-
-                    For Each nominalValue As Object In grouped(category)(rangeKey)
-                        cLParamACV.Items.Add("      ➤ Nominal: " & nominalValue.ToString())
-                        cLParamACV.SetItemChecked(cLParamACV.Items.Count - 1, False)
-                    Next
-                Next
-            Next
-
-            ' Add spacing for readability
-            cLParamACV.Items.Add(" ")
-
         End If
     End Sub
 
+    ' Click-to-toggle hierarchy that matches "  → Range:" / "      → Nominal:" items
     Private Sub HandleCheckedListBoxClick(clb As CheckedListBox, e As MouseEventArgs)
         Dim index As Integer = clb.IndexFromPoint(e.Location)
         If index < 0 Then Exit Sub
 
-        Dim item = clb.Items(index).ToString()
+        Dim raw = clb.Items(index).ToString()
+        Dim trimmed = raw.TrimStart()
         Dim isChecked = Not clb.GetItemChecked(index)
 
-        If item.StartsWith("[") Then
-            ' Category
+        If trimmed.StartsWith("[") Then
+            ' Category: toggle its block until next category
             clb.SetItemChecked(index, isChecked)
             Dim i As Integer = index + 1
-            While i < clb.Items.Count AndAlso Not clb.Items(i).ToString().StartsWith("[")
+            While i < clb.Items.Count AndAlso Not clb.Items(i).ToString().TrimStart().StartsWith("[")
                 clb.SetItemChecked(i, isChecked)
                 i += 1
             End While
-        ElseIf item.TrimStart().StartsWith("•") Then
-            ' Range
+
+        ElseIf trimmed.StartsWith("→ Range:") OrElse trimmed.StartsWith("Range:") Then
+            ' Range: toggle itself + following nominals
             clb.SetItemChecked(index, isChecked)
             Dim i As Integer = index + 1
-            While i < clb.Items.Count AndAlso clb.Items(i).ToString().StartsWith("     →")
+            While i < clb.Items.Count AndAlso clb.Items(i).ToString().TrimStart().StartsWith("→ Nominal:")
                 clb.SetItemChecked(i, isChecked)
                 i += 1
             End While
         Else
+            ' Leaf nominal or anything else
             clb.SetItemChecked(index, isChecked)
         End If
 
@@ -467,7 +420,7 @@ Public Class calibrate
         HandleCheckedListBoxClick(cLParamRES, e)
     End Sub
 
-    ' ========== Select all/Unselect all parameters buttons ==========
+    ' Select all/Unselect all
     Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
         For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
             For i As Integer = 0 To clb.Items.Count - 1
@@ -484,12 +437,7 @@ Public Class calibrate
         Next
     End Sub
 
-    ' ========== Date picker resets sa today ==========
-    'Private Sub DateTimePicker1_ValueChanged(sender As Object, e As EventArgs)
-    '   DateTimePicker1.Value = DateTime.Today
-    'End Sub
-
-    ' ========== Function to check if all required fields are filled ==========
+    ' Validate required fields
     Private Function AllInputsFilledInPanel(panel As Panel) As Boolean
         Dim excludedFields As New List(Of String) From {"dmmSearch", "specificSite", "refstand4", "DateTimePicker1", "TextBox23", "TextBox21", "TextBox19", "TextBox25", "refstand3", "refstand2", "refstand2", "refstand6", "refstand5", "refstand4", "DateTimePicker1", "TextBox31", "TextBox19", "TextBox27", "TextBox25", "TextBox28", "TextBox26", "TextBox29", "TextBox30", "TextBox20", "TextBox22", "TextBox24", "compAdd"}
         For Each ctrl As Control In panel.Controls
@@ -505,23 +453,31 @@ Public Class calibrate
             End If
         Next
 
-        ' ✅ Check if a company was selected
+        ' Company selected
         If String.IsNullOrWhiteSpace(contextMenuCompanies.Text) OrElse Not companyDict.ContainsKey(contextMenuCompanies.Text.Trim()) Then
             MessageBox.Show("Please select a valid calibration company from the list.", "Missing Company", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             contextMenuCompanies.Focus()
             Return False
         End If
 
-        ' ✅ Check if at least one parameter is selected
-        If cLParamACV.CheckedItems.Count = 0 Then
+        ' At least one parameter across ALL lists
+        Dim anyChecked As Boolean =
+            (cLParamACV.CheckedItems.Count > 0) OrElse
+            (cLParamDCV.CheckedItems.Count > 0) OrElse
+            (cLParamACC.CheckedItems.Count > 0) OrElse
+            (cLParamDCC.CheckedItems.Count > 0) OrElse
+            (cLParamRES.CheckedItems.Count > 0)
+
+        If Not anyChecked Then
             MessageBox.Show("Please select at least one calibration parameter.", "Missing Parameters", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             cLParamACV.Focus()
             Return False
         End If
+
         Return True
     End Function
 
-    ' ✅ Helper functions
+    ' Small table helpers
     Private Function GetTableText(table As TableLayoutPanel, col As Integer, row As Integer) As String
         Dim ctrl = table.GetControlFromPosition(col, row)
         If TypeOf ctrl Is TextBox Then
@@ -538,204 +494,49 @@ Public Class calibrate
         Return ""
     End Function
 
-    ' ========== Start Calibration button click — check required inputs ==========
+    ' Start Calibration — NO SAVE/EXPORT, go straight to calibratingResult
     Private Sub btnStartCalibration_Click(sender As Object, e As EventArgs) Handles btnStartCalibration.Click
-        If AllInputsFilledInPanel(mainPanelCalibrateInp) Then
-            Dim jobID As Integer = SQLiteHelper.GenerateNextJobID()
+        If Not AllInputsFilledInPanel(mainPanelCalibrateInp) Then Exit Sub
 
-            Dim initials As String = technicalID.Text.Trim()
-            Dim technicianName As String = CurrentUser.Name
-            Dim signatoryInitials As String = "ALL"
-            Dim signatoryName As String = "All Signatories"
-            Dim selectedDate As String = receivedDate.Value.ToString("yyyy-MM-dd")
+        ' Build ALL checked parameters once (pass to next form)
+        Dim allParams As New List(Of String)
+        For Each it As Object In cLParamACV.CheckedItems : allParams.Add(it.ToString()) : Next
+        For Each it As Object In cLParamDCV.CheckedItems : allParams.Add(it.ToString()) : Next
+        For Each it As Object In cLParamACC.CheckedItems : allParams.Add(it.ToString()) : Next
+        For Each it As Object In cLParamDCC.CheckedItems : allParams.Add(it.ToString()) : Next
+        For Each it As Object In cLParamRES.CheckedItems : allParams.Add(it.ToString()) : Next
 
-            Dim company As String = contextMenuCompanies.Text.Trim()
-            Dim address As String = compAdd.Text.Trim()
-            Dim model As String = dmmmodel.Text.Trim()
-            Dim manufacturer As String = manufaacturer.Text.Trim()
-            Dim description As String = dmmdescription.Text.Trim()
-            Dim calibType As String = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), "")
-            Dim site As String = specificSite.Text.Trim()
-            Dim parameters As String = String.Join(", ", cLParamACV.CheckedItems.Cast(Of String))
-            Dim status As String = "for review"
-            Dim dateCreated As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            Dim lastUpdatedBy As String = CurrentUser.Username
+        ' Build active categories to activate on next screen
+        Dim activeCategories As New List(Of String)
+        If cLParamACV.CheckedItems.Count > 0 Then activeCategories.Add("AC VOLTAGE")
+        If cLParamDCV.CheckedItems.Count > 0 Then activeCategories.Add("DC VOLTAGE")
+        If cLParamACC.CheckedItems.Count > 0 Then activeCategories.Add("AC CURRENT")
+        If cLParamDCC.CheckedItems.Count > 0 Then activeCategories.Add("DC CURRENT")
+        If cLParamRES.CheckedItems.Count > 0 Then activeCategories.Add("RESISTANCE")
 
-            Dim serialFormat As String = SQLiteHelper.GenerateNextWorkOrderNumber()
-            Dim workOrderNo = serialFormat & "-" & DateTime.Now.ToString("MM")
+        ' Open the calibration entry screen and pass context (no DB save)
+        Dim cr As New calibratingResult() With {
+            .JobId = 0, ' no save yet
+            .WorkOrderNumber = workOrderNo.Text, ' just pass what’s displayed
+            .CompanyName = contextMenuCompanies.Text.Trim(),
+            .CompanyAddress = compAdd.Text.Trim(),
+            .Model = dmmmodel.Text.Trim(),
+            .Manufacturer = manufaacturer.Text.Trim(),
+            .Description = dmmdescription.Text.Trim(),
+            .TechnicianInitials = technicalID.Text.Trim(),
+            .TechnicianName = CurrentUser.Name,
+            .CalibrationType = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), ""),
+            .SpecificSite = specificSite.Text.Trim(),
+            .SerialNumber = serialNumber.Text.Trim(),
+            .SelectedParameters = allParams,
+            .ActiveCategories = activeCategories
+        }
 
-            Try
-                ' 🔄 Save main job
-                Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
-                    conn.Open()
-
-                    Dim cmd As New SQLiteCommand("
-                        INSERT INTO calibration_jobs
-                        (job_id, technician_initials, technician_name, signatory_initials, signatory_name,
-                         company_name, company_address, model, manufacturer, description, calibration_date,
-                         calibration_type, specific_site, parameters, status, date_created, serial_number, last_updated_by, workOrderNumber)
-                        VALUES
-                        (@job_id, @technician_initials, @technician_name, @signatory_initials, @signatory_name,
-                         @company_name, @company_address, @model, @manufacturer, @description, @calibration_date,
-                         @calibration_type, @specific_site, @parameters, @status, @date_created, @serial_number, @last_updated_by, @workOrderNumber)", conn)
-
-                    With cmd.Parameters
-                        .AddWithValue("@job_id", jobID)
-                        .AddWithValue("@technician_initials", initials)
-                        .AddWithValue("@technician_name", technicianName)
-                        .AddWithValue("@signatory_initials", signatoryInitials)
-                        .AddWithValue("@signatory_name", signatoryName)
-                        .AddWithValue("@company_name", company)
-                        .AddWithValue("@company_address", address)
-                        .AddWithValue("@model", model)
-                        .AddWithValue("@manufacturer", manufacturer)
-                        .AddWithValue("@description", description)
-                        .AddWithValue("@calibration_date", selectedDate)
-                        .AddWithValue("@calibration_type", calibType)
-                        .AddWithValue("@specific_site", site)
-                        .AddWithValue("@parameters", parameters)
-                        .AddWithValue("@status", status)
-                        .AddWithValue("@date_created", dateCreated)
-                        .AddWithValue("@serial_number", serialNumber.Text.Trim())
-                        .AddWithValue("@last_updated_by", lastUpdatedBy)
-                        .AddWithValue("@workOrderNumber", serialFormat)
-                    End With
-
-                    cmd.ExecuteNonQuery()
-                End Using
-
-                ' ✅ Save Reference Standards
-                Dim refStandards As New List(Of ReferenceStandard)
-                For row As Integer = 1 To TableLayoutPanel1.RowCount - 1
-                    Dim desc = TryCast(TableLayoutPanel1.GetControlFromPosition(0, row), TextBox)
-                    Dim serial = TryCast(TableLayoutPanel1.GetControlFromPosition(1, row), TextBox)
-                    Dim calRef = TryCast(TableLayoutPanel1.GetControlFromPosition(2, row), TextBox)
-                    Dim dueDate = TryCast(TableLayoutPanel1.GetControlFromPosition(3, row), DateTimePicker)
-
-                    If desc IsNot Nothing AndAlso serial IsNot Nothing AndAlso calRef IsNot Nothing AndAlso dueDate IsNot Nothing Then
-                        refStandards.Add(New ReferenceStandard With {
-                        .CalibrationID = jobID,
-                        .Description = desc.Text,
-                        .SerialNo = serial.Text,
-                        .CalReportRef = calRef.Text,
-                        .DueDate = dueDate.Value.ToString("yyyy-MM-dd")
-                    })
-                    End If
-                Next
-                'If refStandards.Count > 0 Then
-                '    SQLiteHelper.InsertReferenceStandards(jobID, refStandards)
-                'End If
-
-                ' ✅ Save Accessories Used
-                Dim accessories As New List(Of AccessoryUsed)
-                For row As Integer = 1 To TableLayoutPanel2.RowCount - 1
-                    Dim descBox = TryCast(TableLayoutPanel2.GetControlFromPosition(0, row), TextBox)
-                    Dim serialBox = TryCast(TableLayoutPanel2.GetControlFromPosition(1, row), TextBox)
-                    Dim calRefBox = TryCast(TableLayoutPanel2.GetControlFromPosition(2, row), TextBox)
-                    Dim modelBox = TryCast(TableLayoutPanel2.GetControlFromPosition(3, row), TextBox)
-
-                    If descBox IsNot Nothing AndAlso serialBox IsNot Nothing AndAlso calRefBox IsNot Nothing AndAlso modelBox IsNot Nothing Then
-                        accessories.Add(New AccessoryUsed With {
-                        .CalibrationID = jobID,
-                        .Description = descBox.Text,
-                        .SerialNo = serialBox.Text,
-                        .CalReportRef = calRefBox.Text,
-                        .Model = modelBox.Text
-                    })
-                    End If
-                Next
-                If accessories.Count > 0 Then
-                    SQLiteHelper.InsertAccessoryUsed(jobID, accessories)
-                End If
-
-                ' 🎉 Success Message
-
-                MessageBox.Show("Calibration job successfully saved!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                MessageBox.Show("Calibration job saved! Serial Number (Work Order No.): " & serialFormat)
-
-                Dim result = MessageBox.Show("Calibration saved successfully." & vbCrLf & "Do you want to export to Excel?", "Export to Excel", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
-
-                If result = DialogResult.Yes Then
-                    ' --- Use fixed template path
-                    Dim templatePath As String = "C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\template.xlsx"
-
-                    If Not File.Exists(templatePath) Then
-                        MessageBox.Show("Template file not found at: " & templatePath, "Template Missing", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                        Return
-                    End If
-
-                    ' --- Ask where to save the new file
-                    Dim saveDialog As New SaveFileDialog With {
-                        .Title = "Save Calibration Excel File",
-                        .Filter = "Excel Files (*.xlsx)|*.xlsx",
-                        .FileName = "Calibration_" & workOrderNo & ".xlsx"
-                    }
-
-                    If saveDialog.ShowDialog() <> DialogResult.OK Then Return
-                    Dim savePath = saveDialog.FileName
-
-                    ' --- Collect data from form controls
-                    Dim excelData As New Dictionary(Of String, String) From {
-                        {"workOrderNumber", workOrderNo},
-                        {"technicalID", technicalID.Text},
-                        {"description", dmmdescription.Text},
-                        {"manufacturer", manufaacturer.Text},
-                        {"model", dmmmodel.Text},
-                        {"serialNumber", serialNumber.Text},
-                        {"range", range.Text},
-                        {"readability", readability.Text},
-                        {"prevCalCert", prevCalCert.Text},
-                        {"receivedDate", receivedDate.Value.ToShortDateString()},
-                        {"calibrationDate", calibrationDate.Value.ToShortDateString()},
-                        {"optionsInstalled", optionsInstalled.Text},
-                        {"customerPO", customerPO.Text},
-                        {"assetNumber", assetNumber.Text},
-                        {"accuracy", accuracy.Text},
-                        {"previousTechnician", prevTech.Text},
-                        {"companyName", contextMenuCompanies.Text},
-                        {"companyAddress", compAdd.Text},
-                        {"isInhouse1", If(CheckedListBox1.GetItemChecked(0), "x", "")},
-                        {"isInhouse2", If(CheckedListBox1.GetItemChecked(1), "x", "")},
-                        {"onsiteAddress", specificSite.Text},
-                        {"refDesc1", GetTableText(TableLayoutPanel1, 0, 1)},
-                        {"refDesc2", GetTableText(TableLayoutPanel1, 0, 2)},
-                        {"refSerial1", GetTableText(TableLayoutPanel1, 1, 1)},
-                        {"refSerial2", GetTableText(TableLayoutPanel1, 1, 2)},
-                        {"refCalRef1", GetTableText(TableLayoutPanel1, 2, 1)},
-                        {"refCalRef2", GetTableText(TableLayoutPanel1, 2, 2)},
-                        {"refDue1", GetTableDate(TableLayoutPanel1, 3, 1)},
-                        {"refDue2", GetTableDate(TableLayoutPanel1, 3, 2)},
-                        {"accDesc1", GetTableText(TableLayoutPanel2, 0, 1)},
-                        {"accDesc2", GetTableText(TableLayoutPanel2, 0, 2)},
-                        {"accSerial1", GetTableText(TableLayoutPanel2, 1, 1)},
-                        {"accSerial2", GetTableText(TableLayoutPanel2, 1, 2)},
-                        {"accCalRef1", GetTableText(TableLayoutPanel2, 2, 1)},
-                        {"accCalRef2", GetTableText(TableLayoutPanel2, 2, 2)},
-                        {"accDue1", GetTableText(TableLayoutPanel2, 3, 1)},
-                        {"accDue2", GetTableText(TableLayoutPanel2, 3, 2)},
-                        {"tempStart", txtTempStart.Text},
-                        {"tempEnd", txtTempEnd.Text},
-                        {"humidityStart", txtHumidityStart.Text},
-                        {"humidityEnd", txtHumidityEnd.Text}
-                    }
-
-                    For Each kvp As KeyValuePair(Of String, String) In excelData
-                        Console.WriteLine($"{kvp.Key} = {kvp.Value}")
-                    Next
-
-                    ' --- Export to Excel using helper function
-                    excelHelper.SaveCalibrationToExcel(templatePath, savePath, excelData)
-                End If
-
-                Me.Hide()
-                landingPageTechnician.Show()
-            Catch ex As Exception
-                MessageBox.Show("Error saving job: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
-        End If
+        cr.Show()
+        Me.Close()
     End Sub
 
-    ' ========== On-Site or In-House checkbox toggle logic ==========
+    ' On-Site or In-House checkbox toggle logic (single-select)
     Private Sub CheckedListBox1_MouseUp(sender As Object, e As MouseEventArgs) Handles CheckedListBox1.MouseUp
         Dim index As Integer = CheckedListBox1.IndexFromPoint(e.Location)
         If index <> ListBox.NoMatches Then
@@ -771,50 +572,13 @@ Public Class calibrate
 
     Private Sub addRefStandard_Click(sender As Object, e As EventArgs) Handles addRefStandard.Click
         Dim insertAtRow As Integer = TableLayoutPanel1.RowCount
-
         TableLayoutPanel1.RowCount += 1
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.AutoSize))
 
-        ' Ensure row style is added and top-anchored if first content row
-        If insertAtRow = 1 Then
-            TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.AutoSize))
-        Else
-            TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.AutoSize))
-        End If
-
-        ' Create controls
-        Dim txtDescription As New TextBox With {
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(5),
-        .Font = New Font("Courier New", 10, FontStyle.Regular),
-        .Multiline = True,
-        .WordWrap = True,
-        .ScrollBars = ScrollBars.Vertical
-    }
-
-        Dim txtSerial As New TextBox With {
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(5),
-        .Font = New Font("Courier New", 10, FontStyle.Regular),
-        .Multiline = True,
-        .WordWrap = True,
-        .ScrollBars = ScrollBars.Vertical
-    }
-
-        Dim txtCalRef As New TextBox With {
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(5),
-        .Font = New Font("Courier New", 10, FontStyle.Regular),
-        .Multiline = True,
-        .WordWrap = True,
-        .ScrollBars = ScrollBars.Vertical
-    }
-
-        Dim dtDueDate As New DateTimePicker With {
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(5),
-        .Font = New Font("Courier New", 10, FontStyle.Regular),
-        .Format = DateTimePickerFormat.Long
-    }
+        Dim txtDescription As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
+        Dim txtSerial As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
+        Dim txtCalRef As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
+        Dim dtDueDate As New DateTimePicker With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Format = DateTimePickerFormat.Long}
 
         TableLayoutPanel1.Controls.Add(txtDescription, 0, insertAtRow)
         TableLayoutPanel1.Controls.Add(txtSerial, 1, insertAtRow)
@@ -825,51 +589,13 @@ Public Class calibrate
     Private Sub addAccUsed_Click(sender As Object, e As EventArgs) Handles addAccUsed.Click
         Dim insertAtRow As Integer = TableLayoutPanel2.RowCount
         TableLayoutPanel2.RowCount += 1
+        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.AutoSize))
 
-        If insertAtRow = 1 Then
-            TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.AutoSize))
-        Else
-            TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.AutoSize))
-        End If
+        Dim txtDescription As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
+        Dim txtSerial As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
+        Dim txtCalRef As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
+        Dim model As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
 
-        ' Create new controls
-        Dim txtDescription As New TextBox With {
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(5),
-        .Font = New Font("Courier New", 10, FontStyle.Regular),
-        .Multiline = True,
-        .WordWrap = True,
-        .ScrollBars = ScrollBars.Vertical
-    }
-
-        Dim txtSerial As New TextBox With {
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(5),
-        .Font = New Font("Courier New", 10, FontStyle.Regular),
-        .Multiline = True,
-        .WordWrap = True,
-        .ScrollBars = ScrollBars.Vertical
-    }
-
-        Dim txtCalRef As New TextBox With {
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(5),
-        .Font = New Font("Courier New", 10, FontStyle.Regular),
-        .Multiline = True,
-        .WordWrap = True,
-        .ScrollBars = ScrollBars.Vertical
-    }
-
-        Dim model As New TextBox With {
-        .Dock = DockStyle.Fill,
-        .Margin = New Padding(5),
-        .Font = New Font("Courier New", 10, FontStyle.Regular),
-        .Multiline = True,
-        .WordWrap = True,
-        .ScrollBars = ScrollBars.Vertical
-    }
-
-        ' Add to correct panel (TableLayoutPanel2)
         TableLayoutPanel2.Controls.Add(txtDescription, 0, insertAtRow)
         TableLayoutPanel2.Controls.Add(txtSerial, 1, insertAtRow)
         TableLayoutPanel2.Controls.Add(txtCalRef, 2, insertAtRow)
