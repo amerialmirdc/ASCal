@@ -20,9 +20,9 @@ Module defaultParameters
             Tuple.Create("600 V", "60", "-"),
             Tuple.Create("600 V", "540", "-"),
             Tuple.Create("600 V", "-540", "-"),
-            Tuple.Create("1 000 V", "100", "-"),
-            Tuple.Create("1 000 V", "900", "-"),
-            Tuple.Create("1 000 V", "-900", "-")
+            Tuple.Create("1000 V", "100", "-"),
+            Tuple.Create("1000 V", "900", "-"),
+            Tuple.Create("1000 V", "-900", "-")
         }},
         {"AC Voltage Test", New List(Of Tuple(Of String, String, String)) From {
             Tuple.Create("600 mV", "60", "50 Hz"),
@@ -43,10 +43,10 @@ Module defaultParameters
             Tuple.Create("600 V", "60", "1 kHz"),
             Tuple.Create("600 V", "540", "50 Hz"),
             Tuple.Create("600 V", "540", "1 kHz"),
-            Tuple.Create("1 000 V", "100", "50 Hz"),
-            Tuple.Create("1 000 V", "100", "1 kHz"),
-            Tuple.Create("1 000 V", "900", "50 Hz"),
-            Tuple.Create("1 000 V", "900", "1 kHz")
+            Tuple.Create("1000 V", "100", "50 Hz"),
+            Tuple.Create("1000 V", "100", "1 kHz"),
+            Tuple.Create("1000 V", "900", "50 Hz"),
+            Tuple.Create("1000 V", "900", "1 kHz")
         }},
         {"Resistance Test", New List(Of Tuple(Of String, String, String)) From {
             Tuple.Create("600 Ω", "0", "-"),
@@ -59,28 +59,28 @@ Module defaultParameters
         }},
         {"DC Current Test", New List(Of Tuple(Of String, String, String)) From {
             Tuple.Create("600 µA", "540", "-"),
-            Tuple.Create("6 000 µA", "5400", "-"),
+            Tuple.Create("6000 µA", "5400", "-"),
             Tuple.Create("60 mA", "54", "-"),
             Tuple.Create("60 mA", "-54", "-"),
             Tuple.Create("400 mA", "360", "-"),
-            Tuple.Create("6A", "3", "-"),
-            Tuple.Create("6A", "5.4", "-"),
-            Tuple.Create("10A", "5", "-"),
-            Tuple.Create("10A", "9", "-")
+            Tuple.Create("6 A", "3", "-"),
+            Tuple.Create("6 A", "5.4", "-"),
+            Tuple.Create("10 A", "5", "-"),
+            Tuple.Create("10 A", "9", "-")
         }},
         {"AC Current Test", New List(Of Tuple(Of String, String, String)) From {
             Tuple.Create("600 µA", "540", "50 Hz"),
             Tuple.Create("600 µA", "540", "1 kHz"),
-            Tuple.Create("6 000 µA", "5400", "50 Hz"),
-            Tuple.Create("6 000 µA", "5400", "1 kHz"),
+            Tuple.Create("6000 µA", "5400", "50 Hz"),
+            Tuple.Create("6000 µA", "5400", "1 kHz"),
             Tuple.Create("60 mA", "54", "50 Hz"),
             Tuple.Create("60 mA", "54", "1 kHz"),
             Tuple.Create("400 mA", "360", "50 Hz"),
             Tuple.Create("400 mA", "360", "1 kHz"),
-            Tuple.Create("6A", "5.4", "50 Hz"),
-            Tuple.Create("6A", "5.4", "1 kHz"),
-            Tuple.Create("10A", "9", "50 Hz"),
-            Tuple.Create("10A", "9", "1 kHz")
+            Tuple.Create("6 A", "5.4", "50 Hz"),
+            Tuple.Create("6 A", "5.4", "1 kHz"),
+            Tuple.Create("10 A", "9", "50 Hz"),
+            Tuple.Create("10 A", "9", "1 kHz")
         }}
     }
 

@@ -3102,7 +3102,7 @@ Partial Class calibratingResult
         Me.Label438.Name = "Label438"
         Me.Label438.Size = New System.Drawing.Size(19, 19)
         Me.Label438.TabIndex = 536
-        Me.Label438.Text = "V"
+        Me.Label438.Text = "A"
         '
         'Label439
         '
@@ -3112,7 +3112,7 @@ Partial Class calibratingResult
         Me.Label439.Name = "Label439"
         Me.Label439.Size = New System.Drawing.Size(19, 19)
         Me.Label439.TabIndex = 535
-        Me.Label439.Text = "V"
+        Me.Label439.Text = "A"
         '
         'Label440
         '
@@ -3122,7 +3122,7 @@ Partial Class calibratingResult
         Me.Label440.Name = "Label440"
         Me.Label440.Size = New System.Drawing.Size(19, 19)
         Me.Label440.TabIndex = 534
-        Me.Label440.Text = "V"
+        Me.Label440.Text = "A"
         '
         'Label441
         '
@@ -3162,7 +3162,7 @@ Partial Class calibratingResult
         Me.Label538.Name = "Label538"
         Me.Label538.Size = New System.Drawing.Size(19, 19)
         Me.Label538.TabIndex = 530
-        Me.Label538.Text = "V"
+        Me.Label538.Text = "A"
         '
         'Label539
         '
@@ -3182,7 +3182,7 @@ Partial Class calibratingResult
         Me.Label540.Name = "Label540"
         Me.Label540.Size = New System.Drawing.Size(19, 19)
         Me.Label540.TabIndex = 528
-        Me.Label540.Text = "V"
+        Me.Label540.Text = "A"
         '
         'Label541
         '
@@ -3192,7 +3192,7 @@ Partial Class calibratingResult
         Me.Label541.Name = "Label541"
         Me.Label541.Size = New System.Drawing.Size(19, 19)
         Me.Label541.TabIndex = 527
-        Me.Label541.Text = "V"
+        Me.Label541.Text = "A"
         '
         'Label542
         '
@@ -3850,7 +3850,7 @@ Partial Class calibratingResult
         Me.Label479.Name = "Label479"
         Me.Label479.Size = New System.Drawing.Size(29, 19)
         Me.Label479.TabIndex = 415
-        Me.Label479.Text = "mV"
+        Me.Label479.Text = "µA"
         '
         'Label480
         '
@@ -3868,9 +3868,9 @@ Partial Class calibratingResult
         Me.Label481.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label481.Location = New System.Drawing.Point(216, 204)
         Me.Label481.Name = "Label481"
-        Me.Label481.Size = New System.Drawing.Size(19, 19)
+        Me.Label481.Size = New System.Drawing.Size(29, 19)
         Me.Label481.TabIndex = 413
-        Me.Label481.Text = "V"
+        Me.Label481.Text = "mA"
         '
         'Label482
         '
@@ -3890,7 +3890,7 @@ Partial Class calibratingResult
         Me.Label500.Name = "Label500"
         Me.Label500.Size = New System.Drawing.Size(19, 19)
         Me.Label500.TabIndex = 393
-        Me.Label500.Text = "V"
+        Me.Label500.Text = "A"
         '
         'Label501
         '
@@ -3898,9 +3898,9 @@ Partial Class calibratingResult
         Me.Label501.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label501.Location = New System.Drawing.Point(216, 300)
         Me.Label501.Name = "Label501"
-        Me.Label501.Size = New System.Drawing.Size(19, 19)
+        Me.Label501.Size = New System.Drawing.Size(29, 19)
         Me.Label501.TabIndex = 392
-        Me.Label501.Text = "V"
+        Me.Label501.Text = "mA"
         '
         'Label502
         '
@@ -3908,9 +3908,9 @@ Partial Class calibratingResult
         Me.Label502.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label502.Location = New System.Drawing.Point(216, 268)
         Me.Label502.Name = "Label502"
-        Me.Label502.Size = New System.Drawing.Size(19, 19)
+        Me.Label502.Size = New System.Drawing.Size(29, 19)
         Me.Label502.TabIndex = 391
-        Me.Label502.Text = "V"
+        Me.Label502.Text = "mA"
         '
         'Label503
         '
@@ -3918,9 +3918,9 @@ Partial Class calibratingResult
         Me.Label503.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label503.Location = New System.Drawing.Point(216, 236)
         Me.Label503.Name = "Label503"
-        Me.Label503.Size = New System.Drawing.Size(19, 19)
+        Me.Label503.Size = New System.Drawing.Size(29, 19)
         Me.Label503.TabIndex = 390
-        Me.Label503.Text = "V"
+        Me.Label503.Text = "mA"
         '
         'Label504
         '
@@ -3930,7 +3930,7 @@ Partial Class calibratingResult
         Me.Label504.Name = "Label504"
         Me.Label504.Size = New System.Drawing.Size(29, 19)
         Me.Label504.TabIndex = 389
-        Me.Label504.Text = "mV"
+        Me.Label504.Text = "µA"
         '
         'Label505
         '
@@ -3940,7 +3940,7 @@ Partial Class calibratingResult
         Me.Label505.Name = "Label505"
         Me.Label505.Size = New System.Drawing.Size(29, 19)
         Me.Label505.TabIndex = 388
-        Me.Label505.Text = "mV"
+        Me.Label505.Text = "µA"
         '
         'Label506
         '
@@ -3950,7 +3950,7 @@ Partial Class calibratingResult
         Me.Label506.Name = "Label506"
         Me.Label506.Size = New System.Drawing.Size(29, 19)
         Me.Label506.TabIndex = 387
-        Me.Label506.Text = "mV"
+        Me.Label506.Text = "µA"
         '
         'Label516
         '
@@ -4048,9 +4048,9 @@ Partial Class calibratingResult
         Me.Label531.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label531.Location = New System.Drawing.Point(75, 300)
         Me.Label531.Name = "Label531"
-        Me.Label531.Size = New System.Drawing.Size(19, 19)
+        Me.Label531.Size = New System.Drawing.Size(29, 19)
         Me.Label531.TabIndex = 361
-        Me.Label531.Text = "V"
+        Me.Label531.Text = "mA"
         '
         'Label532
         '
@@ -4070,7 +4070,7 @@ Partial Class calibratingResult
         Me.Label533.Name = "Label533"
         Me.Label533.Size = New System.Drawing.Size(29, 19)
         Me.Label533.TabIndex = 359
-        Me.Label533.Text = "mV"
+        Me.Label533.Text = "µA"
         '
         'Label534
         '
@@ -4090,7 +4090,7 @@ Partial Class calibratingResult
         Me.Label545.Name = "Label545"
         Me.Label545.Size = New System.Drawing.Size(19, 19)
         Me.Label545.TabIndex = 347
-        Me.Label545.Text = "V"
+        Me.Label545.Text = "A"
         '
         'Label546
         '
@@ -4098,9 +4098,9 @@ Partial Class calibratingResult
         Me.Label546.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label546.Location = New System.Drawing.Point(75, 268)
         Me.Label546.Name = "Label546"
-        Me.Label546.Size = New System.Drawing.Size(19, 19)
+        Me.Label546.Size = New System.Drawing.Size(29, 19)
         Me.Label546.TabIndex = 346
-        Me.Label546.Text = "V"
+        Me.Label546.Text = "mA"
         '
         'Label547
         '
@@ -4108,9 +4108,9 @@ Partial Class calibratingResult
         Me.Label547.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label547.Location = New System.Drawing.Point(75, 236)
         Me.Label547.Name = "Label547"
-        Me.Label547.Size = New System.Drawing.Size(19, 19)
+        Me.Label547.Size = New System.Drawing.Size(29, 19)
         Me.Label547.TabIndex = 345
-        Me.Label547.Text = "V"
+        Me.Label547.Text = "mA"
         '
         'Label548
         '
@@ -4118,9 +4118,9 @@ Partial Class calibratingResult
         Me.Label548.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label548.Location = New System.Drawing.Point(75, 204)
         Me.Label548.Name = "Label548"
-        Me.Label548.Size = New System.Drawing.Size(19, 19)
+        Me.Label548.Size = New System.Drawing.Size(29, 19)
         Me.Label548.TabIndex = 344
-        Me.Label548.Text = "V"
+        Me.Label548.Text = "mA"
         '
         'Label549
         '
@@ -4130,7 +4130,7 @@ Partial Class calibratingResult
         Me.Label549.Name = "Label549"
         Me.Label549.Size = New System.Drawing.Size(29, 19)
         Me.Label549.TabIndex = 343
-        Me.Label549.Text = "mV"
+        Me.Label549.Text = "µA"
         '
         'Label550
         '
@@ -4140,7 +4140,7 @@ Partial Class calibratingResult
         Me.Label550.Name = "Label550"
         Me.Label550.Size = New System.Drawing.Size(29, 19)
         Me.Label550.TabIndex = 342
-        Me.Label550.Text = "mV"
+        Me.Label550.Text = "µA"
         '
         'Label551
         '
@@ -4150,7 +4150,7 @@ Partial Class calibratingResult
         Me.Label551.Name = "Label551"
         Me.Label551.Size = New System.Drawing.Size(29, 19)
         Me.Label551.TabIndex = 341
-        Me.Label551.Text = "mV"
+        Me.Label551.Text = "µA"
         '
         'Label562
         '
@@ -4186,7 +4186,7 @@ Partial Class calibratingResult
         '
         Me.Label565.AutoSize = True
         Me.Label565.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label565.Location = New System.Drawing.Point(13, 204)
+        Me.Label565.Location = New System.Drawing.Point(14, 204)
         Me.Label565.Name = "Label565"
         Me.Label565.Size = New System.Drawing.Size(29, 19)
         Me.Label565.TabIndex = 327
@@ -5463,9 +5463,9 @@ Partial Class calibratingResult
         Me.Label608.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label608.Location = New System.Drawing.Point(315, 112)
         Me.Label608.Name = "Label608"
-        Me.Label608.Size = New System.Drawing.Size(29, 19)
+        Me.Label608.Size = New System.Drawing.Size(19, 19)
         Me.Label608.TabIndex = 384
-        Me.Label608.Text = "kΩ"
+        Me.Label608.Text = "Ω"
         '
         'Label609
         '
@@ -5603,9 +5603,9 @@ Partial Class calibratingResult
         Me.Label586.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.Label586.Location = New System.Drawing.Point(161, 112)
         Me.Label586.Name = "Label586"
-        Me.Label586.Size = New System.Drawing.Size(29, 19)
+        Me.Label586.Size = New System.Drawing.Size(19, 19)
         Me.Label586.TabIndex = 370
-        Me.Label586.Text = "kΩ"
+        Me.Label586.Text = "Ω"
         '
         'Label587
         '

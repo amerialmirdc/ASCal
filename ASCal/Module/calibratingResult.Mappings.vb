@@ -37,7 +37,7 @@ Partial Class calibratingResult
         ACV.RangeLbl = {L("Label201"), L("Label200"), L("Label199"), L("Label203"), L("Label198"), L("Label197"), L("Label196"), L("Label205"), L("Label195"), L("Label194"), L("Label193"), L("Label192"), L("Label191"), L("Label207"), L("Label190"), L("Label189"), L("Label188"), L("Label209"), L("Label187"), L("Label186"), L("Label185"), L("Label211")}
         ACV.Unit1Lbl = {L("Label184"), L("Label183"), L("Label182"), L("Label202"), L("Label181"), L("Label180"), L("Label179"), L("Label204"), L("Label178"), L("Label177"), L("Label176"), L("Label175"), L("Label174"), L("Label206"), L("Label173"), L("Label172"), L("Label171"), L("Label208"), L("Label170"), L("Label169"), L("Label168"), L("Label210")}
         ACV.NominalLbl = {L("Label245"), L("Label256"), L("Label244"), L("Label243"), L("Label254"), L("Label242"), L("Label241"), L("Label240"), L("Label239"), L("Label252"), L("Label236"), L("Label238"), L("Label237"), L("Label235"), L("Label234"), L("Label250"), L("Label233"), L("Label232"), L("Label231"), L("Label248"), L("Label230"), L("Label229")}
-        ACV.Unit2Lbl = {L("Label228"), L("Label227"), L("Label226"), L("Label225"), L("Label224"), L("Label223"), L("Label222"), L("Label221"), L("Label220"), L("Label218"), L("Label217"), L("Label216"), L("Label215"), L("Label214"), L("Label213"), L("Label212"), L("Label29"), L("Label249"), L("Label219"), L("Label251"), L("Label253"), L("Label255")}
+        ACV.Unit2Lbl = {L("Label228"), L("Label255"), L("Label227"), L("Label226"), L("Label253"), L("Label225"), L("Label224"), L("Label223"), L("Label222"), L("Label251"), L("Label219"), L("Label221"), L("Label220"), L("Label218"), L("Label217"), L("Label249"), L("Label216"), L("Label215"), L("Label214"), L("Label29"), L("Label213"), L("Label212")}
         ' New:
         ACV.FrequencyLbl = {L("Label258"), L("Label257"), L("Label260"), L("Label259"), L("Label264"), L("Label263"), L("Label262"), L("Label261"), L("Label272"), L("Label271"), L("Label270"), L("Label269"), L("Label268"), L("Label267"), L("Label266"), L("Label265"), L("Label278"), L("Label277"), L("Label276"), L("Label275"), L("Label274"), L("Label273")}
         ACV.UnitLbl = {L("Label280"), L("Label279"), L("Label282"), L("Label281"), L("Label286"), L("Label285"), L("Label284"), L("Label283"), L("Label294"), L("Label293"), L("Label292"), L("Label291"), L("Label290"), L("Label289"), L("Label288"), L("Label287"), L("Label302"), L("Label301"), L("Label300"), L("Label299"), L("Label298"), L("Label297")}
@@ -82,10 +82,10 @@ Partial Class calibratingResult
         LockAutoFields(RES)
 
         ' --- DC CURRENT (9 rows: 113..121) ---
-        DCC.RangeLbl = {L("Label508"), L("Label507"), L("Label499"), L("Label498"), L("Label497"), L("Label496"), L("Label495"), L("Label487"), L("Label485")}
-        DCC.Unit1Lbl = {L("Label494"), L("Label493"), L("Label492"), L("Label491"), L("Label490"), L("Label489"), L("Label488"), L("Label486"), L("Label484")}
-        DCC.NominalLbl = {L("Label468"), L("Label467"), L("Label466"), L("Label465"), L("Label464"), L("Label463"), L("Label462"), L("Label445"), L("Label443")}
-        DCC.Unit2Lbl = {L("Label461"), L("Label460"), L("Label459"), L("Label458"), L("Label457"), L("Label447"), L("Label446"), L("Label444"), L("Label442")}
+        DCC.RangeLbl = {L("Label508"), L("Label507"), L("Label499"), L("Label487"), L("Label498"), L("Label497"), L("Label496"), L("Label485"), L("Label495")}
+        DCC.Unit1Lbl = {L("Label494"), L("Label493"), L("Label492"), L("Label486"), L("Label491"), L("Label490"), L("Label489"), L("Label484"), L("Label488")}
+        DCC.NominalLbl = {L("Label468"), L("Label443"), L("Label467"), L("Label466"), L("Label445"), L("Label465"), L("Label464"), L("Label463"), L("Label462")}
+        DCC.Unit2Lbl = {L("Label461"), L("Label460"), L("Label459"), L("Label444"), L("Label458"), L("Label457"), L("Label446"), L("Label442"), L("Label446")}
         ' New:
         DCC.FrequencyLbl = {}
         DCC.UnitLbl = {}

@@ -120,9 +120,17 @@ Partial Public Class calibratingResult
 
     Private Function NormalizeKey(s As String) As String
         If s Is Nothing Then Return ""
-        Dim t = s.Trim().ToUpperInvariant()
+        Dim t = s.Trim()
+
+        ' --- normalize common unit issues ---
+        t = t.Replace("Ω"c, "Ω"c)  ' Greek Omega -> Ohm sign
+        t = t.Replace("uA", "µA").Replace("uV", "µV").Replace("uΩ", "µΩ") ' micro → µ
+
+        ' collapse whitespace
         t = System.Text.RegularExpressions.Regex.Replace(t, "\s+", " ")
-        Return t
+
+        ' uppercase for comparison
+        Return t.ToUpperInvariant()
     End Function
 
     Private Function L(name As String) As Label
@@ -619,10 +627,6 @@ Partial Public Class calibratingResult
                       End Sub
 
         process(DCV) : process(ACV) : process(RES) : process(DCC) : process(ACC)
-    End Sub
-
-    Private Sub Label217_Click(sender As Object, e As EventArgs)
-
     End Sub
 
 #End Region

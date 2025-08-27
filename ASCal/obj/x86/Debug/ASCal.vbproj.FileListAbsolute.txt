@@ -201,6 +201,5 @@ C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x8
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.Up2Date
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.frmMain.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.exe.config
-C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.Form2.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.SerialandOCR.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.calibratingResult.resources

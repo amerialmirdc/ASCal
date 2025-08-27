@@ -1,9 +1,10 @@
 ﻿Imports System.Data.SQLite
-Imports System.IO
 
 Public Class calibrate
 
-    ' Unified Navigation Handler for Technician
+    ' -------------------------------
+    ' Handles navigation buttons (logo, logout, dashboard)
+    ' -------------------------------
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoBtn.Click, logoutBtn.Click, jobDashBtn.Click
         contextMenuCompanies.SelectedIndex = -1
         contextMenuCompanies.Text = ""
@@ -24,6 +25,9 @@ Public Class calibrate
 
     Private companyDict As New Dictionary(Of String, String)
 
+    ' -------------------------------
+    ' Load active companies (name + address) from database
+    ' -------------------------------
     Private Sub LoadCompaniesFromDatabase()
         companyDict.Clear()
         Try
@@ -50,6 +54,9 @@ Public Class calibrate
     Private dmmItems As New List(Of Tuple(Of String, String, String))
     Private dmmParametersDict As New Dictionary(Of String, List(Of String))
 
+    ' -------------------------------
+    ' Load all DMM models and their parameter categories
+    ' -------------------------------
     Private Sub LoadDMMsAndParameters()
         dmmItems.Clear()
         dmmParametersDict.Clear()
@@ -96,6 +103,9 @@ Public Class calibrate
         End Try
     End Sub
 
+    ' -------------------------------
+    ' Load parameters for the selected DMM model
+    ' -------------------------------
     Private Sub LoadParametersForSelectedDMM(model As String)
         cLParamACV.Items.Clear()
 
@@ -124,6 +134,9 @@ Public Class calibrate
         End Try
     End Sub
 
+    ' -------------------------------
+    ' Form Load: configure window, UI defaults, load DMMs & companies
+    ' -------------------------------
     Private Sub calibrate_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Window sizing/placement
         Me.StartPosition = FormStartPosition.Manual
@@ -208,7 +221,11 @@ Public Class calibrate
         Next
     End Sub
 
-    ' Serial Number -> load last job + company address mapping
+    ' -------------------------------
+    ' Serial number lookup:
+    '   - Autofill company address
+    '   - Retrieve last calibration cert & technician
+    ' -------------------------------
     Private Sub serialNumber_change(sender As Object, e As EventArgs) Handles serialNumber.Leave, serialNumber.KeyDown, serialNumber.TextChanged
         If TypeOf e Is KeyEventArgs Then
             Dim ke As KeyEventArgs = DirectCast(e, KeyEventArgs)
@@ -257,6 +274,9 @@ Public Class calibrate
         End Try
     End Sub
 
+    ' -------------------------------
+    ' Company dropdown changes → autofill company address
+    ' -------------------------------
     Private Sub contextMenuCompanies_SelectedIndexChanged(sender As Object, e As EventArgs) Handles contextMenuCompanies.SelectedIndexChanged
         Dim selectedCompany As String = contextMenuCompanies.Text.Trim()
         If companyDict.ContainsKey(selectedCompany) Then
@@ -282,6 +302,11 @@ Public Class calibrate
         End If
     End Sub
 
+    ' -------------------------------
+    ' DMM grid click:
+    '   - Autofill model/manufacturer/description
+    '   - Populate parameter checklists grouped by category
+    ' -------------------------------
     Private Sub dataGridResult_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dataGridResult.CellClick
         If e.RowIndex < 0 Then Exit Sub
 
@@ -323,6 +348,9 @@ Public Class calibrate
         Next
     End Sub
 
+    ' -------------------------------
+    ' Helpers: find the correct CheckedListBox for a parameter category
+    ' -------------------------------
     Private Function GetCheckedListBoxForCategory(category As String) As CheckedListBox
         Select Case category.Trim().ToUpper()
             Case "AC VOLTAGE" : Return cLParamACV
@@ -366,7 +394,10 @@ Public Class calibrate
         End If
     End Sub
 
-    ' Click-to-toggle hierarchy that matches "  → Range:" / "      → Nominal:" items
+    ' -------------------------------
+    ' CheckedListBox click handler:
+    '   - Toggle entire category, range, or nominal items
+    ' -------------------------------
     Private Sub HandleCheckedListBoxClick(clb As CheckedListBox, e As MouseEventArgs)
         Dim index As Integer = clb.IndexFromPoint(e.Location)
         If index < 0 Then Exit Sub
@@ -420,7 +451,9 @@ Public Class calibrate
         HandleCheckedListBoxClick(cLParamRES, e)
     End Sub
 
-    ' Select all/Unselect all
+    ' -------------------------------
+    ' Select All / Unselect All parameters
+    ' -------------------------------
     Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
         For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
             For i As Integer = 0 To clb.Items.Count - 1
@@ -437,7 +470,12 @@ Public Class calibrate
         Next
     End Sub
 
-    ' Validate required fields
+    ' -------------------------------
+    ' Validate required inputs:
+    '   - All text fields filled
+    '   - Company selected
+    '   - At least one parameter checked
+    ' -------------------------------
     Private Function AllInputsFilledInPanel(panel As Panel) As Boolean
         Dim excludedFields As New List(Of String) From {"dmmSearch", "specificSite", "refstand4", "DateTimePicker1", "TextBox23", "TextBox21", "TextBox19", "TextBox25", "refstand3", "refstand2", "refstand2", "refstand6", "refstand5", "refstand4", "DateTimePicker1", "TextBox31", "TextBox19", "TextBox27", "TextBox25", "TextBox28", "TextBox26", "TextBox29", "TextBox30", "TextBox20", "TextBox22", "TextBox24", "compAdd"}
         For Each ctrl As Control In panel.Controls
@@ -494,7 +532,12 @@ Public Class calibrate
         Return ""
     End Function
 
-    ' Start Calibration — NO SAVE/EXPORT, go straight to calibratingResult
+    ' -------------------------------
+    ' Start Calibration:
+    '   - Gather checked parameters
+    '   - Pass context (work order, company, DMM, technician, etc.)
+    '   - Open calibratingResult form
+    ' -------------------------------
     Private Sub btnStartCalibration_Click(sender As Object, e As EventArgs) Handles btnStartCalibration.Click
         If Not AllInputsFilledInPanel(mainPanelCalibrateInp) Then Exit Sub
 
@@ -536,7 +579,9 @@ Public Class calibrate
         Me.Close()
     End Sub
 
-    ' On-Site or In-House checkbox toggle logic (single-select)
+    ' -------------------------------
+    ' Toggle On-Site vs In-House calibration (single-select)
+    ' -------------------------------
     Private Sub CheckedListBox1_MouseUp(sender As Object, e As MouseEventArgs) Handles CheckedListBox1.MouseUp
         Dim index As Integer = CheckedListBox1.IndexFromPoint(e.Location)
         If index <> ListBox.NoMatches Then
@@ -570,6 +615,9 @@ Public Class calibrate
         Next
     End Sub
 
+    ' -------------------------------
+    ' Add new reference standard row (dynamic rows in TableLayoutPanel1)
+    ' -------------------------------
     Private Sub addRefStandard_Click(sender As Object, e As EventArgs) Handles addRefStandard.Click
         Dim insertAtRow As Integer = TableLayoutPanel1.RowCount
         TableLayoutPanel1.RowCount += 1
@@ -586,6 +634,9 @@ Public Class calibrate
         TableLayoutPanel1.Controls.Add(dtDueDate, 3, insertAtRow)
     End Sub
 
+    ' -------------------------------
+    ' Add new accessory used row (dynamic rows in TableLayoutPanel2)
+    ' -------------------------------
     Private Sub addAccUsed_Click(sender As Object, e As EventArgs) Handles addAccUsed.Click
         Dim insertAtRow As Integer = TableLayoutPanel2.RowCount
         TableLayoutPanel2.RowCount += 1
