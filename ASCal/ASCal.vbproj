@@ -201,7 +201,9 @@
     <Compile Include="Forms\SERIAL\SerialandOCR.Designer.vb">
       <DependentUpon>SerialandOCR.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SERIAL\SerialandOCR.vb" />
+    <Compile Include="Forms\SERIAL\SerialandOCR.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Technician\calibratingResult.Designer.vb">
       <DependentUpon>calibratingResult.vb</DependentUpon>
     </Compile>
