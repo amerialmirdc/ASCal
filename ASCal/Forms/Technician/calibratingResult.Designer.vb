@@ -1142,7 +1142,11 @@ Partial Class calibratingResult
         Me.Label3 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.cameraPanel = New System.Windows.Forms.Panel()
+        Me.pnlTools = New System.Windows.Forms.Panel()
+        Me.btnStopFill = New System.Windows.Forms.Button()
+        Me.btnAutoFillNominalSeq = New System.Windows.Forms.Button()
+        Me.btnAutoFill60 = New System.Windows.Forms.Button()
+        Me.btnAutoFillNominalBulk = New System.Windows.Forms.Button()
         Me.Panel1.SuspendLayout
         Me.Panel8.SuspendLayout
         Me.Panel4.SuspendLayout
@@ -1160,8 +1164,12 @@ Partial Class calibratingResult
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.Color.Cyan
+        Me.Panel1.Controls.Add(Me.btnAutoFillNominalBulk)
+        Me.Panel1.Controls.Add(Me.btnStopFill)
         Me.Panel1.Controls.Add(Me.Panel8)
+        Me.Panel1.Controls.Add(Me.btnAutoFillNominalSeq)
         Me.Panel1.Controls.Add(Me.Panel4)
+        Me.Panel1.Controls.Add(Me.btnAutoFill60)
         Me.Panel1.Controls.Add(Me.Panel3)
         Me.Panel1.Controls.Add(Me.Panel2)
         Me.Panel1.Cursor = System.Windows.Forms.Cursors.Default
@@ -1277,9 +1285,9 @@ Partial Class calibratingResult
         Me.Panel5.Controls.Add(Me.Panel7)
         Me.Panel5.Controls.Add(Me.Panel6)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel5.Location = New System.Drawing.Point(300, 69)
+        Me.Panel5.Location = New System.Drawing.Point(300, 66)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(1624, 992)
+        Me.Panel5.Size = New System.Drawing.Size(1624, 995)
         Me.Panel5.TabIndex = 24
         '
         'Panel12
@@ -12523,20 +12531,56 @@ Partial Class calibratingResult
         Me.Label1.TabIndex = 0
         Me.Label1.Text = "DC VOLTAGE"
         '
-        'cameraPanel
+        'pnlTools
         '
-        Me.cameraPanel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.cameraPanel.Location = New System.Drawing.Point(300, 0)
-        Me.cameraPanel.Name = "cameraPanel"
-        Me.cameraPanel.Size = New System.Drawing.Size(1624, 69)
-        Me.cameraPanel.TabIndex = 25
+        Me.pnlTools.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.pnlTools.Location = New System.Drawing.Point(300, 0)
+        Me.pnlTools.Name = "pnlTools"
+        Me.pnlTools.Size = New System.Drawing.Size(1624, 66)
+        Me.pnlTools.TabIndex = 25
+        '
+        'btnStopFill
+        '
+        Me.btnStopFill.Location = New System.Drawing.Point(139, 425)
+        Me.btnStopFill.Name = "btnStopFill"
+        Me.btnStopFill.Size = New System.Drawing.Size(75, 23)
+        Me.btnStopFill.TabIndex = 2
+        Me.btnStopFill.Text = "Cancel"
+        Me.btnStopFill.UseVisualStyleBackColor = True
+        '
+        'btnAutoFillNominalSeq
+        '
+        Me.btnAutoFillNominalSeq.Location = New System.Drawing.Point(97, 334)
+        Me.btnAutoFillNominalSeq.Name = "btnAutoFillNominalSeq"
+        Me.btnAutoFillNominalSeq.Size = New System.Drawing.Size(117, 23)
+        Me.btnAutoFillNominalSeq.TabIndex = 1
+        Me.btnAutoFillNominalSeq.Text = "Nominal entry"
+        Me.btnAutoFillNominalSeq.UseVisualStyleBackColor = True
+        '
+        'btnAutoFill60
+        '
+        Me.btnAutoFill60.Location = New System.Drawing.Point(139, 291)
+        Me.btnAutoFill60.Name = "btnAutoFill60"
+        Me.btnAutoFill60.Size = New System.Drawing.Size(75, 23)
+        Me.btnAutoFill60.TabIndex = 0
+        Me.btnAutoFill60.Text = "AutoFill 60"
+        Me.btnAutoFill60.UseVisualStyleBackColor = True
+        '
+        'btnAutoFillNominalBulk
+        '
+        Me.btnAutoFillNominalBulk.Location = New System.Drawing.Point(97, 377)
+        Me.btnAutoFillNominalBulk.Name = "btnAutoFillNominalBulk"
+        Me.btnAutoFillNominalBulk.Size = New System.Drawing.Size(117, 23)
+        Me.btnAutoFillNominalBulk.TabIndex = 6
+        Me.btnAutoFillNominalBulk.Text = "Nominal bulk"
+        Me.btnAutoFillNominalBulk.UseVisualStyleBackColor = True
         '
         'calibratingResult
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1924, 1061)
-        Me.Controls.Add(Me.cameraPanel)
+        Me.Controls.Add(Me.pnlTools)
         Me.Controls.Add(Me.Panel5)
         Me.Controls.Add(Me.Panel1)
         Me.Name = "calibratingResult"
@@ -13647,7 +13691,7 @@ Partial Class calibratingResult
     Friend WithEvents TextBox166 As TextBox
     Friend WithEvents TextBox167 As TextBox
     Friend WithEvents TextBox168 As TextBox
-    Friend WithEvents cameraPanel As Panel
+    Friend WithEvents pnlTools As Panel
     Friend WithEvents TextBox328 As TextBox
     Friend WithEvents TextBox695 As TextBox
     Friend WithEvents TextBox709 As TextBox
@@ -13683,4 +13727,8 @@ Partial Class calibratingResult
     Friend WithEvents Label435 As Label
     Friend WithEvents Label436 As Label
     Friend WithEvents Label437 As Label
+    Friend WithEvents btnAutoFill60 As Button
+    Friend WithEvents btnStopFill As Button
+    Friend WithEvents btnAutoFillNominalSeq As Button
+    Friend WithEvents btnAutoFillNominalBulk As Button
 End Class
