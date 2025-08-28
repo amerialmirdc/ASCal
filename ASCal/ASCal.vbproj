@@ -45,6 +45,7 @@
     <DocumentationFile>ASCal.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -200,7 +201,11 @@
     <Compile Include="Forms\SERIAL\SerialandOCR.Designer.vb">
       <DependentUpon>SerialandOCR.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SERIAL\SerialandOCR.vb">
+    <Compile Include="Forms\SERIAL\SerialandOCR.vb" />
+    <Compile Include="Forms\Technician\calibratingResult.Designer.vb">
+      <DependentUpon>calibratingResult.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Technician\calibratingResult.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Technician\jobPreview.Designer.vb">
@@ -275,7 +280,11 @@
     <Compile Include="Forms\Admin\newCompanyForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Module\CalRowEngine.vb" />
+    <Compile Include="Module\excelCalculated.vb" />
     <Compile Include="Module\excelHelper.vb" />
+    <Compile Include="Module\defaultParameters.vb" />
+    <Compile Include="Module\CalibratingResultMappings.Module.vb" />
     <Compile Include="Module\UIHelper.vb" />
     <Compile Include="Module\SessionManager.vb" />
     <Compile Include="Module\SQLiteHelper.vb" />
@@ -342,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SERIAL\SerialandOCR.resx">
       <DependentUpon>SerialandOCR.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Technician\calibratingResult.resx">
+      <DependentUpon>calibratingResult.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Technician\jobPreview.resx">
       <DependentUpon>jobPreview.vb</DependentUpon>

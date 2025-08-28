@@ -732,4 +732,44 @@ Public Class editDMMAdmin
         End Select
     End Sub
 
+    'Private Sub delBtn_Click(sender As Object, e As EventArgs) Handles delBtn.Click
+    '    Dim passwordInput As String = InputBox("Please enter your password to confirm deletion of this company:", "Confirm Delete")
+    '    If String.IsNullOrEmpty(passwordInput) Then
+    '        MessageBox.Show("Deletion cancelled.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    '        Exit Sub
+    '    End If
+
+    '    If passwordInput <> SessionManager.LoggedInUser.Password Then
+    '        MessageBox.Show("Incorrect password. Deletion aborted.", "Password Mismatch", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        Exit Sub
+    '    End If
+
+    '    Dim confirmResult As DialogResult = MessageBox.Show("Are you sure you want to permanently delete this company?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    '    If confirmResult = DialogResult.Yes Then
+    '        Try
+    '            Using conn = GetConnection()
+    '                conn.Open()
+    '                Dim sql As String = "DELETE FROM companies WHERE company_id=@id"
+    '                Using cmd As New SQLiteCommand(sql, conn)
+    '                    cmd.Parameters.AddWithValue("@id", currentComp.CompanyID)
+    '                    cmd.ExecuteNonQuery()
+    '                End Using
+    '            End Using
+
+    '            MessageBox.Show("Company deleted successfully.", "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+    '             ✅ Refresh the grid if compManagementAdmin is open
+    '            If Application.OpenForms().OfType(Of compManagementAdmin).Any() Then
+    '                Dim form As compManagementAdmin = Application.OpenForms().OfType(Of compManagementAdmin).First()
+    '                form.Refresh()
+    '            End If
+
+    '             ✅ Close ONLY this edit form
+    '            Me.Close()
+    '        Catch ex As Exception
+    '            MessageBox.Show("Error deleting company: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        End Try
+    '    End If
+    'End Sub
+
 End Class
