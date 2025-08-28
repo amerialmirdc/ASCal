@@ -254,8 +254,6 @@ C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.exe
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.xml
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.pdb
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ClosedXML.dll
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ClosedXML.Parser.dll
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.dll
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.Framework.dll
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\EntityFramework.dll
