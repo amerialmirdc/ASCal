@@ -559,8 +559,8 @@ Public Class calibrate
 
         ' Open the calibration entry screen and pass context (no DB save)
         Dim cr As New calibratingResult() With {
-            .JobId = 0, ' no save yet
-            .WorkOrderNumber = workOrderNo.Text, ' just pass what’s displayed
+            .JobId = 0,
+            .WorkOrderNumber = workOrderNo.Text,
             .CompanyName = contextMenuCompanies.Text.Trim(),
             .CompanyAddress = compAdd.Text.Trim(),
             .Model = dmmmodel.Text.Trim(),
@@ -572,7 +572,21 @@ Public Class calibrate
             .SpecificSite = specificSite.Text.Trim(),
             .SerialNumber = serialNumber.Text.Trim(),
             .SelectedParameters = allParams,
-            .ActiveCategories = activeCategories
+            .ActiveCategories = activeCategories,
+            .Range = range.Text.Trim(),
+            .Readability = readability.Text.Trim(),
+            .PrevSesCalCert = prevCalCert.Text.Trim(),
+            .AccuracyHeader = accuracy.Text.Trim(),
+            .PreviousTechnician = prevTech.Text.Trim(),
+            .ReceivedDate = receivedDate.Value.ToShortDateString(),
+            .CalibrationDate = calibrationDate.Value.ToShortDateString(),
+            .OptionsInstalled = optionsInstalled.Text.Trim(),
+            .CustomerPO = customerPO.Text.Trim(),
+            .AssetNumber = assetNumber.Text.Trim(),
+            .TempStart = txtTempStart.Text.Trim(),
+            .TempEnd = txtTempEnd.Text.Trim(),
+            .HumidityStart = txtHumidityStart.Text.Trim(),
+            .HumidityEnd = txtHumidityEnd.Text.Trim()
         }
 
         cr.Show()

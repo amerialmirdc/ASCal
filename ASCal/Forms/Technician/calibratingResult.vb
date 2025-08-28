@@ -41,14 +41,56 @@ Partial Public Class calibratingResult
     Public Property SelectedParameters As List(Of String)
     Public Property ActiveCategories As List(Of String)
 
+    ' --- right-side header block ---
+    Public Property ReceivedDate As String         ' AL9
+
+    Public Property CalibrationDate As String      ' AL11
+    Public Property OptionsInstalled As String     ' AL13
+    Public Property CustomerPO As String           ' AL15
+    Public Property AssetNumber As String          ' AL17
+    Public Property AccuracyHeader As String       ' AL19
+    Public Property PreviousTechnician As String   ' AL21
+
+    ' --- environmental conditions (if you want to pass them from the first form) ---
+    Public Property TempStart As String            ' K41
+
+    Public Property TempEnd As String              ' K42
+    Public Property HumidityStart As String        ' T41
+    Public Property HumidityEnd As String          ' T42
+
+    Public Property Range As String
+    Public Property Readability As String
+    Public Property PrevSesCalCert As String
+
+    ' Reference Standards (top 2 rows)
+    Public Property RefDesc1 As String
+
+    Public Property RefSN1 As String
+    Public Property RefCalRef1 As String
+    Public Property RefDue1 As String
+
+    Public Property RefDesc2 As String
+    Public Property RefSN2 As String
+    Public Property RefCalRef2 As String
+    Public Property RefDue2 As String
+
+    ' Accessories (top 2 rows)
+    Public Property AccDesc1 As String
+
+    Public Property AccSN1 As String
+    Public Property AccCalRef1 As String
+    Public Property AccModel1 As String
+
+    Public Property AccDesc2 As String
+    Public Property AccSN2 As String
+    Public Property AccCalRef2 As String
+    Public Property AccModel2 As String
+
 #End Region
 
 #Region "Core Types & Mapping Helpers"
 
     Private Class ParamGroup
-
-        ' existing fields...
-
         Public MV1 As (tb As TextBox, cell As String)()
         Public MV2 As (tb As TextBox, cell As String)()
         Public MV3 As (tb As TextBox, cell As String)()
@@ -63,7 +105,7 @@ Partial Public Class calibratingResult
         Public FrequencyLbl() As Label
         Public UnitLbl() As Label
 
-        ' NEW: per-row left-hand labels (Range | Unit | Nominal | Unit)
+        ' Left-hand labels (Range | Unit1 | Nominal | Unit2)
         Public RangeLbl As Label()
 
         Public Unit1Lbl As Label()
@@ -100,42 +142,19 @@ Partial Public Class calibratingResult
                              Dim lb = a(idx).lbl : If lb IsNot Nothing Then lb.Visible = visible
                          End Sub
 
-        ' Left-side labels (now includes Frequency & Unit)
         showLbl(g.RangeLbl) : showLbl(g.Unit1Lbl) : showLbl(g.NominalLbl) : showLbl(g.Unit2Lbl)
         showLbl(g.FrequencyLbl) : showLbl(g.UnitLbl)
 
-        ' Inputs & outputs
         showTb(g.MV1) : showTb(g.MV2) : showTb(g.MV3)
         showOutLbl(g.Average) : showOutLbl(g.Error) : showOutLbl(g.FinalUncDecl)
         showTb(g.Tolerance) : showTb(g.UpperLimit) : showTb(g.LowerLimit) : showTb(g.Remarks)
     End Sub
 
-    Private Function RowKey(g As ParamGroup, idx As Integer) As String
-        Dim r = If(g.RangeLbl IsNot Nothing AndAlso idx < g.RangeLbl.Length AndAlso g.RangeLbl(idx) IsNot Nothing, g.RangeLbl(idx).Text, "")
-        Dim u1 = If(g.Unit1Lbl IsNot Nothing AndAlso idx < g.Unit1Lbl.Length AndAlso g.Unit1Lbl(idx) IsNot Nothing, g.Unit1Lbl(idx).Text, "")
-        Dim n = If(g.NominalLbl IsNot Nothing AndAlso idx < g.NominalLbl.Length AndAlso g.NominalLbl(idx) IsNot Nothing, g.NominalLbl(idx).Text, "")
-        Dim u2 = If(g.Unit2Lbl IsNot Nothing AndAlso idx < g.Unit2Lbl.Length AndAlso g.Unit2Lbl(idx) IsNot Nothing, g.Unit2Lbl(idx).Text, "")
-        Return NormalizeKey($"{r} {u1} {n} {u2}")
-    End Function
-
     Private Function NormalizeKey(s As String) As String
         If s Is Nothing Then Return ""
-        Dim t = s.Trim()
-
-        ' --- normalize common unit issues ---
-        t = t.Replace("Ω"c, "Ω"c)  ' Greek Omega -> Ohm sign
-        t = t.Replace("uA", "µA").Replace("uV", "µV").Replace("uΩ", "µΩ") ' micro → µ
-
-        ' collapse whitespace
+        Dim t = s.Trim().Replace("Ω"c, "Ω"c).Replace("uA", "µA").Replace("uV", "µV").Replace("uΩ", "µΩ")
         t = System.Text.RegularExpressions.Regex.Replace(t, "\s+", " ")
-
-        ' uppercase for comparison
         Return t.ToUpperInvariant()
-    End Function
-
-    Private Function L(name As String) As Label
-        Dim arr = Me.Controls.Find(name, True)
-        Return TryCast(If(arr IsNot Nothing AndAlso arr.Length > 0, arr(0), Nothing), Label)
     End Function
 
     Private Function MapTB(col As String, startRow As Integer, ParamArray boxes() As TextBox) _
@@ -143,15 +162,6 @@ Partial Public Class calibratingResult
         Dim a(boxes.Length - 1) As (TextBox, String)
         For i = 0 To boxes.Length - 1
             a(i) = (boxes(i), col & (startRow + i).ToString())
-        Next
-        Return a
-    End Function
-
-    Private Function MapLBL(col As String, startRow As Integer, ParamArray labels() As Label) _
-    As (lbl As Label, cell As String)()
-        Dim a(labels.Length - 1) As (Label, String)
-        For i = 0 To labels.Length - 1
-            a(i) = (labels(i), col & (startRow + i).ToString())
         Next
         Return a
     End Function
@@ -209,29 +219,39 @@ Partial Public Class calibratingResult
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
         ' 1) Mappings (in partial)
-        InitMappings()
+        InitMappings()   ' you already have this in a separate partial
 
         ' 2) Activate only checked categories from previous form
         ApplyActiveCategories()
 
-        ' 2.5) NEW: show only rows that match the checked parameters, default closed
+        ' 2.5) Show only rows matching the selected parameters
         ApplySelectedParameterRows()
 
         ' 3) Live compute wiring & debounce
-        dcComputeTimer = New Timer() With {.Interval = 50}
+        dcComputeTimer = New Timer() With {.Interval = 10}
         AddHandler dcComputeTimer.Tick, AddressOf OnDcComputeTimerTick
         HookLiveCompute()
 
-        ' 4) Excel context
+        ' 4) Excel working copy
+        Dim template = "C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\template.xlsx"
+        Dim workingCopy = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"ASCal_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}.xlsx")
+
+        Try
+            If System.IO.File.Exists(workingCopy) Then System.IO.File.Delete(workingCopy)
+            System.IO.File.Copy(template, workingCopy, True)
+        Catch ex As Exception
+            MessageBox.Show("Unable to prepare Excel template: " & ex.Message, "Template Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+
         ctxDc = New CalRowModule.RowContext With {
-            .TemplatePath = "C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\template.xlsx",
+            .TemplatePath = workingCopy,
             .SheetInputsName = "DataSheet",
             .SheetFormulaName = "DataSheet",
             .hostControls = Me.Controls
         }
         CalRowModule.Initialize(ctxDc)
 
-        ' 5) Prime first DC row
+        ' 5) Prime first DC row if present
         If DCV.MV3 IsNot Nothing AndAlso DCV.MV3.Length > 0 Then
             currentGroup = DCV
             currentRowIdx = 0
@@ -246,6 +266,37 @@ Partial Public Class calibratingResult
     Private Sub calibratingResult_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If ctxDc IsNot Nothing Then CalRowModule.SaveToExcel(ctxDc)
     End Sub
+
+    Private Function NormalizeFile(s As String) As String
+        If String.IsNullOrWhiteSpace(s) Then Return "NA"
+        Dim invalid = System.IO.Path.GetInvalidFileNameChars()
+        For Each ch In invalid
+            s = s.Replace(ch, "_"c)
+        Next
+        Return s.Trim()
+    End Function
+
+    Private Function AreAllVisibleRowsComplete() As Boolean
+        For Each g In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
+            If g Is Nothing OrElse g.MV1 Is Nothing Then Continue For
+
+            For i = 0 To g.MV1.Length - 1
+                Dim tb1 = g.MV1(i).tb
+                Dim tb2 = If(g.MV2 IsNot Nothing AndAlso i < g.MV2.Length, g.MV2(i).tb, Nothing)
+                Dim tb3 = If(g.MV3 IsNot Nothing AndAlso i < g.MV3.Length, g.MV3(i).tb, Nothing)
+
+                If tb1 IsNot Nothing AndAlso tb1.Visible Then
+                    If tb2 Is Nothing OrElse tb3 Is Nothing Then Return False
+                    If String.IsNullOrWhiteSpace(tb1.Text) OrElse
+                       String.IsNullOrWhiteSpace(tb2.Text) OrElse
+                       String.IsNullOrWhiteSpace(tb3.Text) Then
+                        Return False
+                    End If
+                End If
+            Next
+        Next
+        Return True
+    End Function
 
 #End Region
 
@@ -264,6 +315,8 @@ Partial Public Class calibratingResult
         attach(DCC.MV1) : attach(DCC.MV2) : attach(DCC.MV3)
         attach(ACC.MV1) : attach(ACC.MV2) : attach(ACC.MV3)
     End Sub
+
+    Private reportGenerated As Boolean = False
 
     Private Sub OnMvChanged(sender As Object, e As EventArgs)
         Dim tb = TryCast(sender, TextBox)
@@ -293,6 +346,8 @@ Partial Public Class calibratingResult
 
             dcComputeTimer.Stop()
             dcComputeTimer.Start()
+
+            TryAutoGenerateReport()
         End If
     End Sub
 
@@ -300,6 +355,166 @@ Partial Public Class calibratingResult
         dcComputeTimer.Stop()
         If currentExcelRow > 0 Then ctxDc.TargetRow = currentExcelRow
         CalRowModule.RecalculateNow(ctxDc)
+    End Sub
+
+#End Region
+
+#Region "Auto-generate export"
+
+    Private Sub TryAutoGenerateReport()
+        If reportGenerated Then Exit Sub
+        If Not AreAllVisibleRowsComplete() Then Exit Sub
+
+        ' Preserve previous delegates so live compute continues after export
+        Dim prevPre As Action(Of Object) = ctxDc.PreCalculate
+        Dim prevPost As Action(Of Object) = ctxDc.AfterCalculate
+
+        ' Push ALL header/context + all visible MV rows; then (optionally) read outputs
+        ctxDc.PreCalculate = Sub(ws As Object)
+                                 WriteAllHeaderInputsToExcel_Cells(ws)
+                                 WriteAllVisibleInputs(ws, DCV)
+                                 WriteAllVisibleInputs(ws, ACV)
+                                 WriteAllVisibleInputs(ws, RES)
+                                 WriteAllVisibleInputs(ws, DCC)
+                                 WriteAllVisibleInputs(ws, ACC)
+                             End Sub
+
+        ctxDc.AfterCalculate = Sub(ws As Object)
+                                   ReadAllOutputsForVisibleRows(ws, DCV)
+                                   ReadAllOutputsForVisibleRows(ws, ACV)
+                                   ReadAllOutputsForVisibleRows(ws, RES)
+                                   ReadAllOutputsForVisibleRows(ws, DCC)
+                                   ReadAllOutputsForVisibleRows(ws, ACC)
+                               End Sub
+
+        Try
+            If currentExcelRow > 0 Then ctxDc.TargetRow = currentExcelRow
+            CalRowModule.RecalculateNow(ctxDc)
+            CalRowModule.SaveToExcel(ctxDc)
+        Catch ex As Exception
+            MessageBox.Show("Failed to finalize Excel before export: " & ex.Message, "Excel Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ctxDc.PreCalculate = prevPre : ctxDc.AfterCalculate = prevPost
+            Return
+        End Try
+
+        ' Restore normal wiring
+        ctxDc.PreCalculate = prevPre
+        ctxDc.AfterCalculate = prevPost
+
+        Using sfd As New SaveFileDialog()
+            sfd.Title = "Save Calibration Report"
+            sfd.Filter = "Excel Workbook (*.xlsx)|*.xlsx"
+            sfd.FileName = $"CalibrationReport_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}.xlsx"
+            If sfd.ShowDialog(Me) = DialogResult.OK Then
+                Try
+                    System.IO.File.Copy(ctxDc.TemplatePath, sfd.FileName, True)
+                    reportGenerated = True
+                    MessageBox.Show("Report generated successfully:" & Environment.NewLine & sfd.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Catch ex As Exception
+                    MessageBox.Show("Unable to save report copy: " & ex.Message, "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End Try
+            End If
+        End Using
+    End Sub
+
+    ' Header/context → specific cells (your mapping)
+    Private Sub WriteAllHeaderInputsToExcel_Cells(ws As Object)
+        ' Left block (already OK)
+        WriteIfNotEmpty(ws, "L7", WorkOrderNumber)      ' workordernumber
+        WriteIfNotEmpty(ws, "AN7", TechnicianInitials)  ' technical id
+        WriteIfNotEmpty(ws, "K9", Description)          ' Description
+        WriteIfNotEmpty(ws, "K11", Manufacturer)        ' Manufacturer
+        WriteIfNotEmpty(ws, "K13", Model)               ' Model
+        WriteIfNotEmpty(ws, "K15", SerialNumber)        ' Serial Number
+        WriteIfNotEmpty(ws, "K17", Range)               ' Range
+        WriteIfNotEmpty(ws, "K19", Readability)         ' Res/Readability
+        WriteIfNotEmpty(ws, "K21", PrevSesCalCert)      ' Prev. SES Cal Cert
+
+        ' Prefer inbound properties; fall back to same-form controls if present
+        ' --- Right block (AL9..AL21) — write the passed-in values directly ---
+        WriteIfNotEmpty(ws, "AL9", ReceivedDate)
+        WriteIfNotEmpty(ws, "AL11", CalibrationDate)
+        WriteIfNotEmpty(ws, "AL13", OptionsInstalled)
+        WriteIfNotEmpty(ws, "AL15", CustomerPO)
+        WriteIfNotEmpty(ws, "AL17", AssetNumber)
+        WriteIfNotEmpty(ws, "AL19", AccuracyHeader)
+        WriteIfNotEmpty(ws, "AL21", PreviousTechnician)
+
+        ' Company
+        WriteIfNotEmpty(ws, "H25", CompanyName)
+        WriteIfNotEmpty(ws, "H27", CompanyAddress)
+
+        ' --- In-house / On-site flags & address (unchanged) ---
+        Dim ct = If(CalibrationType, "").Trim().ToUpperInvariant()
+        If ct.Contains("IN-HOUSE") OrElse ct.Contains("INHOUSE") Then
+            WriteIfNotEmpty(ws, "AE25", "x")
+        ElseIf ct.Contains("ON-SITE") OrElse ct.Contains("ONSITE") Then
+            WriteIfNotEmpty(ws, "AE27", "x")
+            WriteIfNotEmpty(ws, "AG29", SpecificSite)
+        End If
+
+        ' Reference Standards
+        WriteIfNotEmpty(ws, "B33", RefDesc1)
+        WriteIfNotEmpty(ws, "Q33", RefSN1)
+        WriteIfNotEmpty(ws, "AB33", RefCalRef1)
+        WriteIfNotEmpty(ws, "AO33", RefDue1)
+
+        WriteIfNotEmpty(ws, "B34", RefDesc2)
+        WriteIfNotEmpty(ws, "Q34", RefSN2)
+        WriteIfNotEmpty(ws, "AB34", RefCalRef2)
+        WriteIfNotEmpty(ws, "AO34", RefDue2)
+
+        ' Accessories
+        WriteIfNotEmpty(ws, "B37", AccDesc1)
+        WriteIfNotEmpty(ws, "Q37", AccSN1)
+        WriteIfNotEmpty(ws, "AB37", AccCalRef1)
+        WriteIfNotEmpty(ws, "AO37", AccModel1)
+
+        WriteIfNotEmpty(ws, "B38", AccDesc2)
+        WriteIfNotEmpty(ws, "Q38", AccSN2)
+        WriteIfNotEmpty(ws, "AB38", AccCalRef2)
+        WriteIfNotEmpty(ws, "AO38", AccModel2)
+
+        ' --- Environmental condition (write properties directly) ---
+        WriteIfNotEmpty(ws, "K41", TempStart)      ' Temperature Start
+        WriteIfNotEmpty(ws, "K42", TempEnd)        ' Temperature End
+        WriteIfNotEmpty(ws, "T41", HumidityStart)  ' RH Start
+        WriteIfNotEmpty(ws, "T42", HumidityEnd)    ' RH End
+    End Sub
+
+    Private Sub WriteIfNotEmpty(ws As Object, addr As String, value As String)
+        If String.IsNullOrWhiteSpace(value) Then Exit Sub
+        WriteCell(ws, addr, value)
+    End Sub
+
+    Private Function GetTextIfExists(name As String) As String
+        Dim arr = Me.Controls.Find(name, True)
+        If arr Is Nothing OrElse arr.Length = 0 Then Return ""
+        If TypeOf arr(0) Is TextBox Then Return DirectCast(arr(0), TextBox).Text
+        If TypeOf arr(0) Is DateTimePicker Then Return DirectCast(arr(0), DateTimePicker).Value.ToShortDateString()
+        Return ""
+    End Function
+
+    ' Push MV1/MV2/MV3 for all VISIBLE rows in a group
+    Private Sub WriteAllVisibleInputs(ws As Object, g As ParamGroup)
+        If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
+        For i As Integer = 0 To g.MV1.Length - 1
+            Dim tb1 As TextBox = g.MV1(i).tb
+            If tb1 IsNot Nothing AndAlso tb1.Visible Then
+                WriteInputsRow(ws, g, i)
+            End If
+        Next
+    End Sub
+
+    ' Optional: read outputs back to UI for all visible rows
+    Private Sub ReadAllOutputsForVisibleRows(ws As Object, g As ParamGroup)
+        If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
+        For i As Integer = 0 To g.MV1.Length - 1
+            Dim tb1 As TextBox = g.MV1(i).tb
+            If tb1 IsNot Nothing AndAlso tb1.Visible Then
+                ReadOutputsRow(ws, g, i)
+            End If
+        Next
     End Sub
 
 #End Region
@@ -431,7 +646,7 @@ Partial Public Class calibratingResult
                            Next
                        End Sub
 
-        ' Left-side labels (now includes Frequency & Unit)
+        ' Left-side labels
         setPlain(g.RangeLbl) : setPlain(g.Unit1Lbl) : setPlain(g.NominalLbl) : setPlain(g.Unit2Lbl)
         setPlain(g.FrequencyLbl) : setPlain(g.UnitLbl)
 
@@ -455,12 +670,7 @@ Partial Public Class calibratingResult
     Private Sub ApplySelectedParameterRows()
         If ActiveCategories Is Nothing OrElse ActiveCategories.Count = 0 Then Return
 
-        ' --- 1) Parse selections coming from the previous form
-        ' We accept any combination of:
-        '   Range: ...
-        '   Nominal: ...
-        '   Frequency: ...
-        '   Unit: ...
+        ' Parse selections from previous form
         Dim selRanges As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         Dim selNominals As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         Dim selFreqs As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
@@ -483,33 +693,30 @@ Partial Public Class calibratingResult
             If mr.Success Then selRanges.Add(NormalizeKey(mr.Groups(1).Value))       ' e.g., "6 V"
             If mn.Success Then selNominals.Add(NormalizeKey(mn.Groups(1).Value))     ' e.g., "5.4 V"
             If mf.Success Then selFreqs.Add(NormalizeKey(mf.Groups(1).Value))        ' e.g., "50 HZ"
-            If mu.Success Then selUnits.Add(NormalizeKey(mu.Groups(1).Value))        ' e.g., "V" / "A" / "OHM"
+            If mu.Success Then selUnits.Add(NormalizeKey(mu.Groups(1).Value))        ' e.g., "V"
         Next
 
         Dim nothingPicked = (selRanges.Count = 0 AndAlso selNominals.Count = 0 AndAlso selFreqs.Count = 0 AndAlso selUnits.Count = 0)
 
-        ' --- 2) Per-parameter group processing
+        ' Per-parameter group processing
         Dim process = Sub(g As ParamGroup)
                           If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
 
                           Dim rowCount = g.MV1.Length
-                          Dim rowR(rowCount - 1) As String   ' Range + Unit1 (e.g., "6 V")
-                          Dim rowN(rowCount - 1) As String   ' Nominal + Unit2
-                          Dim rowF(rowCount - 1) As String   ' Frequency label (e.g., "50 HZ")
-                          Dim rowU(rowCount - 1) As String   ' Unit label (e.g., "HZ" or plain unit column)
+                          Dim rowR(rowCount - 1) As String   ' Range + Unit1
+                          Dim rowN(rowCount - 1) As String   ' Nominal + Unit2 (with forward-fill per range)
+                          Dim rowF(rowCount - 1) As String   ' Frequency
+                          Dim rowU(rowCount - 1) As String   ' Unit
 
-                          ' Forward-fill support for Nominal/Unit2 within the same Range block
                           Dim lastNomByRange As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
                           Dim lastU2ByRange As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
 
                           For i = 0 To rowCount - 1
-                              ' Range key (Range + Unit1)
                               Dim rTxt = If(g.RangeLbl IsNot Nothing AndAlso i < g.RangeLbl.Length AndAlso g.RangeLbl(i) IsNot Nothing, g.RangeLbl(i).Text, "")
                               Dim u1 = If(g.Unit1Lbl IsNot Nothing AndAlso i < g.Unit1Lbl.Length AndAlso g.Unit1Lbl(i) IsNot Nothing, g.Unit1Lbl(i).Text, "")
                               Dim rKey = NormalizeKey((rTxt & " " & u1).Trim())
                               rowR(i) = rKey
 
-                              ' Nominal key (Nominal + Unit2) with forward fill per range
                               Dim nRaw = If(g.NominalLbl IsNot Nothing AndAlso i < g.NominalLbl.Length AndAlso g.NominalLbl(i) IsNot Nothing, g.NominalLbl(i).Text, "")
                               Dim u2Raw = If(g.Unit2Lbl IsNot Nothing AndAlso i < g.Unit2Lbl.Length AndAlso g.Unit2Lbl(i) IsNot Nothing, g.Unit2Lbl(i).Text, "")
                               If nRaw <> "" Then lastNomByRange(rKey) = nRaw
@@ -518,16 +725,14 @@ Partial Public Class calibratingResult
                               Dim u2Use = If(u2Raw <> "", u2Raw, If(lastU2ByRange.ContainsKey(rKey), lastU2ByRange(rKey), ""))
                               rowN(i) = NormalizeKey((nUse & " " & u2Use).Trim())
 
-                              ' Frequency key (no forward fill; each row has its own)
                               Dim fRaw = If(g.FrequencyLbl IsNot Nothing AndAlso i < g.FrequencyLbl.Length AndAlso g.FrequencyLbl(i) IsNot Nothing, g.FrequencyLbl(i).Text, "")
                               rowF(i) = NormalizeKey(fRaw)
 
-                              ' Unit key (per-row)
                               Dim unitRaw = If(g.UnitLbl IsNot Nothing AndAlso i < g.UnitLbl.Length AndAlso g.UnitLbl(i) IsNot Nothing, g.UnitLbl(i).Text, "")
                               rowU(i) = NormalizeKey(unitRaw)
                           Next
 
-                          ' Build groups: (Range || Nominal || Frequency || Unit) → list of row indices
+                          ' Build groups: (Range||Nominal||Frequency||Unit) → indices
                           Dim groups As New Dictionary(Of String, List(Of Integer))(StringComparer.OrdinalIgnoreCase)
                           For i = 0 To rowCount - 1
                               Dim gKey = rowR(i) & "||" & rowN(i) & "||" & rowF(i) & "||" & rowU(i)
@@ -535,7 +740,7 @@ Partial Public Class calibratingResult
                               groups(gKey).Add(i)
                           Next
 
-                          ' Identify ranges that have explicit nominal picks
+                          ' Ranges that have explicit nominal picks
                           Dim rangesWithExplicitNom As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
                           If selNominals.Count > 0 Then
                               For Each kvp In groups
@@ -553,57 +758,34 @@ Partial Public Class calibratingResult
                               Dim rKey = parts(0) : Dim nKey = parts(1) : Dim fKey = parts(2) : Dim uKey = parts(3)
 
                               Dim match As Boolean = True
-
-                              ' Range filter (if any ranges were selected)
-                              If selRanges.Count > 0 Then
-                                  match = match AndAlso selRanges.Contains(rKey)
-                              End If
-
-                              ' Nominal filter (scoped to its range if that range has explicit nominal picks)
+                              If selRanges.Count > 0 Then match = match AndAlso selRanges.Contains(rKey)
                               If selNominals.Count > 0 Then
                                   If rangesWithExplicitNom.Contains(rKey) Then
                                       match = match AndAlso selNominals.Contains(nKey)
                                   ElseIf selRanges.Count = 0 Then
-                                      ' If no ranges selected, allow nominals across ranges (looser)
                                       match = match AndAlso selNominals.Contains(nKey)
                                   End If
                               End If
+                              If selFreqs.Count > 0 Then match = match AndAlso selFreqs.Contains(fKey)
+                              If selUnits.Count > 0 Then match = match AndAlso selUnits.Contains(uKey)
 
-                              ' Frequency filter (if provided)
-                              If selFreqs.Count > 0 Then
-                                  match = match AndAlso selFreqs.Contains(fKey)
-                              End If
-
-                              ' Unit filter (if provided)
-                              If selUnits.Count > 0 Then
-                                  match = match AndAlso selUnits.Contains(uKey)
-                              End If
-
-                              If match Then
-                                  anyMatch = True
-                                  Exit For
-                              End If
+                              If match Then anyMatch = True : Exit For
                           Next
 
-                          ' Nothing picked or no matches → close all rows in this parameter group
                           If nothingPicked OrElse Not anyMatch Then
                               For i = 0 To rowCount - 1 : SetRowVisible(g, i, False) : Next
                               Exit Sub
                           End If
 
-                          ' Decide visibility for each GROUP using the same matching logic
+                          ' Decide visibility per group
+                          ' Decide visibility per group
                           For Each kvp In groups
                               Dim parts = kvp.Key.Split(New String() {"||"}, StringSplitOptions.None)
                               Dim rKey = parts(0) : Dim nKey = parts(1) : Dim fKey = parts(2) : Dim uKey = parts(3)
-
                               Dim hasExplicitNomForRange = rangesWithExplicitNom.Contains(rKey)
 
                               Dim match As Boolean = True
-
-                              If selRanges.Count > 0 Then
-                                  match = match AndAlso selRanges.Contains(rKey)
-                              End If
-
+                              If selRanges.Count > 0 Then match = match AndAlso selRanges.Contains(rKey)
                               If selNominals.Count > 0 Then
                                   If hasExplicitNomForRange Then
                                       match = match AndAlso selNominals.Contains(nKey)
@@ -611,19 +793,14 @@ Partial Public Class calibratingResult
                                       match = match AndAlso selNominals.Contains(nKey)
                                   End If
                               End If
-
-                              If selFreqs.Count > 0 Then
-                                  match = match AndAlso selFreqs.Contains(fKey)
-                              End If
-
-                              If selUnits.Count > 0 Then
-                                  match = match AndAlso selUnits.Contains(uKey)
-                              End If
+                              If selFreqs.Count > 0 Then match = match AndAlso selFreqs.Contains(fKey)
+                              If selUnits.Count > 0 Then match = match AndAlso selUnits.Contains(uKey)
 
                               For Each idx In kvp.Value
                                   SetRowVisible(g, idx, match)
                               Next
                           Next
+
                       End Sub
 
         process(DCV) : process(ACV) : process(RES) : process(DCC) : process(ACC)
