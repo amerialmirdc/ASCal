@@ -23,10 +23,14 @@ Partial Class calibratingResult
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.btnAutoFillNominalBulk = New System.Windows.Forms.Button()
+        Me.btnStopFill = New System.Windows.Forms.Button()
         Me.Panel8 = New System.Windows.Forms.Panel()
         Me.logoutBtn = New System.Windows.Forms.Button()
+        Me.btnAutoFillNominalSeq = New System.Windows.Forms.Button()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.jobDashBtn = New System.Windows.Forms.Button()
+        Me.btnAutoFill60 = New System.Windows.Forms.Button()
         Me.Panel3 = New System.Windows.Forms.Panel()
         Me.calibrateBtn = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
@@ -1143,10 +1147,7 @@ Partial Class calibratingResult
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.pnlTools = New System.Windows.Forms.Panel()
-        Me.btnStopFill = New System.Windows.Forms.Button()
-        Me.btnAutoFillNominalSeq = New System.Windows.Forms.Button()
-        Me.btnAutoFill60 = New System.Windows.Forms.Button()
-        Me.btnAutoFillNominalBulk = New System.Windows.Forms.Button()
+        Me.btnExportReportExcel = New System.Windows.Forms.Button()
         Me.Panel1.SuspendLayout
         Me.Panel8.SuspendLayout
         Me.Panel4.SuspendLayout
@@ -1164,6 +1165,7 @@ Partial Class calibratingResult
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.Color.Cyan
+        Me.Panel1.Controls.Add(Me.btnExportReportExcel)
         Me.Panel1.Controls.Add(Me.btnAutoFillNominalBulk)
         Me.Panel1.Controls.Add(Me.btnStopFill)
         Me.Panel1.Controls.Add(Me.Panel8)
@@ -1178,6 +1180,24 @@ Partial Class calibratingResult
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(300, 1061)
         Me.Panel1.TabIndex = 23
+        '
+        'btnAutoFillNominalBulk
+        '
+        Me.btnAutoFillNominalBulk.Location = New System.Drawing.Point(97, 375)
+        Me.btnAutoFillNominalBulk.Name = "btnAutoFillNominalBulk"
+        Me.btnAutoFillNominalBulk.Size = New System.Drawing.Size(117, 23)
+        Me.btnAutoFillNominalBulk.TabIndex = 6
+        Me.btnAutoFillNominalBulk.Text = "Nominal bulk"
+        Me.btnAutoFillNominalBulk.UseVisualStyleBackColor = True
+        '
+        'btnStopFill
+        '
+        Me.btnStopFill.Location = New System.Drawing.Point(139, 459)
+        Me.btnStopFill.Name = "btnStopFill"
+        Me.btnStopFill.Size = New System.Drawing.Size(75, 23)
+        Me.btnStopFill.TabIndex = 2
+        Me.btnStopFill.Text = "Cancel"
+        Me.btnStopFill.UseVisualStyleBackColor = True
         '
         'Panel8
         '
@@ -1204,6 +1224,15 @@ Partial Class calibratingResult
         Me.logoutBtn.Text = "LOGOUT"
         Me.logoutBtn.UseVisualStyleBackColor = False
         '
+        'btnAutoFillNominalSeq
+        '
+        Me.btnAutoFillNominalSeq.Location = New System.Drawing.Point(97, 334)
+        Me.btnAutoFillNominalSeq.Name = "btnAutoFillNominalSeq"
+        Me.btnAutoFillNominalSeq.Size = New System.Drawing.Size(117, 23)
+        Me.btnAutoFillNominalSeq.TabIndex = 1
+        Me.btnAutoFillNominalSeq.Text = "Nominal entry"
+        Me.btnAutoFillNominalSeq.UseVisualStyleBackColor = True
+        '
         'Panel4
         '
         Me.Panel4.Controls.Add(Me.jobDashBtn)
@@ -1227,6 +1256,15 @@ Partial Class calibratingResult
         Me.jobDashBtn.TabIndex = 0
         Me.jobDashBtn.Text = "JOB DASHBOARD"
         Me.jobDashBtn.UseVisualStyleBackColor = True
+        '
+        'btnAutoFill60
+        '
+        Me.btnAutoFill60.Location = New System.Drawing.Point(139, 295)
+        Me.btnAutoFill60.Name = "btnAutoFill60"
+        Me.btnAutoFill60.Size = New System.Drawing.Size(75, 23)
+        Me.btnAutoFill60.TabIndex = 0
+        Me.btnAutoFill60.Text = "AutoFill 60"
+        Me.btnAutoFill60.UseVisualStyleBackColor = True
         '
         'Panel3
         '
@@ -12539,41 +12577,14 @@ Partial Class calibratingResult
         Me.pnlTools.Size = New System.Drawing.Size(1624, 66)
         Me.pnlTools.TabIndex = 25
         '
-        'btnStopFill
+        'btnExportReportExcel
         '
-        Me.btnStopFill.Location = New System.Drawing.Point(139, 425)
-        Me.btnStopFill.Name = "btnStopFill"
-        Me.btnStopFill.Size = New System.Drawing.Size(75, 23)
-        Me.btnStopFill.TabIndex = 2
-        Me.btnStopFill.Text = "Cancel"
-        Me.btnStopFill.UseVisualStyleBackColor = True
-        '
-        'btnAutoFillNominalSeq
-        '
-        Me.btnAutoFillNominalSeq.Location = New System.Drawing.Point(97, 334)
-        Me.btnAutoFillNominalSeq.Name = "btnAutoFillNominalSeq"
-        Me.btnAutoFillNominalSeq.Size = New System.Drawing.Size(117, 23)
-        Me.btnAutoFillNominalSeq.TabIndex = 1
-        Me.btnAutoFillNominalSeq.Text = "Nominal entry"
-        Me.btnAutoFillNominalSeq.UseVisualStyleBackColor = True
-        '
-        'btnAutoFill60
-        '
-        Me.btnAutoFill60.Location = New System.Drawing.Point(139, 291)
-        Me.btnAutoFill60.Name = "btnAutoFill60"
-        Me.btnAutoFill60.Size = New System.Drawing.Size(75, 23)
-        Me.btnAutoFill60.TabIndex = 0
-        Me.btnAutoFill60.Text = "AutoFill 60"
-        Me.btnAutoFill60.UseVisualStyleBackColor = True
-        '
-        'btnAutoFillNominalBulk
-        '
-        Me.btnAutoFillNominalBulk.Location = New System.Drawing.Point(97, 377)
-        Me.btnAutoFillNominalBulk.Name = "btnAutoFillNominalBulk"
-        Me.btnAutoFillNominalBulk.Size = New System.Drawing.Size(117, 23)
-        Me.btnAutoFillNominalBulk.TabIndex = 6
-        Me.btnAutoFillNominalBulk.Text = "Nominal bulk"
-        Me.btnAutoFillNominalBulk.UseVisualStyleBackColor = True
+        Me.btnExportReportExcel.Location = New System.Drawing.Point(97, 411)
+        Me.btnExportReportExcel.Name = "btnExportReportExcel"
+        Me.btnExportReportExcel.Size = New System.Drawing.Size(117, 23)
+        Me.btnExportReportExcel.TabIndex = 7
+        Me.btnExportReportExcel.Text = "Export"
+        Me.btnExportReportExcel.UseVisualStyleBackColor = True
         '
         'calibratingResult
         '
@@ -13731,4 +13742,5 @@ Partial Class calibratingResult
     Friend WithEvents btnStopFill As Button
     Friend WithEvents btnAutoFillNominalSeq As Button
     Friend WithEvents btnAutoFillNominalBulk As Button
+    Friend WithEvents btnExportReportExcel As Button
 End Class

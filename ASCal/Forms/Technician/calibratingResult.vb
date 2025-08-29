@@ -1083,7 +1083,7 @@ Public Class calibratingResult
     End Sub
 
     Public Sub TempFillAllMvSequential60()
-        StartSequentialMvFill("60", onlyVisible:=True, intervalMs:=50, recomputeAfter:=True)
+        StartSequentialMvFill("60", onlyVisible:=True, intervalMs:=100, recomputeAfter:=True)
     End Sub
 
     Public Sub StopSequentialMvFill()
@@ -1239,7 +1239,7 @@ Public Class calibratingResult
     End Sub
 
     Private Sub btnAutoFillNominalSeq_Click(sender As Object, e As EventArgs) Handles btnAutoFillNominalSeq.Click
-        StartSequentialFillWithNominal(onlyVisible:=True, copyUnits:=False, intervalMs:=50, recomputeAfter:=True)
+        StartSequentialFillWithNominal(onlyVisible:=True, copyUnits:=False, intervalMs:=100, recomputeAfter:=True)
     End Sub
 
     Private Sub btnAutoFillNominalBulk_Click(sender As Object, e As EventArgs) Handles btnAutoFillNominalBulk.Click
@@ -1249,6 +1249,87 @@ Public Class calibratingResult
     Private Sub btnStopFill_Click(sender As Object, e As EventArgs) Handles btnStopFill.Click
         StopSequentialMvFill()          ' for the “60” sequencer
         StopSequentialFillWithNominal() ' for the nominal sequencer
+    End Sub
+
+    ' === Manual Export (button) ===
+    Private Sub btnExportReportExcel_Click(sender As Object, e As EventArgs) _
+        Handles btnExportReportExcel.Click
+
+        If ctxDc Is Nothing OrElse String.IsNullOrWhiteSpace(ctxDc.TemplatePath) Then
+            MessageBox.Show("Excel context is not ready. Open the form with a valid template first.",
+                            "Export Unavailable", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End If
+
+        ' If rows aren’t all complete, allow user to export anyway
+        If Not AreAllVisibleRowsComplete() Then
+            Dim r = MessageBox.Show("Some visible rows are incomplete. Export anyway?",
+                                    "Incomplete Data", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            If r = DialogResult.No Then Exit Sub
+        End If
+
+        ' Preserve existing Pre/After hooks while we do a full-sheet push/read
+        Dim prevPre As Action(Of Object) = ctxDc.PreCalculate
+        Dim prevPost As Action(Of Object) = ctxDc.AfterCalculate
+
+        ctxDc.PreCalculate = Sub(ws As Object)
+                                 ' Write headers and ALL visible MV inputs to the sheet
+                                 WriteAllHeaderInputsToExcel_Cells(ws)                     ' headers
+                                 WriteAllVisibleInputs(ws, DCV) : WriteAllVisibleInputs(ws, ACV)
+                                 WriteAllVisibleInputs(ws, RES) : WriteAllVisibleInputs(ws, DCC)
+                                 WriteAllVisibleInputs(ws, ACC)
+                             End Sub
+
+        ctxDc.AfterCalculate = Sub(ws As Object)
+                                   ' Pull computed outputs back into the UI (labels, pass/fail colors, etc.)
+                                   ReadAllOutputsForVisibleRows(ws, DCV) : ReadAllOutputsForVisibleRows(ws, ACV)
+                                   ReadAllOutputsForVisibleRows(ws, RES) : ReadAllOutputsForVisibleRows(ws, DCC)
+                                   ReadAllOutputsForVisibleRows(ws, ACC)
+                               End Sub
+
+        Try
+            If currentExcelRow > 0 Then ctxDc.TargetRow = currentExcelRow
+            CalRowModule.RecalculateNow(ctxDc)            ' push → calc → pull
+            CalRowModule.SaveToExcel(ctxDc)               ' persist into the working copy
+        Catch ex As Exception
+            MessageBox.Show("Failed to finalize Excel before export: " & ex.Message,
+                            "Excel Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ctxDc.PreCalculate = prevPre : ctxDc.AfterCalculate = prevPost
+            Exit Sub
+        End Try
+
+        ' Restore hooks
+        ctxDc.PreCalculate = prevPre
+        ctxDc.AfterCalculate = prevPost
+
+        ' Let user choose where to save; also mirror to Job_Export for portability
+        Using sfd As New SaveFileDialog()
+            sfd.Title = "Save Calibration Report"
+            sfd.Filter = "Excel Workbook (*.xlsx)|*.xlsx"
+            sfd.InitialDirectory = GetJobExportDir()
+            sfd.FileName = BuildReportFileName()
+
+            If sfd.ShowDialog(Me) = DialogResult.OK Then
+                Try
+                    ' Copy the updated working copy out to the chosen path
+                    System.IO.File.Copy(ctxDc.TemplatePath, sfd.FileName, True)
+
+                    ' Mirror into Job_Export if the chosen path is elsewhere
+                    Dim exportDir = GetJobExportDir()
+                    Dim exportCopy = System.IO.Path.Combine(exportDir, System.IO.Path.GetFileName(sfd.FileName))
+                    If Not sfd.FileName.Equals(exportCopy, StringComparison.OrdinalIgnoreCase) Then
+                        System.IO.File.Copy(sfd.FileName, exportCopy, True)
+                    End If
+
+                    reportGenerated = True
+                    MessageBox.Show("Report exported successfully:" & Environment.NewLine & sfd.FileName,
+                                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Catch ex As Exception
+                    MessageBox.Show("Unable to save report copy: " & ex.Message,
+                                    "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End Try
+            End If
+        End Using
     End Sub
 
 #End Region  ' TEMP/DEBUG — easy to delete later
