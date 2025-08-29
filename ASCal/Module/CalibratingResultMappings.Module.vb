@@ -2,7 +2,6 @@
 
 Imports System.Reflection
 Imports System.Runtime.CompilerServices
-Imports System.Windows.Forms
 
 ' =============================================================================
 ' Module: CalibratingResultMappings
@@ -317,10 +316,10 @@ Module CalibratingResultMappings
         ' ==============================
         Dim ACC = getPg("ACC")
 
-        setLabels(ACC, "RangeLbl", {"Label568", "Label567", "Label566", "Label565", "Label564", "Label563", "Label562", "Label534", "Label532", "Label543", "Label542", "Label539"})
-        setLabels(ACC, "Unit1Lbl", {"Label551", "Label550", "Label549", "Label548", "Label547", "Label546", "Label545", "Label533", "Label531", "Label541", "Label540", "Label538"})
-        setLabels(ACC, "NominalLbl", {"Label522", "Label521", "Label520", "Label519", "Label518", "Label517", "Label516", "Label482", "Label480", "Label537", "Label529", "Label441"})
-        setLabels(ACC, "Unit2Lbl", {"Label506", "Label505", "Label504", "Label503", "Label502", "Label501", "Label500", "Label481", "Label479", "Label440", "Label439", "Label438"})
+        setLabels(ACC, "RangeLbl", {"Label568", "Label567", "Label566", "Label534", "Label565", "Label564", "Label563", "Label532", "Label562", "Label543", "Label539", "Label542"})
+        setLabels(ACC, "Unit1Lbl", {"Label551", "Label550", "Label549", "Label533", "Label548", "Label547", "Label546", "Label531", "Label545", "Label541", "Label538", "Label540"})
+        setLabels(ACC, "NominalLbl", {"Label522", "Label480", "Label521", "Label520", "Label482", "Label519", "Label518", "Label517", "Label516", "Label537", "Label529", "Label441"})
+        setLabels(ACC, "Unit2Lbl", {"Label506", "Label479", "Label505", "Label504", "Label481", "Label503", "Label502", "Label501", "Label500", "Label440", "Label439", "Label438"})
 
         setLabels(ACC, "FrequencyLbl", {"Label478", "Label477", "Label476", "Label475", "Label474", "Label473", "Label472", "Label471", "Label470", "Label436", "Label435", "Label437"})
         setLabels(ACC, "UnitLbl", {"Label456", "Label455", "Label454", "Label453", "Label452", "Label451", "Label450", "Label449", "Label448", "Label424", "Label423", "Label422"})
