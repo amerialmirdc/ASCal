@@ -22,7 +22,9 @@ Partial Class calibratingResult
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.btnExportReportExcel = New System.Windows.Forms.Button()
         Me.btnAutoFillNominalBulk = New System.Windows.Forms.Button()
         Me.btnStopFill = New System.Windows.Forms.Button()
         Me.Panel8 = New System.Windows.Forms.Panel()
@@ -1147,7 +1149,32 @@ Partial Class calibratingResult
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.pnlTools = New System.Windows.Forms.Panel()
-        Me.btnExportReportExcel = New System.Windows.Forms.Button()
+        Me.ButtonDisable = New System.Windows.Forms.Button()
+        Me.Label629 = New System.Windows.Forms.Label()
+        Me.DMMtxtparameter = New System.Windows.Forms.TextBox()
+        Me.Label630 = New System.Windows.Forms.Label()
+        Me.DMMtxtpartnumber = New System.Windows.Forms.TextBox()
+        Me.Label631 = New System.Windows.Forms.Label()
+        Me.Dmmtxtbrand = New System.Windows.Forms.TextBox()
+        Me.Label632 = New System.Windows.Forms.Label()
+        Me.RichTextBox1 = New System.Windows.Forms.RichTextBox()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.BtnCapture = New System.Windows.Forms.Button()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+        Me.SerialPort1 = New System.IO.Ports.SerialPort(Me.components)
+        Me.rtbReceived = New System.Windows.Forms.RichTextBox()
+        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.BtnSend = New System.Windows.Forms.Button()
+        Me.txtTransmit = New System.Windows.Forms.TextBox()
+        Me.DMMtxtread = New System.Windows.Forms.TextBox()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.BtnDisconnect = New System.Windows.Forms.Button()
+        Me.BtnConnect = New System.Windows.Forms.Button()
+        Me.CmbBaud = New System.Windows.Forms.ComboBox()
+        Me.CmbPort = New System.Windows.Forms.ComboBox()
+        Me.Label633 = New System.Windows.Forms.Label()
+        Me.Label634 = New System.Windows.Forms.Label()
+        Me.KryptonWebBrowser1 = New Krypton.Toolkit.KryptonWebBrowser()
         Me.Panel1.SuspendLayout
         Me.Panel8.SuspendLayout
         Me.Panel4.SuspendLayout
@@ -1160,6 +1187,10 @@ Partial Class calibratingResult
         Me.Panel9.SuspendLayout
         Me.Panel7.SuspendLayout
         Me.Panel6.SuspendLayout
+        Me.pnlTools.SuspendLayout
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.GroupBox2.SuspendLayout
+        Me.GroupBox1.SuspendLayout
         Me.SuspendLayout
         '
         'Panel1
@@ -1180,6 +1211,15 @@ Partial Class calibratingResult
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(300, 1061)
         Me.Panel1.TabIndex = 23
+        '
+        'btnExportReportExcel
+        '
+        Me.btnExportReportExcel.Location = New System.Drawing.Point(97, 411)
+        Me.btnExportReportExcel.Name = "btnExportReportExcel"
+        Me.btnExportReportExcel.Size = New System.Drawing.Size(117, 23)
+        Me.btnExportReportExcel.TabIndex = 7
+        Me.btnExportReportExcel.Text = "Export"
+        Me.btnExportReportExcel.UseVisualStyleBackColor = True
         '
         'btnAutoFillNominalBulk
         '
@@ -1323,9 +1363,9 @@ Partial Class calibratingResult
         Me.Panel5.Controls.Add(Me.Panel7)
         Me.Panel5.Controls.Add(Me.Panel6)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel5.Location = New System.Drawing.Point(300, 66)
+        Me.Panel5.Location = New System.Drawing.Point(300, 584)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(1624, 995)
+        Me.Panel5.Size = New System.Drawing.Size(1624, 477)
         Me.Panel5.TabIndex = 24
         '
         'Panel12
@@ -12571,20 +12611,297 @@ Partial Class calibratingResult
         '
         'pnlTools
         '
+        Me.pnlTools.Controls.Add(Me.ButtonDisable)
+        Me.pnlTools.Controls.Add(Me.Label629)
+        Me.pnlTools.Controls.Add(Me.DMMtxtparameter)
+        Me.pnlTools.Controls.Add(Me.Label630)
+        Me.pnlTools.Controls.Add(Me.DMMtxtpartnumber)
+        Me.pnlTools.Controls.Add(Me.Label631)
+        Me.pnlTools.Controls.Add(Me.Dmmtxtbrand)
+        Me.pnlTools.Controls.Add(Me.Label632)
+        Me.pnlTools.Controls.Add(Me.RichTextBox1)
+        Me.pnlTools.Controls.Add(Me.Button1)
+        Me.pnlTools.Controls.Add(Me.BtnCapture)
+        Me.pnlTools.Controls.Add(Me.PictureBox1)
+        Me.pnlTools.Controls.Add(Me.GroupBox2)
+        Me.pnlTools.Controls.Add(Me.DMMtxtread)
+        Me.pnlTools.Controls.Add(Me.GroupBox1)
+        Me.pnlTools.Controls.Add(Me.BtnDisconnect)
+        Me.pnlTools.Controls.Add(Me.BtnConnect)
+        Me.pnlTools.Controls.Add(Me.CmbBaud)
+        Me.pnlTools.Controls.Add(Me.CmbPort)
+        Me.pnlTools.Controls.Add(Me.Label633)
+        Me.pnlTools.Controls.Add(Me.Label634)
+        Me.pnlTools.Controls.Add(Me.KryptonWebBrowser1)
         Me.pnlTools.Dock = System.Windows.Forms.DockStyle.Fill
         Me.pnlTools.Location = New System.Drawing.Point(300, 0)
         Me.pnlTools.Name = "pnlTools"
-        Me.pnlTools.Size = New System.Drawing.Size(1624, 66)
+        Me.pnlTools.Size = New System.Drawing.Size(1624, 584)
         Me.pnlTools.TabIndex = 25
         '
-        'btnExportReportExcel
+        'ButtonDisable
         '
-        Me.btnExportReportExcel.Location = New System.Drawing.Point(97, 411)
-        Me.btnExportReportExcel.Name = "btnExportReportExcel"
-        Me.btnExportReportExcel.Size = New System.Drawing.Size(117, 23)
-        Me.btnExportReportExcel.TabIndex = 7
-        Me.btnExportReportExcel.Text = "Export"
-        Me.btnExportReportExcel.UseVisualStyleBackColor = True
+        Me.ButtonDisable.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.ButtonDisable.Location = New System.Drawing.Point(1073, 404)
+        Me.ButtonDisable.Margin = New System.Windows.Forms.Padding(2)
+        Me.ButtonDisable.Name = "ButtonDisable"
+        Me.ButtonDisable.Size = New System.Drawing.Size(97, 30)
+        Me.ButtonDisable.TabIndex = 44
+        Me.ButtonDisable.Text = "Button2"
+        Me.ButtonDisable.UseVisualStyleBackColor = True
+        '
+        'Label629
+        '
+        Me.Label629.AutoSize = True
+        Me.Label629.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label629.Location = New System.Drawing.Point(355, 509)
+        Me.Label629.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label629.Name = "Label629"
+        Me.Label629.Size = New System.Drawing.Size(129, 19)
+        Me.Label629.TabIndex = 42
+        Me.Label629.Text = "DMM Reading:"
+        '
+        'DMMtxtparameter
+        '
+        Me.DMMtxtparameter.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.DMMtxtparameter.Location = New System.Drawing.Point(507, 464)
+        Me.DMMtxtparameter.Margin = New System.Windows.Forms.Padding(2)
+        Me.DMMtxtparameter.Name = "DMMtxtparameter"
+        Me.DMMtxtparameter.ReadOnly = True
+        Me.DMMtxtparameter.Size = New System.Drawing.Size(144, 26)
+        Me.DMMtxtparameter.TabIndex = 41
+        '
+        'Label630
+        '
+        Me.Label630.AutoSize = True
+        Me.Label630.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label630.Location = New System.Drawing.Point(355, 471)
+        Me.Label630.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label630.Name = "Label630"
+        Me.Label630.Size = New System.Drawing.Size(149, 19)
+        Me.Label630.TabIndex = 40
+        Me.Label630.Text = "DMM Parameter:"
+        '
+        'DMMtxtpartnumber
+        '
+        Me.DMMtxtpartnumber.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.DMMtxtpartnumber.Location = New System.Drawing.Point(196, 502)
+        Me.DMMtxtpartnumber.Margin = New System.Windows.Forms.Padding(2)
+        Me.DMMtxtpartnumber.Name = "DMMtxtpartnumber"
+        Me.DMMtxtpartnumber.ReadOnly = True
+        Me.DMMtxtpartnumber.Size = New System.Drawing.Size(144, 26)
+        Me.DMMtxtpartnumber.TabIndex = 39
+        '
+        'Label631
+        '
+        Me.Label631.AutoSize = True
+        Me.Label631.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label631.Location = New System.Drawing.Point(72, 509)
+        Me.Label631.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label631.Name = "Label631"
+        Me.Label631.Size = New System.Drawing.Size(119, 19)
+        Me.Label631.TabIndex = 38
+        Me.Label631.Text = "DMM Part #:"
+        '
+        'Dmmtxtbrand
+        '
+        Me.Dmmtxtbrand.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Dmmtxtbrand.Location = New System.Drawing.Point(196, 464)
+        Me.Dmmtxtbrand.Margin = New System.Windows.Forms.Padding(2)
+        Me.Dmmtxtbrand.Name = "Dmmtxtbrand"
+        Me.Dmmtxtbrand.ReadOnly = True
+        Me.Dmmtxtbrand.Size = New System.Drawing.Size(144, 26)
+        Me.Dmmtxtbrand.TabIndex = 34
+        '
+        'Label632
+        '
+        Me.Label632.AutoSize = True
+        Me.Label632.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label632.Location = New System.Drawing.Point(72, 471)
+        Me.Label632.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label632.Name = "Label632"
+        Me.Label632.Size = New System.Drawing.Size(109, 19)
+        Me.Label632.TabIndex = 37
+        Me.Label632.Text = "DMM Brand:"
+        '
+        'RichTextBox1
+        '
+        Me.RichTextBox1.Location = New System.Drawing.Point(76, 361)
+        Me.RichTextBox1.Margin = New System.Windows.Forms.Padding(2)
+        Me.RichTextBox1.Name = "RichTextBox1"
+        Me.RichTextBox1.Size = New System.Drawing.Size(575, 82)
+        Me.RichTextBox1.TabIndex = 24
+        Me.RichTextBox1.Text = ""
+        '
+        'Button1
+        '
+        Me.Button1.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Button1.Location = New System.Drawing.Point(963, 404)
+        Me.Button1.Margin = New System.Windows.Forms.Padding(2)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(97, 30)
+        Me.Button1.TabIndex = 36
+        Me.Button1.Text = "Button1"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
+        'BtnCapture
+        '
+        Me.BtnCapture.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.BtnCapture.Location = New System.Drawing.Point(1186, 404)
+        Me.BtnCapture.Margin = New System.Windows.Forms.Padding(2)
+        Me.BtnCapture.Name = "BtnCapture"
+        Me.BtnCapture.Size = New System.Drawing.Size(121, 30)
+        Me.BtnCapture.TabIndex = 35
+        Me.BtnCapture.Text = "Capture"
+        Me.BtnCapture.UseVisualStyleBackColor = True
+        '
+        'PictureBox1
+        '
+        Me.PictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.PictureBox1.Location = New System.Drawing.Point(941, 40)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(2)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(626, 333)
+        Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
+        Me.PictureBox1.TabIndex = 33
+        Me.PictureBox1.TabStop = False
+        '
+        'rtbReceived
+        '
+        Me.rtbReceived.Location = New System.Drawing.Point(13, 24)
+        Me.rtbReceived.Margin = New System.Windows.Forms.Padding(2)
+        Me.rtbReceived.Name = "rtbReceived"
+        Me.rtbReceived.Size = New System.Drawing.Size(546, 83)
+        Me.rtbReceived.TabIndex = 0
+        Me.rtbReceived.Text = ""
+        '
+        'GroupBox2
+        '
+        Me.GroupBox2.Controls.Add(Me.rtbReceived)
+        Me.GroupBox2.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.GroupBox2.Location = New System.Drawing.Point(78, 235)
+        Me.GroupBox2.Margin = New System.Windows.Forms.Padding(2)
+        Me.GroupBox2.Name = "GroupBox2"
+        Me.GroupBox2.Padding = New System.Windows.Forms.Padding(2)
+        Me.GroupBox2.Size = New System.Drawing.Size(573, 122)
+        Me.GroupBox2.TabIndex = 32
+        Me.GroupBox2.TabStop = False
+        Me.GroupBox2.Text = "Received Data"
+        '
+        'BtnSend
+        '
+        Me.BtnSend.Location = New System.Drawing.Point(480, 28)
+        Me.BtnSend.Margin = New System.Windows.Forms.Padding(2)
+        Me.BtnSend.Name = "BtnSend"
+        Me.BtnSend.Size = New System.Drawing.Size(79, 27)
+        Me.BtnSend.TabIndex = 9
+        Me.BtnSend.Text = "Send"
+        Me.BtnSend.UseVisualStyleBackColor = True
+        '
+        'txtTransmit
+        '
+        Me.txtTransmit.Location = New System.Drawing.Point(12, 28)
+        Me.txtTransmit.Margin = New System.Windows.Forms.Padding(2)
+        Me.txtTransmit.Name = "txtTransmit"
+        Me.txtTransmit.Size = New System.Drawing.Size(464, 26)
+        Me.txtTransmit.TabIndex = 0
+        '
+        'DMMtxtread
+        '
+        Me.DMMtxtread.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.DMMtxtread.Location = New System.Drawing.Point(507, 502)
+        Me.DMMtxtread.Margin = New System.Windows.Forms.Padding(2)
+        Me.DMMtxtread.Name = "DMMtxtread"
+        Me.DMMtxtread.ReadOnly = True
+        Me.DMMtxtread.Size = New System.Drawing.Size(144, 26)
+        Me.DMMtxtread.TabIndex = 43
+        '
+        'GroupBox1
+        '
+        Me.GroupBox1.Controls.Add(Me.BtnSend)
+        Me.GroupBox1.Controls.Add(Me.txtTransmit)
+        Me.GroupBox1.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.GroupBox1.Location = New System.Drawing.Point(78, 156)
+        Me.GroupBox1.Margin = New System.Windows.Forms.Padding(2)
+        Me.GroupBox1.Name = "GroupBox1"
+        Me.GroupBox1.Padding = New System.Windows.Forms.Padding(2)
+        Me.GroupBox1.Size = New System.Drawing.Size(573, 69)
+        Me.GroupBox1.TabIndex = 31
+        Me.GroupBox1.TabStop = False
+        Me.GroupBox1.Text = "Transmit Data"
+        '
+        'BtnDisconnect
+        '
+        Me.BtnDisconnect.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.BtnDisconnect.Location = New System.Drawing.Point(526, 110)
+        Me.BtnDisconnect.Margin = New System.Windows.Forms.Padding(2)
+        Me.BtnDisconnect.Name = "BtnDisconnect"
+        Me.BtnDisconnect.Size = New System.Drawing.Size(125, 27)
+        Me.BtnDisconnect.TabIndex = 30
+        Me.BtnDisconnect.Text = "Disconnect"
+        Me.BtnDisconnect.UseVisualStyleBackColor = True
+        '
+        'BtnConnect
+        '
+        Me.BtnConnect.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.BtnConnect.Location = New System.Drawing.Point(526, 72)
+        Me.BtnConnect.Margin = New System.Windows.Forms.Padding(2)
+        Me.BtnConnect.Name = "BtnConnect"
+        Me.BtnConnect.Size = New System.Drawing.Size(125, 27)
+        Me.BtnConnect.TabIndex = 29
+        Me.BtnConnect.Text = "Connect"
+        Me.BtnConnect.UseVisualStyleBackColor = True
+        '
+        'CmbBaud
+        '
+        Me.CmbBaud.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.CmbBaud.FormattingEnabled = True
+        Me.CmbBaud.Location = New System.Drawing.Point(196, 113)
+        Me.CmbBaud.Margin = New System.Windows.Forms.Padding(2)
+        Me.CmbBaud.Name = "CmbBaud"
+        Me.CmbBaud.Size = New System.Drawing.Size(326, 27)
+        Me.CmbBaud.TabIndex = 28
+        '
+        'CmbPort
+        '
+        Me.CmbPort.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.CmbPort.FormattingEnabled = True
+        Me.CmbPort.Location = New System.Drawing.Point(196, 73)
+        Me.CmbPort.Margin = New System.Windows.Forms.Padding(2)
+        Me.CmbPort.Name = "CmbPort"
+        Me.CmbPort.Size = New System.Drawing.Size(326, 27)
+        Me.CmbPort.TabIndex = 27
+        '
+        'Label633
+        '
+        Me.Label633.AutoSize = True
+        Me.Label633.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label633.Location = New System.Drawing.Point(83, 116)
+        Me.Label633.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label633.Name = "Label633"
+        Me.Label633.Size = New System.Drawing.Size(109, 19)
+        Me.Label633.TabIndex = 26
+        Me.Label633.Text = "Baud Rate:"
+        '
+        'Label634
+        '
+        Me.Label634.AutoSize = True
+        Me.Label634.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label634.Location = New System.Drawing.Point(86, 76)
+        Me.Label634.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label634.Name = "Label634"
+        Me.Label634.Size = New System.Drawing.Size(99, 19)
+        Me.Label634.TabIndex = 25
+        Me.Label634.Text = "Com Port:"
+        '
+        'KryptonWebBrowser1
+        '
+        Me.KryptonWebBrowser1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.KryptonWebBrowser1.Location = New System.Drawing.Point(0, 0)
+        Me.KryptonWebBrowser1.Margin = New System.Windows.Forms.Padding(2)
+        Me.KryptonWebBrowser1.Name = "KryptonWebBrowser1"
+        Me.KryptonWebBrowser1.Size = New System.Drawing.Size(1624, 584)
+        Me.KryptonWebBrowser1.TabIndex = 23
         '
         'calibratingResult
         '
@@ -12613,6 +12930,12 @@ Partial Class calibratingResult
         Me.Panel7.PerformLayout
         Me.Panel6.ResumeLayout(False)
         Me.Panel6.PerformLayout
+        Me.pnlTools.ResumeLayout(False)
+        Me.pnlTools.PerformLayout
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox2.ResumeLayout(False)
+        Me.GroupBox1.ResumeLayout(False)
+        Me.GroupBox1.PerformLayout
         Me.ResumeLayout(False)
 
     End Sub
@@ -13743,4 +14066,30 @@ Partial Class calibratingResult
     Friend WithEvents btnAutoFillNominalSeq As Button
     Friend WithEvents btnAutoFillNominalBulk As Button
     Friend WithEvents btnExportReportExcel As Button
+    Friend WithEvents ButtonDisable As Button
+    Friend WithEvents Label629 As Label
+    Friend WithEvents DMMtxtparameter As TextBox
+    Friend WithEvents Label630 As Label
+    Friend WithEvents DMMtxtpartnumber As TextBox
+    Friend WithEvents Label631 As Label
+    Friend WithEvents Dmmtxtbrand As TextBox
+    Friend WithEvents Label632 As Label
+    Friend WithEvents RichTextBox1 As RichTextBox
+    Friend WithEvents Button1 As Button
+    Friend WithEvents BtnCapture As Button
+    Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents GroupBox2 As GroupBox
+    Friend WithEvents rtbReceived As RichTextBox
+    Friend WithEvents DMMtxtread As TextBox
+    Friend WithEvents GroupBox1 As GroupBox
+    Friend WithEvents BtnSend As Button
+    Friend WithEvents txtTransmit As TextBox
+    Friend WithEvents BtnDisconnect As Button
+    Friend WithEvents BtnConnect As Button
+    Friend WithEvents CmbBaud As ComboBox
+    Friend WithEvents CmbPort As ComboBox
+    Friend WithEvents Label633 As Label
+    Friend WithEvents Label634 As Label
+    Friend WithEvents KryptonWebBrowser1 As Krypton.Toolkit.KryptonWebBrowser
+    Friend WithEvents SerialPort1 As IO.Ports.SerialPort
 End Class

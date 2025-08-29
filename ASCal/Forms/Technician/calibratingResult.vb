@@ -1,16 +1,35 @@
 ﻿Option Strict Off
 
-Imports System.Drawing
+Imports System.Drawing.Imaging
 Imports System.IO
-Imports System.Linq
-Imports System.Windows.Forms
-Imports DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing
+Imports System.Runtime.InteropServices
+Imports System.Threading
+Imports AForge.Video
+Imports AForge.Video.DirectShow
 
 Public Class calibratingResult
 
+    ' -------------------------------
+    ' Handles navigation buttons (logo, logout, dashboard)
+    ' -------------------------------
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoBtn.Click, logoutBtn.Click, jobDashBtn.Click
+
+        Select Case True
+            Case sender Is logoBtn
+                landingPageTechnician.Show()
+                Me.Close()
+            Case sender Is logoutBtn
+                login.Show()
+                Me.Close()
+            Case sender Is jobDashBtn
+                jobDashTech.Show()
+                Me.Close()
+        End Select
+    End Sub
+
 #Region "Fields & Excel context"
 
-    Private dcComputeTimer As Timer
+    Private dcComputeTimer As System.Windows.Forms.Timer
     Private ctxDc As CalRowModule.RowContext
 
     ' Parameter group holder
@@ -172,7 +191,11 @@ Public Class calibratingResult
         Next
     End Sub
 
-    ' Recompute everything once after a bulk load
+    ' === Bulk compute ===
+    ' Pag marami tayong sabay-sabay na niload na values (bulk update),
+    ' tatawagin itong function para i-push lahat ng inputs papuntang Excel sheet,
+    ' tapos i-run ang recalculation, tapos kukunin pabalik yung outputs.
+
     Public Sub ComputeAllAfterBulkLoad()
         If ctxDc Is Nothing Then Exit Sub
 
@@ -232,6 +255,34 @@ Public Class calibratingResult
         Me.MinimumSize = New Size(0, 0)
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
+        '' SIR MEL CODE
+        'When our form loads, auto detect all serial ports in the system And populate the cmbPort Combo box.
+        myPort = IO.Ports.SerialPort.GetPortNames() 'Get all com ports available
+        CmbBaud.Items.Add(9600)     'Populate the cmbBaud Combo box to common baud rates used
+
+        For i = 0 To UBound(myPort)
+            CmbPort.Items.Add(myPort(i))
+        Next
+        CmbPort.Text = CmbPort.Items.Item(0)    'Set cmbPort text to the first COM port detected
+        CmbBaud.Text = CmbBaud.Items.Item(0)    'Set cmbBaud text to the first Baud rate on the list
+
+        BtnDisconnect.Enabled = False           'Initially Disconnect Button is Disabled
+        '''''''''''''automatic istart
+        Dim videoDevices As New FilterInfoCollection(FilterCategory.VideoInputDevice)
+        If videoDevices.Count > 0 Then
+            ' Select the first available camera
+            videoSource = New VideoCaptureDevice(videoDevices(0).MonikerString)
+
+            ' Set the NewFrame event to handle the video feed
+            AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
+
+            ' Start the camera
+            videoSource.Start()
+        Else
+            MessageBox.Show("No camera devices found.")
+        End If
+        ''''''''''''''''
+
         ' 1) Mappings (provided by your Module or partial)
         InitMappings()
 
@@ -249,7 +300,7 @@ Public Class calibratingResult
         ApplySelectedParameterRows()
 
         ' 3) Live compute wiring & debounce
-        dcComputeTimer = New Timer() With {.Interval = 10}
+        dcComputeTimer = New System.Windows.Forms.Timer() With {.Interval = 10}
         AddHandler dcComputeTimer.Tick, AddressOf OnDcComputeTimerTick
         HookLiveCompute()
         KeepToolButtonsVisible() ' keep your three/four tool buttons on top
@@ -306,6 +357,7 @@ Public Class calibratingResult
     ' Returns a portable Job_Export folder.
     ' 1) Prefer next to the EXE: <app>\Job_Export
     ' 2) Fallback to: Documents\ASCal\Job_Export (always writable)
+
     Private Function GetJobExportDir() As String
         Dim dir1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Job_Export")
         Try
@@ -320,12 +372,12 @@ Public Class calibratingResult
         End Try
     End Function
 
-    ' >>> CHANGE FILE NAME FORMAT HERE <<<
+    ' !!!!!!!!!!!!>>> CHANGE FILE NAME FORMAT HERE <<<!!!!!!!!!!!!!!!!!!!
     Private Function BuildReportFileName() As String
         ' Examples:
         ' Return $"CalReport_{NormalizeFile(WorkOrderNumber)}.xlsx"
         ' Return $"Cal_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}_{DateTime.Now:yyyyMMdd}.xlsx"
-        Return $"CalibrationReport_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx"
+        Return $"CalibrationReport_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}.xlsx"
     End Function
 
     ' Mirrors a saved file into the Job_Export folder (portable)
@@ -411,7 +463,7 @@ Public Class calibratingResult
 
 #End Region
 
-#Region "Header write (cells mapping)"
+#Region "Header write (cells mapping)" 'inputs na galing sa calibrate.vb
 
     Private Sub WriteAllHeaderInputsToExcel_Cells(ws As Object)
         ' Left block
@@ -420,60 +472,60 @@ Public Class calibratingResult
         WriteIfNotEmpty(ws, "K9", Description)          ' Description
         WriteIfNotEmpty(ws, "K11", Manufacturer)        ' Manufacturer
         WriteIfNotEmpty(ws, "K13", Model)               ' Model
-        WriteIfNotEmpty(ws, "K15", SerialNumber)       ' Serial Number
+        WriteIfNotEmpty(ws, "K15", SerialNumber)        ' Serial Number
         WriteIfNotEmpty(ws, "K17", Range)               ' Range
         WriteIfNotEmpty(ws, "K19", Readability)         ' Res/Readability
         WriteIfNotEmpty(ws, "K21", PrevSesCalCert)      ' Prev. SES Cal Cert
 
         ' Right block
-        WriteIfNotEmpty(ws, "AL9", ReceivedDate)
-        WriteIfNotEmpty(ws, "AL11", CalibrationDate)
-        WriteIfNotEmpty(ws, "AL13", OptionsInstalled)
-        WriteIfNotEmpty(ws, "AL15", CustomerPO)
-        WriteIfNotEmpty(ws, "AL17", AssetNumber)
-        WriteIfNotEmpty(ws, "AL19", AccuracyHeader)
-        WriteIfNotEmpty(ws, "AL21", PreviousTechnician)
+        WriteIfNotEmpty(ws, "AL9", ReceivedDate)        ' received date
+        WriteIfNotEmpty(ws, "AL11", CalibrationDate)    ' calibration date
+        WriteIfNotEmpty(ws, "AL13", OptionsInstalled)   ' options installed
+        WriteIfNotEmpty(ws, "AL15", CustomerPO)         ' customers PO
+        WriteIfNotEmpty(ws, "AL17", AssetNumber)        ' asset number
+        WriteIfNotEmpty(ws, "AL19", AccuracyHeader)     ' accuracy header
+        WriteIfNotEmpty(ws, "AL21", PreviousTechnician) ' previous technician
 
         ' Company
-        WriteIfNotEmpty(ws, "H25", CompanyName)
-        WriteIfNotEmpty(ws, "H27", CompanyAddress)
+        WriteIfNotEmpty(ws, "H25", CompanyName)         ' company name
+        WriteIfNotEmpty(ws, "H27", CompanyAddress)      ' company address
 
         ' In-house / On-site flags & address
         Dim ct = If(CalibrationType, "").Trim().ToUpperInvariant()
         If ct.Contains("IN-HOUSE") OrElse ct.Contains("INHOUSE") Then
-            WriteIfNotEmpty(ws, "AE25", "x")
+            WriteIfNotEmpty(ws, "AE25", "x")            ' kung in-house ang checked
         ElseIf ct.Contains("ON-SITE") OrElse ct.Contains("ONSITE") Then
-            WriteIfNotEmpty(ws, "AE27", "x")
-            WriteIfNotEmpty(ws, "AG29", SpecificSite)
+            WriteIfNotEmpty(ws, "AE27", "x")            ' kung on-site ang checked
+            WriteIfNotEmpty(ws, "AG29", SpecificSite)   ' address ng on site calibration
         End If
 
         ' Reference Standards (rows 33–34)
-        WriteIfNotEmpty(ws, "B33", RefDesc1)
-        WriteIfNotEmpty(ws, "Q33", RefSN1)
-        WriteIfNotEmpty(ws, "AB33", RefCalRef1)
-        WriteIfNotEmpty(ws, "AO33", RefDue1)
+        WriteIfNotEmpty(ws, "B33", RefDesc1)            ' reference description 1
+        WriteIfNotEmpty(ws, "Q33", RefSN1)              ' reference serial number 1
+        WriteIfNotEmpty(ws, "AB33", RefCalRef1)         ' reference cal reference 1
+        WriteIfNotEmpty(ws, "AO33", RefDue1)            ' reference due date 1
 
-        WriteIfNotEmpty(ws, "B34", RefDesc2)
-        WriteIfNotEmpty(ws, "Q34", RefSN2)
-        WriteIfNotEmpty(ws, "AB34", RefCalRef2)
-        WriteIfNotEmpty(ws, "AO34", RefDue2)
+        WriteIfNotEmpty(ws, "B34", RefDesc2)            ' reference description 2
+        WriteIfNotEmpty(ws, "Q34", RefSN2)              ' reference serial number 2
+        WriteIfNotEmpty(ws, "AB34", RefCalRef2)         ' reference cal reference 2
+        WriteIfNotEmpty(ws, "AO34", RefDue2)            ' reference due date 2
 
         ' Accessories (rows 37–38)
-        WriteIfNotEmpty(ws, "B37", AccDesc1)
-        WriteIfNotEmpty(ws, "Q37", AccSN1)
-        WriteIfNotEmpty(ws, "AB37", AccCalRef1)
-        WriteIfNotEmpty(ws, "AO37", AccModel1)
+        WriteIfNotEmpty(ws, "B37", AccDesc1)            ' accesory description 1
+        WriteIfNotEmpty(ws, "Q37", AccSN1)              ' accesory serial num 1
+        WriteIfNotEmpty(ws, "AB37", AccCalRef1)         ' accesory cal reference 1
+        WriteIfNotEmpty(ws, "AO37", AccModel1)          ' accesory model 1
 
-        WriteIfNotEmpty(ws, "B38", AccDesc2)
-        WriteIfNotEmpty(ws, "Q38", AccSN2)
-        WriteIfNotEmpty(ws, "AB38", AccCalRef2)
-        WriteIfNotEmpty(ws, "AO38", AccModel2)
+        WriteIfNotEmpty(ws, "B38", AccDesc2)            ' accesory description 2
+        WriteIfNotEmpty(ws, "Q38", AccSN2)              ' accesory serial num 2
+        WriteIfNotEmpty(ws, "AB38", AccCalRef2)         ' accesory cal reference 2
+        WriteIfNotEmpty(ws, "AO38", AccModel2)          ' accesory model 2
 
         ' Environmental condition
         WriteIfNotEmpty(ws, "K41", TempStart)       ' Temperature Start
         WriteIfNotEmpty(ws, "K42", TempEnd)         ' Temperature End
-        WriteIfNotEmpty(ws, "T41", HumidityStart)   ' RH Start
-        WriteIfNotEmpty(ws, "T42", HumidityEnd)     ' RH End
+        WriteIfNotEmpty(ws, "T41", HumidityStart)   ' Relative Humidity Start
+        WriteIfNotEmpty(ws, "T42", HumidityEnd)     ' Relative Humidity End
     End Sub
 
     Private Sub WriteIfNotEmpty(ws As Object, addr As String, value As String)
@@ -483,8 +535,11 @@ Public Class calibratingResult
 
 #End Region
 
-#Region "Live compute plumbing"
+#Region "Live compute plumbing" 'mag-aactivate eto kapag nagmanual input sa lahat ng fields
 
+    ' === HookLiveCompute (Sub) ===
+    ' Summary: kapag nagchange ang mga respective textbox fields magrereference kay "OnMvChanged"
+    ' Tags: UI, Export, Excel
     Private Sub HookLiveCompute()
         Dim attach = Sub(arr As (tb As TextBox, cell As String)())
                          If arr Is Nothing Then Exit Sub
@@ -498,6 +553,11 @@ Public Class calibratingResult
         attach(DCC.MV1) : attach(DCC.MV2) : attach(DCC.MV3)
         attach(ACC.MV1) : attach(ACC.MV2) : attach(ACC.MV3)
     End Sub
+
+    ' === MV textbox change event ===
+    ' Kapag may binago sa MV textbox, dito dumadaan.
+    ' Ina-advance yung focus, chine-check kung complete na yung row,
+    ' at nagsesetup ng timer para sa recalculation.
 
     Private Sub OnMvChanged(sender As Object, e As EventArgs)
         If isBulkUpdating Then Exit Sub  ' skip noisy live compute during bulk/sequence fills
@@ -516,6 +576,7 @@ Public Class calibratingResult
 
         FocusAdvance(g, rowIdx, tb)
 
+        'checker ng lahat ng fields sa row na yun kung complate na (manual input), kapag complete na magrarun ang "TryAutoGenerateReport"
         If IsRowComplete(g, rowIdx) Then
             currentGroup = g
             currentRowIdx = rowIdx
@@ -624,12 +685,12 @@ Public Class calibratingResult
     End Function
 
     Private Function AreAllVisibleRowsComplete() As Boolean
-        For Each g In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
-            If g Is Nothing OrElse g.MV1 Is Nothing Then Continue For
-            For i = 0 To g.MV1.Length - 1
-                Dim tb1 = g.MV1(i).tb
-                Dim tb2 = If(g.MV2 IsNot Nothing AndAlso i < g.MV2.Length, g.MV2(i).tb, Nothing)
-                Dim tb3 = If(g.MV3 IsNot Nothing AndAlso i < g.MV3.Length, g.MV3(i).tb, Nothing)
+        For Each h In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
+            If h Is Nothing OrElse h.MV1 Is Nothing Then Continue For
+            For i = 0 To h.MV1.Length - 1
+                Dim tb1 = h.MV1(i).tb
+                Dim tb2 = If(h.MV2 IsNot Nothing AndAlso i < h.MV2.Length, h.MV2(i).tb, Nothing)
+                Dim tb3 = If(h.MV3 IsNot Nothing AndAlso i < h.MV3.Length, h.MV3(i).tb, Nothing)
                 If tb1 IsNot Nothing AndAlso tb1.Visible Then
                     If tb2 Is Nothing OrElse tb3 Is Nothing Then Return False
                     If String.IsNullOrWhiteSpace(tb1.Text) OrElse
@@ -921,32 +982,33 @@ Public Class calibratingResult
 
 #Region "TEMP/DEBUG — easy to delete later"
 
-    ' ===========================
-    ' Keep tool buttons visible even when parents are hidden/collapsed
-    ' ===========================
+    ' === KeepToolButtonsVisible (Sub) ===
+    ' Summary: Ginagawa visible ang tool buttons kahit hidden yung parent containers.
+    ' Notes: Useful para di mawala buttons pag may filtering/collapsed panels.
+    ' Tags: UI, Layout
     Private Sub KeepToolButtonsVisible()
         Dim btns = New Control() {btnAutoFill60, btnAutoFillNominalSeq, btnAutoFillNominalBulk, btnStopFill}
-        For Each b In btns
-            If b Is Nothing Then Continue For
+        For Each c In btns
+            If c Is Nothing Then Continue For
 
             ' If its parent is hidden (e.g., filtered panel), re-parent to the form at same screen spot
-            If b.Parent IsNot Nothing AndAlso Not b.Parent.Visible Then
-                Dim pt = b.PointToScreen(Point.Empty)
+            If c.Parent IsNot Nothing AndAlso Not c.Parent.Visible Then
+                Dim pt = c.PointToScreen(System.Drawing.Point.Empty)
                 pt = Me.PointToClient(pt)
-                b.Parent = Me
-                b.Location = pt
+                c.Parent = Me
+                c.Location = pt
             End If
 
-            b.Visible = True
-            b.BringToFront()
+            c.Visible = True
+            c.BringToFront()
 
             ' Prevent TableLayout row collapse
-            Dim tlp = TryCast(b.Parent, TableLayoutPanel)
+            Dim tlp = TryCast(c.Parent, TableLayoutPanel)
             If tlp IsNot Nothing Then
-                Dim r = tlp.GetRow(b)
+                Dim r = tlp.GetRow(c)
                 If r >= 0 AndAlso r < tlp.RowStyles.Count Then
                     tlp.RowStyles(r).SizeType = SizeType.Absolute
-                    tlp.RowStyles(r).Height = Math.Max(tlp.RowStyles(r).Height, b.Height + 8)
+                    tlp.RowStyles(r).Height = Math.Max(tlp.RowStyles(r).Height, c.Height + 8)
                 End If
             End If
         Next
@@ -1059,6 +1121,10 @@ Public Class calibratingResult
         Return list
     End Function
 
+    ' === StartSequentialMvFill (Sub) ===
+    ' Summary: Auto-fills MV textboxes sequentially (halimbawa value "60") gamit Timer.
+    ' Notes: Useful sa testing/demo ng bulk data entry.
+    ' Tags: AutoFill, Timer
     Public Sub StartSequentialMvFill(Optional value As String = "60",
                                      Optional onlyVisible As Boolean = True,
                                      Optional intervalMs As Integer = 50,
@@ -1094,6 +1160,9 @@ Public Class calibratingResult
         isBulkUpdating = False
     End Sub
 
+    ' === OnNomSeqTick (Sub) ===
+    ' Summary: Tick handler ng nominal sequential filler.
+    ' Tags: AutoFill, Timer
     Private Sub OnSeqTick(sender As Object, e As EventArgs)
         If seqTargets Is Nothing OrElse seqIndex >= seqTargets.Count Then
             StopSequentialMvFill()
@@ -1230,9 +1299,9 @@ Public Class calibratingResult
         nomSeqIndex += 1
     End Sub
 
-    ' ===========================
-    ' Button handlers (tool panel)
-    ' ===========================
+    ' === btnAutoFill60_Click (Sub) ===
+    ' Summary: Button handler para simulan ang 60 sequential filler.
+    ' Tags: UI, AutoFill
     Private Sub btnAutoFill60_Click(sender As Object, e As EventArgs) Handles btnAutoFill60.Click
         ' Fills MV1→MV2→MV3 on all VISIBLE rows at 50 ms, then recalculates once
         TempFillAllMvSequential60()
@@ -1251,7 +1320,9 @@ Public Class calibratingResult
         StopSequentialFillWithNominal() ' for the nominal sequencer
     End Sub
 
-    ' === Manual Export (button) ===
+    ' === btnExportReportExcel_Click (Sub) ===
+    ' Summary: Manual export button. Saves calibration report to Excel.
+    ' Tags: UI, Export, Excel
     Private Sub btnExportReportExcel_Click(sender As Object, e As EventArgs) _
         Handles btnExportReportExcel.Click
 
@@ -1333,5 +1404,324 @@ Public Class calibratingResult
     End Sub
 
 #End Region  ' TEMP/DEBUG — easy to delete later
+
+#Region "Sir Mel"
+
+    Dim tentimes As Integer = 0
+    Dim color As Color = Color.Olive
+    Dim r As Integer = color.R
+    Dim g As Integer = color.G
+    Dim b As Integer = color.B
+    Dim Camera As VideoCaptureDevice
+    Dim bmp As Bitmap
+    Private videoSource As VideoCaptureDevice
+    Dim myPort As Array  'COM Ports detected on the system will be stored here
+
+    Delegate Sub SetTextCallback(ByVal [text] As String) 'Added to prevent threading errors during receiveing of data
+
+    ' Import user32.dll function to show/hide windows
+    <DllImport("user32.dll")>
+    Private Shared Function ShowWindow(hWnd As IntPtr, nCmdShow As Integer) As Boolean
+    End Function
+
+    ' Import BlockInput from user32.dll
+    <DllImport("user32.dll")>
+    Private Shared Function BlockInput(fBlockIt As Boolean) As Boolean
+    End Function
+
+    Private Sub ButtonDisable_Click(sender As Object, e As EventArgs) Handles ButtonDisable.Click
+        ' This blocks all input (mouse & keyboard)
+        BlockInput(True)
+        'MessageBox.Show("Mouse and keyboard input is now blocked for 5 seconds.")
+        Threading.Thread.Sleep(5000)
+        BlockInput(False)
+        'MessageBox.Show("Input unblocked.")
+    End Sub
+
+    ' Constants for ShowWindow
+    Private Const SW_HIDE As Integer = 0
+
+    Private Const SW_SHOW As Integer = 5
+
+    Private Sub HideSnippingTool()
+        ' List of common Snipping Tool process names
+        Dim snippingProcesses As String() = {"SnippingTool", "SnipAndSketch"}
+
+        For Each procName As String In snippingProcesses
+            Dim processes() As Process = Process.GetProcessesByName(procName)
+            For Each proc As Process In processes
+                Dim hWnd As IntPtr = proc.MainWindowHandle
+                If hWnd <> IntPtr.Zero Then
+                    ShowWindow(hWnd, SW_HIDE) ' Hide the window
+                End If
+            Next
+        Next
+    End Sub
+
+    Private Sub Video_NewFrame(sender As Object, eventArgs As NewFrameEventArgs)
+        ' Display the video feed in a PictureBox
+        Dim bitmap As Bitmap = DirectCast(eventArgs.Frame.Clone(), Bitmap)
+        PictureBox1.Image = bitmap
+    End Sub
+
+    Private Sub BtnConnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnConnect.Click
+        SerialPort1.PortName = CmbPort.Text         'Set SerialPort1 to the selected COM port at startup
+        SerialPort1.BaudRate = CmbBaud.Text         'Set Baud rate to the selected value on
+
+        'Other Serial Port Property
+        SerialPort1.Parity = IO.Ports.Parity.None
+        SerialPort1.StopBits = IO.Ports.StopBits.One
+        SerialPort1.DataBits = 8            'Open our serial port
+        SerialPort1.Open()
+
+        BtnConnect.Enabled = False          'Disable Connect button
+        BtnDisconnect.Enabled = True        'and Enable Disconnect button
+
+    End Sub
+
+    Private Sub BtnDisconnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnDisconnect.Click
+        SerialPort1.Close()             'Close our Serial Port
+
+        BtnConnect.Enabled = True
+        BtnDisconnect.Enabled = False
+    End Sub
+
+    Private Sub BtnSend_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnSend.Click
+        SerialPort1.Write(txtTransmit.Text & vbCr) 'The text contained in the txtText will be sent to the serial port as ascii
+        'plus the carriage return (Enter Key) the carriage return can be ommitted if the other end does not need it
+    End Sub
+
+    Private Sub SerialPort1_DataReceived(ByVal sender As Object, ByVal e As System.IO.Ports.SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
+        ReceivedText(SerialPort1.ReadExisting())    'Automatically called every time a data is received at the serialPort
+    End Sub
+
+    Private Sub ReceivedText(ByVal [text] As String)
+        'compares the ID of the creating Thread to the ID of the calling Thread
+        If Me.rtbReceived.InvokeRequired Then
+            Dim x As New SetTextCallback(AddressOf ReceivedText)
+            Me.Invoke(x, New Object() {(text)})
+        Else
+            Me.rtbReceived.Text &= [text]
+        End If
+    End Sub
+
+    Private Sub CmbPort_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbPort.SelectedIndexChanged
+        If SerialPort1.IsOpen = False Then
+            SerialPort1.PortName = CmbPort.Text         'pop a message box to user if he is changing ports
+        Else                                                                               'without disconnecting first.
+            MsgBox(”Valid only if port is Closed”, vbCritical)
+        End If
+    End Sub
+
+    Private Sub CmbBaud_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbBaud.SelectedIndexChanged
+        If SerialPort1.IsOpen = False Then
+            SerialPort1.BaudRate = CmbBaud.Text         'pop a message box to user if he is changing baud rate
+        Else                                                                                'without disconnecting first.
+            MsgBox(”Valid only if port is Closed”, vbCritical)
+        End If
+    End Sub
+
+    Private Sub Captured(ByVal sender As Object, ByVal EventArgs As NewFrameEventArgs)
+        bmp = DirectCast(EventArgs.Frame.Clone(), Bitmap)
+        PictureBox1.Image = DirectCast(EventArgs.Frame.Clone(), Bitmap)
+    End Sub
+
+    Private Sub BtnCapture_Click(sender As Object, e As EventArgs) Handles BtnCapture.Click
+        If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
+            videoSource.SignalToStop()
+            videoSource.WaitForStop()
+        End If
+        If PictureBox1.Image IsNot Nothing Then
+            PictureBox1.Image.Save("C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\AAAA.jpg", ImageFormat.Jpeg)
+        Else
+            'kukuha ulit ng picture kasi walang laman yung picturebox1
+        End If
+        ' Load the image
+        'Dim originalImage As Bitmap = CType(Image.FromFile("C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\AAAAA.jpg"), Bitmap)
+
+        ' Convert to black and white
+        'Dim blackAndWhiteImage As Bitmap = ConvertToBlackAndWhite(originalImage)
+
+        ' Save the black and white image
+        'blackAndWhiteImage.Save("C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\BBBBB.jpg", ImageFormat.Jpeg)
+    End Sub
+
+    'Function ConvertToBlackAndWhite(ByVal original As Bitmap) As Bitmap
+    '    Dim newBitmap As New Bitmap(original.Width, original.Height)
+
+    '    For x As Integer = 0 To original.Width - 1
+    '        For y As Integer = 0 To original.Height - 1
+    '            ' Get the pixel color
+    '            Dim originalColor As Color = original.GetPixel(x, y)
+    '            If (x < 105 Or x > 500) Then
+    '                newBitmap.SetPixel(x, y, Color.Black)
+    '            ElseIf (y < 61 Or y > 265) Then
+    '                newBitmap.SetPixel(x, y, Color.Black)
+    '            Else
+    '                'get the RGB values of the pixel
+    '                r = originalColor.R
+    '                g = originalColor.G
+    '                b = originalColor.B
+    '                If (r < 110 And r > 17) And (g < 139 And g > 34) And (b < 141 And b > 48) Then
+    '                    newBitmap.SetPixel(x, y, Color.White)
+    '                    'ElseIf (r < 169 And r > 55) And (g < 165 And g > 79) And (b < 167 And b > 82) Then
+    '                    '    newBitmap.SetPixel(x, y, Color.White)
+    '                ElseIf (r < 84 And r > 63) And (g < 108 And g > 51) And (b < 102 And b > 75) Then
+    '                    newBitmap.SetPixel(x, y, Color.White)
+    '                Else
+    '                    newBitmap.SetPixel(x, y, Color.Black)
+    '                End If
+    '            End If
+    '        Next
+    '    Next
+
+    '    Return newBitmap
+    'End Function
+
+    Private Sub FrmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+        If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
+            videoSource.SignalToStop()
+            videoSource.WaitForStop()
+        End If
+        'Try
+        '    Camera.Stop()
+        'Catch ex As Exception
+
+        'End Try
+        'closing snipping tool
+        Dim snippingToolProcesses As String() = {"SnippingTool", "SnipAndSketch"}
+
+        For Each procName In snippingToolProcesses
+            Dim processes As Process() = Process.GetProcessesByName(procName)
+
+            For Each proc In processes
+                Try
+                    proc.Kill()
+                    proc.WaitForExit()
+                    'MessageBox.Show($"{proc.ProcessName} closed successfully.")
+                Catch ex As Exception
+                    'MessageBox.Show($"Failed to close {proc.ProcessName}: {ex.Message}")
+                End Try
+            Next
+        Next
+        BlockInput(False)
+    End Sub
+
+    Private Sub RemoveFocus()
+        Dim dummy = Me.Controls("lblDummy")
+        If dummy IsNot Nothing Then
+            dummy.Focus()
+        End If
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        DMMtxtparameter.Clear()
+        Dmmtxtbrand.Clear()
+        DMMtxtpartnumber.Clear()
+        DMMtxtread.Clear()
+        rtbReceived.Clear()
+        RichTextBox1.Clear()
+        RemoveFocus()
+        BlockInput(True)
+        Process.Start("C:\Users\mellu\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe")
+        Thread.Sleep(1500)
+        HideSnippingTool()
+        My.Computer.Keyboard.SendKeys("{TAB}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True)
+        Thread.Sleep(1500)
+        My.Computer.Keyboard.SendKeys("A.jpg", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True)
+        Thread.Sleep(1000)
+        My.Computer.Keyboard.SendKeys("{TAB}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{TAB}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{TAB}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{RIGHT}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True)
+        Thread.Sleep(1500)
+        My.Computer.Keyboard.SendKeys("{TAB}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{TAB}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{TAB}", True)
+        Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True)
+        Thread.Sleep(100)
+        RichTextBox1.Paste()
+        RichTextBox1.Text.Replace(",", ".") 'Replace new line with space
+
+        If RichTextBox1.Text.Contains("V") Then
+            DMMtxtparameter.Text = "V"
+        ElseIf RichTextBox1.Text.Contains("A") Then
+            DMMtxtparameter.Text = "A"
+        End If
+        If RichTextBox1.Text.Contains("AMPROBE") Then
+            Dmmtxtbrand.Text = "AMPROBE"
+        ElseIf RichTextBox1.Text.Contains("FLUKE") Then
+            Dmmtxtbrand.Text = "FLUKE"
+        End If
+
+        If RichTextBox1.Text.Contains("30XR-A") Then
+            DMMtxtpartnumber.Text = "30XR-A"
+            RichTextBox1.Text = RichTextBox1.Text.Replace("30XR-A", "A")
+        ElseIf RichTextBox1.Text.Contains("114") Then
+            DMMtxtpartnumber.Text = "114"
+            RichTextBox1.Text = RichTextBox1.Text.Replace("114", "A")
+        End If
+        RichTextBox1.Text = RichTextBox1.Text.Replace(vbCr, "A")
+        RichTextBox1.Text = RichTextBox1.Text.Replace(vbNewLine, "A")
+        RichTextBox1.Text = RemoveAlphabets(RichTextBox1.Text)
+
+        Dim lines As String() = RichTextBox1.Lines
+
+        ' Filter out empty or whitespace-only lines
+        Dim nonEmptyLines = lines.Where(Function(line) Not String.IsNullOrWhiteSpace(line)).ToArray()
+
+        ' Update the TextBox with cleaned lines
+        RichTextBox1.Lines = nonEmptyLines
+        DMMtxtread.Text = RichTextBox1.Text
+        videoSource.Start()
+        Dim snippingToolProcesses As String() = {"SnippingTool", "SnipAndSketch"}
+
+        For Each procName In snippingToolProcesses
+            Dim processes As Process() = Process.GetProcessesByName(procName)
+
+            For Each proc In processes
+                Try
+                    proc.Kill()
+                    proc.WaitForExit()
+                    'MessageBox.Show($"{proc.ProcessName} closed successfully.")
+                Catch ex As Exception
+                    'MessageBox.Show($"Failed to close {proc.ProcessName}: {ex.Message}")
+                End Try
+            Next
+        Next
+        Thread.Sleep(1000)
+        tentimes += 1
+        If tentimes < 1 Then
+            Button1.PerformClick()
+        End If
+        BlockInput(False)
+    End Sub
+
+    Function RemoveAlphabets(ByVal str As String) As String
+        Dim output As String = ""
+        For Each ch As Char In str
+            ' Check if the character is NOT a letter
+            If Not Char.IsLetter(ch) Then
+                output &= ch
+            End If
+        Next
+        Return output
+    End Function
+
+#End Region
 
 End Class
