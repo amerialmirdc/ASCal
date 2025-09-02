@@ -249,6 +249,8 @@ Public Class calibratingResult
 
 #Region "Load / Close"
 
+    Public Property UseSerialUI As Boolean = False
+
     Private Sub calibratingResult_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Window sizing/placement
         Me.StartPosition = FormStartPosition.Manual
@@ -258,16 +260,41 @@ Public Class calibratingResult
 
         '''''''''''''''''''''''''''''''''' SIR MEL CODE''''''''''''''''''''''''''''''''''''''''''''''''
         'When our form loads, auto detect all serial ports in the system And populate the cmbPort Combo box.
-        myPort = IO.Ports.SerialPort.GetPortNames() 'Get all com ports available
-        CmbBaud.Items.Add(9600)     'Populate the cmbBaud Combo box to common baud rates used
 
-        For i = 0 To UBound(myPort)
-            CmbPort.Items.Add(myPort(i))
-        Next
-        CmbPort.Text = CmbPort.Items.Item(0)    'Set cmbPort text to the first COM port detected
-        CmbBaud.Text = CmbBaud.Items.Item(0)    'Set cmbBaud text to the first Baud rate on the list
+        If UseSerialUI Then
+            ' --- original COM init moved here if ever needed ---
+            myPort = IO.Ports.SerialPort.GetPortNames()
+            CmbBaud.Items.Clear()
+            CmbBaud.Items.AddRange(New Object() {9600, 19200, 38400, 57600, 115200})
+            If CmbBaud.Items.Count > 0 Then CmbBaud.SelectedIndex = 0
+            If myPort IsNot Nothing AndAlso myPort.Length > 0 Then
+                CmbPort.Items.AddRange(myPort)
+                CmbPort.SelectedIndex = 0
+            End If
+            BtnDisconnect.Enabled = False
+        Else
+            ' --- hard disconnect: close & hide everything serial ---
+            Try
+                If SerialPort1 IsNot Nothing AndAlso SerialPort1.IsOpen Then SerialPort1.Close()
+            Catch
+            End Try
+            For Each c As Control In New Control() {CmbPort, CmbBaud, BtnConnect, BtnDisconnect, Label633, Label634}
+                If c IsNot Nothing Then c.Visible = False
+            Next
+        End If
 
-        BtnDisconnect.Enabled = False           'Initially Disconnect Button is Disabled
+        If False Then
+            myPort = IO.Ports.SerialPort.GetPortNames() 'Get all com ports available
+            CmbBaud.Items.Add(9600)     'Populate the cmbBaud Combo box to common baud rates used
+
+            For i = 0 To UBound(myPort)
+                CmbPort.Items.Add(myPort(i))
+            Next
+            CmbPort.Text = CmbPort.Items.Item(0)    'Set cmbPort text to the first COM port detected
+            CmbBaud.Text = CmbBaud.Items.Item(0)    'Set cmbBaud text to the first Baud rate on the list
+
+            BtnDisconnect.Enabled = False           'Initially Disconnect Button is Disabled
+        End If
         '''''''''''''automatic istart
         Dim videoDevices As New FilterInfoCollection(FilterCategory.VideoInputDevice)
         If videoDevices.Count > 0 Then

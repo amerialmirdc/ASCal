@@ -12670,6 +12670,7 @@ Partial Class calibratingResult
         '
         'PictureBox4
         '
+        Me.PictureBox4.BackColor = System.Drawing.Color.White
         Me.PictureBox4.Cursor = System.Windows.Forms.Cursors.Hand
         Me.PictureBox4.Image = Global.ASCal.My.Resources.Resources._3_inactive
         Me.PictureBox4.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
@@ -12682,6 +12683,7 @@ Partial Class calibratingResult
         '
         'PictureBox3
         '
+        Me.PictureBox3.BackColor = System.Drawing.Color.White
         Me.PictureBox3.Cursor = System.Windows.Forms.Cursors.Hand
         Me.PictureBox3.Image = Global.ASCal.My.Resources.Resources._2
         Me.PictureBox3.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
@@ -12694,6 +12696,7 @@ Partial Class calibratingResult
         '
         'PictureBox2
         '
+        Me.PictureBox2.BackColor = System.Drawing.Color.White
         Me.PictureBox2.Cursor = System.Windows.Forms.Cursors.Hand
         Me.PictureBox2.Image = Global.ASCal.My.Resources.Resources._1_inactive
         Me.PictureBox2.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
@@ -12707,6 +12710,7 @@ Partial Class calibratingResult
         'Label635
         '
         Me.Label635.AutoSize = True
+        Me.Label635.BackColor = System.Drawing.Color.White
         Me.Label635.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.Label635.Location = New System.Drawing.Point(33, 64)
         Me.Label635.Name = "Label635"
@@ -12717,6 +12721,7 @@ Partial Class calibratingResult
         'Label636
         '
         Me.Label636.AutoSize = True
+        Me.Label636.BackColor = System.Drawing.Color.White
         Me.Label636.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.Label636.Location = New System.Drawing.Point(201, 64)
         Me.Label636.Name = "Label636"
@@ -12727,6 +12732,7 @@ Partial Class calibratingResult
         'Label637
         '
         Me.Label637.AutoSize = True
+        Me.Label637.BackColor = System.Drawing.Color.White
         Me.Label637.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.Label637.Location = New System.Drawing.Point(345, 64)
         Me.Label637.Name = "Label637"
@@ -12991,6 +12997,7 @@ Partial Class calibratingResult
         '
         'PictureBox5
         '
+        Me.PictureBox5.BackColor = System.Drawing.Color.White
         Me.PictureBox5.Cursor = System.Windows.Forms.Cursors.Hand
         Me.PictureBox5.Image = Global.ASCal.My.Resources.Resources.Untitled_design1
         Me.PictureBox5.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
