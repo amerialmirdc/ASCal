@@ -174,7 +174,7 @@ Public Class FrmMain
             videoSource.WaitForStop()
         End If
         If PictureBox1.Image IsNot Nothing Then
-            PictureBox1.Image.Save("C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\A.jpg", ImageFormat.Jpeg)
+            PictureBox1.Image.Save("C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\AAAA.jpg", ImageFormat.Jpeg)
         Else
             'kukuha ulit ng picture kasi walang laman yung picturebox1
         End If
@@ -345,7 +345,7 @@ Public Class FrmMain
         Next
         Thread.Sleep(1000)
         tentimes += 1
-        If tentimes < 10 Then
+        If tentimes < 1 Then
             Button1.PerformClick()
         End If
         BlockInput(False)
