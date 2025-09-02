@@ -87,8 +87,6 @@ C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Krypt
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Krypton.Toolkit.dll
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Krypton.Navigator.xml
 C:\Users\Dani\OneDrive\Documents\Visual Studio 2019\ASCal2\ASCal\bin\Debug\Krypton.Toolkit.xml
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ClosedXML.dll
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ClosedXML.Parser.dll
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.dll
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.Framework.dll
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\EntityFramework.dll
@@ -106,9 +104,6 @@ C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\De
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\EnvDTE.dll
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\stdole.dll
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ClosedXML.pdb
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ClosedXML.xml
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ClosedXML.Parser.xml
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.xml
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.Framework.xml
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\EntityFramework.xml
@@ -201,3 +196,4 @@ C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.pdb
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.exe.config
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.FrmMain.resources
+C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.calibratingResult.resources

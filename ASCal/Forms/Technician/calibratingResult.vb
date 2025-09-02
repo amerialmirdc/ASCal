@@ -250,12 +250,13 @@ Public Class calibratingResult
 #Region "Load / Close"
 
     Private Sub calibratingResult_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Window sizing/placement
         Me.StartPosition = FormStartPosition.Manual
         Me.MaximumSize = New Size(0, 0)
         Me.MinimumSize = New Size(0, 0)
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
-        '' SIR MEL CODE
+        '''''''''''''''''''''''''''''''''' SIR MEL CODE''''''''''''''''''''''''''''''''''''''''''''''''
         'When our form loads, auto detect all serial ports in the system And populate the cmbPort Combo box.
         myPort = IO.Ports.SerialPort.GetPortNames() 'Get all com ports available
         CmbBaud.Items.Add(9600)     'Populate the cmbBaud Combo box to common baud rates used
@@ -281,7 +282,7 @@ Public Class calibratingResult
         Else
             MessageBox.Show("No camera devices found.")
         End If
-        ''''''''''''''''
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
         ' 1) Mappings (provided by your Module or partial)
         InitMappings()
