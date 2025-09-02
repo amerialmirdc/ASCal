@@ -123,7 +123,4 @@
 This is to certify that the above Measuring and Test Equipment has been calibrated by SONJU Engineering Services in accordance with relevant calibration procedure defined for this instrument.
 </value>
   </data>
-  <metadata name="workOrderNo.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
 </root>

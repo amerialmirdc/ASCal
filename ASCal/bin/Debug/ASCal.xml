@@ -22,12 +22,42 @@ ASCal
   resource lookups using this strongly typed resource class.
 </summary>
 </member>
+<member name="P:ASCal.My.Resources.Resources._1">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ASCal.My.Resources.Resources._1_inactive">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ASCal.My.Resources.Resources._2">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ASCal.My.Resources.Resources._2_inactive">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
 <member name="P:ASCal.My.Resources.Resources._3">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
+<member name="P:ASCal.My.Resources.Resources._3_inactive">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
 <member name="P:ASCal.My.Resources.Resources._31">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ASCal.My.Resources.Resources._32">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
@@ -57,6 +87,21 @@ ASCal
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
+<member name="P:ASCal.My.Resources.Resources.Information_input">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ASCal.My.Resources.Resources.Live_calibration">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ASCal.My.Resources.Resources.previe">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
 <member name="P:ASCal.My.Resources.Resources.profile">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
@@ -78,6 +123,16 @@ ASCal
 </summary>
 </member>
 <member name="P:ASCal.My.Resources.Resources.Slide2">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ASCal.My.Resources.Resources.Untitled_design">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:ASCal.My.Resources.Resources.Untitled_design1">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>

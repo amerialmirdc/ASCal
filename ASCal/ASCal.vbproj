@@ -555,7 +555,39 @@
   <ItemGroup>
     <None Include="Resources\31.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\Information-input.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Live calibration.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\previe.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\active\1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\active\2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\active\3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\not-active\2-inactive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\not-active\3-inactive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\not-active\1-inactive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Untitled design.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Untitled design1.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
     <PostBuildEvent>

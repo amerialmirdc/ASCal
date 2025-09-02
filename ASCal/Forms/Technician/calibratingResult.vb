@@ -536,7 +536,7 @@ Public Class calibratingResult
 
 #End Region
 
-#Region "Live compute plumbing" 'mag-aactivate eto kapag nagmanual input sa lahat ng fields
+#Region "Live compute plumbing" 'mag-aactivate eto kapag nagmanual input sa lahat ng fields - tatanggalin din FOR TESTING PURPOSES ONLY
 
     ' === HookLiveCompute (Sub) ===
     ' Summary: kapag nagchange ang mga respective textbox fields magrereference kay "OnMvChanged"
@@ -634,33 +634,42 @@ Public Class calibratingResult
         showTb(g.Tolerance) : showTb(g.UpperLimit) : showTb(g.LowerLimit) : showTb(g.Remarks)
     End Sub
 
-    Private Sub FocusAdvance(g As ParamGroup, rowIdx As Integer, senderTb As TextBox)
-        If g Is Nothing OrElse rowIdx < 0 OrElse senderTb Is Nothing Then Exit Sub
+    Private Sub FocusAdvance(g As ParamGroup, row As Integer, currentTb As TextBox)
+        Dim target As TextBox = Nothing
 
-        Dim tb1 As TextBox = If(g.MV1 Is Nothing OrElse rowIdx >= g.MV1.Length, Nothing, g.MV1(rowIdx).tb)
-        Dim tb2 As TextBox = If(g.MV2 Is Nothing OrElse rowIdx >= g.MV2.Length, Nothing, g.MV2(rowIdx).tb)
-        Dim tb3 As TextBox = If(g.MV3 Is Nothing OrElse rowIdx >= g.MV3.Length, Nothing, g.MV3(rowIdx).tb)
-
-        Dim isEditable As Func(Of TextBox, Boolean) =
-            Function(t) t IsNot Nothing AndAlso t.Visible AndAlso t.Enabled AndAlso Not t.ReadOnly
-
-        If senderTb Is tb1 Then
-            If senderTb.TextLength > 0 AndAlso isEditable(tb2) AndAlso tb2.TextLength = 0 Then
-                tb2.Focus() : tb2.SelectAll()
-            End If
-        ElseIf senderTb Is tb2 Then
-            If senderTb.TextLength > 0 AndAlso isEditable(tb3) AndAlso tb3.TextLength = 0 Then
-                tb3.Focus() : tb3.SelectAll()
-            End If
-        ElseIf senderTb Is tb3 Then
-            If IsRowComplete(g, rowIdx) Then
-                Dim nextIdx = rowIdx + 1
-                If g.MV1 IsNot Nothing AndAlso nextIdx < g.MV1.Length Then
-                    Dim nextTb = g.MV1(nextIdx).tb
-                    If isEditable(nextTb) Then nextTb.Focus() : nextTb.SelectAll()
-                End If
+        If currentTb Is g.MV1(row).tb Then
+            target = g.MV2(row).tb
+        ElseIf currentTb Is g.MV2(row).tb Then
+            target = g.MV3(row).tb
+        ElseIf currentTb Is g.MV3(row).tb Then
+            ' Move to next row's MV1
+            If row + 1 < g.MV1.Length Then
+                target = g.MV1(row + 1).tb
             End If
         End If
+
+        If target IsNot Nothing Then
+            target.Focus()
+            target.SelectAll()
+            ScrollIntoViewDeep(target)
+
+            ' --- Auto-scroll to ensure visibility ---
+            Dim scrollParent As ScrollableControl = TryCast(target.Parent, ScrollableControl)
+            If scrollParent IsNot Nothing Then
+                scrollParent.ScrollControlIntoView(target)
+            End If
+        End If
+    End Sub
+
+    Private Sub ScrollIntoViewDeep(c As Control)
+        Dim p As Control = c
+        While p IsNot Nothing
+            Dim sc = TryCast(p, ScrollableControl)
+            If sc IsNot Nothing AndAlso sc.AutoScroll Then
+                sc.ScrollControlIntoView(c)
+            End If
+            p = p.Parent
+        End While
     End Sub
 
     Private Function FindRowIndexFromSenderInGroup(g As ParamGroup, tb As TextBox) As Integer
@@ -1170,8 +1179,13 @@ Public Class calibratingResult
             If seqRecomputeAfter Then ComputeAllAfterBulkLoad()
             Return
         End If
+
         Dim tb As TextBox = seqTargets(seqIndex)
-        If tb IsNot Nothing AndAlso Not tb.IsDisposed Then tb.Text = seqValue
+        If tb IsNot Nothing AndAlso Not tb.IsDisposed Then
+            tb.Focus()                    ' optional, helps caret follow
+            tb.Text = seqValue
+            ScrollIntoViewDeep(tb)        ' <--- ensure visible while auto-filling
+        End If
         seqIndex += 1
     End Sub
 
@@ -1295,7 +1309,9 @@ Public Class calibratingResult
 
         Dim pair = nomSeqTargets(nomSeqIndex)
         If pair.tb IsNot Nothing AndAlso Not pair.tb.IsDisposed Then
+            pair.tb.Focus()               ' optional
             pair.tb.Text = pair.value
+            ScrollIntoViewDeep(pair.tb)   ' <--- ensure visible
         End If
         nomSeqIndex += 1
     End Sub
