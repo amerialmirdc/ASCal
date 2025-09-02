@@ -91,6 +91,7 @@ Partial Class editDMMAdmin
         Me.listViewParamsRES = New System.Windows.Forms.ListView()
         Me.cmbRangeUnitRES = New System.Windows.Forms.ComboBox()
         Me.txtRangeValueRES = New System.Windows.Forms.TextBox()
+        Me.CheckBoxRES = New System.Windows.Forms.CheckBox()
         Me.rangeRadioPanelDCC = New System.Windows.Forms.FlowLayoutPanel()
         Me.cmbNominalUnitDCC = New System.Windows.Forms.ComboBox()
         Me.txtNominalValueDCC = New System.Windows.Forms.TextBox()
@@ -110,7 +111,6 @@ Partial Class editDMMAdmin
         Me.txtRangeValueDCV = New System.Windows.Forms.TextBox()
         Me.CheckBoxDCV = New System.Windows.Forms.CheckBox()
         Me.Label11 = New System.Windows.Forms.Label()
-        Me.CheckBoxRES = New System.Windows.Forms.CheckBox()
         Me.Panel1.SuspendLayout()
         Me.Panel3.SuspendLayout()
         Me.Panel10.SuspendLayout()
@@ -446,8 +446,6 @@ Partial Class editDMMAdmin
         Me.Label9.TabIndex = 26
         Me.Label9.Text = "Model:"
         '
-
-        '
         'manuDMM
         '
         Me.manuDMM.BackColor = System.Drawing.SystemColors.Control
@@ -456,7 +454,6 @@ Partial Class editDMMAdmin
         Me.manuDMM.Name = "manuDMM"
         Me.manuDMM.Size = New System.Drawing.Size(312, 31)
         Me.manuDMM.TabIndex = 25
-        '
         '
         'Label10
         '
@@ -978,6 +975,17 @@ Partial Class editDMMAdmin
         Me.txtRangeValueRES.Size = New System.Drawing.Size(144, 31)
         Me.txtRangeValueRES.TabIndex = 106
         '
+        'CheckBoxRES
+        '
+        Me.CheckBoxRES.AutoSize = True
+        Me.CheckBoxRES.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.CheckBoxRES.Location = New System.Drawing.Point(1248, 72)
+        Me.CheckBoxRES.Name = "CheckBoxRES"
+        Me.CheckBoxRES.Size = New System.Drawing.Size(161, 27)
+        Me.CheckBoxRES.TabIndex = 105
+        Me.CheckBoxRES.Text = "RESISTANCE:"
+        Me.CheckBoxRES.UseVisualStyleBackColor = True
+        '
         'rangeRadioPanelDCC
         '
         Me.rangeRadioPanelDCC.AutoScroll = True
@@ -1190,17 +1198,6 @@ Partial Class editDMMAdmin
         Me.Label11.Size = New System.Drawing.Size(195, 35)
         Me.Label11.TabIndex = 47
         Me.Label11.Text = "PARAMETERS"
-        '
-        'CheckBoxRES
-        '
-        Me.CheckBoxRES.AutoSize = True
-        Me.CheckBoxRES.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxRES.Location = New System.Drawing.Point(1248, 72)
-        Me.CheckBoxRES.Name = "CheckBoxRES"
-        Me.CheckBoxRES.Size = New System.Drawing.Size(161, 27)
-        Me.CheckBoxRES.TabIndex = 105
-        Me.CheckBoxRES.Text = "RESISTANCE:"
-        Me.CheckBoxRES.UseVisualStyleBackColor = True
         '
         'editDMMAdmin
         '
