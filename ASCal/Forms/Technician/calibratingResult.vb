@@ -588,6 +588,7 @@ Public Class calibratingResult
         WriteIfNotEmpty(ws, "T42", HumidityEnd)     ' Relative Humidity End
 
         WriteIfNotEmpty(ws, "AB40", calMathod)     ' Calibration Method
+        WriteIfNotEmpty(ws, "B140", TechnicianName)     ' Technician Name
 
     End Sub
 
