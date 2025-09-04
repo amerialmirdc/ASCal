@@ -586,7 +586,24 @@ Public Class calibrate
             .TempStart = txtTempStart.Text.Trim(),
             .TempEnd = txtTempEnd.Text.Trim(),
             .HumidityStart = txtHumidityStart.Text.Trim(),
-            .HumidityEnd = txtHumidityEnd.Text.Trim()
+            .HumidityEnd = txtHumidityEnd.Text.Trim(),
+            .RefDesc1 = RefCal_description1.Text.Trim(),
+            .RefSN1 = RefCal_serialNo1.Text.Trim(),
+            .RefCalRef1 = RefCal_calReportRef1.Text.Trim(),
+            .RefDue1 = refCal_DueDate1.Text.Trim(),
+            .RefDesc2 = RefCal_description2.Text.Trim(),
+            .RefSN2 = RefCal_serialNo2.Text.Trim(),
+            .RefCalRef2 = RefCal_calReportRef2.Text.Trim(),
+            .RefDue2 = refCal_DueDate2.Text.Trim(),
+            .AccDesc1 = accUsed_Description1.Text.Trim(),
+            .AccSN1 = accUsed_SerialNo1.Text.Trim(),
+            .AccCalBrand1 = accUsed_Brand1.Text.Trim(),
+            .AccModel1 = accUsed_Model1.Text.Trim(),
+            .AccDesc2 = accUsed_Description2.Text.Trim(),
+            .AccSN2 = accUsed_SerialNo2.Text.Trim(),
+            .AccCalBrand2 = accUsed_Brand2.Text.Trim(),
+            .AccModel2 = accUsed_Model2.Text.Trim(),
+            .calMathod = calMethod.Text.Trim()
         }
 
         cr.Show()
@@ -627,44 +644,6 @@ Public Class calibrate
         For Each comp In companies
             contextMenuCompanies.Items.Add(comp.Name)
         Next
-    End Sub
-
-    ' -------------------------------
-    ' Add new reference standard row (dynamic rows in TableLayoutPanel1)
-    ' -------------------------------
-    Private Sub addRefStandard_Click(sender As Object, e As EventArgs) Handles addRefStandard.Click
-        Dim insertAtRow As Integer = TableLayoutPanel1.RowCount
-        TableLayoutPanel1.RowCount += 1
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.AutoSize))
-
-        Dim txtDescription As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
-        Dim txtSerial As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
-        Dim txtCalRef As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
-        Dim dtDueDate As New DateTimePicker With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Format = DateTimePickerFormat.Long}
-
-        TableLayoutPanel1.Controls.Add(txtDescription, 0, insertAtRow)
-        TableLayoutPanel1.Controls.Add(txtSerial, 1, insertAtRow)
-        TableLayoutPanel1.Controls.Add(txtCalRef, 2, insertAtRow)
-        TableLayoutPanel1.Controls.Add(dtDueDate, 3, insertAtRow)
-    End Sub
-
-    ' -------------------------------
-    ' Add new accessory used row (dynamic rows in TableLayoutPanel2)
-    ' -------------------------------
-    Private Sub addAccUsed_Click(sender As Object, e As EventArgs) Handles addAccUsed.Click
-        Dim insertAtRow As Integer = TableLayoutPanel2.RowCount
-        TableLayoutPanel2.RowCount += 1
-        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.AutoSize))
-
-        Dim txtDescription As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
-        Dim txtSerial As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
-        Dim txtCalRef As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
-        Dim model As New TextBox With {.Dock = DockStyle.Fill, .Margin = New Padding(5), .Font = New Font("Courier New", 10, FontStyle.Regular), .Multiline = True, .WordWrap = True, .ScrollBars = ScrollBars.Vertical}
-
-        TableLayoutPanel2.Controls.Add(txtDescription, 0, insertAtRow)
-        TableLayoutPanel2.Controls.Add(txtSerial, 1, insertAtRow)
-        TableLayoutPanel2.Controls.Add(txtCalRef, 2, insertAtRow)
-        TableLayoutPanel2.Controls.Add(model, 3, insertAtRow)
     End Sub
 
 End Class
