@@ -6,6 +6,7 @@ Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports AForge.Video
 Imports AForge.Video.DirectShow
+Imports Microsoft.Vbe.Interop
 
 Public Class calibratingResult
 
@@ -124,12 +125,13 @@ Public Class calibratingResult
 
     Public Property AccDesc1 As String
     Public Property AccSN1 As String
-    Public Property AccCalRef1 As String
+    Public Property AccCalBrand1 As String
     Public Property AccModel1 As String
     Public Property AccDesc2 As String
     Public Property AccSN2 As String
-    Public Property AccCalRef2 As String
+    Public Property AccCalBrand2 As String
     Public Property AccModel2 As String
+    Public Property calMathod As String
 
 #End Region
 
@@ -198,31 +200,36 @@ Public Class calibratingResult
 
     Public Sub ComputeAllAfterBulkLoad()
         If ctxDc Is Nothing Then Exit Sub
-
         Dim prevPre = ctxDc.PreCalculate
         Dim prevPost = ctxDc.AfterCalculate
+        Me.Cursor = Cursors.WaitCursor
+        SetCalculating(True)
 
-        ctxDc.PreCalculate = Sub(ws As Object)
-                                 WriteAllHeaderInputsToExcel_Cells(ws)
-                                 WriteAllVisibleInputs(ws, DCV)
-                                 WriteAllVisibleInputs(ws, ACV)
-                                 WriteAllVisibleInputs(ws, RES)
-                                 WriteAllVisibleInputs(ws, DCC)
-                                 WriteAllVisibleInputs(ws, ACC)
-                             End Sub
+        Try
+            ctxDc.PreCalculate = Sub(ws)
+                                     WriteAllHeaderInputsToExcel_Cells(ws)
+                                     WriteAllVisibleInputs(ws, DCV)
+                                     WriteAllVisibleInputs(ws, ACV)
+                                     WriteAllVisibleInputs(ws, RES)
+                                     WriteAllVisibleInputs(ws, DCC)
+                                     WriteAllVisibleInputs(ws, ACC)
+                                 End Sub
 
-        ctxDc.AfterCalculate = Sub(ws As Object)
-                                   ReadAllOutputsForVisibleRows(ws, DCV)
-                                   ReadAllOutputsForVisibleRows(ws, ACV)
-                                   ReadAllOutputsForVisibleRows(ws, RES)
-                                   ReadAllOutputsForVisibleRows(ws, DCC)
-                                   ReadAllOutputsForVisibleRows(ws, ACC)
-                               End Sub
+            ctxDc.AfterCalculate = Sub(ws)
+                                       ReadAllOutputsForVisibleRows(ws, DCV)
+                                       ReadAllOutputsForVisibleRows(ws, ACV)
+                                       ReadAllOutputsForVisibleRows(ws, RES)
+                                       ReadAllOutputsForVisibleRows(ws, DCC)
+                                       ReadAllOutputsForVisibleRows(ws, ACC)
+                                   End Sub
 
-        CalRowModule.RecalculateNow(ctxDc)
-
-        ctxDc.PreCalculate = prevPre
-        ctxDc.AfterCalculate = prevPost
+            CalRowModule.RecalculateNow(ctxDc)
+        Finally
+            ctxDc.PreCalculate = prevPre
+            ctxDc.AfterCalculate = prevPost
+            Me.Cursor = Cursors.Default
+            SetCalculating(False)
+        End Try
     End Sub
 
     ' Public entry point to accept external payload
@@ -230,7 +237,7 @@ Public Class calibratingResult
                                     Optional onlyVisible As Boolean = False,
                                     Optional recomputeAfter As Boolean = True)
         If payload Is Nothing Then Exit Sub
-
+        SetCalculating(True)
         isBulkUpdating = True
         Try
             If payload.DCV IsNot Nothing Then ApplyMvListToGroup(DCV, payload.DCV, onlyVisible)
@@ -242,14 +249,17 @@ Public Class calibratingResult
             isBulkUpdating = False
         End Try
 
-        If recomputeAfter Then ComputeAllAfterBulkLoad()
+        If recomputeAfter Then
+            ComputeAllAfterBulkLoad()
+            Me.Cursor = Cursors.Default
+        End If
     End Sub
 
 #End Region
 
 #Region "Load / Close"
 
-    Public Property UseSerialUI As Boolean = False
+    Public Property UseSerialUI As Boolean = True
 
     Private Sub calibratingResult_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Window sizing/placement
@@ -302,6 +312,7 @@ Public Class calibratingResult
 
         ' 1) Mappings (provided by your Module or partial)
         InitMappings()
+        SetCalculating(True)
 
         ' 1.1) Normalize row order across all arrays (ensures labels & MV align)
         NormalizeGroupOrderByTop(DCV)
@@ -365,6 +376,27 @@ Public Class calibratingResult
 
     Private Sub calibratingResult_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If ctxDc IsNot Nothing Then CalRowModule.SaveToExcel(ctxDc)
+    End Sub
+
+    ' Put this inside your form class
+    Private Sub SetCalculating(isCalculating As Boolean)
+        ' CALCULATING group
+        PictureBox2.Visible = isCalculating
+        PictureBox3.Visible = isCalculating
+        PictureBox4.Visible = isCalculating
+        Label635.Visible = isCalculating
+        Label636.Visible = isCalculating
+        Label637.Visible = isCalculating
+        PictureBox5.Visible = isCalculating
+
+        ' PREVIEW group (inverse)
+        PictureBox8.Visible = Not isCalculating
+        PictureBox7.Visible = Not isCalculating
+        PictureBox6.Visible = Not isCalculating
+        Label638.Visible = Not isCalculating
+        Label639.Visible = Not isCalculating
+        Label640.Visible = Not isCalculating
+        PictureBox9.Visible = Not isCalculating
     End Sub
 
 #End Region
@@ -530,12 +562,12 @@ Public Class calibratingResult
         ' Accessories (rows 37–38)
         WriteIfNotEmpty(ws, "B37", AccDesc1)            ' accesory description 1
         WriteIfNotEmpty(ws, "Q37", AccSN1)              ' accesory serial num 1
-        WriteIfNotEmpty(ws, "AB37", AccCalRef1)         ' accesory cal reference 1
+        WriteIfNotEmpty(ws, "AB37", AccCalBrand1)       ' accesory brand 1
         WriteIfNotEmpty(ws, "AO37", AccModel1)          ' accesory model 1
 
         WriteIfNotEmpty(ws, "B38", AccDesc2)            ' accesory description 2
         WriteIfNotEmpty(ws, "Q38", AccSN2)              ' accesory serial num 2
-        WriteIfNotEmpty(ws, "AB38", AccCalRef2)         ' accesory cal reference 2
+        WriteIfNotEmpty(ws, "AB38", AccCalBrand2)       ' accesory brand 2
         WriteIfNotEmpty(ws, "AO38", AccModel2)          ' accesory model 2
 
         ' Environmental condition
@@ -543,6 +575,9 @@ Public Class calibratingResult
         WriteIfNotEmpty(ws, "K42", TempEnd)         ' Temperature End
         WriteIfNotEmpty(ws, "T41", HumidityStart)   ' Relative Humidity Start
         WriteIfNotEmpty(ws, "T42", HumidityEnd)     ' Relative Humidity End
+
+        WriteIfNotEmpty(ws, "AB40", calMathod)     ' Calibration Method
+
     End Sub
 
     Private Sub WriteIfNotEmpty(ws As Object, addr As String, value As String)
@@ -606,6 +641,8 @@ Public Class calibratingResult
             ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, groupLocal, rowLocal)
 
             dcComputeTimer.Stop()
+            SetCalculating(True)
+            Me.Cursor = Cursors.WaitCursor
             dcComputeTimer.Start()
 
             TryAutoGenerateReport()
@@ -614,8 +651,13 @@ Public Class calibratingResult
 
     Private Sub OnDcComputeTimerTick(sender As Object, e As EventArgs)
         dcComputeTimer.Stop()
-        If currentExcelRow > 0 Then ctxDc.TargetRow = currentExcelRow
-        CalRowModule.RecalculateNow(ctxDc)
+        Try
+            If currentExcelRow > 0 Then ctxDc.TargetRow = currentExcelRow
+            CalRowModule.RecalculateNow(ctxDc)
+        Finally
+            Me.Cursor = Cursors.Default
+            SetCalculating(False)        ' <--- add this
+        End Try
     End Sub
 
 #End Region
@@ -1127,9 +1169,15 @@ Public Class calibratingResult
 
     Private Function BuildMvTargets(onlyVisible As Boolean) As List(Of TextBox)
         Dim list As New List(Of TextBox)
+
+        'If the group or MV1 is missing, it skips the group.
+        'It uses rowCount = g.MV1.Length and iterates i = 0 … rowCount-1. This makes MV1 the row-count driver.
+
         Dim addGroup As Action(Of ParamGroup) =
             Sub(g As ParamGroup)
                 If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
+                'If onlyVisible = True, the entire row is included only if MV1(i).tb exists and is visible.
+                'If that MV1 textbox isn’t visible, the code skips the whole row, meaning it won’t add MV2(i) or MV3(i) either—even if those are visible.
                 Dim rowCount = g.MV1.Length
                 For i As Integer = 0 To rowCount - 1
                     Dim rowVisible As Boolean = True
@@ -1138,11 +1186,15 @@ Public Class calibratingResult
                         rowVisible = (tb1 IsNot Nothing AndAlso tb1.Visible)
                     End If
                     If Not rowVisible Then Continue For
+                    'For the current row i, it adds MV1(i).tb, then MV2(i).tb, then MV3(i).tb, if each exists.
+                    'There are index and null guards for each array and element.
                     If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length AndAlso g.MV1(i).tb IsNot Nothing Then list.Add(g.MV1(i).tb)
                     If g.MV2 IsNot Nothing AndAlso i < g.MV2.Length AndAlso g.MV2(i).tb IsNot Nothing Then list.Add(g.MV2(i).tb)
                     If g.MV3 IsNot Nothing AndAlso i < g.MV3.Length AndAlso g.MV3(i).tb IsNot Nothing Then list.Add(g.MV3(i).tb)
                 Next
             End Sub
+        'The same per-group logic runs for each of the five groups, in that order.
+        'So the final list order is: group-by-group, and within each group, row 0’s MV1→MV2→MV3, then row 1’s MV1→MV2→MV3
         addGroup(DCV) : addGroup(ACV) : addGroup(RES) : addGroup(DCC) : addGroup(ACC)
         Return list
     End Function
@@ -1162,7 +1214,7 @@ Public Class calibratingResult
 
         seqTargets = BuildMvTargets(onlyVisible)
         If seqTargets Is Nothing OrElse seqTargets.Count = 0 Then Exit Sub
-
+        SetCalculating(True)
         seqValue = value
         seqIndex = 0
         seqRecomputeAfter = recomputeAfter
@@ -1192,7 +1244,10 @@ Public Class calibratingResult
     Private Sub OnSeqTick(sender As Object, e As EventArgs)
         If seqTargets Is Nothing OrElse seqIndex >= seqTargets.Count Then
             StopSequentialMvFill()
-            If seqRecomputeAfter Then ComputeAllAfterBulkLoad()
+            If seqRecomputeAfter Then
+                ComputeAllAfterBulkLoad()
+                Me.Cursor = Cursors.Default
+            End If
             Return
         End If
 
@@ -1220,6 +1275,7 @@ Public Class calibratingResult
     Public Sub FillAllMvWithNominal(Optional onlyVisible As Boolean = True,
                                     Optional copyUnits As Boolean = False,
                                     Optional recomputeAfter As Boolean = True)
+        SetCalculating(True)
         isBulkUpdating = True
         Try
             Dim fill As Action(Of ParamGroup) =
@@ -1246,7 +1302,10 @@ Public Class calibratingResult
             isBulkUpdating = False
         End Try
 
-        If recomputeAfter Then ComputeAllAfterBulkLoad()
+        If recomputeAfter Then
+            ComputeAllAfterBulkLoad()
+            Me.Cursor = Cursors.Default
+        End If
     End Sub
 
     ' ===========================
@@ -1285,24 +1344,36 @@ Public Class calibratingResult
         Return list
     End Function
 
+    'onlyVisible: If True, only process visible items.
+    'copyUnits: whether to duplicate units during the process.
+    'intervalMs: how often(in milliseconds) the Loop should "tick."
+    'recomputeAfter: whether to trigger a recomputation at the end.
     Public Sub StartSequentialFillWithNominal(Optional onlyVisible As Boolean = True,
                                               Optional copyUnits As Boolean = False,
-                                              Optional intervalMs As Integer = 50,
+                                              Optional intervalMs As Integer = 100,
                                               Optional recomputeAfter As Boolean = True)
-
+        'If a Then timer Is already running, remove its Event handler, Stop it, And free its resources.
+        'This prevents multiple timers from overlapping.
         If nomSeqTimer IsNot Nothing Then
             RemoveHandler nomSeqTimer.Tick, AddressOf OnNomSeqTick
             nomSeqTimer.Stop() : nomSeqTimer.Dispose()
         End If
-
+        'Calls a helper method to figure out what needs to be filled sequentially.
+        'If no Then targets are found, Exit early — Nothing To Do.
         nomSeqTargets = BuildNominalTargets(onlyVisible, copyUnits)
         If nomSeqTargets Is Nothing OrElse nomSeqTargets.Count = 0 Then Exit Sub
-
+        SetCalculating(True)
+        'nomSeqIndex keeps track of which target in the list is currently being processed.
+        'nomSeqRecomputeAfter remembers if we need to recompute at the end.
+        'isBulkUpdating is a flag to signal that a batch update is in progress.
         nomSeqIndex = 0
         nomSeqRecomputeAfter = recomputeAfter
 
         isBulkUpdating = True
 
+        'Creates a New Timer that fires every intervalMs milliseconds.
+        'Attaches the handler OnNomSeqTick to the timer's Tick event.
+        'Starts the timer — this effectively kicks off the loop.
         nomSeqTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, intervalMs)}
         AddHandler nomSeqTimer.Tick, AddressOf OnNomSeqTick
         nomSeqTimer.Start()
@@ -1319,7 +1390,10 @@ Public Class calibratingResult
     Private Sub OnNomSeqTick(sender As Object, e As EventArgs)
         If nomSeqTargets Is Nothing OrElse nomSeqIndex >= nomSeqTargets.Count Then
             StopSequentialFillWithNominal()
-            If nomSeqRecomputeAfter Then ComputeAllAfterBulkLoad()
+            If nomSeqRecomputeAfter Then
+                ComputeAllAfterBulkLoad()
+                Me.Cursor = Cursors.Default
+            End If
             Return
         End If
 
@@ -1342,6 +1416,7 @@ Public Class calibratingResult
 
     Private Sub btnAutoFillNominalSeq_Click(sender As Object, e As EventArgs) Handles btnAutoFillNominalSeq.Click
         StartSequentialFillWithNominal(onlyVisible:=True, copyUnits:=False, intervalMs:=100, recomputeAfter:=True)
+
     End Sub
 
     Private Sub btnAutoFillNominalBulk_Click(sender As Object, e As EventArgs) Handles btnAutoFillNominalBulk.Click

@@ -1149,6 +1149,13 @@ Partial Class calibratingResult
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.pnlTools = New System.Windows.Forms.Panel()
+        Me.PictureBox6 = New System.Windows.Forms.PictureBox()
+        Me.PictureBox7 = New System.Windows.Forms.PictureBox()
+        Me.PictureBox8 = New System.Windows.Forms.PictureBox()
+        Me.Label638 = New System.Windows.Forms.Label()
+        Me.Label639 = New System.Windows.Forms.Label()
+        Me.Label640 = New System.Windows.Forms.Label()
+        Me.PictureBox9 = New System.Windows.Forms.PictureBox()
         Me.Splitter1 = New System.Windows.Forms.Splitter()
         Me.PictureBox4 = New System.Windows.Forms.PictureBox()
         Me.PictureBox3 = New System.Windows.Forms.PictureBox()
@@ -1196,6 +1203,10 @@ Partial Class calibratingResult
         Me.Panel7.SuspendLayout
         Me.Panel6.SuspendLayout
         Me.pnlTools.SuspendLayout
+        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit
+        CType(Me.PictureBox8, System.ComponentModel.ISupportInitialize).BeginInit
+        CType(Me.PictureBox9, System.ComponentModel.ISupportInitialize).BeginInit
         CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit
         CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).BeginInit
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit
@@ -12624,6 +12635,13 @@ Partial Class calibratingResult
         '
         'pnlTools
         '
+        Me.pnlTools.Controls.Add(Me.PictureBox6)
+        Me.pnlTools.Controls.Add(Me.PictureBox7)
+        Me.pnlTools.Controls.Add(Me.PictureBox8)
+        Me.pnlTools.Controls.Add(Me.Label638)
+        Me.pnlTools.Controls.Add(Me.Label639)
+        Me.pnlTools.Controls.Add(Me.Label640)
+        Me.pnlTools.Controls.Add(Me.PictureBox9)
         Me.pnlTools.Controls.Add(Me.Splitter1)
         Me.pnlTools.Controls.Add(Me.PictureBox4)
         Me.pnlTools.Controls.Add(Me.PictureBox3)
@@ -12659,6 +12677,91 @@ Partial Class calibratingResult
         Me.pnlTools.Name = "pnlTools"
         Me.pnlTools.Size = New System.Drawing.Size(1624, 584)
         Me.pnlTools.TabIndex = 25
+        '
+        'PictureBox6
+        '
+        Me.PictureBox6.BackColor = System.Drawing.Color.White
+        Me.PictureBox6.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.PictureBox6.Image = Global.ASCal.My.Resources.Resources._33
+        Me.PictureBox6.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
+        Me.PictureBox6.Location = New System.Drawing.Point(378, 11)
+        Me.PictureBox6.Name = "PictureBox6"
+        Me.PictureBox6.Size = New System.Drawing.Size(50, 50)
+        Me.PictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
+        Me.PictureBox6.TabIndex = 212
+        Me.PictureBox6.TabStop = False
+        '
+        'PictureBox7
+        '
+        Me.PictureBox7.BackColor = System.Drawing.Color.White
+        Me.PictureBox7.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.PictureBox7.Image = Global.ASCal.My.Resources.Resources._2_inactive
+        Me.PictureBox7.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
+        Me.PictureBox7.Location = New System.Drawing.Point(231, 16)
+        Me.PictureBox7.Name = "PictureBox7"
+        Me.PictureBox7.Size = New System.Drawing.Size(40, 40)
+        Me.PictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
+        Me.PictureBox7.TabIndex = 211
+        Me.PictureBox7.TabStop = False
+        '
+        'PictureBox8
+        '
+        Me.PictureBox8.BackColor = System.Drawing.Color.White
+        Me.PictureBox8.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.PictureBox8.Image = Global.ASCal.My.Resources.Resources._1_inactive
+        Me.PictureBox8.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
+        Me.PictureBox8.Location = New System.Drawing.Point(70, 16)
+        Me.PictureBox8.Name = "PictureBox8"
+        Me.PictureBox8.Size = New System.Drawing.Size(40, 40)
+        Me.PictureBox8.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
+        Me.PictureBox8.TabIndex = 210
+        Me.PictureBox8.TabStop = False
+        '
+        'Label638
+        '
+        Me.Label638.AutoSize = True
+        Me.Label638.BackColor = System.Drawing.Color.White
+        Me.Label638.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label638.Location = New System.Drawing.Point(33, 64)
+        Me.Label638.Name = "Label638"
+        Me.Label638.Size = New System.Drawing.Size(125, 17)
+        Me.Label638.TabIndex = 207
+        Me.Label638.Text = "Initial Input"
+        '
+        'Label639
+        '
+        Me.Label639.AutoSize = True
+        Me.Label639.BackColor = System.Drawing.Color.White
+        Me.Label639.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label639.Location = New System.Drawing.Point(201, 64)
+        Me.Label639.Name = "Label639"
+        Me.Label639.Size = New System.Drawing.Size(107, 17)
+        Me.Label639.TabIndex = 208
+        Me.Label639.Text = "Calibrating"
+        '
+        'Label640
+        '
+        Me.Label640.AutoSize = True
+        Me.Label640.BackColor = System.Drawing.Color.White
+        Me.Label640.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.Label640.Location = New System.Drawing.Point(345, 64)
+        Me.Label640.Name = "Label640"
+        Me.Label640.Size = New System.Drawing.Size(134, 17)
+        Me.Label640.TabIndex = 209
+        Me.Label640.Text = "Preview Report"
+        '
+        'PictureBox9
+        '
+        Me.PictureBox9.BackColor = System.Drawing.Color.White
+        Me.PictureBox9.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.PictureBox9.Image = Global.ASCal.My.Resources.Resources.Untitled_design1
+        Me.PictureBox9.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
+        Me.PictureBox9.Location = New System.Drawing.Point(71, 26)
+        Me.PictureBox9.Name = "PictureBox9"
+        Me.PictureBox9.Size = New System.Drawing.Size(357, 20)
+        Me.PictureBox9.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
+        Me.PictureBox9.TabIndex = 213
+        Me.PictureBox9.TabStop = False
         '
         'Splitter1
         '
@@ -13049,6 +13152,10 @@ Partial Class calibratingResult
         Me.Panel6.PerformLayout
         Me.pnlTools.ResumeLayout(False)
         Me.pnlTools.PerformLayout
+        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.PictureBox8, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.PictureBox9, System.ComponentModel.ISupportInitialize).EndInit
         CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).EndInit
         CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).EndInit
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit
@@ -14221,4 +14328,11 @@ Partial Class calibratingResult
     Friend WithEvents PictureBox2 As PictureBox
     Friend WithEvents Splitter1 As Splitter
     Friend WithEvents PictureBox5 As PictureBox
+    Friend WithEvents PictureBox6 As PictureBox
+    Friend WithEvents PictureBox7 As PictureBox
+    Friend WithEvents PictureBox8 As PictureBox
+    Friend WithEvents Label638 As Label
+    Friend WithEvents Label639 As Label
+    Friend WithEvents Label640 As Label
+    Friend WithEvents PictureBox9 As PictureBox
 End Class
