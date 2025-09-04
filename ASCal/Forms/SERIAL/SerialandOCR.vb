@@ -81,8 +81,8 @@ Public Class FrmMain
         For i = 0 To UBound(myPort)
             CmbPort.Items.Add(myPort(i))
         Next
-        CmbPort.Text = CmbPort.Items.Item(0)    'Set cmbPort text to the first COM port detected
-        CmbBaud.Text = CmbBaud.Items.Item(0)    'Set cmbBaud text to the first Baud rate on the list
+        'CmbPort.Text = CmbPort.Items.Item(0)    'Set cmbPort text to the first COM port detected
+        'CmbBaud.Text = CmbBaud.Items.Item(0)    'Set cmbBaud text to the first Baud rate on the list
 
         BtnDisconnect.Enabled = False           'Initially Disconnect Button is Disabled
         '''''''''''''automatic istart 
