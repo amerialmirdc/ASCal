@@ -33,6 +33,9 @@ Public Class calibratingResult
     Private dcComputeTimer As System.Windows.Forms.Timer
     Private ctxDc As CalRowModule.RowContext
 
+    ' Serial ports found on the machine
+    Private myPort As String() = Array.Empty(Of String)()
+
     ' Parameter group holder
     Private Class ParamGroup
         Public MV1 As (tb As TextBox, cell As String)()
@@ -306,19 +309,25 @@ Public Class calibratingResult
             BtnDisconnect.Enabled = False           'Initially Disconnect Button is Disabled
         End If
         '''''''''''''automatic istart
-        Dim videoDevices As New FilterInfoCollection(FilterCategory.VideoInputDevice)
-        If videoDevices.Count > 0 Then
-            ' Select the first available camera
-            videoSource = New VideoCaptureDevice(videoDevices(0).MonikerString)
 
-            ' Set the NewFrame event to handle the video feed
+        ' ----- Camera init (prefers EXTERNAL USB cam) -----
+
+        ' Restart preview using preferred (external) camera
+        Try
+            If videoSource IsNot Nothing Then
+                RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
+                If videoSource.IsRunning Then videoSource.SignalToStop()
+            End If
+        Catch
+        End Try
+
+        Dim cam = CreatePreferredCamera() ' external first, then fallback
+        If cam IsNot Nothing Then
+            videoSource = cam
             AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
-
-            ' Start the camera
             videoSource.Start()
-        Else
-            MessageBox.Show("No camera devices found.")
         End If
+
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
         ' 1) Mappings (provided by your Module or partial)
@@ -400,6 +409,65 @@ Public Class calibratingResult
         Catch
         End Try
     End Sub
+
+    ' Prefer an EXTERNAL USB webcam if present; otherwise fall back gracefully
+    Private Function CreatePreferredCamera() As AForge.Video.DirectShow.VideoCaptureDevice
+        Dim devices = New AForge.Video.DirectShow.FilterInfoCollection(AForge.Video.DirectShow.FilterCategory.VideoInputDevice)
+        If devices Is Nothing OrElse devices.Count = 0 Then Return Nothing
+
+        ' Heuristics: common external webcam markers (vendor/models/USB terms)
+        Dim externalKeywords = New String() {
+        "logi", "logitech", "brio", "c920", "c922", "c930",
+        "microsoft", "lifecam", "creative", "razer", "elgato", "aver",
+        "aukey", "hd pro", "usb", "webcam hd"
+    }
+
+        ' Names often used by integrated laptop cameras
+        Dim internalKeywords = New String() {
+        "integrated", "internal", "built-in", "builtin", "laptop",
+        "hd camera", "front camera"
+    }
+
+        Dim pick As AForge.Video.DirectShow.FilterInfo = Nothing
+
+        ' 1) Try to find an obvious EXTERNAL webcam
+        For Each d As AForge.Video.DirectShow.FilterInfo In devices
+            Dim n = d.Name.ToLowerInvariant()
+            If externalKeywords.Any(Function(k) n.Contains(k)) Then
+                pick = d : Exit For
+            End If
+        Next
+
+        ' 2) If none matched, choose the first device that does NOT look internal
+        If pick Is Nothing Then
+            For Each d As AForge.Video.DirectShow.FilterInfo In devices
+                Dim n = d.Name.ToLowerInvariant()
+                If Not internalKeywords.Any(Function(k) n.Contains(k)) Then
+                    pick = d : Exit For
+                End If
+            Next
+        End If
+
+        ' 3) Last fallback: first device
+        If pick Is Nothing Then pick = devices(0)
+
+        ' Build device and choose a sensible resolution (prefer 1280x720, else highest)
+        Dim cam = New AForge.Video.DirectShow.VideoCaptureDevice(pick.MonikerString)
+        Try
+            Dim caps = cam.VideoCapabilities
+            If caps IsNot Nothing AndAlso caps.Length > 0 Then
+                Dim best = caps.FirstOrDefault(Function(c) c.FrameSize.Width = 1280 AndAlso c.FrameSize.Height = 720)
+                If best Is Nothing Then
+                    best = caps.OrderByDescending(Function(c) c.FrameSize.Width * c.FrameSize.Height).First()
+                End If
+                cam.VideoResolution = best
+            End If
+        Catch
+            ' Some drivers throw; safe to ignore and use default
+        End Try
+
+        Return cam
+    End Function
 
     'PURELY VISUAL - CHANGING LANG NG FROM CALIBRATING TO PREVIEW RESULT SA TOP
     Private Sub SetCalculating(isCalculating As Boolean)
@@ -741,7 +809,7 @@ Public Class calibratingResult
 
 #End Region
 
-#Region "Row helpers & visibility"
+#Region "Row helpers & visibility" '---------need ko pang iedit kasi meron mga nagaappear na hindi na select sa calibrate
 
     Private Sub SetRowVisible(g As ParamGroup, idx As Integer, visible As Boolean)
         If g Is Nothing Then Exit Sub
@@ -1690,320 +1758,351 @@ Public Class calibratingResult
 
 #Region "Sir Mel"
 
+    ' =========================================================
+    '  Camera + Snipping Tool OCR (NO brand/model logic here)
+    '  Focus: Normalize OCR text, detect negative signs,
+    '         infer READING (main) vs RANGE (scale) from flat text.
+    ' =========================================================
+
+    ' ---------- FIELDS ----------
     Dim tentimes As Integer = 0
-    Dim color As Color = Color.Olive
-    Dim r As Integer = color.R
-    Dim g As Integer = color.G
-    Dim b As Integer = color.B
-    Dim Camera As VideoCaptureDevice
+
+    Private videoSource As AForge.Video.DirectShow.VideoCaptureDevice
     Dim bmp As Bitmap
-    Private videoSource As VideoCaptureDevice
-    Dim myPort As Array  'COM Ports detected on the system will be stored here
 
-    Delegate Sub SetTextCallback(ByVal [text] As String) 'Added to prevent threading errors during receiveing of data
+    ' For thread-safe UI updates in serial receive (kept for compatibility)
+    Delegate Sub SetTextCallback(ByVal [text] As String)
 
-    ' Import user32.dll function to show/hide windows
+    ' ---------- Win32 Imports ----------
     <DllImport("user32.dll")>
     Private Shared Function ShowWindow(hWnd As IntPtr, nCmdShow As Integer) As Boolean
     End Function
 
-    ' Import BlockInput from user32.dll
     <DllImport("user32.dll")>
     Private Shared Function BlockInput(fBlockIt As Boolean) As Boolean
     End Function
 
-    Private Sub ButtonDisable_Click(sender As Object, e As EventArgs) Handles ButtonDisable.Click
-        ' This blocks all input (mouse & keyboard)
-        BlockInput(True)
-        'MessageBox.Show("Mouse and keyboard input is now blocked for 5 seconds.")
-        Threading.Thread.Sleep(5000)
-        BlockInput(False)
-        'MessageBox.Show("Input unblocked.")
-    End Sub
-
-    ' Constants for ShowWindow
     Private Const SW_HIDE As Integer = 0
-
     Private Const SW_SHOW As Integer = 5
 
+    ' ---------- Small helpers ----------
     Private Sub HideSnippingTool()
-        ' List of common Snipping Tool process names
         Dim snippingProcesses As String() = {"SnippingTool", "SnipAndSketch"}
-
         For Each procName As String In snippingProcesses
-            Dim processes() As Process = Process.GetProcessesByName(procName)
-            For Each proc As Process In processes
-                Dim hWnd As IntPtr = proc.MainWindowHandle
-                If hWnd <> IntPtr.Zero Then
-                    ShowWindow(hWnd, SW_HIDE) ' Hide the window
-                End If
+            For Each p As Process In Process.GetProcessesByName(procName)
+                Dim h As IntPtr = p.MainWindowHandle
+                If h <> IntPtr.Zero Then ShowWindow(h, SW_HIDE)
             Next
         Next
     End Sub
 
-    Private Sub Video_NewFrame(sender As Object, eventArgs As NewFrameEventArgs)
-        ' Display the video feed in a PictureBox
-        Dim bitmap As Bitmap = DirectCast(eventArgs.Frame.Clone(), Bitmap)
-        PictureBox1.Image = bitmap
+    Private Sub RemoveFocus()
+        Dim dummy = Me.Controls("lblDummy")
+        If dummy IsNot Nothing Then dummy.Focus()
     End Sub
 
-    Private Sub BtnConnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnConnect.Click
-        SerialPort1.PortName = CmbPort.Text         'Set SerialPort1 to the selected COM port at startup
-        SerialPort1.BaudRate = CmbBaud.Text         'Set Baud rate to the selected value on
-
-        'Other Serial Port Property
-        SerialPort1.Parity = IO.Ports.Parity.None
-        SerialPort1.StopBits = IO.Ports.StopBits.One
-        SerialPort1.DataBits = 8            'Open our serial port
-        SerialPort1.Open()
-
-        BtnConnect.Enabled = False          'Disable Connect button
-        BtnDisconnect.Enabled = True        'and Enable Disconnect button
-
+    ' ---------- Camera preview ----------
+    Private Sub Video_NewFrame(sender As Object, e As AForge.Video.NewFrameEventArgs)
+        Dim frame As Bitmap = DirectCast(e.Frame.Clone(), Bitmap)
+        PictureBox1.Image = frame
     End Sub
 
-    Private Sub BtnDisconnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnDisconnect.Click
-        SerialPort1.Close()             'Close our Serial Port
-
-        BtnConnect.Enabled = True
-        BtnDisconnect.Enabled = False
-    End Sub
-
-    Private Sub BtnSend_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnSend.Click
-        SerialPort1.Write(txtTransmit.Text & vbCr) 'The text contained in the txtText will be sent to the serial port as ascii
-        'plus the carriage return (Enter Key) the carriage return can be ommitted if the other end does not need it
-    End Sub
-
-    Private Sub SerialPort1_DataReceived(ByVal sender As Object, ByVal e As System.IO.Ports.SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
-        ReceivedText(SerialPort1.ReadExisting())    'Automatically called every time a data is received at the serialPort
-    End Sub
-
-    Private Sub ReceivedText(ByVal [text] As String)
-        'compares the ID of the creating Thread to the ID of the calling Thread
-        If Me.rtbReceived.InvokeRequired Then
-            Dim x As New SetTextCallback(AddressOf ReceivedText)
-            Me.Invoke(x, New Object() {(text)})
-        Else
-            Me.rtbReceived.Text &= [text]
-        End If
-    End Sub
-
-    Private Sub CmbPort_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbPort.SelectedIndexChanged
-        If SerialPort1.IsOpen = False Then
-            SerialPort1.PortName = CmbPort.Text         'pop a message box to user if he is changing ports
-        Else                                                                               'without disconnecting first.
-            MsgBox(”Valid only if port is Closed”, vbCritical)
-        End If
-    End Sub
-
-    Private Sub CmbBaud_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbBaud.SelectedIndexChanged
-        If SerialPort1.IsOpen = False Then
-            SerialPort1.BaudRate = CmbBaud.Text         'pop a message box to user if he is changing baud rate
-        Else                                                                                'without disconnecting first.
-            MsgBox(”Valid only if port is Closed”, vbCritical)
-        End If
-    End Sub
-
-    Private Sub Captured(ByVal sender As Object, ByVal EventArgs As NewFrameEventArgs)
-        bmp = DirectCast(EventArgs.Frame.Clone(), Bitmap)
-        PictureBox1.Image = DirectCast(EventArgs.Frame.Clone(), Bitmap)
-    End Sub
-
+    ' ---------- Capture Button (merged flow) ----------
     Private Sub BtnCapture_Click(sender As Object, e As EventArgs) Handles BtnCapture.Click
+        ' Stop preview para stable ang frame
         If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
             videoSource.SignalToStop()
             videoSource.WaitForStop()
         End If
+
+        ' Portable folder
+        Dim baseDir As String = IO.Path.Combine(My.Application.Info.DirectoryPath, "CapturedImage")
+        If Not IO.Directory.Exists(baseDir) Then IO.Directory.CreateDirectory(baseDir)
+
+        ' Timestamped filename to avoid overwrite
+        Dim capturePath As String = IO.Path.Combine(baseDir, $"AAAA_{DateTime.Now:yyyyMMdd_HHmmss}.jpg")
+
+        ' Save current frame
         If PictureBox1.Image IsNot Nothing Then
-            PictureBox1.Image.Save("C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\AAAA.jpg", ImageFormat.Jpeg)
+            PictureBox1.Image.Save(capturePath, Imaging.ImageFormat.Jpeg)
         Else
-            'kukuha ulit ng picture kasi walang laman yung picturebox1
+            MessageBox.Show("Walang laman ang camera frame (PictureBox1).", "Capture", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
         End If
-        ' Load the image
-        'Dim originalImage As Bitmap = CType(Image.FromFile("C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\AAAAA.jpg"), Bitmap)
 
-        ' Convert to black and white
-        'Dim blackAndWhiteImage As Bitmap = ConvertToBlackAndWhite(originalImage)
+        ' ======= Snipping Tool OCR-by-paste (no external OCR) =======
+        ' Clear only the fields handled here
+        DMMtxtparameter.Clear()
+        DMMreading.Clear()
+        RichTextBox1.Clear()
 
-        ' Save the black and white image
-        'blackAndWhiteImage.Save("C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\BBBBB.jpg", ImageFormat.Jpeg)
+        RemoveFocus()
+        BlockInput(True)
+
+        ' Launch Snipping Tool (fallback to PATH)
+        Dim launched As Boolean = False
+        Try
+            Process.Start("C:\Users\dbneri\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe")
+            launched = True
+        Catch
+            Try
+                Process.Start("SnippingTool.exe")
+                launched = True
+            Catch
+            End Try
+        End Try
+        If Not launched Then
+            BlockInput(False)
+            MessageBox.Show("Hindi ma-launch ang Snipping Tool.", "Snipping Tool", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
+
+        Thread.Sleep(1500)
+        HideSnippingTool()
+
+        ' Keystroke sequence (brittle): type FULL PATH so tama ang file
+        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1500)
+        My.Computer.Keyboard.SendKeys(capturePath, True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1000)
+        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{RIGHT}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1500)
+        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(100)
+
+        ' Paste OCR text, then normalize BEFORE parsing
+        RichTextBox1.Paste()
+        Dim raw As String = NormalizeOcrText(RichTextBox1.Text)
+        RichTextBox1.Text = raw
+
+        ' Infer parameter (V/A/Ω) if not set by UI
+        If String.IsNullOrWhiteSpace(DMMtxtparameter.Text) Then
+            If raw.IndexOf("V", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                DMMtxtparameter.Text = "V"
+            ElseIf raw.IndexOf("A", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                DMMtxtparameter.Text = "A"
+            ElseIf raw.IndexOf("Ω", StringComparison.OrdinalIgnoreCase) >= 0 OrElse
+                   raw.IndexOf("OHM", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                DMMtxtparameter.Text = "Ω"
+            End If
+        End If
+
+        ' Parse tokens, then pick READING and RANGE
+        Dim tokens = ExtractOcrTokens(raw)
+        Dim expectedUnit As String = If(String.IsNullOrWhiteSpace(DMMtxtparameter.Text), "", DMMtxtparameter.Text.Trim().ToUpperInvariant())
+        Dim readingStr As String = "", rangeStr As String = ""
+        PickReadingAndRange(tokens, expectedUnit, readingStr, rangeStr)
+
+        ' I-display din ang na-detect na range sa DMMrange.Text para kita agad ng user.
+
+        If readingStr <> "" Then DMMreading.Text = readingStr
+
+        If rangeStr <> "" Then
+            DMMrange.Text = rangeStr     ' ← ipakita ang detected range sa textbox
+            Me.Range = rangeStr          ' ← kung kailangan pa rin ng header/Excel mapping
+        End If
+
+        ' Restart preview using preferred (external-first) camera
+        Try
+            If videoSource IsNot Nothing Then
+                RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
+                If videoSource.IsRunning Then videoSource.SignalToStop()
+            End If
+        Catch
+        End Try
+
+        Dim cam = CreatePreferredCamera()
+        If cam IsNot Nothing Then
+            videoSource = cam
+            AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
+            videoSource.Start()
+        End If
+
+        ' Cleanup snipping processes
+        Dim snip() As String = {"SnippingTool", "SnipAndSketch"}
+        For Each procName As String In snip
+            For Each p As Process In Process.GetProcessesByName(procName)
+                Try : p.Kill() : p.WaitForExit() : Catch : End Try
+            Next
+        Next
+
+        Thread.Sleep(1000)
+        tentimes += 1
+        BlockInput(False)
     End Sub
-
-    'Function ConvertToBlackAndWhite(ByVal original As Bitmap) As Bitmap
-    '    Dim newBitmap As New Bitmap(original.Width, original.Height)
-
-    '    For x As Integer = 0 To original.Width - 1
-    '        For y As Integer = 0 To original.Height - 1
-    '            ' Get the pixel color
-    '            Dim originalColor As Color = original.GetPixel(x, y)
-    '            If (x < 105 Or x > 500) Then
-    '                newBitmap.SetPixel(x, y, Color.Black)
-    '            ElseIf (y < 61 Or y > 265) Then
-    '                newBitmap.SetPixel(x, y, Color.Black)
-    '            Else
-    '                'get the RGB values of the pixel
-    '                r = originalColor.R
-    '                g = originalColor.G
-    '                b = originalColor.B
-    '                If (r < 110 And r > 17) And (g < 139 And g > 34) And (b < 141 And b > 48) Then
-    '                    newBitmap.SetPixel(x, y, Color.White)
-    '                    'ElseIf (r < 169 And r > 55) And (g < 165 And g > 79) And (b < 167 And b > 82) Then
-    '                    '    newBitmap.SetPixel(x, y, Color.White)
-    '                ElseIf (r < 84 And r > 63) And (g < 108 And g > 51) And (b < 102 And b > 75) Then
-    '                    newBitmap.SetPixel(x, y, Color.White)
-    '                Else
-    '                    newBitmap.SetPixel(x, y, Color.Black)
-    '                End If
-    '            End If
-    '        Next
-    '    Next
-
-    '    Return newBitmap
-    'End Function
 
     Private Sub FrmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
             videoSource.SignalToStop()
             videoSource.WaitForStop()
         End If
-        'Try
-        '    Camera.Stop()
-        'Catch ex As Exception
-
-        'End Try
-        'closing snipping tool
-        Dim snippingToolProcesses As String() = {"SnippingTool", "SnipAndSketch"}
-
-        For Each procName In snippingToolProcesses
-            Dim processes As Process() = Process.GetProcessesByName(procName)
-
-            For Each proc In processes
-                Try
-                    proc.Kill()
-                    proc.WaitForExit()
-                    'MessageBox.Show($"{proc.ProcessName} closed successfully.")
-                Catch ex As Exception
-                    'MessageBox.Show($"Failed to close {proc.ProcessName}: {ex.Message}")
-                End Try
+        Dim snip() As String = {"SnippingTool", "SnipAndSketch"}
+        For Each procName As String In snip
+            For Each p As Process In Process.GetProcessesByName(procName)
+                Try : p.Kill() : p.WaitForExit() : Catch : End Try
             Next
         Next
         BlockInput(False)
     End Sub
 
-    Private Sub RemoveFocus()
-        Dim dummy = Me.Controls("lblDummy")
-        If dummy IsNot Nothing Then
-            dummy.Focus()
-        End If
-    End Sub
-
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        DMMtxtparameter.Clear()
-        Dmmtxtbrand.Clear()
-        DMMtxtpartnumber.Clear()
-        DMMtxtread.Clear()
-        rtbReceived.Clear()
-        RichTextBox1.Clear()
-        RemoveFocus()
-        BlockInput(True)
-        Process.Start("C:\Users\mellu\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe")
-        Thread.Sleep(1500)
-        HideSnippingTool()
-        My.Computer.Keyboard.SendKeys("{TAB}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True)
-        Thread.Sleep(1500)
-        My.Computer.Keyboard.SendKeys("A.jpg", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True)
-        Thread.Sleep(1000)
-        My.Computer.Keyboard.SendKeys("{TAB}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{TAB}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{TAB}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{RIGHT}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True)
-        Thread.Sleep(1500)
-        My.Computer.Keyboard.SendKeys("{TAB}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{TAB}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{TAB}", True)
-        Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True)
-        Thread.Sleep(100)
-        RichTextBox1.Paste()
-        RichTextBox1.Text.Replace(",", ".") 'Replace new line with space
-
-        If RichTextBox1.Text.Contains("V") Then
-            DMMtxtparameter.Text = "V"
-        ElseIf RichTextBox1.Text.Contains("A") Then
-            DMMtxtparameter.Text = "A"
-        End If
-        If RichTextBox1.Text.Contains("AMPROBE") Then
-            Dmmtxtbrand.Text = "AMPROBE"
-        ElseIf RichTextBox1.Text.Contains("FLUKE") Then
-            Dmmtxtbrand.Text = "FLUKE"
-        End If
-
-        If RichTextBox1.Text.Contains("30XR-A") Then
-            DMMtxtpartnumber.Text = "30XR-A"
-            RichTextBox1.Text = RichTextBox1.Text.Replace("30XR-A", "A")
-        ElseIf RichTextBox1.Text.Contains("114") Then
-            DMMtxtpartnumber.Text = "114"
-            RichTextBox1.Text = RichTextBox1.Text.Replace("114", "A")
-        End If
-        RichTextBox1.Text = RichTextBox1.Text.Replace(vbCr, "A")
-        RichTextBox1.Text = RichTextBox1.Text.Replace(vbNewLine, "A")
-        RichTextBox1.Text = RemoveAlphabets(RichTextBox1.Text)
-
-        Dim lines As String() = RichTextBox1.Lines
-
-        ' Filter out empty or whitespace-only lines
-        Dim nonEmptyLines = lines.Where(Function(line) Not String.IsNullOrWhiteSpace(line)).ToArray()
-
-        ' Update the TextBox with cleaned lines
-        RichTextBox1.Lines = nonEmptyLines
-        DMMtxtread.Text = RichTextBox1.Text
-        videoSource.Start()
-        Dim snippingToolProcesses As String() = {"SnippingTool", "SnipAndSketch"}
-
-        For Each procName In snippingToolProcesses
-            Dim processes As Process() = Process.GetProcessesByName(procName)
-
-            For Each proc In processes
-                Try
-                    proc.Kill()
-                    proc.WaitForExit()
-                    'MessageBox.Show($"{proc.ProcessName} closed successfully.")
-                Catch ex As Exception
-                    'MessageBox.Show($"Failed to close {proc.ProcessName}: {ex.Message}")
-                End Try
-            Next
-        Next
-        Thread.Sleep(1000)
-        tentimes += 1
-        If tentimes < 1 Then
-            Button1.PerformClick()
-        End If
-        BlockInput(False)
-    End Sub
-
-    Function RemoveAlphabets(ByVal str As String) As String
-        Dim output As String = ""
-        For Each ch As Char In str
-            ' Check if the character is NOT a letter
-            If Not Char.IsLetter(ch) Then
-                output &= ch
-            End If
-        Next
-        Return output
+    ' ---------- OCR Text Normalization ----------
+    Private Function NormalizeOcrText(s As String) As String
+        If s Is Nothing Then Return ""
+        Dim t As String = s
+        ' Unicode minus & dashes -> ASCII hyphen
+        t = t.Replace(ChrW(&H2212), "-").Replace("–", "-").Replace("—", "-")
+        ' Remove spaces after sign ("- 12.3" -> "-12.3")
+        t = System.Text.RegularExpressions.Regex.Replace(t, "([+\-])\s+(?=\d)", "$1")
+        ' Normalize decimals to "."
+        t = t.Replace(",", ".")
+        Return t
     End Function
+
+    ' ---------- Tokenize numbers (with optional SI + Unit) ----------
+    Private Class OcrToken
+        Public LineIndex As Integer
+        Public Raw As String
+        Public Sign As Integer      ' -1, 0, +1
+        Public Value As Double      ' scaled to base unit if SI prefix present
+        Public Unit As String       ' "V","A","Ω","OHM","HZ",""
+        Public HasDecimal As Boolean
+        Public LineText As String
+    End Class
+
+    Private Function ExtractOcrTokens(text As String) As List(Of OcrToken)
+        Dim list As New List(Of OcrToken)
+        If String.IsNullOrWhiteSpace(text) Then Return list
+
+        Dim lines = text.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+        Dim rx = New System.Text.RegularExpressions.Regex(
+            "([+\-]?)\s*(\d+(?:\.\d+)?)\s*(m|µ|u|k|M)?\s*(V|A|Ω|OHM|HZ)?",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+
+        For i As Integer = 0 To lines.Length - 1
+            Dim ln = lines(i)
+            For Each m As System.Text.RegularExpressions.Match In rx.Matches(ln)
+                If Not m.Success Then Continue For
+                Dim signTxt = m.Groups(1).Value
+                Dim numTxt = m.Groups(2).Value
+                Dim siTxt = m.Groups(3).Value
+                Dim unitTxt = m.Groups(4).Value
+
+                If String.IsNullOrWhiteSpace(numTxt) Then Continue For
+
+                Dim val As Double
+                If Not Double.TryParse(numTxt, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, val) Then Continue For
+
+                Dim mult As Double = 1.0
+                Select Case siTxt
+                    Case "m" : mult = 0.001
+                    Case "µ", "u" : mult = 0.000001
+                    Case "k" : mult = 1000.0
+                    Case "M" : mult = 1000000.0
+                End Select
+                val *= mult
+
+                Dim tok As New OcrToken With {
+                    .LineIndex = i,
+                    .Raw = m.Value.Trim(),
+                    .Sign = If(signTxt = "-", -1, If(signTxt = "+", 1, 0)),
+                    .Value = val,
+                    .Unit = unitTxt.ToUpperInvariant(),
+                    .HasDecimal = numTxt.Contains("."),
+                    .LineText = ln
+                }
+                list.Add(tok)
+            Next
+        Next
+        Return list
+    End Function
+
+    ' ---------- Range heuristics ----------
+    Private Function StandardRangesFor(unitKey As String) As Double()
+        Select Case unitKey
+            Case "V" : Return New Double() {2, 6, 20, 60, 200, 600, 1000}
+            Case "A" : Return New Double() {0.002, 0.02, 0.2, 2, 10}
+            Case "Ω", "OHM" : Return New Double() {200, 2000, 20000, 200000, 2000000, 20000000}
+            Case Else : Return Array.Empty(Of Double)()
+        End Select
+    End Function
+
+    Private Function IsRangeLike(val As Double, unitKey As String) As Boolean
+        Dim ranges = StandardRangesFor(unitKey)
+        If ranges Is Nothing OrElse ranges.Length = 0 Then Return False
+        For Each r In ranges
+            If r = 0 Then Continue For
+            If Math.Abs(val - r) <= Math.Max(0.02 * r, If(r < 10, 0.5, 1.0)) Then Return True
+        Next
+        Return False
+    End Function
+
+    ' Score how likely a token is the main READING
+    Private Function ScoreReading(tok As OcrToken, expectedUnit As String) As Double
+        Dim s As Double = 0
+        s += Math.Min(8, tok.Raw.Length) * 0.6      ' longer with decimals → likely main
+        If tok.HasDecimal Then s += 0.8
+        If Not IsRangeLike(tok.Value, If(tok.Unit = "", expectedUnit, tok.Unit)) Then s += 1.2
+        If expectedUnit <> "" AndAlso (tok.Unit = "" OrElse tok.Unit.StartsWith(expectedUnit, StringComparison.OrdinalIgnoreCase)) Then s += 0.8
+        Dim l = tok.LineText.ToUpperInvariant()
+        If l.Contains("AUTO") OrElse l.Contains("LOZ") OrElse l.Contains("RANGE") Then s -= 0.7
+        Return s
+    End Function
+
+    ' Score how likely a token is a RANGE label
+    Private Function ScoreRange(tok As OcrToken, expectedUnit As String) As Double
+        Dim s As Double = 0
+        Dim unitKey = If(tok.Unit = "", expectedUnit, tok.Unit)
+        If IsRangeLike(tok.Value, unitKey) Then s += 2.0
+        Dim l = tok.LineText.ToUpperInvariant()
+        If l.Contains("AUTO") OrElse l.Contains("RANGE") OrElse l.Contains("AUTO VOLT") Then s += 0.8
+        s += Math.Max(0, 6 - Math.Log10(Math.Max(0.000001, tok.Value + 1))) * 0.2 ' smaller values look “range-like”
+        Return s
+    End Function
+
+    ' Pick best reading and best range from tokens
+    Private Sub PickReadingAndRange(tokens As List(Of OcrToken),
+                                    expectedUnit As String,
+                                    ByRef readingOut As String,
+                                    ByRef rangeOut As String)
+        readingOut = "" : rangeOut = ""
+        If tokens Is Nothing OrElse tokens.Count = 0 Then Exit Sub
+
+        Dim rBest As (tok As OcrToken, score As Double) = (Nothing, Double.NegativeInfinity)
+        Dim rngBest As (tok As OcrToken, score As Double) = (Nothing, Double.NegativeInfinity)
+
+        For Each t In tokens
+            Dim rs = ScoreReading(t, expectedUnit)
+            If rs > rBest.score Then rBest = (t, rs)
+            Dim gs = ScoreRange(t, expectedUnit)
+            If gs > rngBest.score Then rngBest = (t, gs)
+        Next
+
+        If rBest.tok IsNot Nothing Then
+            Dim sign = If(rBest.tok.Sign < 0, "-", If(rBest.tok.Sign > 0, "+", ""))
+            Dim unit = If(String.IsNullOrEmpty(rBest.tok.Unit), expectedUnit, rBest.tok.Unit)
+            readingOut = (sign & rBest.tok.Value.ToString("G", Globalization.CultureInfo.InvariantCulture) &
+                         If(unit = "", "", " " & unit)).Trim()
+        End If
+
+        If rngBest.tok IsNot Nothing Then
+            Dim unit = If(String.IsNullOrEmpty(rngBest.tok.Unit), expectedUnit, rngBest.tok.Unit)
+            Dim ranges = StandardRangesFor(unit)
+            If ranges.Length > 0 Then
+                Dim nearest = ranges.OrderBy(Function(v) Math.Abs(v - rngBest.tok.Value)).First()
+                rangeOut = nearest.ToString("G", Globalization.CultureInfo.InvariantCulture) &
+                           If(unit = "", "", " " & unit)
+            Else
+                rangeOut = rngBest.tok.Value.ToString("G", Globalization.CultureInfo.InvariantCulture) &
+                           If(unit = "", "", " " & unit)
+            End If
+        End If
+    End Sub
 
 #End Region
 

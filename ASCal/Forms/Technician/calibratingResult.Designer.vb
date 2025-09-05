@@ -1167,17 +1167,13 @@ Partial Class calibratingResult
         Me.Label629 = New System.Windows.Forms.Label()
         Me.DMMtxtparameter = New System.Windows.Forms.TextBox()
         Me.Label630 = New System.Windows.Forms.Label()
-        Me.DMMtxtpartnumber = New System.Windows.Forms.TextBox()
-        Me.Label631 = New System.Windows.Forms.Label()
-        Me.Dmmtxtbrand = New System.Windows.Forms.TextBox()
-        Me.Label632 = New System.Windows.Forms.Label()
         Me.RichTextBox1 = New System.Windows.Forms.RichTextBox()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.BtnCapture = New System.Windows.Forms.Button()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.rtbReceived = New System.Windows.Forms.RichTextBox()
-        Me.DMMtxtread = New System.Windows.Forms.TextBox()
+        Me.DMMreading = New System.Windows.Forms.TextBox()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.BtnSend = New System.Windows.Forms.Button()
         Me.txtTransmit = New System.Windows.Forms.TextBox()
@@ -1190,6 +1186,8 @@ Partial Class calibratingResult
         Me.PictureBox5 = New System.Windows.Forms.PictureBox()
         Me.KryptonWebBrowser1 = New Krypton.Toolkit.KryptonWebBrowser()
         Me.SerialPort1 = New System.IO.Ports.SerialPort(Me.components)
+        Me.Label641 = New System.Windows.Forms.Label()
+        Me.DMMrange = New System.Windows.Forms.TextBox()
         Me.Panel1.SuspendLayout
         Me.Panel8.SuspendLayout
         Me.Panel4.SuspendLayout
@@ -12635,6 +12633,8 @@ Partial Class calibratingResult
         '
         'pnlTools
         '
+        Me.pnlTools.Controls.Add(Me.Label641)
+        Me.pnlTools.Controls.Add(Me.DMMrange)
         Me.pnlTools.Controls.Add(Me.PictureBox6)
         Me.pnlTools.Controls.Add(Me.PictureBox7)
         Me.pnlTools.Controls.Add(Me.PictureBox8)
@@ -12653,16 +12653,12 @@ Partial Class calibratingResult
         Me.pnlTools.Controls.Add(Me.Label629)
         Me.pnlTools.Controls.Add(Me.DMMtxtparameter)
         Me.pnlTools.Controls.Add(Me.Label630)
-        Me.pnlTools.Controls.Add(Me.DMMtxtpartnumber)
-        Me.pnlTools.Controls.Add(Me.Label631)
-        Me.pnlTools.Controls.Add(Me.Dmmtxtbrand)
-        Me.pnlTools.Controls.Add(Me.Label632)
         Me.pnlTools.Controls.Add(Me.RichTextBox1)
         Me.pnlTools.Controls.Add(Me.Button1)
         Me.pnlTools.Controls.Add(Me.BtnCapture)
         Me.pnlTools.Controls.Add(Me.PictureBox1)
         Me.pnlTools.Controls.Add(Me.GroupBox2)
-        Me.pnlTools.Controls.Add(Me.DMMtxtread)
+        Me.pnlTools.Controls.Add(Me.DMMreading)
         Me.pnlTools.Controls.Add(Me.GroupBox1)
         Me.pnlTools.Controls.Add(Me.BtnDisconnect)
         Me.pnlTools.Controls.Add(Me.BtnConnect)
@@ -12858,7 +12854,7 @@ Partial Class calibratingResult
         '
         Me.Label629.AutoSize = True
         Me.Label629.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label629.Location = New System.Drawing.Point(654, 234)
+        Me.Label629.Location = New System.Drawing.Point(654, 152)
         Me.Label629.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label629.Name = "Label629"
         Me.Label629.Size = New System.Drawing.Size(129, 19)
@@ -12868,7 +12864,7 @@ Partial Class calibratingResult
         'DMMtxtparameter
         '
         Me.DMMtxtparameter.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMtxtparameter.Location = New System.Drawing.Point(788, 192)
+        Me.DMMtxtparameter.Location = New System.Drawing.Point(788, 110)
         Me.DMMtxtparameter.Margin = New System.Windows.Forms.Padding(2)
         Me.DMMtxtparameter.Name = "DMMtxtparameter"
         Me.DMMtxtparameter.ReadOnly = True
@@ -12879,54 +12875,12 @@ Partial Class calibratingResult
         '
         Me.Label630.AutoSize = True
         Me.Label630.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label630.Location = New System.Drawing.Point(636, 196)
+        Me.Label630.Location = New System.Drawing.Point(636, 114)
         Me.Label630.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label630.Name = "Label630"
         Me.Label630.Size = New System.Drawing.Size(149, 19)
         Me.Label630.TabIndex = 40
         Me.Label630.Text = "DMM Parameter:"
-        '
-        'DMMtxtpartnumber
-        '
-        Me.DMMtxtpartnumber.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMtxtpartnumber.Location = New System.Drawing.Point(788, 155)
-        Me.DMMtxtpartnumber.Margin = New System.Windows.Forms.Padding(2)
-        Me.DMMtxtpartnumber.Name = "DMMtxtpartnumber"
-        Me.DMMtxtpartnumber.ReadOnly = True
-        Me.DMMtxtpartnumber.Size = New System.Drawing.Size(144, 26)
-        Me.DMMtxtpartnumber.TabIndex = 39
-        '
-        'Label631
-        '
-        Me.Label631.AutoSize = True
-        Me.Label631.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label631.Location = New System.Drawing.Point(665, 158)
-        Me.Label631.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.Label631.Name = "Label631"
-        Me.Label631.Size = New System.Drawing.Size(119, 19)
-        Me.Label631.TabIndex = 38
-        Me.Label631.Text = "DMM Part #:"
-        '
-        'Dmmtxtbrand
-        '
-        Me.Dmmtxtbrand.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Dmmtxtbrand.Location = New System.Drawing.Point(788, 117)
-        Me.Dmmtxtbrand.Margin = New System.Windows.Forms.Padding(2)
-        Me.Dmmtxtbrand.Name = "Dmmtxtbrand"
-        Me.Dmmtxtbrand.ReadOnly = True
-        Me.Dmmtxtbrand.Size = New System.Drawing.Size(144, 26)
-        Me.Dmmtxtbrand.TabIndex = 34
-        '
-        'Label632
-        '
-        Me.Label632.AutoSize = True
-        Me.Label632.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label632.Location = New System.Drawing.Point(674, 120)
-        Me.Label632.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.Label632.Name = "Label632"
-        Me.Label632.Size = New System.Drawing.Size(109, 19)
-        Me.Label632.TabIndex = 37
-        Me.Label632.Text = "DMM Brand:"
         '
         'RichTextBox1
         '
@@ -12992,15 +12946,15 @@ Partial Class calibratingResult
         Me.rtbReceived.TabIndex = 0
         Me.rtbReceived.Text = ""
         '
-        'DMMtxtread
+        'DMMreading
         '
-        Me.DMMtxtread.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMtxtread.Location = New System.Drawing.Point(788, 230)
-        Me.DMMtxtread.Margin = New System.Windows.Forms.Padding(2)
-        Me.DMMtxtread.Name = "DMMtxtread"
-        Me.DMMtxtread.ReadOnly = True
-        Me.DMMtxtread.Size = New System.Drawing.Size(144, 26)
-        Me.DMMtxtread.TabIndex = 43
+        Me.DMMreading.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.DMMreading.Location = New System.Drawing.Point(788, 148)
+        Me.DMMreading.Margin = New System.Windows.Forms.Padding(2)
+        Me.DMMreading.Name = "DMMreading"
+        Me.DMMreading.ReadOnly = True
+        Me.DMMreading.Size = New System.Drawing.Size(144, 26)
+        Me.DMMreading.TabIndex = 43
         '
         'GroupBox1
         '
@@ -13122,6 +13076,27 @@ Partial Class calibratingResult
         '
         'SerialPort1
         '
+        '
+        'Label641
+        '
+        Me.Label641.AutoSize = True
+        Me.Label641.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label641.Location = New System.Drawing.Point(675, 187)
+        Me.Label641.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label641.Name = "Label641"
+        Me.Label641.Size = New System.Drawing.Size(109, 19)
+        Me.Label641.TabIndex = 214
+        Me.Label641.Text = "DMM Range:"
+        '
+        'DMMrange
+        '
+        Me.DMMrange.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.DMMrange.Location = New System.Drawing.Point(788, 184)
+        Me.DMMrange.Margin = New System.Windows.Forms.Padding(2)
+        Me.DMMrange.Name = "DMMrange"
+        Me.DMMrange.ReadOnly = True
+        Me.DMMrange.Size = New System.Drawing.Size(144, 26)
+        Me.DMMrange.TabIndex = 215
         '
         'calibratingResult
         '
@@ -14298,17 +14273,13 @@ Partial Class calibratingResult
     Friend WithEvents Label629 As Label
     Friend WithEvents DMMtxtparameter As TextBox
     Friend WithEvents Label630 As Label
-    Friend WithEvents DMMtxtpartnumber As TextBox
-    Friend WithEvents Label631 As Label
-    Friend WithEvents Dmmtxtbrand As TextBox
-    Friend WithEvents Label632 As Label
     Friend WithEvents RichTextBox1 As RichTextBox
     Friend WithEvents Button1 As Button
     Friend WithEvents BtnCapture As Button
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents GroupBox2 As GroupBox
     Friend WithEvents rtbReceived As RichTextBox
-    Friend WithEvents DMMtxtread As TextBox
+    Friend WithEvents DMMreading As TextBox
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents BtnSend As Button
     Friend WithEvents txtTransmit As TextBox
@@ -14335,4 +14306,6 @@ Partial Class calibratingResult
     Friend WithEvents Label639 As Label
     Friend WithEvents Label640 As Label
     Friend WithEvents PictureBox9 As PictureBox
+    Friend WithEvents Label641 As Label
+    Friend WithEvents DMMrange As TextBox
 End Class
