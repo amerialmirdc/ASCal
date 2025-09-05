@@ -328,7 +328,7 @@ Public Class calibratingResult
         ApplySelectedParameterRows()
 
         ' 3) Live compute wiring & debounce
-        dcComputeTimer = New System.Windows.Forms.Timer() With {.Interval = 10}
+        dcComputeTimer = New System.Windows.Forms.Timer() With {.Interval = 1000}
         AddHandler dcComputeTimer.Tick, AddressOf OnDcComputeTimerTick
         HookLiveCompute()
         KeepToolButtonsVisible() ' keep your three/four tool buttons on top
@@ -372,13 +372,25 @@ Public Class calibratingResult
             ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, DCV, currentRowIdx)
             CalRowModule.RecalculateNow(ctxDc)
         End If
+
     End Sub
 
     Private Sub calibratingResult_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If ctxDc IsNot Nothing Then CalRowModule.SaveToExcel(ctxDc)
+        Try
+            If videoSource IsNot Nothing Then
+                RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
+                If videoSource.IsRunning Then videoSource.SignalToStop()
+            End If
+        Catch
+        End Try
+        Try
+            If SerialPort1 IsNot Nothing AndAlso SerialPort1.IsOpen Then SerialPort1.Close()
+        Catch
+        End Try
     End Sub
 
-    ' Put this inside your form class
+    'PURELY VISUAL - CHANGING LANG NG FROM CALIBRATING TO PREVIEW RESULT SA TOP
     Private Sub SetCalculating(isCalculating As Boolean)
         ' CALCULATING group
         PictureBox2.Visible = isCalculating
@@ -588,7 +600,45 @@ Public Class calibratingResult
 
 #End Region
 
-#Region "Live compute plumbing" 'mag-aactivate eto kapag nagmanual input sa lahat ng fields - tatanggalin din FOR TESTING PURPOSES ONLY
+#Region "Live compute plumbing" 'mag-aactivate eto kapag nagmanual input sa lahat ng fields
+
+    ' === MV textbox change event ===
+    ' Kapag may binago sa MV textbox, dito dumadaan.
+    ' Ina-advance yung focus, chine-check kung complete na yung row,
+    ' at nagsesetup ng timer para sa recalculation.
+
+    Private Sub OnMvChanged(sender As Object, e As EventArgs)
+        If isBulkUpdating Then Exit Sub
+        Dim tb = TryCast(sender, TextBox) : If tb Is Nothing Then Exit Sub
+
+        Dim g As ParamGroup = Nothing : Dim rowIdx As Integer = -1
+        For Each candidate In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
+            If candidate Is Nothing Then Continue For
+            rowIdx = FindRowIndexFromSenderInGroup(candidate, tb)
+            If rowIdx >= 0 Then g = candidate : Exit For
+        Next
+        If g Is Nothing OrElse rowIdx < 0 Then Exit Sub
+
+        FocusAdvance(g, rowIdx, tb)
+
+        If IsRowComplete(g, rowIdx) Then
+            currentGroup = g
+            currentRowIdx = rowIdx
+            currentExcelRow = GetRowFromAddr(g.MV3(rowIdx).cell)
+            ctxDc.TargetRow = currentExcelRow
+
+            'Dim groupLocal = g, rowLocal = currentRowIdx
+            'ctxDc.PreCalculate = Sub(ws) WriteInputsRow(ws, groupLocal, rowLocal)
+            'ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, groupLocal, rowLocal)
+
+            'dcComputeTimer.Stop()
+            'SetCalculating(True)           ' show CALCULATING, hide PREVIEW
+            'Me.Cursor = Cursors.WaitCursor
+            'dcComputeTimer.Start()
+            StartRowCompute(g, rowIdx)
+            TryAutoGenerateReport()        ' optional auto-export
+        End If
+    End Sub
 
     ' === HookLiveCompute (Sub) ===
     ' Summary: kapag nagchange ang mga respective textbox fields magrereference kay "OnMvChanged"
@@ -607,58 +657,75 @@ Public Class calibratingResult
         attach(ACC.MV1) : attach(ACC.MV2) : attach(ACC.MV3)
     End Sub
 
-    ' === MV textbox change event ===
-    ' Kapag may binago sa MV textbox, dito dumadaan.
-    ' Ina-advance yung focus, chine-check kung complete na yung row,
-    ' at nagsesetup ng timer para sa recalculation.
+    ' === TEMP row timing ===
+    Private rowStopwatch As System.Diagnostics.Stopwatch = Nothing
 
-    Private Sub OnMvChanged(sender As Object, e As EventArgs)
-        If isBulkUpdating Then Exit Sub  ' skip noisy live compute during bulk/sequence fills
-
-        Dim tb = TryCast(sender, TextBox)
-        If tb Is Nothing Then Exit Sub
-
-        Dim g As ParamGroup = Nothing
-        Dim rowIdx As Integer = -1
-        For Each candidate In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
-            If candidate Is Nothing Then Continue For
-            rowIdx = FindRowIndexFromSenderInGroup(candidate, tb)
-            If rowIdx >= 0 Then g = candidate : Exit For
-        Next
-        If g Is Nothing OrElse rowIdx < 0 Then Exit Sub
-
-        FocusAdvance(g, rowIdx, tb)
-
-        'checker ng lahat ng fields sa row na yun kung complate na (manual input), kapag complete na magrarun ang "TryAutoGenerateReport"
-        If IsRowComplete(g, rowIdx) Then
-            currentGroup = g
-            currentRowIdx = rowIdx
-            currentExcelRow = GetRowFromAddr(g.MV3(rowIdx).cell)
-            ctxDc.TargetRow = currentExcelRow
-
-            Dim groupLocal = g
-            Dim rowLocal = currentRowIdx
-            ctxDc.PreCalculate = Sub(ws) WriteInputsRow(ws, groupLocal, rowLocal)
-            ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, groupLocal, rowLocal)
-
-            dcComputeTimer.Stop()
-            SetCalculating(True)
-            Me.Cursor = Cursors.WaitCursor
-            dcComputeTimer.Start()
-
-            TryAutoGenerateReport()
-        End If
-    End Sub
+    ' Collect per-row elapsed times in order
+    Private rowTimes As New List(Of (Key As String, Elapsed As TimeSpan))
 
     Private Sub OnDcComputeTimerTick(sender As Object, e As EventArgs)
         dcComputeTimer.Stop()
         Try
-            If currentExcelRow > 0 Then ctxDc.TargetRow = currentExcelRow
+            If dcTargetRowForTick > 0 Then ctxDc.TargetRow = dcTargetRowForTick
             CalRowModule.RecalculateNow(ctxDc)
         Finally
             Me.Cursor = Cursors.Default
-            SetCalculating(False)        ' <--- add this
+            SetCalculating(False)
+            ' === TIMING/STOP LOGIC (TEMP) ===
+            If runActive Then
+                Dim key As String = GroupCode(currentGroup) & "#" & currentRowIdx
+                If Not computedKeys.Contains(key) Then
+                    computedKeys.Add(key)
+                    runComputedRows += 1
+                End If
+                If rowStopwatch IsNot Nothing Then
+                    rowStopwatch.Stop()
+                    Dim rowElapsed = rowStopwatch.Elapsed
+                    Dim rowKey As String = GroupCode(currentGroup) & " #" & currentRowIdx
+                    rowTimes.Add((rowKey, rowElapsed))
+                End If
+
+                If runComputedRows >= runTotalRows Then
+                    runActive = False
+                    If runStopwatch IsNot Nothing Then runStopwatch.Stop()
+
+                    ' stop any still-running fill timers
+                    StopSequentialFillWithNominal()
+                    StopSequentialMvFill()
+
+                    Dim total As TimeSpan = If(runStopwatch IsNot Nothing, runStopwatch.Elapsed, TimeSpan.Zero)
+                    Dim avg As TimeSpan = If(rowTimes.Count > 0,
+                                             TimeSpan.FromSeconds(rowTimes.Average(Function(t) t.Elapsed.TotalSeconds)),
+                                             TimeSpan.Zero)
+
+                    ' Build summary
+                    Dim sb As New System.Text.StringBuilder()
+                    sb.AppendLine("=== Calculation Time Summary ===")
+                    sb.AppendLine("Per-row times:")
+                    For Each t In rowTimes
+                        sb.AppendLine($"  {t.Key}: {t.Elapsed.TotalSeconds:F3}s ({t.Elapsed})")
+                    Next
+                    sb.AppendLine()
+                    sb.AppendLine($"Rows computed: {rowTimes.Count}")
+                    sb.AppendLine($"Average per row: {avg.TotalSeconds:F3}s ({avg})")
+                    sb.AppendLine($"TOTAL time: {total.TotalSeconds:F3}s ({total})")
+
+                    MessageBox.Show(sb.ToString(), "TEMP timing summary", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                End If
+
+            End If
+            ' Continue the nominal sequence after the compute for that row finishes
+            If nomSeqActive AndAlso nomSeqWaitingCompute Then
+                nomSeqWaitingCompute = False
+                If nomSeqTimer IsNot Nothing Then
+                    nomSeqTimer.Stop()
+                    nomSeqTimer.Start()
+                End If
+                'ProcessNextNominalStep()
+            End If
+
         End Try
+
     End Sub
 
 #End Region
@@ -879,7 +946,7 @@ Public Class calibratingResult
                             If p.tb IsNot Nothing Then
                                 p.tb.Visible = visible
                                 p.tb.TabStop = visible
-                                If Not visible Then p.tb.ReadOnly = True
+                                p.tb.ReadOnly = Not visible   ' was only setting ReadOnly=True when hidden
                             End If
                         Next
                     End Sub
@@ -914,6 +981,13 @@ Public Class calibratingResult
         SetGroupVisible(RES, cats.Contains("RESISTANCE"))
         SetGroupVisible(DCC, cats.Contains("DC CURRENT"))
         SetGroupVisible(ACC, cats.Contains("AC CURRENT"))
+
+        KeepToolButtonsVisible()
+        If nomSeqActive OrElse runActive Then
+            nomSeqTargets = BuildNominalTargets(True, False)
+            runTotalRows = CountVisibleRows()
+        End If
+
     End Sub
 
     Private Sub ApplySelectedParameterRows()
@@ -1055,6 +1129,23 @@ Public Class calibratingResult
     ' Summary: Ginagawa visible ang tool buttons kahit hidden yung parent containers.
     ' Notes: Useful para di mawala buttons pag may filtering/collapsed panels.
     ' Tags: UI, Layout
+
+    ' ——— Sequencer state (nominal) ———
+    Private nomSeqActive As Boolean = False
+
+    Private nomSeqWaitingCompute As Boolean = False
+
+    ' ——— Show HUD even when starting from buttons (reflection-safe; no compile error if missing) ———
+    Private Sub ShowTempHud()
+        Try
+            Dim mi = Me.GetType().GetMethod(
+            "SetupTestHud",
+            Global.System.Reflection.BindingFlags.NonPublic Or Global.System.Reflection.BindingFlags.Instance)
+            If mi IsNot Nothing Then mi.Invoke(Me, Nothing)
+        Catch
+        End Try
+    End Sub
+
     Private Sub KeepToolButtonsVisible()
         Dim btns = New Control() {btnAutoFill60, btnAutoFillNominalSeq, btnAutoFillNominalBulk, btnStopFill}
         For Each c In btns
@@ -1206,8 +1297,9 @@ Public Class calibratingResult
     ' Tags: AutoFill, Timer
     Public Sub StartSequentialMvFill(Optional value As String = "60",
                                      Optional onlyVisible As Boolean = True,
-                                     Optional intervalMs As Integer = 50,
+                                    Optional intervalMs As Integer = 5000,
                                      Optional recomputeAfter As Boolean = True)
+
         If seqTimer IsNot Nothing Then
             RemoveHandler seqTimer.Tick, AddressOf OnSeqTick
             seqTimer.Stop() : seqTimer.Dispose()
@@ -1228,7 +1320,7 @@ Public Class calibratingResult
     End Sub
 
     Public Sub TempFillAllMvSequential60()
-        StartSequentialMvFill("60", onlyVisible:=True, intervalMs:=100, recomputeAfter:=True)
+        StartSequentialMvFill("60", onlyVisible:=True, intervalMs:=5000, recomputeAfter:=True)
     End Sub
 
     Public Sub StopSequentialMvFill()
@@ -1350,34 +1442,83 @@ Public Class calibratingResult
     'intervalMs: how often(in milliseconds) the Loop should "tick."
     'recomputeAfter: whether to trigger a recomputation at the end.
     Public Sub StartSequentialFillWithNominal(Optional onlyVisible As Boolean = True,
-                                              Optional copyUnits As Boolean = False,
-                                              Optional intervalMs As Integer = 100,
-                                              Optional recomputeAfter As Boolean = True)
-        'If a Then timer Is already running, remove its Event handler, Stop it, And free its resources.
-        'This prevents multiple timers from overlapping.
+                                          Optional copyUnits As Boolean = False,
+                                          Optional intervalMs As Integer = 5000,
+                                          Optional recomputeAfter As Boolean = True)
+
+        ' === Reset timing state ===
+        rowTimes.Clear()
+
+        ' Build targets
+        nomSeqTargets = BuildNominalTargets(onlyVisible, copyUnits)
+        If nomSeqTargets Is Nothing OrElse nomSeqTargets.Count = 0 Then Exit Sub
+        SetCalculating(True)
+
+        nomSeqIndex = 0
+        nomSeqRecomputeAfter = recomputeAfter
+        isBulkUpdating = False                ' allow per-row live compute
+
+        ' Run timing/stopwatch (unchanged)
+        runTotalRows = CountVisibleRows()
+        runComputedRows = 0
+        computedKeys.Clear()
+        runStopwatch = System.Diagnostics.Stopwatch.StartNew()
+        runActive = True
+
+        ' Nominal sequence state
+        nomSeqActive = True
+        nomSeqWaitingCompute = False          ' let the timer drive steps first
+
+        ' (Re)create the timer and honor intervalMs
         If nomSeqTimer IsNot Nothing Then
             RemoveHandler nomSeqTimer.Tick, AddressOf OnNomSeqTick
             nomSeqTimer.Stop() : nomSeqTimer.Dispose()
         End If
-        'Calls a helper method to figure out what needs to be filled sequentially.
-        'If no Then targets are found, Exit early — Nothing To Do.
-        nomSeqTargets = BuildNominalTargets(onlyVisible, copyUnits)
-        If nomSeqTargets Is Nothing OrElse nomSeqTargets.Count = 0 Then Exit Sub
-        SetCalculating(True)
-        'nomSeqIndex keeps track of which target in the list is currently being processed.
-        'nomSeqRecomputeAfter remembers if we need to recompute at the end.
-        'isBulkUpdating is a flag to signal that a batch update is in progress.
-        nomSeqIndex = 0
-        nomSeqRecomputeAfter = recomputeAfter
-
-        isBulkUpdating = True
-
-        'Creates a New Timer that fires every intervalMs milliseconds.
-        'Attaches the handler OnNomSeqTick to the timer's Tick event.
-        'Starts the timer — this effectively kicks off the loop.
         nomSeqTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, intervalMs)}
         AddHandler nomSeqTimer.Tick, AddressOf OnNomSeqTick
         nomSeqTimer.Start()
+    End Sub
+
+    Private Sub ProcessNextNominalStep()
+        If Not nomSeqActive Then Exit Sub
+
+        Do
+            If nomSeqTargets Is Nothing OrElse nomSeqIndex >= nomSeqTargets.Count Then
+                ' Done
+                nomSeqActive = False
+                If nomSeqRecomputeAfter Then
+                    ComputeAllAfterBulkLoad()
+                    Me.Cursor = Cursors.Default
+                End If
+                Exit Sub
+            End If
+
+            Dim pair = nomSeqTargets(nomSeqIndex)
+
+            If pair.tb IsNot Nothing AndAlso Not pair.tb.IsDisposed Then
+                pair.tb.Focus()
+                pair.tb.Text = pair.value
+                ScrollIntoViewDeep(pair.tb)
+
+                ' If this write completes a row, start a compute and WAIT (return)
+                Dim g As ParamGroup = Nothing
+                Dim rowIdx As Integer = -1
+                For Each cand In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
+                    If cand Is Nothing Then Continue For
+                    rowIdx = FindRowIndexFromSenderInGroup(cand, pair.tb)
+                    If rowIdx >= 0 Then g = cand : Exit For
+                Next
+
+                If g IsNot Nothing AndAlso rowIdx >= 0 AndAlso IsRowComplete(g, rowIdx) Then
+                    nomSeqWaitingCompute = True
+                    StartRowCompute(g, rowIdx)        ' pins target row and starts dcComputeTimer
+                    nomSeqIndex += 1                   ' advance to next cell AFTER compute completes
+                    Exit Sub                           ' <- WAIT here until compute tick fires
+                End If
+            End If
+
+            nomSeqIndex += 1                           ' not complete yet; continue filling
+        Loop
     End Sub
 
     Public Sub StopSequentialFillWithNominal()
@@ -1389,6 +1530,9 @@ Public Class calibratingResult
     End Sub
 
     Private Sub OnNomSeqTick(sender As Object, e As EventArgs)
+        ' If we’re waiting for compute completion, do nothing this tick
+        If nomSeqWaitingCompute Then Exit Sub
+
         If nomSeqTargets Is Nothing OrElse nomSeqIndex >= nomSeqTargets.Count Then
             StopSequentialFillWithNominal()
             If nomSeqRecomputeAfter Then
@@ -1400,10 +1544,24 @@ Public Class calibratingResult
 
         Dim pair = nomSeqTargets(nomSeqIndex)
         If pair.tb IsNot Nothing AndAlso Not pair.tb.IsDisposed Then
-            pair.tb.Focus()               ' optional
+            pair.tb.Focus()
             pair.tb.Text = pair.value
-            ScrollIntoViewDeep(pair.tb)   ' <--- ensure visible
+            ScrollIntoViewDeep(pair.tb)
+
+            ' If this write completes a row, trigger compute and PAUSE sequence
+            Dim g As ParamGroup = Nothing
+            Dim rowIdx As Integer = -1
+            For Each cand In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
+                If cand Is Nothing Then Continue For
+                rowIdx = FindRowIndexFromSenderInGroup(cand, pair.tb)
+                If rowIdx >= 0 Then g = cand : Exit For
+            Next
+            If g IsNot Nothing AndAlso rowIdx >= 0 AndAlso IsRowComplete(g, rowIdx) Then
+                nomSeqWaitingCompute = True
+                StartRowCompute(g, rowIdx)     ' dcComputeTimer will clear the gate
+            End If
         End If
+
         nomSeqIndex += 1
     End Sub
 
@@ -1411,16 +1569,17 @@ Public Class calibratingResult
     ' Summary: Button handler para simulan ang 60 sequential filler.
     ' Tags: UI, AutoFill
     Private Sub btnAutoFill60_Click(sender As Object, e As EventArgs) Handles btnAutoFill60.Click
-        ' Fills MV1→MV2→MV3 on all VISIBLE rows at 50 ms, then recalculates once
+        ShowTempHud()
         TempFillAllMvSequential60()
     End Sub
 
     Private Sub btnAutoFillNominalSeq_Click(sender As Object, e As EventArgs) Handles btnAutoFillNominalSeq.Click
-        StartSequentialFillWithNominal(onlyVisible:=True, copyUnits:=False, intervalMs:=100, recomputeAfter:=True)
-
+        ShowTempHud()
+        StartSequentialFillWithNominal(onlyVisible:=True, copyUnits:=False, intervalMs:=3000, recomputeAfter:=False)
     End Sub
 
     Private Sub btnAutoFillNominalBulk_Click(sender As Object, e As EventArgs) Handles btnAutoFillNominalBulk.Click
+        ShowTempHud()
         FillAllMvWithNominal(onlyVisible:=True, copyUnits:=False, recomputeAfter:=True)
     End Sub
 
@@ -1428,6 +1587,10 @@ Public Class calibratingResult
         StopSequentialMvFill()          ' for the “60” sequencer
         StopSequentialFillWithNominal() ' for the nominal sequencer
     End Sub
+
+#End Region  ' TEMP/DEBUG — easy to delete later
+
+#Region "Manual export (button handlers)"
 
     ' === btnExportReportExcel_Click (Sub) ===
     ' Summary: Manual export button. Saves calibration report to Excel.
@@ -1512,7 +1675,7 @@ Public Class calibratingResult
         End Using
     End Sub
 
-#End Region  ' TEMP/DEBUG — easy to delete later
+#End Region
 
 #Region "Sir Mel"
 
@@ -1829,6 +1992,220 @@ Public Class calibratingResult
             End If
         Next
         Return output
+    End Function
+
+#End Region
+
+#Region "TEMP/TEST TIMERS — auto steps (DELETE ME LATER)"
+
+    ' Taglish comments para klaro sa future cleanup
+    ' Pinned Excel target row for the *next* compute tick
+    Private dcTargetRowForTick As Integer = -1
+
+    ' === Master switch (set to False to disable in prod) ===
+    Private testTimersEnabled As Boolean = True   ' TEMP ONLY
+
+    ' === Individual delays (ms) ===
+    Private nominalEntryDelayMs As Integer = 1500 ' delay bago mag-nominal entry
+
+    Private calcDelayMs As Integer = 1500         ' delay bago mag-compute (after nominal)
+    Private exportDelayMs As Integer = 1500       ' delay bago mag-export (after compute)
+
+    ' === Timers ===
+    Private nominalEntryTimer As System.Windows.Forms.Timer
+
+    Private calcTimer As System.Windows.Forms.Timer
+    Private exportTimer As System.Windows.Forms.Timer
+    Private testHudPanel As Panel
+    Private lblClock As Label
+    Private lblNominalAt As Label
+    Private lblCalcAt As Label
+    Private lblExportAt As Label
+    Private clockTimer As System.Windows.Forms.Timer
+
+    ' === TEMP timing for sequential nominal run ===
+    Private runStopwatch As System.Diagnostics.Stopwatch = Nothing
+
+    Private runActive As Boolean = False
+    Private runTotalRows As Integer = 0
+    Private runComputedRows As Integer = 0
+    Private computedKeys As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+
+    Private Sub SetupTestHud()
+        ' Huwag mag-spawn ng duplicate panel
+        If testHudPanel IsNot Nothing Then Exit Sub
+
+        testHudPanel = New Panel With {
+        .BackColor = Color.FromArgb(220, 0, 0, 0), ' semi-transparent black
+        .ForeColor = Color.White,
+        .AutoSize = True,
+        .Padding = New Padding(8),
+        .BorderStyle = BorderStyle.FixedSingle,
+        .Anchor = AnchorStyles.Top Or AnchorStyles.Right
+    }
+
+        Dim title = New Label With {.Text = "TEMP HUD", .AutoSize = True, .Font = New Font(Me.Font, FontStyle.Bold)}
+        lblClock = New Label With {.Text = "Now: --:--:--", .AutoSize = True}
+        lblNominalAt = New Label With {.Text = "Nominal: —", .AutoSize = True}
+        lblCalcAt = New Label With {.Text = "Compute: —", .AutoSize = True}
+        lblExportAt = New Label With {.Text = "Export: —", .AutoSize = True}
+
+        testHudPanel.Controls.Add(title)
+        testHudPanel.Controls.Add(lblClock)
+        testHudPanel.Controls.Add(lblNominalAt)
+        testHudPanel.Controls.Add(lblCalcAt)
+        testHudPanel.Controls.Add(lblExportAt)
+
+        ' Simple vertical layout
+        Dim y As Integer = 6
+        For Each c As Control In testHudPanel.Controls
+            c.Location = New Point(8, y)
+            y += c.Height + 4
+        Next
+
+        ' Place top-right and keep it there on resize
+        Me.Controls.Add(testHudPanel)
+        testHudPanel.Location = New Point(Me.ClientSize.Width - testHudPanel.PreferredSize.Width - 8, 8)
+        AddHandler Me.Resize, Sub(sender As Object, e As EventArgs)
+                                  testHudPanel.Location = New Point(
+                                      Me.ClientSize.Width - testHudPanel.PreferredSize.Width - 8, 8)
+                              End Sub
+
+        testHudPanel.BringToFront()
+
+        ' Live clock
+        clockTimer = New System.Windows.Forms.Timer() With {.Interval = 1000}
+        AddHandler clockTimer.Tick, Sub()
+                                        lblClock.Text = "Now: " & DateTime.Now.ToString("HH:mm:ss")
+                                    End Sub
+        clockTimer.Start()
+    End Sub
+
+    ' Starts a compute for a specific row, safely pinned to that row
+    Private Sub StartRowCompute(g As ParamGroup, rowIdx As Integer)
+        If g Is Nothing OrElse rowIdx < 0 Then Exit Sub
+        If g.MV3 Is Nothing OrElse rowIdx >= g.MV3.Length OrElse g.MV3(rowIdx).cell Is Nothing Then Exit Sub
+
+        currentGroup = g
+        currentRowIdx = rowIdx
+        dcTargetRowForTick = GetRowFromAddr(g.MV3(rowIdx).cell)
+
+        Dim groupLocal = g, rowLocal = rowIdx
+        ctxDc.PreCalculate = Sub(ws) WriteInputsRow(ws, groupLocal, rowLocal)
+        ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, groupLocal, rowLocal)
+
+        dcComputeTimer.Stop()
+        SetCalculating(True)
+        Me.Cursor = Cursors.WaitCursor
+
+        ' start row stopwatch
+        rowStopwatch = System.Diagnostics.Stopwatch.StartNew()
+
+        dcComputeTimer.Start()
+    End Sub
+
+    ' Setup ng test timers; tatawagin sa dulo ng Load
+    Private Sub SetupTestTimers()
+        If Not testTimersEnabled Then Return
+
+        SetupTestHud()
+
+        ' 1) Nominal entry after delay
+        nominalEntryTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, nominalEntryDelayMs)}
+        AddHandler nominalEntryTimer.Tick,
+        Sub()
+            nominalEntryTimer.Stop()
+            ' Step 1: Fill ALL visible MV1/MV2/MV3 with Nominal (walang units copy; walang auto-recompute)
+            ' NOTE: Gumagamit tayo ng bulk filler para deterministic at mabilis.
+            FillAllMvWithNominal(onlyVisible:=True, copyUnits:=False, recomputeAfter:=False)
+            ' Chain to compute step via timer #2
+            If calcTimer IsNot Nothing Then calcTimer.Start()
+        End Sub
+
+        ' 2) Recompute after another delay
+        calcTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, calcDelayMs)}
+        AddHandler calcTimer.Tick,
+        Sub()
+            calcTimer.Stop()
+            ' Step 2: Run the full-sheet compute/pull once
+            ComputeAllAfterBulkLoad()
+            ' Chain to export via timer #3
+            If exportTimer IsNot Nothing Then exportTimer.Start()
+        End Sub
+
+        ' 3) Export after compute delay
+        exportTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, exportDelayMs)}
+        AddHandler exportTimer.Tick,
+        Sub()
+            exportTimer.Stop()
+            ' Step 3: Trigger the existing Export button logic
+            If ctxDc Is Nothing OrElse String.IsNullOrWhiteSpace(ctxDc.TemplatePath) Then
+                MessageBox.Show("Test export skipped — Excel context not ready.", "TEMP/TEST TIMERS")
+                Exit Sub
+            End If
+            ' Gamitin ang umiiral na handler via PerformClick para siguradong same behavior
+            If btnExportReportExcel IsNot Nothing AndAlso btnExportReportExcel.Enabled Then
+                btnExportReportExcel.PerformClick()
+            Else
+                ' fallback: direktang tawagin ang handler
+                btnExportReportExcel_Click(Me, EventArgs.Empty)
+            End If
+        End Sub
+
+        ' Start the chain
+        nominalEntryTimer.Start()
+
+        AddHandler nominalEntryTimer.Tick,
+    Sub()
+        nominalEntryTimer.Stop()
+        lblNominalAt.Text = "Nominal: " & DateTime.Now.ToString("HH:mm:ss.fff")
+        FillAllMvWithNominal(onlyVisible:=True, copyUnits:=False, recomputeAfter:=False)
+        If calcTimer IsNot Nothing Then calcTimer.Start()
+    End Sub
+
+        AddHandler calcTimer.Tick,
+            Sub()
+                calcTimer.Stop()
+                lblCalcAt.Text = "Compute: " & DateTime.Now.ToString("HH:mm:ss.fff")
+                ComputeAllAfterBulkLoad()
+                If exportTimer IsNot Nothing Then exportTimer.Start()
+            End Sub
+
+        AddHandler exportTimer.Tick,
+            Sub()
+                exportTimer.Stop()
+                lblExportAt.Text = "Export: " & DateTime.Now.ToString("HH:mm:ss.fff")
+                If btnExportReportExcel IsNot Nothing AndAlso btnExportReportExcel.Enabled Then
+                    btnExportReportExcel.PerformClick()
+                Else
+                    btnExportReportExcel_Click(Me, EventArgs.Empty)
+                End If
+            End Sub
+
+        nominalEntryTimer.Start()
+    End Sub
+
+    Private Function CountVisibleRows() As Integer
+        Dim total As Integer = 0
+        Dim groups As ParamGroup() = {DCV, ACV, RES, DCC, ACC}
+
+        For Each g As ParamGroup In groups
+            If g Is Nothing OrElse g.MV1 Is Nothing Then Continue For
+            For i As Integer = 0 To g.MV1.Length - 1
+                Dim tb1 As TextBox = If(g.MV1(i).tb, Nothing)
+                If tb1 IsNot Nothing AndAlso tb1.Visible Then total += 1
+            Next
+        Next
+        Return total
+    End Function
+
+    Private Function GroupCode(g As ParamGroup) As String
+        If g Is DCV Then Return "DCV"
+        If g Is ACV Then Return "ACV"
+        If g Is RES Then Return "RES"
+        If g Is DCC Then Return "DCC"
+        If g Is ACC Then Return "ACC"
+        Return "G"
     End Function
 
 #End Region
