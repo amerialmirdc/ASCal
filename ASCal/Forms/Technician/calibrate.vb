@@ -1,11 +1,14 @@
 ﻿Imports System.Data.SQLite
+Imports System.Drawing.Imaging
+Imports AForge.Video
+Imports AForge.Video.DirectShow
 
 Public Class calibrate
 
     ' -------------------------------
     ' Handles navigation buttons (logo, logout, dashboard)
     ' -------------------------------
-    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoBtn.Click, logoutBtn.Click, jobDashBtn.Click
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoutBtn.Click, logoBtn.Click, jobDashBtn.Click
         contextMenuCompanies.SelectedIndex = -1
         contextMenuCompanies.Text = ""
         dmmSearch.Clear()
@@ -137,6 +140,11 @@ Public Class calibrate
     ' -------------------------------
     ' Form Load: configure window, UI defaults, load DMMs & companies
     ' -------------------------------
+    Private videoSource As VideoCaptureDevice
+
+    Dim Camera As VideoCaptureDevice
+    Dim bmp As Bitmap
+
     Private Sub calibrate_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Window sizing/placement
         Me.StartPosition = FormStartPosition.Manual
@@ -180,6 +188,33 @@ Public Class calibrate
         cLParamDCC.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
         cLParamRES.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
 
+        '''''''''''''automatic istart
+
+        Dim videoDevices As New FilterInfoCollection(FilterCategory.VideoInputDevice)
+        'If videoDevices.Count > 0 Then
+        '    ' Select the first available camera
+        '    videoSource = New VideoCaptureDevice(videoDevices(0).MonikerString)
+
+        '    ' Set the NewFrame event to handle the video feed
+        '    AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
+
+        '    ' Start the camera
+        '    videoSource.Start()
+        'Else
+        '    MessageBox.Show("No camera devices found.")
+        'End If
+
+        ' ----- Camera init (prefers internal laptop cam) -----
+        Dim cam = CreatePreferredCamera()
+        If cam IsNot Nothing Then
+            videoSource = cam
+            AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
+            videoSource.Start()
+        Else
+            MessageBox.Show("No camera devices found.")
+        End If
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
         For Each row As DataGridViewRow In dataGridResult.Rows
             If Not row.IsNewRow Then
                 Dim modelValue = row.Cells("MODEL").Value
@@ -221,12 +256,243 @@ Public Class calibrate
         Next
     End Sub
 
+    ' Prefer an EXTERNAL USB webcam if present; otherwise fall back gracefully
+    Private Function CreatePreferredCamera() As VideoCaptureDevice
+        Dim devices = New FilterInfoCollection(FilterCategory.VideoInputDevice)
+        If devices Is Nothing OrElse devices.Count = 0 Then Return Nothing
+
+        ' Heuristics: common external webcam markers (vendor/models/USB terms)
+        Dim externalKeywords = New String() {
+        "logi", "logitech", "brio", "c920", "c922", "c925", "c930",
+        "microsoft", "lifecam", "creative", "razer", "elgato", "aver",
+        "aukey", "hd pro", "usb", "webcam hd", "camera hd"
+    }
+
+        ' Heuristics: names often used by integrated laptop cameras
+        ' NOTE: do NOT include generic "webcam" here (externals also say "webcam")
+        Dim internalKeywords = New String() {
+        "integrated", "internal", "built-in", "builtin", "laptop",
+        "hd camera", "front camera"
+    }
+
+        Dim pick As FilterInfo = Nothing
+
+        ' 1) Try to find an obvious EXTERNAL webcam
+        For Each d As FilterInfo In devices
+            Dim n = d.Name.ToLowerInvariant()
+            If externalKeywords.Any(Function(k) n.Contains(k)) Then
+                pick = d
+                Exit For
+            End If
+        Next
+
+        ' 2) If none matched, choose the first device that does NOT look internal
+        If pick Is Nothing Then
+            For Each d As FilterInfo In devices
+                Dim n = d.Name.ToLowerInvariant()
+                If Not internalKeywords.Any(Function(k) n.Contains(k)) Then
+                    pick = d
+                    Exit For
+                End If
+            Next
+        End If
+
+        ' 3) Last fallback: first device
+        If pick Is Nothing Then pick = devices(0)
+
+        ' Build device and choose a sensible resolution
+        Dim cam = New VideoCaptureDevice(pick.MonikerString)
+        Try
+            Dim caps = cam.VideoCapabilities
+            If caps IsNot Nothing AndAlso caps.Length > 0 Then
+                ' Prefer 1280x720 if offered; else the highest resolution available
+                Dim best = caps.FirstOrDefault(Function(c) c.FrameSize.Width = 1280 AndAlso c.FrameSize.Height = 720)
+                If best Is Nothing Then
+                    best = caps.OrderByDescending(Function(c) c.FrameSize.Width * c.FrameSize.Height).First()
+                End If
+                cam.VideoResolution = best
+            End If
+        Catch
+            ' Some drivers throw; safe to ignore and use default
+        End Try
+
+        Return cam
+    End Function
+
+    Private Sub BtnCapture_Click(sender As Object, e As EventArgs) Handles BtnCapture.Click
+        If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
+            videoSource.SignalToStop()
+            videoSource.WaitForStop()
+        End If
+
+        ' Gamitin ang app folder dynamically (hindi hardcoded ang username)
+        Dim baseDir As String = IO.Path.Combine(My.Application.Info.DirectoryPath, "CapturedImage")
+        If Not IO.Directory.Exists(baseDir) Then IO.Directory.CreateDirectory(baseDir)
+
+        Dim capturePath As String = IO.Path.Combine(baseDir, "AAAA.jpg")
+        Dim bwPath As String = IO.Path.Combine(baseDir, "BBBBB.jpg") ' (optional / currently unused)
+
+        ' Save captured image kung may frame sa PictureBox
+        If PictureBox1.Image IsNot Nothing Then
+            PictureBox1.Image.Save(capturePath, ImageFormat.Jpeg)
+        Else
+            'kukuha ulit ng picture kasi walang laman yung picturebox1
+        End If
+
+        ' --- Single IF + Single USING lang para iwas variable shadowing / nesting issues ---
+        If IO.File.Exists(capturePath) Then
+            Using originalImage As Bitmap = CType(Image.FromFile(capturePath), Bitmap)
+
+                ' Step 1: OCR raw text (palitan ng actual OCR engine kapag ready)
+                Dim rawText As String = PerformOcr(originalImage)
+
+                ' Step 2: Fuzzy match laban sa DMM database (brand + model)
+                ' Taglish: I-score lahat ng DMM (brand+model) vs OCR text gamit Similarity(Levenshtein).
+                '          Piliin ang best; kung mababa, ipakita sa grid ang Top suggestions.
+                If dmmItems Is Nothing OrElse dmmItems.Count = 0 Then
+                    MessageBox.Show("Walang laman ang DMM master list (dmmItems).", "DB Empty", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Return
+                End If
+
+                Dim scoredMatches As New List(Of Tuple(Of Double, Tuple(Of String, String, String)))()
+                For Each dmm In dmmItems
+                    Dim model = dmm.Item1   ' model name galing DB
+                    Dim brand = dmm.Item2   ' manufacturer/brand galing DB
+
+                    ' Compute similarity ng buong OCR text kumpara sa brand at model
+                    Dim brandScore = Similarity(rawText, brand)
+                    Dim modelScore = Similarity(rawText, model)
+                    Dim combined = (brandScore + modelScore) / 2   ' average score
+
+                    scoredMatches.Add(Tuple.Create(combined, dmm))
+                Next
+
+                ' Sort by best score (desc)
+                scoredMatches = scoredMatches.OrderByDescending(Function(x) x.Item1).ToList()
+
+                Dim detectedModel As Tuple(Of String, String, String) = Nothing
+                Dim bestScore As Double = scoredMatches(0).Item1
+                Const CONFIDENCE_THRESHOLD As Double = 0.6   ' 60% → tweak as needed
+
+                If bestScore >= CONFIDENCE_THRESHOLD Then
+                    ' Kapag pasado sa threshold, auto-select
+                    detectedModel = scoredMatches(0).Item2
+                Else
+                    ' Mababa ang confidence — ipakita ang top matches sa grid (no InputBox)
+                    ShowTopMatchesInGrid(scoredMatches, 3)
+                    ' Note: hintayin na lang ang user click; iyong existing dataGridResult_CellClick
+                    ' ang bahalang mag-autofill ng dmmmodel/manufaacturer/description.
+                End If
+
+                ' Step 3: Autofill agad kung auto-detected
+                If detectedModel IsNot Nothing Then
+                    dmmmodel.Text = detectedModel.Item1        ' Model
+                    manufaacturer.Text = detectedModel.Item2   ' Brand/Manufacturer
+                    dmmdescription.Text = detectedModel.Item3  ' Description galing DB
+
+                    MessageBox.Show(
+                    $"Detected DMM: {detectedModel.Item2} {detectedModel.Item1}" & vbCrLf &
+                    $"(Confidence: {bestScore:P0})",
+                    "OCR Match", MessageBoxButtons.OK, MessageBoxIcon.Information
+                )
+                End If
+
+            End Using
+        End If
+    End Sub
+
+    ' -------------------------------
+    ' Ipakita sa dataGridResult ang Top N OCR suggestions (Model, Manufacturer, Score)
+    ' -------------------------------
+    Private Sub ShowTopMatchesInGrid(scoredMatches As List(Of Tuple(Of Double, Tuple(Of String, String, String))),
+                                 Optional topN As Integer = 3)
+
+        ' Ensure may SCORE column (3rd col). Kung wala pa, add one.
+        If Not dataGridResult.Columns.Contains("SCORE") Then
+            Dim scoreCol As New DataGridViewTextBoxColumn()
+            scoreCol.Name = "SCORE"
+            scoreCol.HeaderText = "SCORE"
+            scoreCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+            dataGridResult.Columns.Add(scoreCol)
+        End If
+
+        dataGridResult.Rows.Clear()
+
+        Dim count As Integer = Math.Min(topN, scoredMatches.Count)
+        For i As Integer = 0 To count - 1
+            Dim item = scoredMatches(i)
+            Dim dmm = item.Item2                        ' (Model, Manufacturer, Desc)
+            Dim pct As String = (item.Item1 * 100).ToString("0") & "%"
+
+            ' Rows: MODEL, MANUFACTURER, SCORE
+            dataGridResult.Rows.Add(dmm.Item1, dmm.Item2, pct)
+        Next
+
+        dataGridResult.ClearSelection()
+
+        ' Taglish tip para sa tech
+        MessageBox.Show("Mababa ang confidence ng OCR. Pinakita ang Top matches sa grid." &
+                    vbCrLf & "Piliin (click) ang tamang DMM row para i-autofill.",
+                    "Pick from suggestions", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+
+    Private Function PerformOcr(bmp As Bitmap) As String
+        ' TODO: Replace with Tesseract or other OCR engine
+        ' For now, return dummy text to test parsing
+        Return "FLUKE 114 True RMS Multimeter"
+    End Function
+
+    ' Calculate Levenshtein distance (edit distance) between two strings
+    Private Function Levenshtein(a As String, b As String) As Integer
+        If String.IsNullOrEmpty(a) Then Return If(String.IsNullOrEmpty(b), 0, b.Length)
+        If String.IsNullOrEmpty(b) Then Return a.Length
+
+        Dim n = a.Length
+        Dim m = b.Length
+        Dim d(n, m) As Integer
+
+        For i = 0 To n
+            d(i, 0) = i
+        Next
+        For j = 0 To m
+            d(0, j) = j
+        Next
+
+        For i = 1 To n
+            For j = 1 To m
+                Dim cost = If(a(i - 1) = b(j - 1), 0, 1)
+                d(i, j) = Math.Min(Math.Min(d(i - 1, j) + 1, d(i, j - 1) + 1), d(i - 1, j - 1) + cost)
+            Next
+        Next
+
+        Return d(n, m)
+    End Function
+
+    ' Calculate similarity ratio (0.0 – 1.0)
+    Private Function Similarity(a As String, b As String) As Double
+        Dim dist = Levenshtein(a.ToLower().Trim(), b.ToLower().Trim())
+        Dim maxLen = Math.Max(a.Length, b.Length)
+        If maxLen = 0 Then Return 1.0
+        Return 1.0 - (dist / maxLen)
+    End Function
+
+    Private Sub Captured(ByVal sender As Object, ByVal EventArgs As NewFrameEventArgs)
+        bmp = DirectCast(EventArgs.Frame.Clone(), Bitmap)
+        PictureBox1.Image = DirectCast(EventArgs.Frame.Clone(), Bitmap)
+    End Sub
+
+    Private Sub Video_NewFrame(sender As Object, eventArgs As NewFrameEventArgs)
+        ' Display the video feed in a PictureBox
+        Dim bitmap As Bitmap = DirectCast(eventArgs.Frame.Clone(), Bitmap)
+        PictureBox1.Image = bitmap
+    End Sub
+
     ' -------------------------------
     ' Serial number lookup:
     '   - Autofill company address
     '   - Retrieve last calibration cert & technician
     ' -------------------------------
-    Private Sub serialNumber_change(sender As Object, e As EventArgs) Handles serialNumber.Leave, serialNumber.KeyDown, serialNumber.TextChanged
+    Private Sub serialNumber_change(sender As Object, e As EventArgs) Handles serialNumber.TextChanged, serialNumber.Leave, serialNumber.KeyDown
         If TypeOf e Is KeyEventArgs Then
             Dim ke As KeyEventArgs = DirectCast(e, KeyEventArgs)
             If ke.KeyCode <> Keys.Enter Then Return
@@ -346,6 +612,12 @@ Public Class calibrate
                 Next
             Next
         Next
+        ' After picking from OCR suggestions, ibalik ang full DMM list
+        If dataGridResult.Columns.Contains("SCORE") Then
+            dataGridResult.Columns("SCORE").Visible = False
+        End If
+        PopulateDataGrid()
+
     End Sub
 
     ' -------------------------------

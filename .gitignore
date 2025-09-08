@@ -34,9 +34,11 @@ GeneratedFiles/
 # Others
 *.swp
 *.tmp
-/ASCal/bin/Debug/Job_Export/CalibrationReport_5465-09_gdgfgdgfgd.xlsx
-/ASCal/obj/x86/Debug/ASCal.pdb
-/ASCal/obj/x86/Debug/ASCal.exe
-/ASCal/bin/Debug/ASCal.pdb
+/ASCal/~$mapping.xlsx
+/ASCal/bin/Debug/CapturedImage/AAAA.jpg
+/ASCal/bin/Debug/CapturedImage
 /ASCal/bin/Debug/ASCal.exe
-/ASCal/Forms/Technician/calibrate.Designer.vb
+/ASCal/bin/Debug/ASCal.pdb
+/ASCal/obj/x86/Debug/ASCal.exe
+/ASCal/obj/x86/Debug/ASCal.pdb
+/ASCal/bin/Debug/Job_Export
