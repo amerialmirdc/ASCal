@@ -175,7 +175,7 @@ Partial Class calibrate
         Me.Panel1.Cursor = System.Windows.Forms.Cursors.Default
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Left
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
-        Me.Panel1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel1.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(400, 1306)
         Me.Panel1.TabIndex = 22
@@ -185,7 +185,7 @@ Partial Class calibrate
         Me.Panel8.Controls.Add(Me.logoutBtn)
         Me.Panel8.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.Panel8.Location = New System.Drawing.Point(0, 1222)
-        Me.Panel8.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel8.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel8.Name = "Panel8"
         Me.Panel8.Size = New System.Drawing.Size(400, 84)
         Me.Panel8.TabIndex = 5
@@ -200,7 +200,7 @@ Partial Class calibrate
         Me.logoutBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.logoutBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.logoutBtn.Location = New System.Drawing.Point(43, 20)
-        Me.logoutBtn.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.logoutBtn.Margin = New System.Windows.Forms.Padding(4)
         Me.logoutBtn.Name = "logoutBtn"
         Me.logoutBtn.Size = New System.Drawing.Size(327, 50)
         Me.logoutBtn.TabIndex = 0
@@ -212,7 +212,7 @@ Partial Class calibrate
         Me.Panel4.Controls.Add(Me.jobDashBtn)
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel4.Location = New System.Drawing.Point(0, 207)
-        Me.Panel4.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel4.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel4.Name = "Panel4"
         Me.Panel4.Size = New System.Drawing.Size(400, 84)
         Me.Panel4.TabIndex = 2
@@ -226,7 +226,7 @@ Partial Class calibrate
         Me.jobDashBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.jobDashBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.jobDashBtn.Location = New System.Drawing.Point(43, 20)
-        Me.jobDashBtn.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.jobDashBtn.Margin = New System.Windows.Forms.Padding(4)
         Me.jobDashBtn.Name = "jobDashBtn"
         Me.jobDashBtn.Size = New System.Drawing.Size(327, 50)
         Me.jobDashBtn.TabIndex = 0
@@ -238,7 +238,7 @@ Partial Class calibrate
         Me.Panel3.Controls.Add(Me.calibrateBtn)
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel3.Location = New System.Drawing.Point(0, 123)
-        Me.Panel3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel3.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel3.Name = "Panel3"
         Me.Panel3.Size = New System.Drawing.Size(400, 84)
         Me.Panel3.TabIndex = 1
@@ -254,7 +254,7 @@ Partial Class calibrate
         Me.calibrateBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.calibrateBtn.Font = New System.Drawing.Font("Courier10 BT", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.calibrateBtn.Location = New System.Drawing.Point(43, 20)
-        Me.calibrateBtn.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.calibrateBtn.Margin = New System.Windows.Forms.Padding(4)
         Me.calibrateBtn.Name = "calibrateBtn"
         Me.calibrateBtn.Size = New System.Drawing.Size(327, 50)
         Me.calibrateBtn.TabIndex = 0
@@ -266,7 +266,7 @@ Partial Class calibrate
         Me.Panel2.Controls.Add(Me.logoBtn)
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel2.Location = New System.Drawing.Point(0, 0)
-        Me.Panel2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel2.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel2.Name = "Panel2"
         Me.Panel2.Size = New System.Drawing.Size(400, 123)
         Me.Panel2.TabIndex = 0
@@ -276,7 +276,7 @@ Partial Class calibrate
         Me.logoBtn.Cursor = System.Windows.Forms.Cursors.Hand
         Me.logoBtn.Image = Global.ASCal.My.Resources.Resources._31
         Me.logoBtn.Location = New System.Drawing.Point(75, 30)
-        Me.logoBtn.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.logoBtn.Margin = New System.Windows.Forms.Padding(4)
         Me.logoBtn.Name = "logoBtn"
         Me.logoBtn.Size = New System.Drawing.Size(256, 81)
         Me.logoBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
@@ -366,7 +366,7 @@ Partial Class calibrate
         Me.mainPanelCalibrateInp.Controls.Add(Me.PictureBox5)
         Me.mainPanelCalibrateInp.Dock = System.Windows.Forms.DockStyle.Fill
         Me.mainPanelCalibrateInp.Location = New System.Drawing.Point(400, 0)
-        Me.mainPanelCalibrateInp.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.mainPanelCalibrateInp.Margin = New System.Windows.Forms.Padding(4)
         Me.mainPanelCalibrateInp.Name = "mainPanelCalibrateInp"
         Me.mainPanelCalibrateInp.Size = New System.Drawing.Size(2164, 1306)
         Me.mainPanelCalibrateInp.TabIndex = 34
@@ -376,7 +376,7 @@ Partial Class calibrate
         Me.panelAccesoriesUsed.AutoScroll = True
         Me.panelAccesoriesUsed.Controls.Add(Me.TableLayoutPanel2)
         Me.panelAccesoriesUsed.Location = New System.Drawing.Point(89, 1321)
-        Me.panelAccesoriesUsed.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.panelAccesoriesUsed.Margin = New System.Windows.Forms.Padding(4)
         Me.panelAccesoriesUsed.Name = "panelAccesoriesUsed"
         Me.panelAccesoriesUsed.Size = New System.Drawing.Size(1984, 223)
         Me.panelAccesoriesUsed.TabIndex = 203
@@ -402,7 +402,7 @@ Partial Class calibrate
         Me.TableLayoutPanel2.Controls.Add(Me.accUsed_Description1, 0, 1)
         Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TableLayoutPanel2.Location = New System.Drawing.Point(0, 0)
-        Me.TableLayoutPanel2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.TableLayoutPanel2.Margin = New System.Windows.Forms.Padding(4)
         Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
         Me.TableLayoutPanel2.RowCount = 3
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
@@ -416,7 +416,7 @@ Partial Class calibrate
         Me.accUsed_Description2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.accUsed_Description2.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.accUsed_Description2.Location = New System.Drawing.Point(4, 137)
-        Me.accUsed_Description2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accUsed_Description2.Margin = New System.Windows.Forms.Padding(4)
         Me.accUsed_Description2.Multiline = True
         Me.accUsed_Description2.Name = "accUsed_Description2"
         Me.accUsed_Description2.Size = New System.Drawing.Size(488, 82)
@@ -427,7 +427,7 @@ Partial Class calibrate
         Me.accUsed_SerialNo2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.accUsed_SerialNo2.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.accUsed_SerialNo2.Location = New System.Drawing.Point(500, 137)
-        Me.accUsed_SerialNo2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accUsed_SerialNo2.Margin = New System.Windows.Forms.Padding(4)
         Me.accUsed_SerialNo2.Multiline = True
         Me.accUsed_SerialNo2.Name = "accUsed_SerialNo2"
         Me.accUsed_SerialNo2.Size = New System.Drawing.Size(488, 82)
@@ -438,7 +438,7 @@ Partial Class calibrate
         Me.accUsed_Brand2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.accUsed_Brand2.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.accUsed_Brand2.Location = New System.Drawing.Point(996, 137)
-        Me.accUsed_Brand2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accUsed_Brand2.Margin = New System.Windows.Forms.Padding(4)
         Me.accUsed_Brand2.Multiline = True
         Me.accUsed_Brand2.Name = "accUsed_Brand2"
         Me.accUsed_Brand2.Size = New System.Drawing.Size(488, 82)
@@ -449,7 +449,7 @@ Partial Class calibrate
         Me.accUsed_Model2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.accUsed_Model2.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.accUsed_Model2.Location = New System.Drawing.Point(1492, 137)
-        Me.accUsed_Model2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accUsed_Model2.Margin = New System.Windows.Forms.Padding(4)
         Me.accUsed_Model2.Multiline = True
         Me.accUsed_Model2.Name = "accUsed_Model2"
         Me.accUsed_Model2.Size = New System.Drawing.Size(488, 82)
@@ -460,7 +460,7 @@ Partial Class calibrate
         Me.accUsed_Model1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.accUsed_Model1.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.accUsed_Model1.Location = New System.Drawing.Point(1492, 48)
-        Me.accUsed_Model1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accUsed_Model1.Margin = New System.Windows.Forms.Padding(4)
         Me.accUsed_Model1.Multiline = True
         Me.accUsed_Model1.Name = "accUsed_Model1"
         Me.accUsed_Model1.Size = New System.Drawing.Size(488, 81)
@@ -471,7 +471,7 @@ Partial Class calibrate
         Me.accUsed_Brand1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.accUsed_Brand1.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.accUsed_Brand1.Location = New System.Drawing.Point(996, 48)
-        Me.accUsed_Brand1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accUsed_Brand1.Margin = New System.Windows.Forms.Padding(4)
         Me.accUsed_Brand1.Multiline = True
         Me.accUsed_Brand1.Name = "accUsed_Brand1"
         Me.accUsed_Brand1.Size = New System.Drawing.Size(488, 81)
@@ -482,7 +482,7 @@ Partial Class calibrate
         Me.accUsed_SerialNo1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.accUsed_SerialNo1.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.accUsed_SerialNo1.Location = New System.Drawing.Point(500, 48)
-        Me.accUsed_SerialNo1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accUsed_SerialNo1.Margin = New System.Windows.Forms.Padding(4)
         Me.accUsed_SerialNo1.Multiline = True
         Me.accUsed_SerialNo1.Name = "accUsed_SerialNo1"
         Me.accUsed_SerialNo1.Size = New System.Drawing.Size(488, 81)
@@ -549,7 +549,7 @@ Partial Class calibrate
         Me.accUsed_Description1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.accUsed_Description1.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.accUsed_Description1.Location = New System.Drawing.Point(4, 48)
-        Me.accUsed_Description1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accUsed_Description1.Margin = New System.Windows.Forms.Padding(4)
         Me.accUsed_Description1.Multiline = True
         Me.accUsed_Description1.Name = "accUsed_Description1"
         Me.accUsed_Description1.Size = New System.Drawing.Size(488, 81)
@@ -561,7 +561,7 @@ Partial Class calibrate
         Me.PictureBox4.Image = Global.ASCal.My.Resources.Resources._3_inactive
         Me.PictureBox4.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
         Me.PictureBox4.Location = New System.Drawing.Point(512, 20)
-        Me.PictureBox4.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.PictureBox4.Margin = New System.Windows.Forms.Padding(4)
         Me.PictureBox4.Name = "PictureBox4"
         Me.PictureBox4.Size = New System.Drawing.Size(53, 49)
         Me.PictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
@@ -574,7 +574,7 @@ Partial Class calibrate
         Me.PictureBox3.Image = Global.ASCal.My.Resources.Resources._2_inactive
         Me.PictureBox3.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
         Me.PictureBox3.Location = New System.Drawing.Point(304, 20)
-        Me.PictureBox3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.PictureBox3.Margin = New System.Windows.Forms.Padding(4)
         Me.PictureBox3.Name = "PictureBox3"
         Me.PictureBox3.Size = New System.Drawing.Size(53, 49)
         Me.PictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
@@ -587,7 +587,7 @@ Partial Class calibrate
         Me.PictureBox1.Image = Global.ASCal.My.Resources.Resources._1
         Me.PictureBox1.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
         Me.PictureBox1.Location = New System.Drawing.Point(89, 14)
-        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(67, 62)
         Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
@@ -632,7 +632,7 @@ Partial Class calibrate
         Me.panelRefContainer.AutoScroll = True
         Me.panelRefContainer.Controls.Add(Me.TableLayoutPanel1)
         Me.panelRefContainer.Location = New System.Drawing.Point(89, 1055)
-        Me.panelRefContainer.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.panelRefContainer.Margin = New System.Windows.Forms.Padding(4)
         Me.panelRefContainer.Name = "panelRefContainer"
         Me.panelRefContainer.Size = New System.Drawing.Size(1984, 223)
         Me.panelRefContainer.TabIndex = 194
@@ -658,7 +658,7 @@ Partial Class calibrate
         Me.TableLayoutPanel1.Controls.Add(Me.refCal_DueDate1, 3, 1)
         Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TableLayoutPanel1.Location = New System.Drawing.Point(0, 0)
-        Me.TableLayoutPanel1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.TableLayoutPanel1.Margin = New System.Windows.Forms.Padding(4)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 3
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
@@ -672,7 +672,7 @@ Partial Class calibrate
         Me.refCal_DueDate2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.refCal_DueDate2.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.refCal_DueDate2.Location = New System.Drawing.Point(1492, 137)
-        Me.refCal_DueDate2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.refCal_DueDate2.Margin = New System.Windows.Forms.Padding(4)
         Me.refCal_DueDate2.Name = "refCal_DueDate2"
         Me.refCal_DueDate2.Size = New System.Drawing.Size(488, 28)
         Me.refCal_DueDate2.TabIndex = 26
@@ -682,7 +682,7 @@ Partial Class calibrate
         Me.RefCal_description2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RefCal_description2.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.RefCal_description2.Location = New System.Drawing.Point(4, 137)
-        Me.RefCal_description2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.RefCal_description2.Margin = New System.Windows.Forms.Padding(4)
         Me.RefCal_description2.Multiline = True
         Me.RefCal_description2.Name = "RefCal_description2"
         Me.RefCal_description2.Size = New System.Drawing.Size(488, 82)
@@ -693,7 +693,7 @@ Partial Class calibrate
         Me.RefCal_serialNo2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RefCal_serialNo2.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.RefCal_serialNo2.Location = New System.Drawing.Point(500, 137)
-        Me.RefCal_serialNo2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.RefCal_serialNo2.Margin = New System.Windows.Forms.Padding(4)
         Me.RefCal_serialNo2.Multiline = True
         Me.RefCal_serialNo2.Name = "RefCal_serialNo2"
         Me.RefCal_serialNo2.Size = New System.Drawing.Size(488, 82)
@@ -704,7 +704,7 @@ Partial Class calibrate
         Me.RefCal_calReportRef2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RefCal_calReportRef2.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.RefCal_calReportRef2.Location = New System.Drawing.Point(996, 137)
-        Me.RefCal_calReportRef2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.RefCal_calReportRef2.Margin = New System.Windows.Forms.Padding(4)
         Me.RefCal_calReportRef2.Multiline = True
         Me.RefCal_calReportRef2.Name = "RefCal_calReportRef2"
         Me.RefCal_calReportRef2.Size = New System.Drawing.Size(488, 82)
@@ -715,7 +715,7 @@ Partial Class calibrate
         Me.RefCal_calReportRef1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RefCal_calReportRef1.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.RefCal_calReportRef1.Location = New System.Drawing.Point(996, 48)
-        Me.RefCal_calReportRef1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.RefCal_calReportRef1.Margin = New System.Windows.Forms.Padding(4)
         Me.RefCal_calReportRef1.Multiline = True
         Me.RefCal_calReportRef1.Name = "RefCal_calReportRef1"
         Me.RefCal_calReportRef1.Size = New System.Drawing.Size(488, 81)
@@ -726,7 +726,7 @@ Partial Class calibrate
         Me.RefCal_serialNo1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RefCal_serialNo1.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.RefCal_serialNo1.Location = New System.Drawing.Point(500, 48)
-        Me.RefCal_serialNo1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.RefCal_serialNo1.Margin = New System.Windows.Forms.Padding(4)
         Me.RefCal_serialNo1.Multiline = True
         Me.RefCal_serialNo1.Name = "RefCal_serialNo1"
         Me.RefCal_serialNo1.Size = New System.Drawing.Size(488, 81)
@@ -793,7 +793,7 @@ Partial Class calibrate
         Me.RefCal_description1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RefCal_description1.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.RefCal_description1.Location = New System.Drawing.Point(4, 48)
-        Me.RefCal_description1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.RefCal_description1.Margin = New System.Windows.Forms.Padding(4)
         Me.RefCal_description1.Multiline = True
         Me.RefCal_description1.Name = "RefCal_description1"
         Me.RefCal_description1.Size = New System.Drawing.Size(488, 81)
@@ -804,7 +804,7 @@ Partial Class calibrate
         Me.refCal_DueDate1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.refCal_DueDate1.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.refCal_DueDate1.Location = New System.Drawing.Point(1492, 48)
-        Me.refCal_DueDate1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.refCal_DueDate1.Margin = New System.Windows.Forms.Padding(4)
         Me.refCal_DueDate1.Name = "refCal_DueDate1"
         Me.refCal_DueDate1.Size = New System.Drawing.Size(488, 28)
         Me.refCal_DueDate1.TabIndex = 25
@@ -812,7 +812,7 @@ Partial Class calibrate
         'calibrationDate
         '
         Me.calibrationDate.Location = New System.Drawing.Point(1125, 368)
-        Me.calibrationDate.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.calibrationDate.Margin = New System.Windows.Forms.Padding(4)
         Me.calibrationDate.Name = "calibrationDate"
         Me.calibrationDate.Size = New System.Drawing.Size(436, 22)
         Me.calibrationDate.TabIndex = 191
@@ -820,7 +820,7 @@ Partial Class calibrate
         'receivedDate
         '
         Me.receivedDate.Location = New System.Drawing.Point(1125, 329)
-        Me.receivedDate.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.receivedDate.Margin = New System.Windows.Forms.Padding(4)
         Me.receivedDate.Name = "receivedDate"
         Me.receivedDate.Size = New System.Drawing.Size(436, 22)
         Me.receivedDate.TabIndex = 190
@@ -830,7 +830,7 @@ Partial Class calibrate
         Me.contextMenuCompanies.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.contextMenuCompanies.FormattingEnabled = True
         Me.contextMenuCompanies.Location = New System.Drawing.Point(213, 802)
-        Me.contextMenuCompanies.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.contextMenuCompanies.Margin = New System.Windows.Forms.Padding(4)
         Me.contextMenuCompanies.Name = "contextMenuCompanies"
         Me.contextMenuCompanies.Size = New System.Drawing.Size(628, 25)
         Me.contextMenuCompanies.TabIndex = 189
@@ -840,7 +840,7 @@ Partial Class calibrate
         Me.btnSelectAll.BackColor = System.Drawing.Color.Cyan
         Me.btnSelectAll.ForeColor = System.Drawing.Color.Black
         Me.btnSelectAll.Location = New System.Drawing.Point(1785, 1850)
-        Me.btnSelectAll.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.btnSelectAll.Margin = New System.Windows.Forms.Padding(4)
         Me.btnSelectAll.Name = "btnSelectAll"
         Me.btnSelectAll.Size = New System.Drawing.Size(143, 33)
         Me.btnSelectAll.TabIndex = 186
@@ -852,7 +852,7 @@ Partial Class calibrate
         Me.btnUnselectAll.BackColor = System.Drawing.Color.Red
         Me.btnUnselectAll.ForeColor = System.Drawing.Color.White
         Me.btnUnselectAll.Location = New System.Drawing.Point(1935, 1850)
-        Me.btnUnselectAll.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.btnUnselectAll.Margin = New System.Windows.Forms.Padding(4)
         Me.btnUnselectAll.Name = "btnUnselectAll"
         Me.btnUnselectAll.Size = New System.Drawing.Size(143, 33)
         Me.btnUnselectAll.TabIndex = 185
@@ -879,7 +879,7 @@ Partial Class calibrate
         Me.parameterPanel.Controls.Add(Me.cLParamDCV)
         Me.parameterPanel.Controls.Add(Me.cLParamACV)
         Me.parameterPanel.Location = New System.Drawing.Point(21, 1900)
-        Me.parameterPanel.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.parameterPanel.Margin = New System.Windows.Forms.Padding(4)
         Me.parameterPanel.Name = "parameterPanel"
         Me.parameterPanel.Padding = New System.Windows.Forms.Padding(13, 12, 13, 12)
         Me.parameterPanel.Size = New System.Drawing.Size(2080, 642)
@@ -892,7 +892,7 @@ Partial Class calibrate
         Me.cLParamRES.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.cLParamRES.FormattingEnabled = True
         Me.cLParamRES.Location = New System.Drawing.Point(1657, 12)
-        Me.cLParamRES.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.cLParamRES.Margin = New System.Windows.Forms.Padding(4)
         Me.cLParamRES.Name = "cLParamRES"
         Me.cLParamRES.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cLParamRES.Size = New System.Drawing.Size(411, 618)
@@ -905,7 +905,7 @@ Partial Class calibrate
         Me.cLParamDCC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.cLParamDCC.FormattingEnabled = True
         Me.cLParamDCC.Location = New System.Drawing.Point(1246, 12)
-        Me.cLParamDCC.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.cLParamDCC.Margin = New System.Windows.Forms.Padding(4)
         Me.cLParamDCC.Name = "cLParamDCC"
         Me.cLParamDCC.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cLParamDCC.Size = New System.Drawing.Size(411, 618)
@@ -918,7 +918,7 @@ Partial Class calibrate
         Me.cLParamACC.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.cLParamACC.FormattingEnabled = True
         Me.cLParamACC.Location = New System.Drawing.Point(835, 12)
-        Me.cLParamACC.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.cLParamACC.Margin = New System.Windows.Forms.Padding(4)
         Me.cLParamACC.Name = "cLParamACC"
         Me.cLParamACC.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cLParamACC.Size = New System.Drawing.Size(411, 618)
@@ -931,7 +931,7 @@ Partial Class calibrate
         Me.cLParamDCV.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.cLParamDCV.FormattingEnabled = True
         Me.cLParamDCV.Location = New System.Drawing.Point(424, 12)
-        Me.cLParamDCV.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.cLParamDCV.Margin = New System.Windows.Forms.Padding(4)
         Me.cLParamDCV.Name = "cLParamDCV"
         Me.cLParamDCV.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cLParamDCV.Size = New System.Drawing.Size(411, 618)
@@ -944,7 +944,7 @@ Partial Class calibrate
         Me.cLParamACV.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.cLParamACV.FormattingEnabled = True
         Me.cLParamACV.Location = New System.Drawing.Point(13, 12)
-        Me.cLParamACV.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.cLParamACV.Margin = New System.Windows.Forms.Padding(4)
         Me.cLParamACV.Name = "cLParamACV"
         Me.cLParamACV.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cLParamACV.Size = New System.Drawing.Size(411, 618)
@@ -965,7 +965,7 @@ Partial Class calibrate
         '
         Me.calMethod.Font = New System.Drawing.Font("Courier10 BT", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
         Me.calMethod.Location = New System.Drawing.Point(904, 1618)
-        Me.calMethod.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.calMethod.Margin = New System.Windows.Forms.Padding(4)
         Me.calMethod.Multiline = True
         Me.calMethod.Name = "calMethod"
         Me.calMethod.Size = New System.Drawing.Size(1183, 181)
@@ -1031,7 +1031,7 @@ Partial Class calibrate
         '
         Me.txtHumidityEnd.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.txtHumidityEnd.Location = New System.Drawing.Point(571, 1729)
-        Me.txtHumidityEnd.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.txtHumidityEnd.Margin = New System.Windows.Forms.Padding(4)
         Me.txtHumidityEnd.Name = "txtHumidityEnd"
         Me.txtHumidityEnd.ReadOnly = True
         Me.txtHumidityEnd.Size = New System.Drawing.Size(187, 25)
@@ -1064,7 +1064,7 @@ Partial Class calibrate
         '
         Me.txtHumidityStart.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.txtHumidityStart.Location = New System.Drawing.Point(571, 1680)
-        Me.txtHumidityStart.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.txtHumidityStart.Margin = New System.Windows.Forms.Padding(4)
         Me.txtHumidityStart.Name = "txtHumidityStart"
         Me.txtHumidityStart.ReadOnly = True
         Me.txtHumidityStart.Size = New System.Drawing.Size(187, 25)
@@ -1097,7 +1097,7 @@ Partial Class calibrate
         '
         Me.txtTempEnd.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.txtTempEnd.Location = New System.Drawing.Point(197, 1729)
-        Me.txtTempEnd.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.txtTempEnd.Margin = New System.Windows.Forms.Padding(4)
         Me.txtTempEnd.Name = "txtTempEnd"
         Me.txtTempEnd.ReadOnly = True
         Me.txtTempEnd.Size = New System.Drawing.Size(187, 25)
@@ -1130,7 +1130,7 @@ Partial Class calibrate
         '
         Me.txtTempStart.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.txtTempStart.Location = New System.Drawing.Point(197, 1680)
-        Me.txtTempStart.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.txtTempStart.Margin = New System.Windows.Forms.Padding(4)
         Me.txtTempStart.Name = "txtTempStart"
         Me.txtTempStart.ReadOnly = True
         Me.txtTempStart.Size = New System.Drawing.Size(187, 25)
@@ -1152,7 +1152,7 @@ Partial Class calibrate
         '
         Me.Panel6.Controls.Add(Me.dataGridResult)
         Me.Panel6.Location = New System.Drawing.Point(1600, 298)
-        Me.Panel6.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel6.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel6.Name = "Panel6"
         Me.Panel6.Size = New System.Drawing.Size(501, 246)
         Me.Panel6.TabIndex = 161
@@ -1164,7 +1164,7 @@ Partial Class calibrate
         Me.dataGridResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dataGridResult.Dock = System.Windows.Forms.DockStyle.Fill
         Me.dataGridResult.Location = New System.Drawing.Point(0, 0)
-        Me.dataGridResult.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.dataGridResult.Margin = New System.Windows.Forms.Padding(4)
         Me.dataGridResult.Name = "dataGridResult"
         Me.dataGridResult.RowHeadersWidth = 51
         Me.dataGridResult.Size = New System.Drawing.Size(501, 246)
@@ -1185,7 +1185,7 @@ Partial Class calibrate
         '
         Me.dmmSearch.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.dmmSearch.Location = New System.Drawing.Point(1696, 249)
-        Me.dmmSearch.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.dmmSearch.Margin = New System.Windows.Forms.Padding(4)
         Me.dmmSearch.Name = "dmmSearch"
         Me.dmmSearch.Size = New System.Drawing.Size(393, 25)
         Me.dmmSearch.TabIndex = 158
@@ -1196,7 +1196,7 @@ Partial Class calibrate
         Me.btnStartCalibration.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.btnStartCalibration.ForeColor = System.Drawing.SystemColors.ControlText
         Me.btnStartCalibration.Location = New System.Drawing.Point(1611, 148)
-        Me.btnStartCalibration.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.btnStartCalibration.Margin = New System.Windows.Forms.Padding(4)
         Me.btnStartCalibration.Name = "btnStartCalibration"
         Me.btnStartCalibration.Size = New System.Drawing.Size(491, 59)
         Me.btnStartCalibration.TabIndex = 157
@@ -1207,7 +1207,7 @@ Partial Class calibrate
         '
         Me.Panel7.Controls.Add(Me.PictureBox2)
         Me.Panel7.Location = New System.Drawing.Point(1600, 554)
-        Me.Panel7.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel7.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel7.Name = "Panel7"
         Me.Panel7.Size = New System.Drawing.Size(501, 364)
         Me.Panel7.TabIndex = 156
@@ -1217,7 +1217,7 @@ Partial Class calibrate
         Me.PictureBox2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.PictureBox2.Image = Global.ASCal.My.Resources.Resources.Group_26
         Me.PictureBox2.Location = New System.Drawing.Point(0, 0)
-        Me.PictureBox2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.PictureBox2.Margin = New System.Windows.Forms.Padding(4)
         Me.PictureBox2.Name = "PictureBox2"
         Me.PictureBox2.Size = New System.Drawing.Size(501, 364)
         Me.PictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
@@ -1239,7 +1239,7 @@ Partial Class calibrate
         '
         Me.specificSite.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.specificSite.Location = New System.Drawing.Point(875, 876)
-        Me.specificSite.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.specificSite.Margin = New System.Windows.Forms.Padding(4)
         Me.specificSite.Multiline = True
         Me.specificSite.Name = "specificSite"
         Me.specificSite.Size = New System.Drawing.Size(596, 48)
@@ -1251,7 +1251,7 @@ Partial Class calibrate
         Me.CheckedListBox1.FormattingEnabled = True
         Me.CheckedListBox1.Items.AddRange(New Object() {"In-House (SONJU Laboratory)", "On-Site Calibration (Please Specify):"})
         Me.CheckedListBox1.Location = New System.Drawing.Point(864, 807)
-        Me.CheckedListBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.CheckedListBox1.Margin = New System.Windows.Forms.Padding(4)
         Me.CheckedListBox1.Name = "CheckedListBox1"
         Me.CheckedListBox1.Size = New System.Drawing.Size(617, 124)
         Me.CheckedListBox1.TabIndex = 135
@@ -1271,7 +1271,7 @@ Partial Class calibrate
         '
         Me.compAdd.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.compAdd.Location = New System.Drawing.Point(213, 847)
-        Me.compAdd.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.compAdd.Margin = New System.Windows.Forms.Padding(4)
         Me.compAdd.Multiline = True
         Me.compAdd.Name = "compAdd"
         Me.compAdd.ReadOnly = True
@@ -1316,7 +1316,7 @@ Partial Class calibrate
         '
         Me.prevTech.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.prevTech.Location = New System.Drawing.Point(1125, 590)
-        Me.prevTech.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.prevTech.Margin = New System.Windows.Forms.Padding(4)
         Me.prevTech.Name = "prevTech"
         Me.prevTech.Size = New System.Drawing.Size(436, 25)
         Me.prevTech.TabIndex = 128
@@ -1336,7 +1336,7 @@ Partial Class calibrate
         '
         Me.prevCalCert.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.prevCalCert.Location = New System.Drawing.Point(325, 590)
-        Me.prevCalCert.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.prevCalCert.Margin = New System.Windows.Forms.Padding(4)
         Me.prevCalCert.Name = "prevCalCert"
         Me.prevCalCert.Size = New System.Drawing.Size(436, 25)
         Me.prevCalCert.TabIndex = 126
@@ -1356,7 +1356,7 @@ Partial Class calibrate
         '
         Me.accuracy.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.accuracy.Location = New System.Drawing.Point(1125, 545)
-        Me.accuracy.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.accuracy.Margin = New System.Windows.Forms.Padding(4)
         Me.accuracy.Name = "accuracy"
         Me.accuracy.Size = New System.Drawing.Size(436, 25)
         Me.accuracy.TabIndex = 124
@@ -1376,7 +1376,7 @@ Partial Class calibrate
         '
         Me.readability.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.readability.Location = New System.Drawing.Point(325, 545)
-        Me.readability.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.readability.Margin = New System.Windows.Forms.Padding(4)
         Me.readability.Name = "readability"
         Me.readability.Size = New System.Drawing.Size(436, 25)
         Me.readability.TabIndex = 122
@@ -1396,7 +1396,7 @@ Partial Class calibrate
         '
         Me.assetNumber.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.assetNumber.Location = New System.Drawing.Point(1125, 501)
-        Me.assetNumber.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.assetNumber.Margin = New System.Windows.Forms.Padding(4)
         Me.assetNumber.Name = "assetNumber"
         Me.assetNumber.Size = New System.Drawing.Size(436, 25)
         Me.assetNumber.TabIndex = 120
@@ -1416,7 +1416,7 @@ Partial Class calibrate
         '
         Me.range.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.range.Location = New System.Drawing.Point(325, 501)
-        Me.range.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.range.Margin = New System.Windows.Forms.Padding(4)
         Me.range.Name = "range"
         Me.range.Size = New System.Drawing.Size(436, 25)
         Me.range.TabIndex = 118
@@ -1436,7 +1436,7 @@ Partial Class calibrate
         '
         Me.customerPO.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.customerPO.Location = New System.Drawing.Point(1125, 457)
-        Me.customerPO.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.customerPO.Margin = New System.Windows.Forms.Padding(4)
         Me.customerPO.Name = "customerPO"
         Me.customerPO.Size = New System.Drawing.Size(436, 25)
         Me.customerPO.TabIndex = 116
@@ -1456,7 +1456,7 @@ Partial Class calibrate
         '
         Me.serialNumber.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.serialNumber.Location = New System.Drawing.Point(325, 457)
-        Me.serialNumber.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.serialNumber.Margin = New System.Windows.Forms.Padding(4)
         Me.serialNumber.Name = "serialNumber"
         Me.serialNumber.Size = New System.Drawing.Size(436, 25)
         Me.serialNumber.TabIndex = 114
@@ -1476,7 +1476,7 @@ Partial Class calibrate
         '
         Me.optionsInstalled.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.optionsInstalled.Location = New System.Drawing.Point(1125, 412)
-        Me.optionsInstalled.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.optionsInstalled.Margin = New System.Windows.Forms.Padding(4)
         Me.optionsInstalled.Name = "optionsInstalled"
         Me.optionsInstalled.Size = New System.Drawing.Size(436, 25)
         Me.optionsInstalled.TabIndex = 112
@@ -1497,7 +1497,7 @@ Partial Class calibrate
         Me.dmmmodel.Cursor = System.Windows.Forms.Cursors.No
         Me.dmmmodel.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.dmmmodel.Location = New System.Drawing.Point(325, 412)
-        Me.dmmmodel.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.dmmmodel.Margin = New System.Windows.Forms.Padding(4)
         Me.dmmmodel.Name = "dmmmodel"
         Me.dmmmodel.ReadOnly = True
         Me.dmmmodel.Size = New System.Drawing.Size(436, 25)
@@ -1531,7 +1531,7 @@ Partial Class calibrate
         Me.manufaacturer.Cursor = System.Windows.Forms.Cursors.No
         Me.manufaacturer.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.manufaacturer.Location = New System.Drawing.Point(325, 368)
-        Me.manufaacturer.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.manufaacturer.Margin = New System.Windows.Forms.Padding(4)
         Me.manufaacturer.Name = "manufaacturer"
         Me.manufaacturer.ReadOnly = True
         Me.manufaacturer.Size = New System.Drawing.Size(436, 25)
@@ -1565,7 +1565,7 @@ Partial Class calibrate
         Me.dmmdescription.Cursor = System.Windows.Forms.Cursors.No
         Me.dmmdescription.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.dmmdescription.Location = New System.Drawing.Point(325, 324)
-        Me.dmmdescription.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.dmmdescription.Margin = New System.Windows.Forms.Padding(4)
         Me.dmmdescription.Name = "dmmdescription"
         Me.dmmdescription.ReadOnly = True
         Me.dmmdescription.Size = New System.Drawing.Size(436, 25)
@@ -1598,7 +1598,7 @@ Partial Class calibrate
         '
         Me.technicalID.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.technicalID.Location = New System.Drawing.Point(893, 162)
-        Me.technicalID.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.technicalID.Margin = New System.Windows.Forms.Padding(4)
         Me.technicalID.Name = "technicalID"
         Me.technicalID.Size = New System.Drawing.Size(372, 25)
         Me.technicalID.TabIndex = 43
@@ -1618,7 +1618,7 @@ Partial Class calibrate
         '
         Me.workOrderNo.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
         Me.workOrderNo.Location = New System.Drawing.Point(243, 162)
-        Me.workOrderNo.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.workOrderNo.Margin = New System.Windows.Forms.Padding(4)
         Me.workOrderNo.Name = "workOrderNo"
         Me.workOrderNo.Size = New System.Drawing.Size(372, 25)
         Me.workOrderNo.TabIndex = 41
@@ -1630,7 +1630,7 @@ Partial Class calibrate
         Me.PictureBox5.Image = Global.ASCal.My.Resources.Resources.Untitled_design1
         Me.PictureBox5.InitialImage = Global.ASCal.My.Resources.Resources.Information_input
         Me.PictureBox5.Location = New System.Drawing.Point(89, 32)
-        Me.PictureBox5.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.PictureBox5.Margin = New System.Windows.Forms.Padding(4)
         Me.PictureBox5.Name = "PictureBox5"
         Me.PictureBox5.Size = New System.Drawing.Size(476, 25)
         Me.PictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
@@ -1644,7 +1644,7 @@ Partial Class calibrate
         Me.ClientSize = New System.Drawing.Size(2564, 1306)
         Me.Controls.Add(Me.mainPanelCalibrateInp)
         Me.Controls.Add(Me.Panel1)
-        Me.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Margin = New System.Windows.Forms.Padding(4)
         Me.Name = "calibrate"
         Me.Text = "Form1"
         Me.Panel1.ResumeLayout(False)
