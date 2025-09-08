@@ -5,6 +5,9 @@ Imports AForge.Video.DirectShow
 
 Public Class calibrate
 
+    ' ---- master switch for all temporary/testing UI & timers ----
+    Private Const ENABLE_TEMP_FEATURES As Boolean = False
+
     ' -------------------------------
     ' Handles navigation buttons (logo, logout, dashboard)
     ' -------------------------------
