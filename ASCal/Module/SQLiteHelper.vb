@@ -456,12 +456,7 @@ Module SQLiteHelper
         Return jobs
     End Function
 
-    ' Example result structure (you already use something like this):
-    Public Class DMMParameterGroup
-        Public Property Category As String
-        Public Property Range As String
-        Public Property NominalValues As List(Of String)
-    End Class
+    ' ===================== DMM FUNCTIONS =====================
 
     ' 📊 Loads grouped DMM parameters (Category → Range → Nominal Values)
     Public Function LoadGroupedDMMParameters(ByVal modelName As String) As Dictionary(Of String, Dictionary(Of String, List(Of String)))
@@ -503,8 +498,6 @@ Module SQLiteHelper
 
         Return result
     End Function
-
-    ' ===================== DMM FUNCTIONS =====================
 
     ' 📐 Represents a DMM parameter entry (Category → Range → Nominal + Frequency)
     Public Class DMMParameter
