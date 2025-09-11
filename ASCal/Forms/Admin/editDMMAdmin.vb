@@ -282,7 +282,9 @@ Public Class editDMMAdmin
             End If
 
             ' Step 2: Call the unified InsertOrUpdate method
-            SQLiteHelper.InsertOrUpdateDMM(originalModelName, newModel, newManufacturer, newDescription, paramDict)
+            UpdateDMM(originalModelName, newModel, newManufacturer, newDescription)
+
+            calibrate.RefreshData()
 
             MessageBox.Show("DMM and parameters updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Me.Close()
@@ -732,44 +734,54 @@ Public Class editDMMAdmin
         End Select
     End Sub
 
-    'Private Sub delBtn_Click(sender As Object, e As EventArgs) Handles delBtn.Click
-    '    Dim passwordInput As String = InputBox("Please enter your password to confirm deletion of this company:", "Confirm Delete")
-    '    If String.IsNullOrEmpty(passwordInput) Then
-    '        MessageBox.Show("Deletion cancelled.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '        Exit Sub
-    '    End If
+    ' Delete the current DMM (with password + confirmation)
+    Private Sub delBtn_Click(sender As Object, e As EventArgs) Handles delBtn.Click
+        ' ✅ Ensure a DMM (model) is loaded
+        If String.IsNullOrWhiteSpace(originalModelName) Then
+            MessageBox.Show("No DMM model is loaded to delete.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
 
-    '    If passwordInput <> SessionManager.LoggedInUser.Password Then
-    '        MessageBox.Show("Incorrect password. Deletion aborted.", "Password Mismatch", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        Exit Sub
-    '    End If
+        ' Ask for password confirmation (consider hashing in production)
+        Dim passwordInput As String = InputBox("Please enter your password to confirm deletion of this DMM:", "Confirm Delete")
+        If String.IsNullOrEmpty(passwordInput) Then
+            MessageBox.Show("Deletion cancelled.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Exit Sub
+        End If
 
-    '    Dim confirmResult As DialogResult = MessageBox.Show("Are you sure you want to permanently delete this company?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-    '    If confirmResult = DialogResult.Yes Then
-    '        Try
-    '            Using conn = GetConnection()
-    '                conn.Open()
-    '                Dim sql As String = "DELETE FROM companies WHERE company_id=@id"
-    '                Using cmd As New SQLiteCommand(sql, conn)
-    '                    cmd.Parameters.AddWithValue("@id", currentComp.CompanyID)
-    '                    cmd.ExecuteNonQuery()
-    '                End Using
-    '            End Using
+        If passwordInput <> SessionManager.LoggedInUser.Password Then
+            MessageBox.Show("Incorrect password. Deletion aborted.", "Password Mismatch", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
 
-    '            MessageBox.Show("Company deleted successfully.", "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        ' Final confirmation
+        If MessageBox.Show(
+            $"Are you sure you want to permanently delete DMM '{originalModelName}'?",
+            "Confirm Deletion",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning
+        ) <> DialogResult.Yes Then
+            Exit Sub
+        End If
 
-    '             ✅ Refresh the grid if compManagementAdmin is open
-    '            If Application.OpenForms().OfType(Of compManagementAdmin).Any() Then
-    '                Dim form As compManagementAdmin = Application.OpenForms().OfType(Of compManagementAdmin).First()
-    '                form.Refresh()
-    '            End If
+        ' Perform deletion using the helper already present in this form
+        Try
+            DeleteDMM(originalModelName)
+            calibrate.RefreshData()
 
-    '             ✅ Close ONLY this edit form
-    '            Me.Close()
-    '        Catch ex As Exception
-    '            MessageBox.Show("Error deleting company: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        End Try
-    '    End If
-    'End Sub
+            MessageBox.Show("DMM deleted successfully.", "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            ' ✅ Refresh the DMM list if the management form is open
+            Dim mgmtForm = Application.OpenForms().OfType(Of dmmManagementAdmin)().FirstOrDefault()
+            If mgmtForm IsNot Nothing Then
+                mgmtForm.Refresh() ' if you have a custom reload method, call it here instead
+            End If
+
+            ' ✅ Close ONLY this edit form
+            Me.Close()
+        Catch ex As Exception
+            MessageBox.Show("Error deleting DMM: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
 
 End Class

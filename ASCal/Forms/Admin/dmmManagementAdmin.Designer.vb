@@ -36,16 +36,13 @@ Partial Class dmmManagementAdmin
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Panel6 = New System.Windows.Forms.Panel()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Button2 = New System.Windows.Forms.Button()
-        Me.Button4 = New System.Windows.Forms.Button()
+        Me.pageLabel = New System.Windows.Forms.Label()
+        Me.prevBtn = New System.Windows.Forms.Button()
+        Me.nextBtn = New System.Windows.Forms.Button()
         Me.DMMDetails = New System.Windows.Forms.FlowLayoutPanel()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.newDmm = New System.Windows.Forms.Button()
         Me.userPanel = New System.Windows.Forms.Panel()
-        Me.pageLabel = New System.Windows.Forms.Label()
-        Me.prevBtn = New System.Windows.Forms.Button()
-        Me.nextBtn = New System.Windows.Forms.Button()
         Me.dataGridDMM = New System.Windows.Forms.DataGridView()
         Me.Panel1.SuspendLayout()
         Me.Panel3.SuspendLayout()
@@ -225,9 +222,9 @@ Partial Class dmmManagementAdmin
         'Panel6
         '
         Me.Panel6.AutoScroll = True
-        Me.Panel6.Controls.Add(Me.Label2)
-        Me.Panel6.Controls.Add(Me.Button2)
-        Me.Panel6.Controls.Add(Me.Button4)
+        Me.Panel6.Controls.Add(Me.pageLabel)
+        Me.Panel6.Controls.Add(Me.prevBtn)
+        Me.Panel6.Controls.Add(Me.nextBtn)
         Me.Panel6.Controls.Add(Me.DMMDetails)
         Me.Panel6.Controls.Add(Me.Label1)
         Me.Panel6.Controls.Add(Me.newDmm)
@@ -239,38 +236,38 @@ Partial Class dmmManagementAdmin
         Me.Panel6.Size = New System.Drawing.Size(1602, 991)
         Me.Panel6.TabIndex = 26
         '
-        'Label2
+        'pageLabel
         '
-        Me.Label2.AutoSize = True
-        Me.Label2.BackColor = System.Drawing.Color.White
-        Me.Label2.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.Label2.Location = New System.Drawing.Point(120, 180)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(260, 17)
-        Me.Label2.TabIndex = 17
-        Me.Label2.Text = "Page {0} of {1} ({2} records"
-        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.Label2.UseMnemonic = False
+        Me.pageLabel.AutoSize = True
+        Me.pageLabel.BackColor = System.Drawing.Color.White
+        Me.pageLabel.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.pageLabel.Location = New System.Drawing.Point(116, 108)
+        Me.pageLabel.Name = "pageLabel"
+        Me.pageLabel.Size = New System.Drawing.Size(17, 17)
+        Me.pageLabel.TabIndex = 17
+        Me.pageLabel.Text = "-"
+        Me.pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.pageLabel.UseMnemonic = False
         '
-        'Button2
+        'prevBtn
         '
-        Me.Button2.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.Button2.Location = New System.Drawing.Point(32, 176)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(72, 24)
-        Me.Button2.TabIndex = 16
-        Me.Button2.Text = "Prev"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.prevBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.prevBtn.Location = New System.Drawing.Point(28, 104)
+        Me.prevBtn.Name = "prevBtn"
+        Me.prevBtn.Size = New System.Drawing.Size(72, 24)
+        Me.prevBtn.TabIndex = 16
+        Me.prevBtn.Text = "Prev"
+        Me.prevBtn.UseVisualStyleBackColor = True
         '
-        'Button4
+        'nextBtn
         '
-        Me.Button4.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.Button4.Location = New System.Drawing.Point(392, 176)
-        Me.Button4.Name = "Button4"
-        Me.Button4.Size = New System.Drawing.Size(72, 24)
-        Me.Button4.TabIndex = 15
-        Me.Button4.Text = "Next"
-        Me.Button4.UseVisualStyleBackColor = True
+        Me.nextBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.nextBtn.Location = New System.Drawing.Point(388, 104)
+        Me.nextBtn.Name = "nextBtn"
+        Me.nextBtn.Size = New System.Drawing.Size(72, 24)
+        Me.nextBtn.TabIndex = 15
+        Me.nextBtn.Text = "Next"
+        Me.nextBtn.UseVisualStyleBackColor = True
         '
         'DMMDetails
         '
@@ -279,9 +276,9 @@ Partial Class dmmManagementAdmin
         Me.DMMDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.DMMDetails.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.DMMDetails.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.DMMDetails.Location = New System.Drawing.Point(928, 216)
+        Me.DMMDetails.Location = New System.Drawing.Point(924, 144)
         Me.DMMDetails.Name = "DMMDetails"
-        Me.DMMDetails.Size = New System.Drawing.Size(648, 744)
+        Me.DMMDetails.Size = New System.Drawing.Size(666, 823)
         Me.DMMDetails.TabIndex = 9
         Me.DMMDetails.WrapContents = False
         '
@@ -289,7 +286,7 @@ Partial Class dmmManagementAdmin
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Courier10 BT", 40.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World)
-        Me.Label1.Location = New System.Drawing.Point(24, 96)
+        Me.Label1.Location = New System.Drawing.Point(20, 24)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(356, 47)
         Me.Label1.TabIndex = 2
@@ -298,7 +295,7 @@ Partial Class dmmManagementAdmin
         'newDmm
         '
         Me.newDmm.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.newDmm.Location = New System.Drawing.Point(712, 160)
+        Me.newDmm.Location = New System.Drawing.Point(708, 88)
         Me.newDmm.Name = "newDmm"
         Me.newDmm.Size = New System.Drawing.Size(200, 40)
         Me.newDmm.TabIndex = 1
@@ -307,47 +304,11 @@ Partial Class dmmManagementAdmin
         '
         'userPanel
         '
-        Me.userPanel.Controls.Add(Me.pageLabel)
-        Me.userPanel.Controls.Add(Me.prevBtn)
-        Me.userPanel.Controls.Add(Me.nextBtn)
         Me.userPanel.Controls.Add(Me.dataGridDMM)
-        Me.userPanel.Location = New System.Drawing.Point(32, 216)
+        Me.userPanel.Location = New System.Drawing.Point(28, 144)
         Me.userPanel.Name = "userPanel"
-        Me.userPanel.Size = New System.Drawing.Size(880, 744)
+        Me.userPanel.Size = New System.Drawing.Size(890, 823)
         Me.userPanel.TabIndex = 0
-        '
-        'pageLabel
-        '
-        Me.pageLabel.AutoSize = True
-        Me.pageLabel.BackColor = System.Drawing.Color.White
-        Me.pageLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.pageLabel.Location = New System.Drawing.Point(1184, 608)
-        Me.pageLabel.Name = "pageLabel"
-        Me.pageLabel.Size = New System.Drawing.Size(185, 18)
-        Me.pageLabel.TabIndex = 4
-        Me.pageLabel.Text = "Page {0} of {1} ({2} records"
-        Me.pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.pageLabel.UseMnemonic = False
-        '
-        'prevBtn
-        '
-        Me.prevBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.prevBtn.Location = New System.Drawing.Point(1096, 600)
-        Me.prevBtn.Name = "prevBtn"
-        Me.prevBtn.Size = New System.Drawing.Size(72, 40)
-        Me.prevBtn.TabIndex = 3
-        Me.prevBtn.Text = "Prev"
-        Me.prevBtn.UseVisualStyleBackColor = True
-        '
-        'nextBtn
-        '
-        Me.nextBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.nextBtn.Location = New System.Drawing.Point(1456, 600)
-        Me.nextBtn.Name = "nextBtn"
-        Me.nextBtn.Size = New System.Drawing.Size(72, 40)
-        Me.nextBtn.TabIndex = 2
-        Me.nextBtn.Text = "Next"
-        Me.nextBtn.UseVisualStyleBackColor = True
         '
         'dataGridDMM
         '
@@ -357,7 +318,7 @@ Partial Class dmmManagementAdmin
         Me.dataGridDMM.Dock = System.Windows.Forms.DockStyle.Fill
         Me.dataGridDMM.Location = New System.Drawing.Point(0, 0)
         Me.dataGridDMM.Name = "dataGridDMM"
-        Me.dataGridDMM.Size = New System.Drawing.Size(880, 744)
+        Me.dataGridDMM.Size = New System.Drawing.Size(890, 823)
         Me.dataGridDMM.TabIndex = 0
         '
         'dmmManagementAdmin
@@ -380,7 +341,6 @@ Partial Class dmmManagementAdmin
         Me.Panel6.ResumeLayout(False)
         Me.Panel6.PerformLayout()
         Me.userPanel.ResumeLayout(False)
-        Me.userPanel.PerformLayout()
         CType(Me.dataGridDMM, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
@@ -399,15 +359,12 @@ Partial Class dmmManagementAdmin
     Friend WithEvents Panel2 As System.Windows.Forms.Panel
     Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
     Friend WithEvents Panel6 As System.Windows.Forms.Panel
-    Friend WithEvents DMMDetails As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents Label1 As System.Windows.Forms.Label
-    Friend WithEvents newDmm As System.Windows.Forms.Button
-    Friend WithEvents userPanel As System.Windows.Forms.Panel
-    Friend WithEvents pageLabel As System.Windows.Forms.Label
-    Friend WithEvents prevBtn As System.Windows.Forms.Button
-    Friend WithEvents nextBtn As System.Windows.Forms.Button
-    Friend WithEvents dataGridDMM As System.Windows.Forms.DataGridView
-    Friend WithEvents Label2 As System.Windows.Forms.Label
-    Friend WithEvents Button2 As System.Windows.Forms.Button
-    Friend WithEvents Button4 As System.Windows.Forms.Button
+    Friend WithEvents pageLabel As Label
+    Friend WithEvents prevBtn As Button
+    Friend WithEvents nextBtn As Button
+    Friend WithEvents DMMDetails As FlowLayoutPanel
+    Friend WithEvents newDmm As Button
+    Friend WithEvents userPanel As Panel
+    Friend WithEvents dataGridDMM As DataGridView
 End Class

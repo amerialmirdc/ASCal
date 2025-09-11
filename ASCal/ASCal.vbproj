@@ -588,6 +588,12 @@
   <ItemGroup>
     <None Include="Resources\Untitled design1.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\capture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\capture1.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
     <PostBuildEvent>

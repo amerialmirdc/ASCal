@@ -1203,6 +1203,10 @@ Public Class calibratingResult
     Private Sub ApplySelectedParameterRows()
         If ActiveCategories Is Nothing OrElse ActiveCategories.Count = 0 Then Return
 
+        'Build a fast lookup for active cats
+        Dim cats = New HashSet(Of String)(
+        ActiveCategories.Select(Function(s) s.Trim().ToUpperInvariant()))
+
         Dim selRanges As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         Dim selNominals As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         Dim selFreqs As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
@@ -1328,7 +1332,12 @@ Public Class calibratingResult
                           Next
                       End Sub
 
-        process(DCV) : process(ACV) : process(RES) : process(DCC) : process(ACC)
+        ' NEW (only touch active groups):
+        If cats.Contains("DC VOLTAGE") Then process(DCV)
+        If cats.Contains("AC VOLTAGE") Then process(ACV)
+        If cats.Contains("RESISTANCE") Then process(RES)
+        If cats.Contains("DC CURRENT") Then process(DCC)
+        If cats.Contains("AC CURRENT") Then process(ACC)
     End Sub
 
 #End Region
@@ -1543,6 +1552,18 @@ Public Class calibratingResult
         ' Paste OCR text, then normalize BEFORE parsing
         RichTextBox1.Paste()
         Dim raw As String = NormalizeOcrText(RichTextBox1.Text)
+
+        Dim mode As String = ""
+        If raw.IndexOf("DC", StringComparison.OrdinalIgnoreCase) >= 0 Then
+            mode = "DC"
+        ElseIf raw.IndexOf("AC", StringComparison.OrdinalIgnoreCase) >= 0 Then
+            mode = "AC"
+        End If
+
+        ' if you have a textbox named DMMmode (or similar), set it safely:
+        Dim ctrl = Me.Controls.Find("DMMmode", True).FirstOrDefault()
+        If TypeOf ctrl Is TextBox Then DirectCast(ctrl, TextBox).Text = mode
+
         RichTextBox1.Text = raw
 
         ' Infer parameter (V/A/Ω) if not set by UI
@@ -1565,13 +1586,16 @@ Public Class calibratingResult
 
         ' I-display din ang na-detect na range sa DMMrange.Text para kita agad ng user.
 
-        If readingStr <> "" Then DMMreading.Text = readingStr
-
-        If readingStr <> "" Then AutoApplyReadingToCurrentRow(readingStr)
+        If readingStr <> "" Then
+            Dim readingNoUnit = StripUnitSuffix(readingStr)
+            DMMreading.Text = readingNoUnit
+            AutoApplyReadingToCurrentRow(readingNoUnit)
+        End If
 
         If rangeStr <> "" Then
-            DMMrange.Text = rangeStr     ' ← ipakita ang detected range sa textbox
-            Me.Range = rangeStr          ' ← kung kailangan pa rin ng header/Excel mapping
+            Dim rangeNoUnit = StripUnitSuffix(rangeStr)
+            DMMrange.Text = rangeNoUnit
+            Me.Range = rangeNoUnit
         End If
 
         ' Restart preview using preferred (external-first) camera
@@ -1639,10 +1663,13 @@ Public Class calibratingResult
         Public Unit As String       ' "V","A","Ω","OHM","HZ",""
         Public HasDecimal As Boolean
         Public LineText As String
+
+        Public NumText As String
     End Class
 
     Private Function ExtractOcrTokens(text As String) As List(Of OcrToken)
         Dim list As New List(Of OcrToken)
+
         If String.IsNullOrWhiteSpace(text) Then Return list
 
         Dim lines = text.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
@@ -1680,7 +1707,8 @@ Public Class calibratingResult
                     .Value = val,
                     .Unit = unitTxt.ToUpperInvariant(),
                     .HasDecimal = numTxt.Contains("."),
-                    .LineText = ln
+                    .LineText = ln,
+                    .NumText = numTxt
                 }
                 list.Add(tok)
             Next
@@ -1752,8 +1780,11 @@ Public Class calibratingResult
         If rBest.tok IsNot Nothing Then
             Dim sign = If(rBest.tok.Sign < 0, "-", If(rBest.tok.Sign > 0, "+", ""))
             Dim unit = If(String.IsNullOrEmpty(rBest.tok.Unit), expectedUnit, rBest.tok.Unit)
-            readingOut = (sign & rBest.tok.Value.ToString("G", Globalization.CultureInfo.InvariantCulture) &
-                         If(unit = "", "", " " & unit)).Trim()
+            ' was: rBest.tok.Value.ToString("G", ...)
+            Dim num = If(String.IsNullOrEmpty(rBest.tok.NumText),
+                 rBest.tok.Value.ToString("G", Globalization.CultureInfo.InvariantCulture),
+                 rBest.tok.NumText)
+            readingOut = (sign & num & If(unit = "", "", " " & unit)).Trim()
         End If
 
         If rngBest.tok IsNot Nothing Then
@@ -1770,9 +1801,20 @@ Public Class calibratingResult
         End If
     End Sub
 
+    Private Function StripUnitSuffix(s As String) As String
+        If String.IsNullOrWhiteSpace(s) Then Return s
+        ' remove a single trailing unit token like V, A, Ω, OHM, HZ (case-insensitive)
+        Return System.Text.RegularExpressions.Regex.Replace(
+        s.Trim(),
+        "\s*(V|A|Ω|OHM|HZ)$",
+        "",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase
+    )
+    End Function
+
 #End Region
 
-    '#Region "TEMP/TEST TIMERS — auto steps (DELETE ME LATER)"
+    '#Region "TEMP/TEST CODES"
 
     '    ' Taglish comments para klaro sa future cleanup
     '    ' Pinned Excel target row for the *next* compute tick

@@ -4,6 +4,36 @@ Imports System.Text.RegularExpressions
 
 Public Class newDMMAdmin
 
+    ' ===== Unified Button Click Handler =====
+    Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles PictureBox1.Click, jobdash.Click, Button3.Click, compMan.Click, logoutBtn.Click, button1.Click, backBtn.Click
+
+        calibrate.RefreshData()
+
+        Select Case True
+            Case sender Is PictureBox1
+                landingPageAdmin.Show()
+                Me.Close()
+            Case sender Is jobdash
+                jobDashAdmin.Show()
+                Me.Close()
+            Case sender Is Button3
+                userManagementAdmin.Show()
+                Me.Close()
+            Case sender Is compMan
+                compManagementAdmin.Show()
+                Me.Close()
+            Case sender Is logoutBtn
+                login.Show()
+                Me.Close()
+            Case sender Is button1
+                dmmManagementAdmin.Show()
+                Me.Close()
+            Case sender Is backBtn
+                dmmManagementAdmin.Show()
+                Me.Close()
+        End Select
+    End Sub
+
     ' Stores user labels per (ListView, baseRange)
     Private ReadOnly rangeLabels As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
 

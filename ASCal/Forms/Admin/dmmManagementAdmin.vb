@@ -2,29 +2,24 @@
 
 Public Class dmmManagementAdmin
 
-    Private dmmList As New List(Of SQLiteHelper.DMMParameter)
     Private currentPage As Integer = 1
     Private itemsPerPage As Integer = 10
 
-    Private Sub Form1_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
-        ' Make sure start position is manual
-        Me.StartPosition = FormStartPosition.Manual
+    ' Add this field:
+    Private totalCount As Integer = 0
 
-        ' Remove designer overrides
+    Private Sub dmmManagementAdmin_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
+
+        ' Window sizing/placement
+        Me.StartPosition = FormStartPosition.Manual
         Me.MaximumSize = New Size(0, 0)
         Me.MinimumSize = New Size(0, 0)
-
-        ' Get working area excluding the taskbar
-        Dim currentScreen As Screen = Screen.FromControl(Me)
-        Dim workingArea As Rectangle = currentScreen.WorkingArea
-
-        ' Apply correct size and location
-        Me.AutoScaleMode = AutoScaleMode.Dpi
-
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
         SetupGrid()
-        LoadDMMGrid()
+        RefreshTotalCount()
+        currentPage = 1
+        LoadDMMPage()
 
     End Sub
 
@@ -93,19 +88,6 @@ Public Class dmmManagementAdmin
         End If
     End Sub
 
-    ' ✅ Display company list with pagination
-    Private Sub PopulateCompanyGrid()
-        dataGridDMM.Rows.Clear()
-
-        Dim startIndex As Integer = (currentPage - 1) * itemsPerPage
-        Dim pagedData = dmmList.Skip(startIndex).Take(itemsPerPage)
-
-        ' ✅ Update pagination controls
-        prevBtn.Enabled = (currentPage > 1)
-        nextBtn.Enabled = (currentPage * itemsPerPage < dmmList.Count)
-        pageLabel.Text = "Page " & currentPage.ToString() & " of " & Math.Ceiling(dmmList.Count / itemsPerPage) & " (" & dmmList.Count & " records)"
-    End Sub
-
     ' 📌 Handles cell click event on the DMM data grid
     Private Sub dataGridDMM_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dataGridDMM.CellClick
         ' ✅ Step 1: Ignore clicks on header
@@ -129,7 +111,7 @@ Public Class dmmManagementAdmin
         DMMDetails.Controls.Clear()
 
         ' ✅ Step 5: Load parameters from updated database
-        Dim parameters As List(Of DMMParameter) = SQLiteHelper.LoadParametersByModel(selectedModel)
+        Dim parameters As List(Of SQLiteHelper.DMMParameter) = SQLiteHelper.LoadParametersByModel(selectedModel)
 
         If parameters Is Nothing OrElse parameters.Count = 0 Then
             DMMDetails.Controls.Add(New Label With {
@@ -205,18 +187,63 @@ Public Class dmmManagementAdmin
     End Sub
 
     ' ✅ Pagination Buttons
-    Private Sub prevBtn_Click(sender As Object, e As EventArgs)
+    Private Sub prevBtn_Click_1(sender As Object, e As EventArgs) Handles prevBtn.Click
         If currentPage > 1 Then
             currentPage -= 1
-            PopulateCompanyGrid()
+            LoadDMMPage()
         End If
     End Sub
 
-    Private Sub nextBtn_Click(sender As Object, e As EventArgs)
-        If currentPage * itemsPerPage < dmmList.Count Then
+    Private Sub nextBtn_Click_1(sender As Object, e As EventArgs) Handles nextBtn.Click
+        Dim totalPages As Integer = Math.Max(1, CInt(Math.Ceiling(totalCount / CDbl(itemsPerPage))))
+        If currentPage < totalPages Then
             currentPage += 1
-            PopulateCompanyGrid()
+            LoadDMMPage()
         End If
+    End Sub
+
+    Private Sub RefreshTotalCount()
+        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+            conn.Open()
+            Using cmd As New SQLiteCommand("SELECT COUNT(*) FROM dmm", conn)
+                totalCount = Convert.ToInt32(cmd.ExecuteScalar())
+            End Using
+        End Using
+    End Sub
+
+    Private Sub RefreshAndGoToFirstPage()
+        RefreshTotalCount()
+        currentPage = 1
+        LoadDMMPage()
+    End Sub
+
+    Private Sub LoadDMMPage()
+        Dim offset As Integer = (currentPage - 1) * itemsPerPage
+
+        Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
+            conn.Open()
+            Dim sql As String = "SELECT model_name AS [Model],
+                                    manufacturer AS [Manufacturer],
+                                    description AS [Description]
+                             FROM dmm
+                             ORDER BY model_name ASC
+                             LIMIT @limit OFFSET @offset"
+
+            Using da As New SQLiteDataAdapter(sql, conn)
+                da.SelectCommand.Parameters.AddWithValue("@limit", itemsPerPage)
+                da.SelectCommand.Parameters.AddWithValue("@offset", offset)
+
+                Dim dt As New DataTable()
+                da.Fill(dt)
+                dataGridDMM.DataSource = dt
+            End Using
+        End Using
+
+        ' Update pagination UI
+        Dim totalPages As Integer = Math.Max(1, CInt(Math.Ceiling(totalCount / CDbl(itemsPerPage))))
+        prevBtn.Enabled = (currentPage > 1)
+        nextBtn.Enabled = (currentPage < totalPages)
+        pageLabel.Text = $"Page {currentPage} of {totalPages} ({totalCount} records)"
     End Sub
 
 End Class
