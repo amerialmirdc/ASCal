@@ -412,6 +412,8 @@ Public Class editDMMAdmin
         Next
     End Sub
 
+#Region "Delete DMM Related"
+
     Private Sub ConfirmAndDeleteSelectedItems(listView As ListView)
         If listView.SelectedItems.Count > 0 Then
             If MessageBox.Show("Are you sure you want to delete the selected parameter(s)?",
@@ -473,200 +475,12 @@ Public Class editDMMAdmin
         End Using
     End Sub
 
-    ' ➕ Add Nominal + Frequency for AC Voltage and AC Current
-    Private Sub HandleAddNomFreq(sender As Object, e As EventArgs) Handles btnAddNomFreqACV.Click, btnAddNomFreqACC.Click
-
-        Dim btn As Button = CType(sender, Button)
-
-        ' Common variables
-        Dim selectedRange As String = ""
-        Dim nominalVal As String = ""
-        Dim freqVal As String = ""
-        Dim rangePanel As Panel = Nothing
-        Dim targetList As ListView = Nothing
-
-        ' Decide which button
-        Select Case btn.Name
-            Case "btnAddNomFreqACV"
-                nominalVal = txtNominalValue.Text.Trim()
-                freqVal = txtFreqValueACV.Text.Trim()
-                rangePanel = rangeRadioPanel
-                targetList = listViewParams
-
-            Case "btnAddNomFreqACC"
-                nominalVal = txtNominalValueACC.Text.Trim()
-                freqVal = txtFreqValueACC.Text.Trim()
-                rangePanel = rangeRadioPanelACC
-                targetList = listViewParamsACC
-        End Select
-
-        ' Get selected range
-        For Each ctrl As Control In rangePanel.Controls
-            If TypeOf ctrl Is RadioButton AndAlso CType(ctrl, RadioButton).Checked Then
-                selectedRange = ctrl.Text.Trim()
-                Exit For
-            End If
-        Next
-
-        ' Validate
-        If selectedRange = "" OrElse nominalVal = "" Then
-            MessageBox.Show("Please select a Range and enter a Nominal Value.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
-
-        ' Append unit if missing
-        Dim unitMatch = System.Text.RegularExpressions.Regex.Match(selectedRange, "[a-zA-Z]+$")
-        Dim unit As String = If(unitMatch.Success, unitMatch.Value, "")
-        If Not nominalVal.EndsWith(unit) Then
-            nominalVal &= unit
-        End If
-
-        ' Normalize frequency
-        If freqVal = "" Then
-            freqVal = "-"
-        ElseIf Not freqVal.ToLower().EndsWith("hz") Then
-            freqVal &= " Hz"
-        End If
-
-        ' Find group
-        Dim targetGroup As ListViewGroup = targetList.Groups.Cast(Of ListViewGroup)().
-        FirstOrDefault(Function(g) g.Header = selectedRange)
-
-        If targetGroup Is Nothing Then
-            MessageBox.Show("The selected range was not found in the list. Please add the range first.", "Missing Range", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
-
-        ' Duplicate check
-        For Each item As ListViewItem In targetList.Items
-            If item.Group Is targetGroup AndAlso item.Text = nominalVal AndAlso item.SubItems(1).Text = freqVal Then
-                MessageBox.Show("This nominal/frequency already exists.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return
-            End If
-        Next
-
-        ' Add item
-        Dim listItem As New ListViewItem(nominalVal)
-        listItem.SubItems.Add(freqVal)
-        listItem.Group = targetGroup
-        targetList.Items.Add(listItem)
-
-        ' 👉 Sort after adding
-        targetList.Sorting = SortOrder.Ascending
-        targetList.Sort()
-
-        ' Clear inputs
-        If btn.Name = "btnAddNomFreqACV" Then
-            txtNominalValue.Clear()
-            txtFreqValueACV.Clear()
-        Else
-            txtNominalValueACC.Clear()
-            txtFreqValueACC.Clear()
-        End If
-
-        ' After clearing input boxes:
-        RefreshCheckBoxesFromLists()
-
-    End Sub
-
     Private Sub delBtnFreqACV_Click(sender As Object, e As EventArgs) Handles delBtnFreqACV.Click
         ConfirmAndDeleteSelectedItems(listViewParams)
     End Sub
 
     Private Sub delBtnFreqACC_Click(sender As Object, e As EventArgs) Handles delBtnFreqACC.Click
         ConfirmAndDeleteSelectedItems(listViewParamsACC)
-    End Sub
-
-    Private Sub HandleRangeClick(sender As Object, e As EventArgs) Handles btnAddRange.Click, btnAddRangeDCV.Click, btnAddRangeACC.Click, btnAddRangeDCC.Click, btnAddRangeRES.Click
-        AddRange(sender, e)
-    End Sub
-
-    ' ✅ Adds a new measurement range to the appropriate section
-    Private Sub AddRange(sender As Object, e As EventArgs)
-        Dim btn As Button = CType(sender, Button)
-        Dim rangeText As String = ""
-        Dim unit As String = ""
-        Dim targetListView As ListView = Nothing
-        Dim radioPanel As Panel = Nothing
-
-        ' Determine range fields and targets based on button
-        Select Case btn.Name
-            Case "btnAddRange"
-                rangeText = txtRangeValue.Text.Trim()
-                unit = cmbRangeUnit.Text.Trim()
-                targetListView = listViewParams
-                radioPanel = rangeRadioPanel
-            Case "btnAddRangeDCV"
-                rangeText = txtRangeValueDCV.Text.Trim()
-                unit = cmbRangeUnitDCV.Text.Trim()
-                targetListView = listViewParamsDCV
-                radioPanel = rangeRadioPanelDCV
-            Case "btnAddRangeACC"
-                rangeText = txtRangeValueACC.Text.Trim()
-                unit = cmbRangeUnitACC.Text.Trim()
-                targetListView = listViewParamsACC
-                radioPanel = rangeRadioPanelACC
-            Case "btnAddRangeDCC"
-                rangeText = txtRangeValueDCC.Text.Trim()
-                unit = cmbRangeUnitDCC.Text.Trim()
-                targetListView = listViewParamsDCC
-                radioPanel = rangeRadioPanelDCC
-            Case "btnAddRangeRES"
-                rangeText = txtRangeValueRES.Text.Trim()
-                unit = cmbRangeUnitRES.Text.Trim()
-                targetListView = listViewParamsRES
-                radioPanel = rangeRadioPanelRES
-        End Select
-
-        ' Validate input
-        If String.IsNullOrWhiteSpace(rangeText) OrElse String.IsNullOrWhiteSpace(unit) Then
-            MessageBox.Show("Please provide both range and unit.", "Missing Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Exit Sub
-        End If
-
-        Dim fullRange As String = rangeText & unit
-
-        ' Prevent duplicates in both ListView group and radio button
-        If targetListView.Groups.Cast(Of ListViewGroup)().Any(Function(g) g.Header = fullRange) Then
-            MessageBox.Show("Range already exists in the list.", "Duplicate Range", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Exit Sub
-        End If
-
-        ' Add group to ListView
-        Dim group As New ListViewGroup(fullRange, HorizontalAlignment.Left)
-        targetListView.Groups.Add(group)
-
-        ' Add RadioButton if it doesn't exist
-        If Not radioPanel.Controls.OfType(Of RadioButton)().Any(Function(r) r.Text = fullRange) Then
-            Dim rbtn As New RadioButton()
-            rbtn.Text = fullRange
-            rbtn.AutoSize = True
-            rbtn.Tag = New KeyValuePair(Of ListViewGroup, ListView)(group, targetListView)
-            radioPanel.Controls.Add(rbtn)
-        End If
-
-        ' Clear input fields after successful add
-        Select Case btn.Name
-            Case "btnAddRange"
-                txtRangeValue.Clear()
-                cmbRangeUnit.SelectedIndex = -1
-            Case "btnAddRangeDCV"
-                txtRangeValueDCV.Clear()
-                cmbRangeUnitDCV.SelectedIndex = -1
-            Case "btnAddRangeACC"
-                txtRangeValueACC.Clear()
-                cmbRangeUnitACC.SelectedIndex = -1
-            Case "btnAddRangeDCC"
-                txtRangeValueDCC.Clear()
-                cmbRangeUnitDCC.SelectedIndex = -1
-            Case "btnAddRangeRES"
-                txtRangeValueRES.Clear()
-                cmbRangeUnitRES.SelectedIndex = -1
-        End Select
-
-        ' After adding the range and radio button:
-        RefreshCheckBoxesFromLists()
-
     End Sub
 
     ' Generic function to delete a selected range
@@ -783,5 +597,199 @@ Public Class editDMMAdmin
             MessageBox.Show("Error deleting DMM: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+#End Region
+
+#Region "Add Related"
+
+    ' ➕ Add Nominal + Frequency for AC Voltage and AC Current
+    Private Sub HandleAddNomFreq(sender As Object, e As EventArgs) Handles btnAddNomFreqACV.Click, btnAddNomFreqACC.Click
+
+        Dim btn As Button = CType(sender, Button)
+
+        ' Common variables
+        Dim selectedRange As String = ""
+        Dim nominalVal As String = ""
+        Dim freqVal As String = ""
+        Dim rangePanel As Panel = Nothing
+        Dim targetList As ListView = Nothing
+
+        ' Decide which button
+        Select Case btn.Name
+            Case "btnAddNomFreqACV"
+                nominalVal = txtNominalValue.Text.Trim()
+                freqVal = txtFreqValueACV.Text.Trim()
+                rangePanel = rangeRadioPanel
+                targetList = listViewParams
+
+            Case "btnAddNomFreqACC"
+                nominalVal = txtNominalValueACC.Text.Trim()
+                freqVal = txtFreqValueACC.Text.Trim()
+                rangePanel = rangeRadioPanelACC
+                targetList = listViewParamsACC
+        End Select
+
+        ' Get selected range
+        For Each ctrl As Control In rangePanel.Controls
+            If TypeOf ctrl Is RadioButton AndAlso CType(ctrl, RadioButton).Checked Then
+                selectedRange = ctrl.Text.Trim()
+                Exit For
+            End If
+        Next
+
+        ' Validate
+        If selectedRange = "" OrElse nominalVal = "" Then
+            MessageBox.Show("Please select a Range and enter a Nominal Value.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' Append unit if missing
+        Dim unitMatch = System.Text.RegularExpressions.Regex.Match(selectedRange, "[a-zA-Z]+$")
+        Dim unit As String = If(unitMatch.Success, unitMatch.Value, "")
+        If Not nominalVal.EndsWith(unit) Then
+            nominalVal &= unit
+        End If
+
+        ' Normalize frequency
+        If freqVal = "" Then
+            freqVal = "-"
+        ElseIf Not freqVal.ToLower().EndsWith("hz") Then
+            freqVal &= " Hz"
+        End If
+
+        ' Find group
+        Dim targetGroup As ListViewGroup = targetList.Groups.Cast(Of ListViewGroup)().
+        FirstOrDefault(Function(g) g.Header = selectedRange)
+
+        If targetGroup Is Nothing Then
+            MessageBox.Show("The selected range was not found in the list. Please add the range first.", "Missing Range", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' Duplicate check
+        For Each item As ListViewItem In targetList.Items
+            If item.Group Is targetGroup AndAlso item.Text = nominalVal AndAlso item.SubItems(1).Text = freqVal Then
+                MessageBox.Show("This nominal/frequency already exists.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+        Next
+
+        ' Add item
+        Dim listItem As New ListViewItem(nominalVal)
+        listItem.SubItems.Add(freqVal)
+        listItem.Group = targetGroup
+        targetList.Items.Add(listItem)
+
+        ' 👉 Sort after adding
+        targetList.Sorting = SortOrder.Ascending
+        targetList.Sort()
+
+        ' Clear inputs
+        If btn.Name = "btnAddNomFreqACV" Then
+            txtNominalValue.Clear()
+            txtFreqValueACV.Clear()
+        Else
+            txtNominalValueACC.Clear()
+            txtFreqValueACC.Clear()
+        End If
+
+        ' After clearing input boxes:
+        RefreshCheckBoxesFromLists()
+
+    End Sub
+
+    Private Sub HandleRangeClick(sender As Object, e As EventArgs) Handles btnAddRange.Click, btnAddRangeDCV.Click, btnAddRangeACC.Click, btnAddRangeDCC.Click, btnAddRangeRES.Click
+        AddRange(sender, e)
+    End Sub
+
+    ' ✅ Adds a new measurement range to the appropriate section
+    Private Sub AddRange(sender As Object, e As EventArgs)
+        Dim btn As Button = CType(sender, Button)
+        Dim rangeText As String = ""
+        Dim unit As String = ""
+        Dim targetListView As ListView = Nothing
+        Dim radioPanel As Panel = Nothing
+
+        ' Determine range fields and targets based on button
+        Select Case btn.Name
+            Case "btnAddRange"
+                rangeText = txtRangeValue.Text.Trim()
+                unit = cmbRangeUnit.Text.Trim()
+                targetListView = listViewParams
+                radioPanel = rangeRadioPanel
+            Case "btnAddRangeDCV"
+                rangeText = txtRangeValueDCV.Text.Trim()
+                unit = cmbRangeUnitDCV.Text.Trim()
+                targetListView = listViewParamsDCV
+                radioPanel = rangeRadioPanelDCV
+            Case "btnAddRangeACC"
+                rangeText = txtRangeValueACC.Text.Trim()
+                unit = cmbRangeUnitACC.Text.Trim()
+                targetListView = listViewParamsACC
+                radioPanel = rangeRadioPanelACC
+            Case "btnAddRangeDCC"
+                rangeText = txtRangeValueDCC.Text.Trim()
+                unit = cmbRangeUnitDCC.Text.Trim()
+                targetListView = listViewParamsDCC
+                radioPanel = rangeRadioPanelDCC
+            Case "btnAddRangeRES"
+                rangeText = txtRangeValueRES.Text.Trim()
+                unit = cmbRangeUnitRES.Text.Trim()
+                targetListView = listViewParamsRES
+                radioPanel = rangeRadioPanelRES
+        End Select
+
+        ' Validate input
+        If String.IsNullOrWhiteSpace(rangeText) OrElse String.IsNullOrWhiteSpace(unit) Then
+            MessageBox.Show("Please provide both range and unit.", "Missing Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim fullRange As String = rangeText & unit
+
+        ' Prevent duplicates in both ListView group and radio button
+        If targetListView.Groups.Cast(Of ListViewGroup)().Any(Function(g) g.Header = fullRange) Then
+            MessageBox.Show("Range already exists in the list.", "Duplicate Range", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        ' Add group to ListView
+        Dim group As New ListViewGroup(fullRange, HorizontalAlignment.Left)
+        targetListView.Groups.Add(group)
+
+        ' Add RadioButton if it doesn't exist
+        If Not radioPanel.Controls.OfType(Of RadioButton)().Any(Function(r) r.Text = fullRange) Then
+            Dim rbtn As New RadioButton()
+            rbtn.Text = fullRange
+            rbtn.AutoSize = True
+            rbtn.Tag = New KeyValuePair(Of ListViewGroup, ListView)(group, targetListView)
+            radioPanel.Controls.Add(rbtn)
+        End If
+
+        ' Clear input fields after successful add
+        Select Case btn.Name
+            Case "btnAddRange"
+                txtRangeValue.Clear()
+                cmbRangeUnit.SelectedIndex = -1
+            Case "btnAddRangeDCV"
+                txtRangeValueDCV.Clear()
+                cmbRangeUnitDCV.SelectedIndex = -1
+            Case "btnAddRangeACC"
+                txtRangeValueACC.Clear()
+                cmbRangeUnitACC.SelectedIndex = -1
+            Case "btnAddRangeDCC"
+                txtRangeValueDCC.Clear()
+                cmbRangeUnitDCC.SelectedIndex = -1
+            Case "btnAddRangeRES"
+                txtRangeValueRES.Clear()
+                cmbRangeUnitRES.SelectedIndex = -1
+        End Select
+
+        ' After adding the range and radio button:
+        RefreshCheckBoxesFromLists()
+
+    End Sub
+
+#End Region
 
 End Class

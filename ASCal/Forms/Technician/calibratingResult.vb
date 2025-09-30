@@ -229,25 +229,46 @@ Public Class calibratingResult
     ' --- fast single-row compute path (moved out of TEMP) ---
     Private dcTargetRowForTick As Integer = -1
 
-    Private Sub StartRowCompute(g As ParamGroup, rowIdx As Integer)
-        If g Is Nothing OrElse rowIdx < 0 OrElse ctxDc Is Nothing Then Exit Sub
+    ' Overload that accepts multiple row indices (can be 1 or more).
+    Private Sub StartRowCompute(g As ParamGroup, rowIndices As IEnumerable(Of Integer))
+        If g Is Nothing OrElse ctxDc Is Nothing Then Exit Sub
+        Dim rows = rowIndices?.ToList()
+        If rows Is Nothing OrElse rows.Count = 0 Then Exit Sub
 
         dcComputeTimer.Stop()
         SetCalculating(True)
         Me.Cursor = Cursors.WaitCursor
 
-        ' capture the row for the compute tick
-        dcTargetRowForTick = GetRowFromAddr(g.MV3(rowIdx).cell)
+        ' For timing logs – just pick the last row
+        dcTargetRowForTick = GetRowFromAddr(g.MV3(rows.Last()).cell)
 
-        Dim groupLocal = g, rowLocal = rowIdx
-        ctxDc.PreCalculate = Sub(ws) WriteInputsRow(ws, groupLocal, rowLocal)
-        ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, groupLocal, rowLocal)
+        Dim groupLocal = g
+        ctxDc.PreCalculate = Sub(ws)
+                                 For Each i In rows
+                                     WriteInputsRow(ws, groupLocal, i)
+                                 Next
+                             End Sub
+
+        ctxDc.AfterCalculate = Sub(ws)
+                                   For Each i In rows
+                                       ReadOutputsRow(ws, groupLocal, i)
+                                   Next
+                               End Sub
 
         If rowStopwatch Is Nothing Then rowStopwatch = New System.Diagnostics.Stopwatch()
         rowStopwatch.Reset()
         rowStopwatch.Start()
 
+        ' If you want INSTANT compute (no delay), call directly:
+        ' CalRowModule.RecalculateNow(ctxDc)
+        ' SetCalculating(False)
+        ' Me.Cursor = Cursors.Default
+        ' Else: keep timer-based async:
         dcComputeTimer.Start()
+    End Sub
+
+    Private Sub StartRowCompute(g As ParamGroup, rowIdx As Integer)
+        StartRowCompute(g, New Integer() {rowIdx})
     End Sub
 
     ' --- OCR → grid helpers ---
@@ -265,9 +286,9 @@ Public Class calibratingResult
 
     ' Public hook: external pipeline can call this to write one row
     Public Sub ApplyOcrReadingToRow(groupKey As String, rowIndex As Integer,
-                                    Optional mv1 As String = Nothing,
-                                    Optional mv2 As String = Nothing,
-                                    Optional mv3 As String = Nothing)
+                             Optional mv1 As String = Nothing,
+                             Optional mv2 As String = Nothing,
+                             Optional mv3 As String = Nothing)
         Dim grp = ResolveGroup(groupKey)
         If grp Is Nothing Then Exit Sub
 
@@ -287,27 +308,52 @@ Public Class calibratingResult
         currentRowIdx = rowIndex
         currentExcelRow = GetRowFromAddr(grp.MV3(rowIndex).cell)
         ctxDc.TargetRow = currentExcelRow
-        StartRowCompute(grp, rowIndex)
+        'StartRowCompute(grp, rowIndex)
+        ' Example: recompute rows 0,1,2 in DCV
+        StartRowCompute(DCV, New Integer() {0, 1, 2})
+
     End Sub
 
     ' Convenience: use the *current* row and fill the first empty MV cell
     Private Sub AutoApplyReadingToCurrentRow(reading As String)
         If String.IsNullOrWhiteSpace(reading) Then Exit Sub
 
-        ' pick group from parameter textbox if currentGroup not set
+        ' Safety: mappings must exist
+        If DCV Is Nothing AndAlso ACV Is Nothing AndAlso RES Is Nothing AndAlso DCC Is Nothing AndAlso ACC Is Nothing Then Exit Sub
+
+        ' Pick group if not set yet (use parameter + optional DMMmode)
         If currentGroup Is Nothing Then
-            Dim p = If(DMMtxtparameter.Text, "").Trim().ToUpperInvariant()
-            currentGroup =
-                If(p = "V", DCV,
-                If(p = "A", DCC,
-                If(p = "Ω" OrElse p = "OHM", RES, DCV)))
+            Dim p As String = If(DMMtxtparameter.Text, "").Trim().ToUpperInvariant()   ' "V", "A", "Ω"/"OHM"
+            Dim mode As String = ""
+            Dim mCtrl = Me.Controls.Find("DMMmode", True).FirstOrDefault()
+            If TypeOf mCtrl Is TextBox Then mode = DirectCast(mCtrl, TextBox).Text.Trim().ToUpperInvariant()   ' "AC" or "DC"
+
+            Select Case p
+                Case "V"
+                    currentGroup = If(mode = "AC", ACV, DCV)
+                Case "A"
+                    currentGroup = If(mode = "AC", ACC, DCC)
+                Case "Ω", "OHM"
+                    currentGroup = RES
+                Case Else
+                    ' Fallback: first visible group that has MV1 rows
+                    For Each g In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
+                        If g IsNot Nothing AndAlso g.MV1 IsNot Nothing Then
+                            For i = 0 To g.MV1.Length - 1
+                                If g.MV1(i).tb IsNot Nothing AndAlso g.MV1(i).tb.Visible Then
+                                    currentGroup = g : currentRowIdx = i : Exit For
+                                End If
+                            Next
+                        End If
+                        If currentGroup IsNot Nothing Then Exit For
+                    Next
+            End Select
         End If
         If currentGroup Is Nothing Then Exit Sub
 
-        ' choose row if none yet
+        ' Choose row if none yet (first visible)
         If currentRowIdx < 0 Then
             currentRowIdx = 0
-            ' try to find first visible row
             If currentGroup.MV1 IsNot Nothing Then
                 For i = 0 To currentGroup.MV1.Length - 1
                     Dim tb = currentGroup.MV1(i).tb
@@ -316,32 +362,53 @@ Public Class calibratingResult
             End If
         End If
 
-        ' write to first empty MV in the row
+        ' --- Write to the first empty MV in the row ---
         Dim wrote As Boolean = False
         If currentGroup.MV1 IsNot Nothing AndAlso currentRowIdx < currentGroup.MV1.Length Then
             Dim tb = currentGroup.MV1(currentRowIdx).tb
-            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then tb.Text = reading : wrote = True
+            ' Remove the IsEmptyMv function calls and handle them directly:
+            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
+                tb.Text = reading
+                wrote = True
+            End If
         End If
         If Not wrote AndAlso currentGroup.MV2 IsNot Nothing AndAlso currentRowIdx < currentGroup.MV2.Length Then
             Dim tb = currentGroup.MV2(currentRowIdx).tb
-            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then tb.Text = reading : wrote = True
+            ' Remove the IsEmptyMv function calls and handle them directly:
+            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
+                tb.Text = reading
+                wrote = True
+            End If
         End If
         If Not wrote AndAlso currentGroup.MV3 IsNot Nothing AndAlso currentRowIdx < currentGroup.MV3.Length Then
             Dim tb = currentGroup.MV3(currentRowIdx).tb
-            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then tb.Text = reading : wrote = True
+            ' Remove the IsEmptyMv function calls and handle them directly:
+            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
+                tb.Text = reading
+                wrote = True
+            End If
         End If
 
-        ' compute if row complete; then advance to next visible row
+        ' If row complete → compute → advance pointer to next visible row
         If IsRowComplete(currentGroup, currentRowIdx) Then
             currentExcelRow = GetRowFromAddr(currentGroup.MV3(currentRowIdx).cell)
             ctxDc.TargetRow = currentExcelRow
             StartRowCompute(currentGroup, currentRowIdx)
 
-            ' advance pointer for next reading
+            ' Find the next visible row
             If currentGroup.MV1 IsNot Nothing Then
                 For i = currentRowIdx + 1 To currentGroup.MV1.Length - 1
                     Dim tb = currentGroup.MV1(i).tb
-                    If tb IsNot Nothing AndAlso tb.Visible Then currentRowIdx = i : Exit Sub
+                    If tb IsNot Nothing AndAlso tb.Visible Then
+                        currentRowIdx = i
+                        ' Move focus to the first visible textbox in the next row (MV1)
+                        Dim nextControl = currentGroup.MV1(currentRowIdx).tb
+                        If nextControl IsNot Nothing Then
+                            nextControl.Focus()
+                            nextControl.SelectAll()
+                        End If
+                        Exit Sub
+                    End If
                 Next
             End If
         End If
@@ -542,36 +609,31 @@ Public Class calibratingResult
     End Sub
 
     ' Prefer an EXTERNAL USB webcam if present; otherwise fall back gracefully
-    Private Function CreatePreferredCamera() As AForge.Video.DirectShow.VideoCaptureDevice
-        Dim devices = New AForge.Video.DirectShow.FilterInfoCollection(AForge.Video.DirectShow.FilterCategory.VideoInputDevice)
+    Private Function CreatePreferredCamera() As VideoCaptureDevice
+        Dim devices = New FilterInfoCollection(FilterCategory.VideoInputDevice)
         If devices Is Nothing OrElse devices.Count = 0 Then Return Nothing
 
-        ' Heuristics: common external webcam markers (vendor/models/USB terms)
         Dim externalKeywords = New String() {
-        "logi", "logitech", "brio", "c920", "c922", "c930",
+        "logi", "logitech", "brio", "c920", "c922", "c925", "c930",
         "microsoft", "lifecam", "creative", "razer", "elgato", "aver",
-        "aukey", "hd pro", "usb", "webcam hd"
+        "aukey", "hd pro", "usb", "webcam hd", "camera hd"
     }
-
-        ' Names often used by integrated laptop cameras
         Dim internalKeywords = New String() {
         "integrated", "internal", "built-in", "builtin", "laptop",
         "hd camera", "front camera"
     }
 
-        Dim pick As AForge.Video.DirectShow.FilterInfo = Nothing
+        Dim pick As FilterInfo = Nothing
 
-        ' 1) Try to find an obvious EXTERNAL webcam
-        For Each d As AForge.Video.DirectShow.FilterInfo In devices
+        For Each d As FilterInfo In devices
             Dim n = d.Name.ToLowerInvariant()
             If externalKeywords.Any(Function(k) n.Contains(k)) Then
                 pick = d : Exit For
             End If
         Next
 
-        ' 2) If none matched, choose the first device that does NOT look internal
         If pick Is Nothing Then
-            For Each d As AForge.Video.DirectShow.FilterInfo In devices
+            For Each d As FilterInfo In devices
                 Dim n = d.Name.ToLowerInvariant()
                 If Not internalKeywords.Any(Function(k) n.Contains(k)) Then
                     pick = d : Exit For
@@ -579,11 +641,9 @@ Public Class calibratingResult
             Next
         End If
 
-        ' 3) Last fallback: first device
         If pick Is Nothing Then pick = devices(0)
 
-        ' Build device and choose a sensible resolution (prefer 1280x720, else highest)
-        Dim cam = New AForge.Video.DirectShow.VideoCaptureDevice(pick.MonikerString)
+        Dim cam = New VideoCaptureDevice(pick.MonikerString)
         Try
             Dim caps = cam.VideoCapabilities
             If caps IsNot Nothing AndAlso caps.Length > 0 Then
@@ -594,7 +654,6 @@ Public Class calibratingResult
                 cam.VideoResolution = best
             End If
         Catch
-            ' Some drivers throw; safe to ignore and use default
         End Try
 
         Return cam
@@ -1347,8 +1406,7 @@ Public Class calibratingResult
     ' === btnExportReportExcel_Click (Sub) ===
     ' Summary: Manual export button. Saves calibration report to Excel.
     ' Tags: UI, Export, Excel
-    Private Sub btnExportReportExcel_Click(sender As Object, e As EventArgs) _
-        Handles btnExportReportExcel.Click
+    Private Sub btnExportReportExcel_Click(sender As Object, e As EventArgs)
 
         If ctxDc Is Nothing OrElse String.IsNullOrWhiteSpace(ctxDc.TemplatePath) Then
             MessageBox.Show("Excel context is not ready. Open the form with a valid template first.",
@@ -1440,8 +1498,27 @@ Public Class calibratingResult
     ' ---------- FIELDS ----------
     Dim tentimes As Integer = 0
 
+    ' --- Camera state (same as calibrate) ---
     Private videoSource As AForge.Video.DirectShow.VideoCaptureDevice
+
+    Private latestFrame As Bitmap
+    Private latestFrameLock As New Object()
+
     Dim bmp As Bitmap
+
+    ' --- TEST BURST (3 shots total) ---
+    Private testBurstTimer As System.Windows.Forms.Timer = Nothing
+
+    Private testBurstCopiesRemaining As Integer = 0
+    Private burstGroup As ParamGroup = Nothing
+    Private burstRow As Integer = -1
+
+    ' --- Click-interval state (TEST MODE) ---
+    Private lastCaptureAt As DateTime = DateTime.MinValue
+
+    Private lastClickGroup As Object = Nothing   ' ParamGroup
+    Private lastClickRow As Integer = -1
+    Private lastNextSlot As Integer = 0          ' 1=MV1, 2=MV2, 3=MV3
 
     ' For thread-safe UI updates in serial receive (kept for compatibility)
     Delegate Sub SetTextCallback(ByVal [text] As String)
@@ -1451,9 +1528,9 @@ Public Class calibratingResult
     Private Shared Function ShowWindow(hWnd As IntPtr, nCmdShow As Integer) As Boolean
     End Function
 
-    <DllImport("user32.dll")>
-    Private Shared Function BlockInput(fBlockIt As Boolean) As Boolean
-    End Function
+    '<DllImport("user32.dll")>
+    'Private Shared Function BlockInput(fBlockIt As Boolean) As Boolean
+    'End Function
 
     Private Const SW_HIDE As Integer = 0
     Private Const SW_SHOW As Integer = 5
@@ -1475,156 +1552,211 @@ Public Class calibratingResult
     End Sub
 
     ' ---------- Camera preview ----------
-    Private Sub Video_NewFrame(sender As Object, e As AForge.Video.NewFrameEventArgs)
-        Dim frame As Bitmap = DirectCast(e.Frame.Clone(), Bitmap)
-        PictureBox1.Image = frame
+    Private Sub Video_NewFrame(sender As Object, eventArgs As AForge.Video.NewFrameEventArgs)
+        Dim frame As Bitmap = Nothing
+        Try
+            frame = DirectCast(eventArgs.Frame.Clone(), Bitmap)
+
+            ' Keep a copy (optional – handy if you also OCR in this form)
+            SyncLock latestFrameLock
+                If latestFrame IsNot Nothing Then latestFrame.Dispose()
+                latestFrame = DirectCast(frame.Clone(), Bitmap)
+            End SyncLock
+
+            ' Show in a PictureBox (rename if your control has a different name)
+            Dim displayFrame As Bitmap = DirectCast(frame.Clone(), Bitmap)
+            If PictureBox1.InvokeRequired Then
+                PictureBox1.BeginInvoke(Sub()
+                                            If PictureBox1.Image IsNot Nothing Then PictureBox1.Image.Dispose()
+                                            PictureBox1.Image = displayFrame
+                                        End Sub)
+            Else
+                If PictureBox1.Image IsNot Nothing Then PictureBox1.Image.Dispose()
+                PictureBox1.Image = displayFrame
+            End If
+        Catch
+            ' swallow/optionally log
+        Finally
+            If frame IsNot Nothing Then frame.Dispose()
+        End Try
     End Sub
+
+    Friend WithEvents txtReading As System.Windows.Forms.TextBox
+
+    Private firstClick As Boolean = True
 
     ' ---------- Capture Button (merged flow) ----------
     Private Sub BtnCapture_Click(sender As Object, e As EventArgs) Handles BtnCapture.Click
-        ' Stop preview para stable ang frame
-        If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
-            videoSource.SignalToStop()
-            videoSource.WaitForStop()
+        ' Check if the index is -1 (i.e., first click)
+        If firstClick = True Then
+            currentRowIdx = 0 ' Set it to 0 on the first click
+            firstClick = False
+        Else
+            currentRowIdx += 1 ' Increment index for subsequent clicks
         End If
 
-        ' Portable folder
+        ' Call to move focus to the next row
+        FocusAdvance(currentGroup, currentRowIdx, currentGroup.MV1(currentRowIdx).tb)
+
+        ' 1) Pause preview so the frame is stable
+        Try
+            If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
+                videoSource.SignalToStop() ' Assuming you want to stop the video capture at this point
+            End If
+        Catch
+            ' Handle potential errors here
+        End Try
+
+        ' 2) Save current frame to a temp/portable folder
         Dim baseDir As String = IO.Path.Combine(My.Application.Info.DirectoryPath, "CapturedImage")
         If Not IO.Directory.Exists(baseDir) Then IO.Directory.CreateDirectory(baseDir)
-
-        ' Timestamped filename to avoid overwrite
         Dim capturePath As String = IO.Path.Combine(baseDir, $"AAAA_{DateTime.Now:yyyyMMdd_HHmmss}.jpg")
 
-        ' Save current frame
-        If PictureBox1.Image IsNot Nothing Then
-            PictureBox1.Image.Save(capturePath, Imaging.ImageFormat.Jpeg)
-        Else
+        If PictureBox1.Image Is Nothing Then
             MessageBox.Show("Walang laman ang camera frame (PictureBox1).", "Capture", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Exit Sub
         End If
+        PictureBox1.Image.Save(capturePath, Imaging.ImageFormat.Jpeg)
 
-        ' ======= Snipping Tool OCR-by-paste (no external OCR) =======
-        ' Clear only the fields handled here
+        ' 3) Clear working fields used by this routine
         DMMtxtparameter.Clear()
         DMMreading.Clear()
         RichTextBox1.Clear()
 
+        ' 4) Launch Snipping Tool, auto-open saved image, copy text, and paste to RichTextBox1
         RemoveFocus()
-        BlockInput(True)
-
-        ' Launch Snipping Tool (fallback to PATH)
-        Dim launched As Boolean = False
+        'BlockInput(True)
         Try
-            Process.Start("C:\Users\dbneri\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe")
-            launched = True
-        Catch
+            Dim launched As Boolean = False
             Try
-                Process.Start("SnippingTool.exe")
-                launched = True
+                Process.Start("C:\Users\dbneri\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe") : launched = True
             Catch
+                Try : Process.Start("SnippingTool.exe") : launched = True : Catch : End Try
             End Try
-        End Try
-        If Not launched Then
-            BlockInput(False)
-            MessageBox.Show("Hindi ma-launch ang Snipping Tool.", "Snipping Tool", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Exit Sub
-        End If
-
-        Thread.Sleep(1500)
-        HideSnippingTool()
-
-        ' Keystroke sequence (brittle): type FULL PATH so tama ang file
-        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1500)
-        My.Computer.Keyboard.SendKeys(capturePath, True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1000)
-        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{RIGHT}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1500)
-        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
-        My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(100)
-
-        ' Paste OCR text, then normalize BEFORE parsing
-        RichTextBox1.Paste()
-        Dim raw As String = NormalizeOcrText(RichTextBox1.Text)
-
-        Dim mode As String = ""
-        If raw.IndexOf("DC", StringComparison.OrdinalIgnoreCase) >= 0 Then
-            mode = "DC"
-        ElseIf raw.IndexOf("AC", StringComparison.OrdinalIgnoreCase) >= 0 Then
-            mode = "AC"
-        End If
-
-        ' if you have a textbox named DMMmode (or similar), set it safely:
-        Dim ctrl = Me.Controls.Find("DMMmode", True).FirstOrDefault()
-        If TypeOf ctrl Is TextBox Then DirectCast(ctrl, TextBox).Text = mode
-
-        RichTextBox1.Text = raw
-
-        ' Infer parameter (V/A/Ω) if not set by UI
-        If String.IsNullOrWhiteSpace(DMMtxtparameter.Text) Then
-            If raw.IndexOf("V", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                DMMtxtparameter.Text = "V"
-            ElseIf raw.IndexOf("A", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                DMMtxtparameter.Text = "A"
-            ElseIf raw.IndexOf("Ω", StringComparison.OrdinalIgnoreCase) >= 0 OrElse
-                   raw.IndexOf("OHM", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                DMMtxtparameter.Text = "Ω"
+            If Not launched Then
+                MessageBox.Show("Hindi ma-launch ang Snipping Tool.", "Snipping Tool", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Exit Sub
             End If
-        End If
 
-        ' Parse tokens, then pick READING and RANGE
-        Dim tokens = ExtractOcrTokens(raw)
-        Dim expectedUnit As String = If(String.IsNullOrWhiteSpace(DMMtxtparameter.Text), "", DMMtxtparameter.Text.Trim().ToUpperInvariant())
-        Dim readingStr As String = "", rangeStr As String = ""
-        PickReadingAndRange(tokens, expectedUnit, readingStr, rangeStr)
+            Thread.Sleep(1500)
+            HideSnippingTool()
 
-        ' I-display din ang na-detect na range sa DMMrange.Text para kita agad ng user.
+            ' Keystroke sequence to load the saved image then copy text
+            My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1500)
+            My.Computer.Keyboard.SendKeys(capturePath, True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1000)
+            My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{RIGHT}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(1500)
+            My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{TAB}", True) : Thread.Sleep(100)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True) : Thread.Sleep(100)
 
-        If readingStr <> "" Then
-            Dim readingNoUnit = StripUnitSuffix(readingStr)
-            DMMreading.Text = readingNoUnit
-            AutoApplyReadingToCurrentRow(readingNoUnit)
-        End If
+            ' Paste OCR text into RichTextBox1, normalize for parsing
+            RichTextBox1.Paste()
+            Dim raw As String = NormalizeOcrText(RichTextBox1.Text)
 
-        If rangeStr <> "" Then
-            Dim rangeNoUnit = StripUnitSuffix(rangeStr)
-            DMMrange.Text = rangeNoUnit
-            Me.Range = rangeNoUnit
-        End If
+            ' 5) Infer AC/DC mode (optional UI mirror if you have a DMMmode TextBox)
+            Dim mode As String = If(raw.IndexOf("DC", StringComparison.OrdinalIgnoreCase) >= 0, "DC",
+                       If(raw.IndexOf("AC", StringComparison.OrdinalIgnoreCase) >= 0, "AC", ""))
+            Dim ctrl = Me.Controls.Find("DMMmode", True).FirstOrDefault()
+            If TypeOf ctrl Is TextBox Then DirectCast(ctrl, TextBox).Text = mode
 
-        ' Restart preview using preferred (external-first) camera
+            ' 6) Infer V/A/Ω parameter if the user didn’t set one
+            If String.IsNullOrWhiteSpace(DMMtxtparameter.Text) Then
+                If raw.IndexOf("V", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    DMMtxtparameter.Text = "V"
+                ElseIf raw.IndexOf("A", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    DMMtxtparameter.Text = "A"
+                ElseIf raw.IndexOf("Ω", StringComparison.OrdinalIgnoreCase) >= 0 OrElse
+               raw.IndexOf("OHM", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    DMMtxtparameter.Text = "Ω"
+                End If
+            End If
+
+            ' 7) Parse tokens then pick READING and RANGE from OCR text
+            Dim tokens = ExtractOcrTokens(raw)
+            Dim expectedUnit As String = If(String.IsNullOrWhiteSpace(DMMtxtparameter.Text), "", DMMtxtparameter.Text.Trim().ToUpperInvariant())
+            Dim readingStr As String = "", rangeStr As String = ""
+            PickReadingAndRange(tokens, expectedUnit, readingStr, rangeStr)
+
+            ' 8) Apply the READING directly into MV1→MV2→MV3 using your helper
+            If readingStr <> "" Then
+                Dim readingNoUnit = StripUnitSuffix(readingStr)
+                DMMreading.Text = readingNoUnit
+                ApplyReadingWithClickInterval(readingNoUnit)  ' <<— fills MV1/MV2/MV3, computes, advances row
+                ' We just did the first capture + apply.
+                ' For TEST ONLY: do up to 2 more applies at 2-second intervals,
+                ' stopping early if MV3 of the current row becomes filled.
+
+                ' lock the original target row so we stop when its MV3 is filled
+                Dim g As ParamGroup = Nothing
+                Dim r As Integer = -1
+                If ResolveOrGuessCurrentTarget(g, r) Then
+                    ' if MV3 is already filled after first apply, no need to start the timer
+                    Dim mv3ok As Boolean = (g.MV3 IsNot Nothing AndAlso r >= 0 AndAlso r < g.MV3.Length AndAlso
+                        g.MV3(r).tb IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(g.MV3(r).tb.Text))
+                    If Not mv3ok Then
+                        burstGroup = g
+                        burstRow = r
+                        testBurstCopiesRemaining = 2  ' we already did 1; do 2 more
+                        If testBurstTimer Is Nothing Then
+                            testBurstTimer = New System.Windows.Forms.Timer() With {.Interval = 1000}
+                        Else
+                            testBurstTimer.Stop()
+                            testBurstTimer.Interval = 1000
+                        End If
+                        RemoveHandler testBurstTimer.Tick, AddressOf OnTestBurstTick
+                        AddHandler testBurstTimer.Tick, AddressOf OnTestBurstTick
+                        testBurstTimer.Start()
+                    End If
+                End If
+
+            End If  ' uses AutoApplyReadingToCurrentRow from earlier in this file.
+
+            ' (Optional) Reflect detected range into UI + header property
+            If rangeStr <> "" Then
+                Dim rangeNoUnit = StripUnitSuffix(rangeStr)
+                DMMrange.Text = rangeNoUnit
+                Me.Range = rangeNoUnit
+            End If
+        Finally
+            ' 9) Always unblock input even if anything above fails
+            'BlockInput(False)
+            ' Kill Snipping Tool remnants (best-effort)
+            For Each procName In New String() {"SnippingTool", "SnipAndSketch"}
+                For Each p As Process In Process.GetProcessesByName(procName)
+                    Try : p.Kill() : p.WaitForExit() : Catch : End Try
+                Next
+            Next
+        End Try
+
+        ' 10) Resume preview on preferred camera (external-first)
         Try
             If videoSource IsNot Nothing Then
                 RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
                 If videoSource.IsRunning Then videoSource.SignalToStop()
             End If
+            Dim cam = CreatePreferredCamera()
+            If cam IsNot Nothing Then
+                videoSource = cam
+                AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
+                videoSource.Start()
+            End If
         Catch
         End Try
+    End Sub
 
-        Dim cam = CreatePreferredCamera()
-        If cam IsNot Nothing Then
-            videoSource = cam
-            AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
-            videoSource.Start()
-        End If
-
-        ' Cleanup snipping processes
-        Dim snip() As String = {"SnippingTool", "SnipAndSketch"}
-        For Each procName As String In snip
-            For Each p As Process In Process.GetProcessesByName(procName)
-                Try : p.Kill() : p.WaitForExit() : Catch : End Try
-            Next
-        Next
-
-        Thread.Sleep(1000)
-        tentimes += 1
-        BlockInput(False)
+    Private Sub OnReadingTextChanged(sender As Object, e As EventArgs)
+        Dim val = DMMreading.Text
+        If String.IsNullOrWhiteSpace(val) Then Exit Sub
+        txtReading.Text = val
+        AutoApplyReadingToCurrentRow(val)
     End Sub
 
     Private Sub FrmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
@@ -1638,7 +1770,7 @@ Public Class calibratingResult
                 Try : p.Kill() : p.WaitForExit() : Catch : End Try
             Next
         Next
-        BlockInput(False)
+        'BlockInput(False)
     End Sub
 
     ' ---------- OCR Text Normalization ----------
@@ -1812,687 +1944,307 @@ Public Class calibratingResult
     )
     End Function
 
+    Private Function ResolveOrGuessCurrentTarget(ByRef g As ParamGroup, ByRef row As Integer) As Boolean
+        g = currentGroup : row = currentRowIdx
+        If g IsNot Nothing AndAlso row >= 0 Then Return True
+
+        Dim p As String = If(DMMtxtparameter.Text, "").Trim().ToUpperInvariant()   ' "V","A","Ω"
+        Dim mode As String = ""
+        Dim mCtrl = Me.Controls.Find("DMMmode", True).FirstOrDefault()
+        If TypeOf mCtrl Is TextBox Then mode = DirectCast(mCtrl, TextBox).Text.Trim().ToUpperInvariant()
+
+        Select Case p
+            Case "V" : g = If(mode = "AC", ACV, DCV)
+            Case "A" : g = If(mode = "AC", ACC, DCC)
+            Case "Ω", "OHM" : g = RES
+        End Select
+
+        ' fallback: first visible group/row
+        If g Is Nothing Then
+            For Each cand In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
+                If cand IsNot Nothing AndAlso cand.MV1 IsNot Nothing Then
+                    For i = 0 To cand.MV1.Length - 1
+                        If cand.MV1(i).tb IsNot Nothing AndAlso cand.MV1(i).tb.Visible Then
+                            g = cand : row = i : Return True
+                        End If
+                    Next
+                End If
+            Next
+            Return False
+        End If
+
+        row = 0
+        If g.MV1 IsNot Nothing Then
+            For i = 0 To g.MV1.Length - 1
+                If g.MV1(i).tb IsNot Nothing AndAlso g.MV1(i).tb.Visible Then row = i : Exit For
+            Next
+        End If
+        Return (g IsNot Nothing)
+    End Function
+
+    Private Sub OnTestBurstTick(sender As Object, e As EventArgs)
+        ' stop if invalid lock
+        If burstGroup Is Nothing OrElse burstRow < 0 _
+       OrElse burstGroup.MV3 Is Nothing _
+       OrElse burstRow >= burstGroup.MV3.Length _
+       OrElse burstGroup.MV3(burstRow).tb Is Nothing Then
+            testBurstTimer.Stop() : Exit Sub
+        End If
+
+        ' stop early if MV3 already filled
+        Dim mv3tb = burstGroup.MV3(burstRow).tb
+        If Not String.IsNullOrWhiteSpace(mv3tb.Text) Then
+            testBurstTimer.Stop() : Exit Sub
+        End If
+
+        Dim val = DMMreading.Text
+        If String.IsNullOrWhiteSpace(val) Then
+            testBurstTimer.Stop() : Exit Sub
+        End If
+
+        ' ---- write explicitly to the locked row (MV2 then MV3) ----
+        Dim wrote As Boolean = False
+        If burstGroup.MV1 IsNot Nothing AndAlso burstRow < burstGroup.MV1.Length Then
+            Dim tb1 = burstGroup.MV1(burstRow).tb
+            If tb1 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb1.Text) Then
+                tb1.Text = val : wrote = True
+            End If
+        End If
+        If Not wrote AndAlso burstGroup.MV2 IsNot Nothing AndAlso burstRow < burstGroup.MV2.Length Then
+            Dim tb2 = burstGroup.MV2(burstRow).tb
+            If tb2 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb2.Text) Then
+                tb2.Text = val : wrote = True
+            End If
+        End If
+        If Not wrote AndAlso burstGroup.MV3 IsNot Nothing AndAlso burstRow < burstGroup.MV3.Length Then
+            Dim tb3 = burstGroup.MV3(burstRow).tb
+            If tb3 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb3.Text) Then
+                tb3.Text = val : wrote = True
+            End If
+        End If
+
+        ' compute the locked row if now complete
+        If IsRowComplete(burstGroup, burstRow) Then
+            currentGroup = burstGroup
+            currentRowIdx = burstRow
+            currentExcelRow = GetRowFromAddr(burstGroup.MV3(burstRow).cell)
+            ctxDc.TargetRow = currentExcelRow
+            StartRowCompute(burstGroup, burstRow)
+        End If
+
+        testBurstCopiesRemaining -= 1
+        If testBurstCopiesRemaining <= 0 Then
+            testBurstTimer.Stop()
+        End If
+    End Sub
+
+    Private Function ResolveOrGuessCurrentTarget(ByRef g As Object, ByRef row As Integer) As Boolean
+        ' reuse your current target if available
+        g = currentGroup : row = currentRowIdx
+        If g IsNot Nothing AndAlso row >= 0 Then Return True
+
+        ' fall back to parameter/mode (you already do this in AutoApply)
+        Dim p As String = If(DMMtxtparameter.Text, "").Trim().ToUpperInvariant()
+        Dim mode As String = ""
+        Dim mCtrl = Me.Controls.Find("DMMmode", True).FirstOrDefault()
+        If TypeOf mCtrl Is TextBox Then mode = DirectCast(mCtrl, TextBox).Text.Trim().ToUpperInvariant()
+
+        Select Case p
+            Case "V" : g = If(mode = "AC", ACV, DCV)
+            Case "A" : g = If(mode = "AC", ACC, DCC)
+            Case "Ω", "OHM" : g = RES
+        End Select
+
+        If g Is Nothing Then
+            For Each cand In New Object() {DCV, ACV, RES, DCC, ACC}
+                If cand IsNot Nothing AndAlso DirectCast(cand, ParamGroup).MV1 IsNot Nothing Then
+                    For i = 0 To DirectCast(cand, ParamGroup).MV1.Length - 1
+                        Dim tb = DirectCast(cand, ParamGroup).MV1(i).tb
+                        If tb IsNot Nothing AndAlso tb.Visible Then g = cand : row = i : Return True
+                    Next
+                End If
+            Next
+            Return False
+        End If
+
+        row = 0
+        If DirectCast(g, ParamGroup).MV1 IsNot Nothing Then
+            For i = 0 To DirectCast(g, ParamGroup).MV1.Length - 1
+                Dim tb = DirectCast(g, ParamGroup).MV1(i).tb
+                If tb IsNot Nothing AndAlso tb.Visible Then row = i : Exit For
+            Next
+        End If
+        Return True
+    End Function
+
+    Private Sub WriteToSpecificSlot(g As ParamGroup, row As Integer, slot As Integer, val As String)
+        ' Declare the variable
+        Dim reading As String = val ' Or assign it to whatever value you want
+        Dim wrote As Boolean = False
+
+        ' Safety: ensure row and group exist
+        If g Is Nothing OrElse row < 0 Then Exit Sub
+
+        ' Write to the first empty MV in the specified row (considering MV1, MV2, MV3)
+        Dim rowTarget As Integer = row ' Row index to target
+
+        ' Check MV1 for empty TextBox
+        If g.MV1 IsNot Nothing AndAlso rowTarget < g.MV1.Length Then
+            Dim tb = g.MV1(rowTarget).tb
+            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
+                tb.Text = reading
+                wrote = True
+            End If
+        End If
+
+        ' If not written, check MV2 for empty TextBox
+        If Not wrote AndAlso g.MV2 IsNot Nothing AndAlso rowTarget < g.MV2.Length Then
+            Dim tb = g.MV2(rowTarget).tb
+            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
+                tb.Text = reading
+                wrote = True
+            End If
+        End If
+
+        ' If not written, check MV3 for empty TextBox
+        If Not wrote AndAlso g.MV3 IsNot Nothing AndAlso rowTarget < g.MV3.Length Then
+            Dim tb = g.MV3(rowTarget).tb
+            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
+                tb.Text = reading
+                wrote = True
+            End If
+        End If
+
+        ' After writing, advance focus to the next visible row (if applicable)
+        If wrote Then
+            ' Move to the next row (next visible TextBox in MV1, MV2, or MV3)
+            MoveFocusToNextRow(g, rowTarget)
+        End If
+    End Sub
+
+    ' Helper to dynamically move focus to the next visible row
+    Private Sub MoveFocusToNextRow(g As ParamGroup, currentRow As Integer)
+        If g Is Nothing Then Exit Sub
+
+        ' Find the next visible row in MV1, MV2, or MV3
+        Dim nextRow As Integer = -1
+
+        ' Try to find the next visible row in MV1
+        If g.MV1 IsNot Nothing Then
+            For i As Integer = currentRow + 1 To g.MV1.Length - 1
+                If g.MV1(i).tb IsNot Nothing AndAlso g.MV1(i).tb.Visible Then
+                    nextRow = i
+                    Exit For
+                End If
+            Next
+        End If
+
+        ' If no row found in MV1, check MV2
+        If nextRow = -1 AndAlso g.MV2 IsNot Nothing Then
+            For i As Integer = currentRow + 1 To g.MV2.Length - 1
+                If g.MV2(i).tb IsNot Nothing AndAlso g.MV2(i).tb.Visible Then
+                    nextRow = i
+                    Exit For
+                End If
+            Next
+        End If
+
+        ' If still no row found, check MV3
+        If nextRow = -1 AndAlso g.MV3 IsNot Nothing Then
+            For i As Integer = currentRow + 1 To g.MV3.Length - 1
+                If g.MV3(i).tb IsNot Nothing AndAlso g.MV3(i).tb.Visible Then
+                    nextRow = i
+                    Exit For
+                End If
+            Next
+        End If
+
+        ' If a valid next row is found, move focus to it
+        If nextRow >= 0 Then
+            Dim nextControl = g.MV1(nextRow).tb
+            If nextControl IsNot Nothing Then
+                nextControl.Focus()
+                nextControl.SelectAll()
+            End If
+        End If
+    End Sub
+
+    Private Sub ApplyReadingWithClickInterval(val As String)
+        Dim g As Object = Nothing
+        Dim r As Integer = -1
+        If Not ResolveOrGuessCurrentTarget(g, r) Then Exit Sub
+        Dim grp = DirectCast(g, ParamGroup)
+
+        Dim now As DateTime = DateTime.Now
+        Dim within2s As Boolean = (lastCaptureAt <> DateTime.MinValue AndAlso (now - lastCaptureAt).TotalSeconds <= 2.0)
+        Dim sameRow As Boolean = (lastClickGroup Is grp AndAlso lastClickRow = r)
+
+        If within2s AndAlso sameRow Then
+            ' continue on the same row: MV1 -> MV2 -> MV3
+            WriteToSpecificSlot(grp, r, Math.Max(1, Math.Min(3, lastNextSlot)), val)
+            lastNextSlot = Math.Min(3, lastNextSlot + 1)
+        Else
+            ' new sequence (new row or >2s gap): start at MV1 then arm MV2
+            lastNextSlot = 1
+            WriteToSpecificSlot(grp, r, lastNextSlot, val)
+            lastNextSlot = 2
+        End If
+
+        ' if the row is now complete, compute and advance
+        If IsRowComplete(grp, r) Then
+            currentGroup = grp
+            currentRowIdx = r
+            currentExcelRow = GetRowFromAddr(grp.MV3(r).cell)
+            ctxDc.TargetRow = currentExcelRow
+            StartRowCompute(grp, r)
+
+            '' move to the next incomplete visible row (if any)
+            'Dim nextIdx As Integer = NextVisibleIncompleteRow(grp, r + 1)
+            'If nextIdx >= 0 Then currentRowIdx = nextIdx
+
+            ' reset click-interval state
+            lastClickGroup = Nothing
+            lastClickRow = -1
+            lastNextSlot = 1
+        Else
+            ' keep state for the next click within 2s
+            lastClickGroup = grp
+            lastClickRow = r
+        End If
+
+        lastCaptureAt = now
+    End Sub
+
+    ' In your form's constructor or Load event, subscribe to the Enter event of each TextBox
+    Private Sub SetupTextBoxEvents()
+        ' Add the Enter event for all textboxes dynamically
+        For Each ctrl As Control In Me.Controls
+            If TypeOf ctrl Is TextBox Then
+                AddHandler ctrl.Enter, AddressOf TextBox_Enter
+            End If
+        Next
+    End Sub
+
+    ' Global variable to track focused textbox
+    Private currentFocusedTextBox As TextBox
+
+    ' Event handler to track focus change
+    Private Sub TextBox_Enter(sender As Object, e As EventArgs)
+        currentFocusedTextBox = CType(sender, TextBox)
+    End Sub
+
 #End Region
 
-    '#Region "TEMP/TEST CODES"
-
-    '    ' Taglish comments para klaro sa future cleanup
-    '    ' Pinned Excel target row for the *next* compute tick
-    '    Private dcTargetRowForTick As Integer = -1
-
-    '    ' === Master switch (set to False to disable in prod) ===
-    '    Private testTimersEnabled As Boolean = True   ' TEMP ONLY
-
-    '    ' === Individual delays (ms) ===
-    '    Private nominalEntryDelayMs As Integer = 1500 ' delay bago mag-nominal entry
-
-    '    Private calcDelayMs As Integer = 1500         ' delay bago mag-compute (after nominal)
-    '    Private exportDelayMs As Integer = 1500       ' delay bago mag-export (after compute)
-
-    '    ' === Timers ===
-    '    Private nominalEntryTimer As System.Windows.Forms.Timer
-
-    '    Private calcTimer As System.Windows.Forms.Timer
-    '    Private exportTimer As System.Windows.Forms.Timer
-    '    Private testHudPanel As Panel
-    '    Private lblClock As Label
-    '    Private lblNominalAt As Label
-    '    Private lblCalcAt As Label
-    '    Private lblExportAt As Label
-    '    Private clockTimer As System.Windows.Forms.Timer
-
-    '    ' === TEMP timing for sequential nominal run ===
-    '    Private runStopwatch As System.Diagnostics.Stopwatch = Nothing
-
-    '    Private runActive As Boolean = False
-    '    Private runTotalRows As Integer = 0
-    '    Private runComputedRows As Integer = 0
-    '    Private computedKeys As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-
-    '    Private Sub SetupTestHud()
-    '        ' Huwag mag-spawn ng duplicate panel
-    '        If testHudPanel IsNot Nothing Then Exit Sub
-
-    '        testHudPanel = New Panel With {
-    '        .BackColor = Color.FromArgb(220, 0, 0, 0), ' semi-transparent black
-    '        .ForeColor = Color.White,
-    '        .AutoSize = True,
-    '        .Padding = New Padding(8),
-    '        .BorderStyle = BorderStyle.FixedSingle,
-    '        .Anchor = AnchorStyles.Top Or AnchorStyles.Right
-    '    }
-
-    '        Dim title = New Label With {.Text = "TEMP HUD", .AutoSize = True, .Font = New Font(Me.Font, FontStyle.Bold)}
-    '        lblClock = New Label With {.Text = "Now: --:--:--", .AutoSize = True}
-    '        lblNominalAt = New Label With {.Text = "Nominal: —", .AutoSize = True}
-    '        lblCalcAt = New Label With {.Text = "Compute: —", .AutoSize = True}
-    '        lblExportAt = New Label With {.Text = "Export: —", .AutoSize = True}
-
-    '        testHudPanel.Controls.Add(title)
-    '        testHudPanel.Controls.Add(lblClock)
-    '        testHudPanel.Controls.Add(lblNominalAt)
-    '        testHudPanel.Controls.Add(lblCalcAt)
-    '        testHudPanel.Controls.Add(lblExportAt)
-
-    '        ' Simple vertical layout
-    '        Dim y As Integer = 6
-    '        For Each c As Control In testHudPanel.Controls
-    '            c.Location = New Point(8, y)
-    '            y += c.Height + 4
-    '        Next
-
-    '        ' Place top-right and keep it there on resize
-    '        Me.Controls.Add(testHudPanel)
-    '        testHudPanel.Location = New Point(Me.ClientSize.Width - testHudPanel.PreferredSize.Width - 8, 8)
-    '        AddHandler Me.Resize, Sub(sender As Object, e As EventArgs)
-    '                                  testHudPanel.Location = New Point(
-    '                                      Me.ClientSize.Width - testHudPanel.PreferredSize.Width - 8, 8)
-    '                              End Sub
-
-    '        testHudPanel.BringToFront()
-
-    '        ' Live clock
-    '        clockTimer = New System.Windows.Forms.Timer() With {.Interval = 1000}
-    '        AddHandler clockTimer.Tick, Sub()
-    '                                        lblClock.Text = "Now: " & DateTime.Now.ToString("HH:mm:ss")
-    '                                    End Sub
-    '        clockTimer.Start()
-    '    End Sub
-
-    '    ' Starts a compute for a specific row, safely pinned to that row
-    '    Private Sub StartRowCompute(g As ParamGroup, rowIdx As Integer)
-    '        If g Is Nothing OrElse rowIdx < 0 Then Exit Sub
-    '        If g.MV3 Is Nothing OrElse rowIdx >= g.MV3.Length OrElse g.MV3(rowIdx).cell Is Nothing Then Exit Sub
-
-    '        currentGroup = g
-    '        currentRowIdx = rowIdx
-    '        dcTargetRowForTick = GetRowFromAddr(g.MV3(rowIdx).cell)
-
-    '        Dim groupLocal = g, rowLocal = rowIdx
-    '        ctxDc.PreCalculate = Sub(ws) WriteInputsRow(ws, groupLocal, rowLocal)
-    '        ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, groupLocal, rowLocal)
-
-    '        dcComputeTimer.Stop()
-    '        SetCalculating(True)
-    '        Me.Cursor = Cursors.WaitCursor
-
-    '        ' start row stopwatch
-    '        rowStopwatch = System.Diagnostics.Stopwatch.StartNew()
-
-    '        dcComputeTimer.Start()
-    '    End Sub
-
-    '    ' Setup ng test timers; tatawagin sa dulo ng Load
-    '    Private Sub SetupTestTimers()
-    '        If Not testTimersEnabled Then Return
-
-    '        SetupTestHud()
-
-    '        ' 1) Nominal entry after delay
-    '        nominalEntryTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, nominalEntryDelayMs)}
-    '        AddHandler nominalEntryTimer.Tick,
-    '        Sub()
-    '            nominalEntryTimer.Stop()
-    '            ' Step 1: Fill ALL visible MV1/MV2/MV3 with Nominal (walang units copy; walang auto-recompute)
-    '            ' NOTE: Gumagamit tayo ng bulk filler para deterministic at mabilis.
-    '            FillAllMvWithNominal(onlyVisible:=True, copyUnits:=False, recomputeAfter:=False)
-    '            ' Chain to compute step via timer #2
-    '            If calcTimer IsNot Nothing Then calcTimer.Start()
-    '        End Sub
-
-    '        ' 2) Recompute after another delay
-    '        calcTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, calcDelayMs)}
-    '        AddHandler calcTimer.Tick,
-    '        Sub()
-    '            calcTimer.Stop()
-    '            ' Step 2: Run the full-sheet compute/pull once
-    '            ComputeAllAfterBulkLoad()
-    '            ' Chain to export via timer #3
-    '            If exportTimer IsNot Nothing Then exportTimer.Start()
-    '        End Sub
-
-    '        ' 3) Export after compute delay
-    '        exportTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, exportDelayMs)}
-    '        AddHandler exportTimer.Tick,
-    '        Sub()
-    '            exportTimer.Stop()
-    '            ' Step 3: Trigger the existing Export button logic
-    '            If ctxDc Is Nothing OrElse String.IsNullOrWhiteSpace(ctxDc.TemplatePath) Then
-    '                MessageBox.Show("Test export skipped — Excel context not ready.", "TEMP/TEST TIMERS")
-    '                Exit Sub
-    '            End If
-    '            ' Gamitin ang umiiral na handler via PerformClick para siguradong same behavior
-    '            If btnExportReportExcel IsNot Nothing AndAlso btnExportReportExcel.Enabled Then
-    '                btnExportReportExcel.PerformClick()
-    '            Else
-    '                ' fallback: direktang tawagin ang handler
-    '                btnExportReportExcel_Click(Me, EventArgs.Empty)
-    '            End If
-    '        End Sub
-
-    '        ' Start the chain
-    '        nominalEntryTimer.Start()
-
-    '        AddHandler nominalEntryTimer.Tick,
-    '    Sub()
-    '        nominalEntryTimer.Stop()
-    '        lblNominalAt.Text = "Nominal: " & DateTime.Now.ToString("HH:mm:ss.fff")
-    '        FillAllMvWithNominal(onlyVisible:=True, copyUnits:=False, recomputeAfter:=False)
-    '        If calcTimer IsNot Nothing Then calcTimer.Start()
-    '    End Sub
-
-    '        AddHandler calcTimer.Tick,
-    '            Sub()
-    '                calcTimer.Stop()
-    '                lblCalcAt.Text = "Compute: " & DateTime.Now.ToString("HH:mm:ss.fff")
-    '                ComputeAllAfterBulkLoad()
-    '                If exportTimer IsNot Nothing Then exportTimer.Start()
-    '            End Sub
-
-    '        AddHandler exportTimer.Tick,
-    '            Sub()
-    '                exportTimer.Stop()
-    '                lblExportAt.Text = "Export: " & DateTime.Now.ToString("HH:mm:ss.fff")
-    '                If btnExportReportExcel IsNot Nothing AndAlso btnExportReportExcel.Enabled Then
-    '                    btnExportReportExcel.PerformClick()
-    '                Else
-    '                    btnExportReportExcel_Click(Me, EventArgs.Empty)
-    '                End If
-    '            End Sub
-
-    '        nominalEntryTimer.Start()
-    '    End Sub
-
-    '    Private Function CountVisibleRows() As Integer
-    '        Dim total As Integer = 0
-    '        Dim groups As ParamGroup() = {DCV, ACV, RES, DCC, ACC}
-
-    '        For Each g As ParamGroup In groups
-    '            If g Is Nothing OrElse g.MV1 Is Nothing Then Continue For
-    '            For i As Integer = 0 To g.MV1.Length - 1
-    '                Dim tb1 As TextBox = If(g.MV1(i).tb, Nothing)
-    '                If tb1 IsNot Nothing AndAlso tb1.Visible Then total += 1
-    '            Next
-    '        Next
-    '        Return total
-    '    End Function
-
-    '    Private Function GroupCode(g As ParamGroup) As String
-    '        If g Is DCV Then Return "DCV"
-    '        If g Is ACV Then Return "ACV"
-    '        If g Is RES Then Return "RES"
-    '        If g Is DCC Then Return "DCC"
-    '        If g Is ACC Then Return "ACC"
-    '        Return "G"
-    '    End Function
-
-    '#End Region
-
-    '#Region "TEMP/DEBUG — easy to delete later"
-
-    '    ' === KeepToolButtonsVisible (Sub) ===
-    '    ' Summary: Ginagawa visible ang tool buttons kahit hidden yung parent containers.
-    '    ' Notes: Useful para di mawala buttons pag may filtering/collapsed panels.
-    '    ' Tags: UI, Layout
-
-    '    ' ——— Sequencer state (nominal) ———
-    '    Private nomSeqActive As Boolean = False
-
-    '    Private nomSeqWaitingCompute As Boolean = False
-
-    '    ' ——— Show HUD even when starting from buttons (reflection-safe; no compile error if missing) ———
-    '    Private Sub ShowTempHud()
-    '        Try
-    '            Dim mi = Me.GetType().GetMethod(
-    '            "SetupTestHud",
-    '            Global.System.Reflection.BindingFlags.NonPublic Or Global.System.Reflection.BindingFlags.Instance)
-    '            If mi IsNot Nothing Then mi.Invoke(Me, Nothing)
-    '        Catch
-    '        End Try
-    '    End Sub
-
-    '    Private Sub KeepToolButtonsVisible()
-    '        Dim btns = New Control() {btnAutoFill60, btnAutoFillNominalSeq, btnAutoFillNominalBulk, btnStopFill}
-    '        For Each c In btns
-    '            If c Is Nothing Then Continue For
-
-    '            ' If its parent is hidden (e.g., filtered panel), re-parent to the form at same screen spot
-    '            If c.Parent IsNot Nothing AndAlso Not c.Parent.Visible Then
-    '                Dim pt = c.PointToScreen(System.Drawing.Point.Empty)
-    '                pt = Me.PointToClient(pt)
-    '                c.Parent = Me
-    '                c.Location = pt
-    '            End If
-
-    '            c.Visible = True
-    '            c.BringToFront()
-
-    '            ' Prevent TableLayout row collapse
-    '            Dim tlp = TryCast(c.Parent, TableLayoutPanel)
-    '            If tlp IsNot Nothing Then
-    '                Dim r = tlp.GetRow(c)
-    '                If r >= 0 AndAlso r < tlp.RowStyles.Count Then
-    '                    tlp.RowStyles(r).SizeType = SizeType.Absolute
-    '                    tlp.RowStyles(r).Height = Math.Max(tlp.RowStyles(r).Height, c.Height + 8)
-    '                End If
-    '            End If
-    '        Next
-    '    End Sub
-
-    '    ' ===========================
-    '    ' Normalize row order by screen Top so all arrays align (fixes AC CURRENT mismatch)
-    '    ' ===========================
-    '    Private Function ReorderTupleTB(arr As (tb As TextBox, cell As String)(), order As Integer()) _
-    '        As (tb As TextBox, cell As String)()
-    '        If arr Is Nothing Then Return Nothing
-    '        Dim out(arr.Length - 1) As (TextBox, String)
-    '        For i = 0 To Math.Min(arr.Length, order.Length) - 1 : out(i) = arr(order(i)) : Next
-    '        Return out
-    '    End Function
-
-    '    Private Function ReorderTupleLBL(arr As (lbl As Label, cell As String)(), order As Integer()) _
-    '        As (lbl As Label, cell As String)()
-    '        If arr Is Nothing Then Return Nothing
-    '        Dim out(arr.Length - 1) As (Label, String)
-    '        For i = 0 To Math.Min(arr.Length, order.Length) - 1 : out(i) = arr(order(i)) : Next
-    '        Return out
-    '    End Function
-
-    '    Private Function ReorderLBL(arr As Label(), order As Integer()) As Label()
-    '        If arr Is Nothing Then Return Nothing
-    '        Dim out(arr.Length - 1) As Label
-    '        For i = 0 To Math.Min(arr.Length, order.Length) - 1 : out(i) = arr(order(i)) : Next
-    '        Return out
-    '    End Function
-
-    '    Private Function FirstControlOfRow(g As ParamGroup, i As Integer) As Control
-    '        Dim c As Control = Nothing
-    '        Try
-    '            If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length AndAlso g.MV1(i).tb IsNot Nothing Then c = g.MV1(i).tb
-    '            If c Is Nothing AndAlso g.RangeLbl IsNot Nothing AndAlso i < g.RangeLbl.Length Then c = g.RangeLbl(i)
-    '            If c Is Nothing AndAlso g.NominalLbl IsNot Nothing AndAlso i < g.NominalLbl.Length Then c = g.NominalLbl(i)
-    '        Catch
-    '        End Try
-    '        Return c
-    '    End Function
-
-    '    Private Sub NormalizeGroupOrderByTop(g As ParamGroup)
-    '        If g Is Nothing Then Exit Sub
-
-    '        Dim n As Integer = 0
-    '        If g.MV1 IsNot Nothing Then n = Math.Max(n, g.MV1.Length)
-    '        If g.MV2 IsNot Nothing Then n = Math.Max(n, g.MV2.Length)
-    '        If g.MV3 IsNot Nothing Then n = Math.Max(n, g.MV3.Length)
-    '        If g.RangeLbl IsNot Nothing Then n = Math.Max(n, g.RangeLbl.Length)
-    '        If n <= 1 Then Exit Sub
-
-    '        Dim pairs As New List(Of Tuple(Of Integer, Integer))()
-    '        For i = 0 To n - 1
-    '            Dim topVal = Integer.MaxValue
-    '            Dim c = FirstControlOfRow(g, i)
-    '            If c IsNot Nothing Then topVal = c.Top
-    '            pairs.Add(Tuple.Create(i, topVal))
-    '        Next
-    '        Dim order = pairs.OrderBy(Function(t) t.Item2).Select(Function(t) t.Item1).ToArray()
-
-    '        g.MV1 = ReorderTupleTB(g.MV1, order)
-    '        g.MV2 = ReorderTupleTB(g.MV2, order)
-    '        g.MV3 = ReorderTupleTB(g.MV3, order)
-    '        g.Average = ReorderTupleLBL(g.Average, order)
-    '        g.Error = ReorderTupleLBL(g.Error, order)
-    '        g.FinalUncDecl = ReorderTupleLBL(g.FinalUncDecl, order)
-    '        g.Tolerance = ReorderTupleTB(g.Tolerance, order)
-    '        g.UpperLimit = ReorderTupleTB(g.UpperLimit, order)
-    '        g.LowerLimit = ReorderTupleTB(g.LowerLimit, order)
-    '        g.Remarks = ReorderTupleTB(g.Remarks, order)
-
-    '        g.RangeLbl = ReorderLBL(g.RangeLbl, order)
-    '        g.Unit1Lbl = ReorderLBL(g.Unit1Lbl, order)
-    '        g.NominalLbl = ReorderLBL(g.NominalLbl, order)
-    '        g.Unit2Lbl = ReorderLBL(g.Unit2Lbl, order)
-    '        g.FrequencyLbl = ReorderLBL(g.FrequencyLbl, order)
-    '        g.UnitLbl = ReorderLBL(g.UnitLbl, order)
-    '    End Sub
-
-    '    ' ===========================
-    '    ' Fillers (60 seq / Nominal bulk+seq)
-    '    ' ===========================
-    '    Private seqTimer As System.Windows.Forms.Timer = Nothing
-
-    '    Private seqTargets As List(Of TextBox) = Nothing
-    '    Private seqIndex As Integer = 0
-    '    Private seqValue As String = "60"
-    '    Private seqRecomputeAfter As Boolean = True
-
-    '    Private Function BuildMvTargets(onlyVisible As Boolean) As List(Of TextBox)
-    '        Dim list As New List(Of TextBox)
-
-    '        'If the group or MV1 is missing, it skips the group.
-    '        'It uses rowCount = g.MV1.Length and iterates i = 0 … rowCount-1. This makes MV1 the row-count driver.
-
-    '        Dim addGroup As Action(Of ParamGroup) =
-    '            Sub(g As ParamGroup)
-    '                If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
-    '                'If onlyVisible = True, the entire row is included only if MV1(i).tb exists and is visible.
-    '                'If that MV1 textbox isn’t visible, the code skips the whole row, meaning it won’t add MV2(i) or MV3(i) either—even if those are visible.
-    '                Dim rowCount = g.MV1.Length
-    '                For i As Integer = 0 To rowCount - 1
-    '                    Dim rowVisible As Boolean = True
-    '                    If onlyVisible Then
-    '                        Dim tb1 = If(i < g.MV1.Length, g.MV1(i).tb, Nothing)
-    '                        rowVisible = (tb1 IsNot Nothing AndAlso tb1.Visible)
-    '                    End If
-    '                    If Not rowVisible Then Continue For
-    '                    'For the current row i, it adds MV1(i).tb, then MV2(i).tb, then MV3(i).tb, if each exists.
-    '                    'There are index and null guards for each array and element.
-    '                    If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length AndAlso g.MV1(i).tb IsNot Nothing Then list.Add(g.MV1(i).tb)
-    '                    If g.MV2 IsNot Nothing AndAlso i < g.MV2.Length AndAlso g.MV2(i).tb IsNot Nothing Then list.Add(g.MV2(i).tb)
-    '                    If g.MV3 IsNot Nothing AndAlso i < g.MV3.Length AndAlso g.MV3(i).tb IsNot Nothing Then list.Add(g.MV3(i).tb)
-    '                Next
-    '            End Sub
-    '        'The same per-group logic runs for each of the five groups, in that order.
-    '        'So the final list order is: group-by-group, and within each group, row 0’s MV1→MV2→MV3, then row 1’s MV1→MV2→MV3
-    '        addGroup(DCV) : addGroup(ACV) : addGroup(RES) : addGroup(DCC) : addGroup(ACC)
-    '        Return list
-    '    End Function
-
-    '    ' === StartSequentialMvFill (Sub) ===
-    '    ' Summary: Auto-fills MV textboxes sequentially (halimbawa value "60") gamit Timer.
-    '    ' Notes: Useful sa testing/demo ng bulk data entry.
-    '    ' Tags: AutoFill, Timer
-    '    Public Sub StartSequentialMvFill(Optional value As String = "60",
-    '                                     Optional onlyVisible As Boolean = True,
-    '                                    Optional intervalMs As Integer = 5000,
-    '                                     Optional recomputeAfter As Boolean = True)
-
-    '        If seqTimer IsNot Nothing Then
-    '            RemoveHandler seqTimer.Tick, AddressOf OnSeqTick
-    '            seqTimer.Stop() : seqTimer.Dispose()
-    '        End If
-
-    '        seqTargets = BuildMvTargets(onlyVisible)
-    '        If seqTargets Is Nothing OrElse seqTargets.Count = 0 Then Exit Sub
-    '        SetCalculating(True)
-    '        seqValue = value
-    '        seqIndex = 0
-    '        seqRecomputeAfter = recomputeAfter
-
-    '        isBulkUpdating = True
-
-    '        seqTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, intervalMs)}
-    '        AddHandler seqTimer.Tick, AddressOf OnSeqTick
-    '        seqTimer.Start()
-    '    End Sub
-
-    '    Public Sub TempFillAllMvSequential60()
-    '        StartSequentialMvFill("60", onlyVisible:=True, intervalMs:=5000, recomputeAfter:=True)
-    '    End Sub
-
-    '    Public Sub StopSequentialMvFill()
-    '        If seqTimer IsNot Nothing Then
-    '            RemoveHandler seqTimer.Tick, AddressOf OnSeqTick
-    '            seqTimer.Stop() : seqTimer.Dispose() : seqTimer = Nothing
-    '        End If
-    '        isBulkUpdating = False
-    '    End Sub
-
-    '    ' === OnNomSeqTick (Sub) ===
-    '    ' Summary: Tick handler ng nominal sequential filler.
-    '    ' Tags: AutoFill, Timer
-    '    Private Sub OnSeqTick(sender As Object, e As EventArgs)
-    '        If seqTargets Is Nothing OrElse seqIndex >= seqTargets.Count Then
-    '            StopSequentialMvFill()
-    '            If seqRecomputeAfter Then
-    '                ComputeAllAfterBulkLoad()
-    '                Me.Cursor = Cursors.Default
-    '            End If
-    '            Return
-    '        End If
-
-    '        Dim tb As TextBox = seqTargets(seqIndex)
-    '        If tb IsNot Nothing AndAlso Not tb.IsDisposed Then
-    '            tb.Focus()                    ' optional, helps caret follow
-    '            tb.Text = seqValue
-    '            ScrollIntoViewDeep(tb)        ' <--- ensure visible while auto-filling
-    '        End If
-    '        seqIndex += 1
-    '    End Sub
-
-    '    Private Function ComposeNominalValue(g As ParamGroup, i As Integer, copyUnits As Boolean) As String
-    '        Dim n As String = ""
-    '        If g.NominalLbl IsNot Nothing AndAlso i < g.NominalLbl.Length AndAlso g.NominalLbl(i) IsNot Nothing Then
-    '            n = If(g.NominalLbl(i).Text, "").Trim()
-    '        End If
-    '        If copyUnits AndAlso g.Unit2Lbl IsNot Nothing AndAlso i < g.Unit2Lbl.Length AndAlso g.Unit2Lbl(i) IsNot Nothing Then
-    '            Dim u2 = If(g.Unit2Lbl(i).Text, "").Trim()
-    '            If u2 <> "" Then n = (n & " " & u2).Trim()
-    '        End If
-    '        Return n
-    '    End Function
-
-    '    Public Sub FillAllMvWithNominal(Optional onlyVisible As Boolean = True,
-    '                                    Optional copyUnits As Boolean = False,
-    '                                    Optional recomputeAfter As Boolean = True)
-    '        SetCalculating(True)
-    '        isBulkUpdating = True
-    '        Try
-    '            Dim fill As Action(Of ParamGroup) =
-    '                Sub(g As ParamGroup)
-    '                    If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
-    '                    Dim rows = g.MV1.Length
-    '                    For i As Integer = 0 To rows - 1
-    '                        Dim doRow = True
-    '                        If onlyVisible Then
-    '                            Dim tbv = If(g.MV1(i).tb, Nothing)
-    '                            doRow = (tbv IsNot Nothing AndAlso tbv.Visible)
-    '                        End If
-    '                        If Not doRow Then Continue For
-
-    '                        Dim val = ComposeNominalValue(g, i, copyUnits)
-    '                        If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length AndAlso g.MV1(i).tb IsNot Nothing Then g.MV1(i).tb.Text = val
-    '                        If g.MV2 IsNot Nothing AndAlso i < g.MV2.Length AndAlso g.MV2(i).tb IsNot Nothing Then g.MV2(i).tb.Text = val
-    '                        If g.MV3 IsNot Nothing AndAlso i < g.MV3.Length AndAlso g.MV3(i).tb IsNot Nothing Then g.MV3(i).tb.Text = val
-    '                    Next
-    '                End Sub
-
-    '            fill(DCV) : fill(ACV) : fill(RES) : fill(DCC) : fill(ACC)
-    '        Finally
-    '            isBulkUpdating = False
-    '        End Try
-
-    '        If recomputeAfter Then
-    '            ComputeAllAfterBulkLoad()
-    '            Me.Cursor = Cursors.Default
-    '        End If
-    '    End Sub
-
-    '    ' ===========================
-    '    ' Sequential “Nominal” filler (one control at a time)
-    '    ' ===========================
-    '    Private nomSeqTimer As System.Windows.Forms.Timer = Nothing
-
-    '    Private nomSeqTargets As List(Of (tb As TextBox, value As String)) = Nothing
-    '    Private nomSeqIndex As Integer = 0
-    '    Private nomSeqRecomputeAfter As Boolean = True
-
-    '    Private Function BuildNominalTargets(onlyVisible As Boolean, copyUnits As Boolean) _
-    '        As List(Of (tb As TextBox, value As String))
-    '        Dim list As New List(Of (tb As TextBox, value As String))
-
-    '        Dim addGroup As Action(Of ParamGroup) =
-    '            Sub(g As ParamGroup)
-    '                If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
-    '                Dim rows = g.MV1.Length
-    '                For i As Integer = 0 To rows - 1
-    '                    Dim rowVisible As Boolean = True
-    '                    If onlyVisible Then
-    '                        Dim tb1 = If(g.MV1(i).tb, Nothing)
-    '                        rowVisible = (tb1 IsNot Nothing AndAlso tb1.Visible)
-    '                    End If
-    '                    If Not rowVisible Then Continue For
-
-    '                    Dim v = ComposeNominalValue(g, i, copyUnits)
-    '                    If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length AndAlso g.MV1(i).tb IsNot Nothing Then list.Add((g.MV1(i).tb, v))
-    '                    If g.MV2 IsNot Nothing AndAlso i < g.MV2.Length AndAlso g.MV2(i).tb IsNot Nothing Then list.Add((g.MV2(i).tb, v))
-    '                    If g.MV3 IsNot Nothing AndAlso i < g.MV3.Length AndAlso g.MV3(i).tb IsNot Nothing Then list.Add((g.MV3(i).tb, v))
-    '                Next
-    '            End Sub
-
-    '        addGroup(DCV) : addGroup(ACV) : addGroup(RES) : addGroup(DCC) : addGroup(ACC)
-    '        Return list
-    '    End Function
-
-    '    'onlyVisible: If True, only process visible items.
-    '    'copyUnits: whether to duplicate units during the process.
-    '    'intervalMs: how often(in milliseconds) the Loop should "tick."
-    '    'recomputeAfter: whether to trigger a recomputation at the end.
-    '    Public Sub StartSequentialFillWithNominal(Optional onlyVisible As Boolean = True,
-    '                                          Optional copyUnits As Boolean = False,
-    '                                          Optional intervalMs As Integer = 5000,
-    '                                          Optional recomputeAfter As Boolean = True)
-
-    '        ' === Reset timing state ===
-    '        rowTimes.Clear()
-
-    '        ' Build targets
-    '        nomSeqTargets = BuildNominalTargets(onlyVisible, copyUnits)
-    '        If nomSeqTargets Is Nothing OrElse nomSeqTargets.Count = 0 Then Exit Sub
-    '        SetCalculating(True)
-
-    '        nomSeqIndex = 0
-    '        nomSeqRecomputeAfter = recomputeAfter
-    '        isBulkUpdating = False                ' allow per-row live compute
-
-    '        ' Run timing/stopwatch (unchanged)
-    '        runTotalRows = CountVisibleRows()
-    '        runComputedRows = 0
-    '        computedKeys.Clear()
-    '        runStopwatch = System.Diagnostics.Stopwatch.StartNew()
-    '        runActive = True
-
-    '        ' Nominal sequence state
-    '        nomSeqActive = True
-    '        nomSeqWaitingCompute = False          ' let the timer drive steps first
-
-    '        ' (Re)create the timer and honor intervalMs
-    '        If nomSeqTimer IsNot Nothing Then
-    '            RemoveHandler nomSeqTimer.Tick, AddressOf OnNomSeqTick
-    '            nomSeqTimer.Stop() : nomSeqTimer.Dispose()
-    '        End If
-    '        nomSeqTimer = New System.Windows.Forms.Timer() With {.Interval = Math.Max(1, intervalMs)}
-    '        AddHandler nomSeqTimer.Tick, AddressOf OnNomSeqTick
-    '        nomSeqTimer.Start()
-    '    End Sub
-
-    '    Private Sub ProcessNextNominalStep()
-    '        If Not nomSeqActive Then Exit Sub
-
-    '        Do
-    '            If nomSeqTargets Is Nothing OrElse nomSeqIndex >= nomSeqTargets.Count Then
-    '                ' Done
-    '                nomSeqActive = False
-    '                If nomSeqRecomputeAfter Then
-    '                    ComputeAllAfterBulkLoad()
-    '                    Me.Cursor = Cursors.Default
-    '                End If
-    '                Exit Sub
-    '            End If
-
-    '            Dim pair = nomSeqTargets(nomSeqIndex)
-
-    '            If pair.tb IsNot Nothing AndAlso Not pair.tb.IsDisposed Then
-    '                pair.tb.Focus()
-    '                pair.tb.Text = pair.value
-    '                ScrollIntoViewDeep(pair.tb)
-
-    '                ' If this write completes a row, start a compute and WAIT (return)
-    '                Dim g As ParamGroup = Nothing
-    '                Dim rowIdx As Integer = -1
-    '                For Each cand In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
-    '                    If cand Is Nothing Then Continue For
-    '                    rowIdx = FindRowIndexFromSenderInGroup(cand, pair.tb)
-    '                    If rowIdx >= 0 Then g = cand : Exit For
-    '                Next
-
-    '                If g IsNot Nothing AndAlso rowIdx >= 0 AndAlso IsRowComplete(g, rowIdx) Then
-    '                    nomSeqWaitingCompute = True
-    '                    StartRowCompute(g, rowIdx)        ' pins target row and starts dcComputeTimer
-    '                    nomSeqIndex += 1                   ' advance to next cell AFTER compute completes
-    '                    Exit Sub                           ' <- WAIT here until compute tick fires
-    '                End If
-    '            End If
-
-    '            nomSeqIndex += 1                           ' not complete yet; continue filling
-    '        Loop
-    '    End Sub
-
-    '    Public Sub StopSequentialFillWithNominal()
-    '        If nomSeqTimer IsNot Nothing Then
-    '            RemoveHandler nomSeqTimer.Tick, AddressOf OnNomSeqTick
-    '            nomSeqTimer.Stop() : nomSeqTimer.Dispose() : nomSeqTimer = Nothing
-    '        End If
-    '        isBulkUpdating = False
-    '    End Sub
-
-    '    Private Sub OnNomSeqTick(sender As Object, e As EventArgs)
-    '        ' If we’re waiting for compute completion, do nothing this tick
-    '        If nomSeqWaitingCompute Then Exit Sub
-
-    '        If nomSeqTargets Is Nothing OrElse nomSeqIndex >= nomSeqTargets.Count Then
-    '            StopSequentialFillWithNominal()
-    '            If nomSeqRecomputeAfter Then
-    '                ComputeAllAfterBulkLoad()
-    '                Me.Cursor = Cursors.Default
-    '            End If
-    '            Return
-    '        End If
-
-    '        Dim pair = nomSeqTargets(nomSeqIndex)
-    '        If pair.tb IsNot Nothing AndAlso Not pair.tb.IsDisposed Then
-    '            pair.tb.Focus()
-    '            pair.tb.Text = pair.value
-    '            ScrollIntoViewDeep(pair.tb)
-
-    '            ' If this write completes a row, trigger compute and PAUSE sequence
-    '            Dim g As ParamGroup = Nothing
-    '            Dim rowIdx As Integer = -1
-    '            For Each cand In New ParamGroup() {DCV, ACV, RES, DCC, ACC}
-    '                If cand Is Nothing Then Continue For
-    '                rowIdx = FindRowIndexFromSenderInGroup(cand, pair.tb)
-    '                If rowIdx >= 0 Then g = cand : Exit For
-    '            Next
-    '            If g IsNot Nothing AndAlso rowIdx >= 0 AndAlso IsRowComplete(g, rowIdx) Then
-    '                nomSeqWaitingCompute = True
-    '                StartRowCompute(g, rowIdx)     ' dcComputeTimer will clear the gate
-    '            End If
-    '        End If
-
-    '        nomSeqIndex += 1
-    '    End Sub
-
-    '    ' === btnAutoFill60_Click (Sub) ===
-    '    ' Summary: Button handler para simulan ang 60 sequential filler.
-    '    ' Tags: UI, AutoFill
-    '    Private Sub btnAutoFill60_Click(sender As Object, e As EventArgs) Handles btnAutoFill60.Click
-    '        ShowTempHud()
-    '        TempFillAllMvSequential60()
-    '    End Sub
-
-    '    Private Sub btnAutoFillNominalSeq_Click(sender As Object, e As EventArgs) Handles btnAutoFillNominalSeq.Click
-    '        ShowTempHud()
-    '        StartSequentialFillWithNominal(onlyVisible:=True, copyUnits:=False, intervalMs:=3000, recomputeAfter:=False)
-    '    End Sub
-
-    '    Private Sub btnAutoFillNominalBulk_Click(sender As Object, e As EventArgs) Handles btnAutoFillNominalBulk.Click
-    '        ShowTempHud()
-    '        FillAllMvWithNominal(onlyVisible:=True, copyUnits:=False, recomputeAfter:=True)
-    '    End Sub
-
-    '    Private Sub btnStopFill_Click(sender As Object, e As EventArgs) Handles btnStopFill.Click
-    '        StopSequentialMvFill()          ' for the “60” sequencer
-    '        StopSequentialFillWithNominal() ' for the nominal sequencer
-    '    End Sub
-
-    '#End Region  ' TEMP/DEBUG — easy to delete later
+    Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
+        Try
+            If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
+                RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
+                videoSource.SignalToStop()
+                videoSource.WaitForStop()
+            End If
+        Catch
+        End Try
+        MyBase.OnFormClosing(e)
+    End Sub
 
 End Class

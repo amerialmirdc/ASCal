@@ -1144,7 +1144,7 @@ Partial Class calibrate
         '
         Me.BtnCapture.BackColor = System.Drawing.SystemColors.Window
         Me.BtnCapture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.BtnCapture.Cursor = System.Windows.Forms.Cursors.WaitCursor
+        Me.BtnCapture.Cursor = System.Windows.Forms.Cursors.Hand
         Me.BtnCapture.Image = Global.ASCal.My.Resources.Resources.capture
         Me.BtnCapture.Location = New System.Drawing.Point(208, 212)
         Me.BtnCapture.Name = "BtnCapture"
@@ -1152,7 +1152,6 @@ Partial Class calibrate
         Me.BtnCapture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
         Me.BtnCapture.TabIndex = 204
         Me.BtnCapture.TabStop = False
-        Me.BtnCapture.UseWaitCursor = True
         '
         'PictureBox1
         '

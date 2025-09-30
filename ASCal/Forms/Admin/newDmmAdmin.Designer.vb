@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class newDMMAdmin
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class newDMMAdmin
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Panel3 = New System.Windows.Forms.Panel()
@@ -52,23 +52,47 @@ Partial Class newDMMAdmin
         Me.CheckBox8 = New System.Windows.Forms.CheckBox()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.Panel5 = New System.Windows.Forms.Panel()
+        Me.Panel6 = New System.Windows.Forms.Panel()
+        Me.RESUncertainty = New System.Windows.Forms.ListView()
+        Me.addRangeUnitRES = New System.Windows.Forms.ComboBox()
+        Me.addRangeTxtRES = New System.Windows.Forms.ComboBox()
+        Me.addTestpointRES = New System.Windows.Forms.Button()
+        Me.addNominalTxtRES = New System.Windows.Forms.TextBox()
+        Me.delBtnNomRES = New System.Windows.Forms.Button()
+        Me.CheckBoxRES = New System.Windows.Forms.CheckBox()
+        Me.DCVoltageUncertainty = New System.Windows.Forms.ListView()
+        Me.addRangeUnitDCV = New System.Windows.Forms.ComboBox()
+        Me.addRangeTxtDCV = New System.Windows.Forms.ComboBox()
+        Me.addTestpointDCV = New System.Windows.Forms.Button()
+        Me.addNominalTxtDCV = New System.Windows.Forms.TextBox()
+        Me.delBtnNomDCV = New System.Windows.Forms.Button()
+        Me.CheckBoxDCV = New System.Windows.Forms.CheckBox()
+        Me.DCCUncertainty = New System.Windows.Forms.ListView()
+        Me.addFrequencyUnitACC = New System.Windows.Forms.ComboBox()
+        Me.addRangeUnitACC = New System.Windows.Forms.ComboBox()
+        Me.addRangeTxtACC = New System.Windows.Forms.ComboBox()
+        Me.addFrequencyTxtACC = New System.Windows.Forms.TextBox()
+        Me.addTestpointACC = New System.Windows.Forms.Button()
+        Me.addNominalTxtACC = New System.Windows.Forms.TextBox()
+        Me.addRangeUnitDCC = New System.Windows.Forms.ComboBox()
+        Me.addRangeTxtDCC = New System.Windows.Forms.ComboBox()
+        Me.addTestpointDCC = New System.Windows.Forms.Button()
+        Me.addNominalTxtDCC = New System.Windows.Forms.TextBox()
+        Me.ACCUncertainty = New System.Windows.Forms.ListView()
+        Me.addFrequencyUnitACV = New System.Windows.Forms.ComboBox()
+        Me.addRangeUnitACV = New System.Windows.Forms.ComboBox()
+        Me.addRangeTxtACV = New System.Windows.Forms.ComboBox()
+        Me.addFrequencyTxtACV = New System.Windows.Forms.TextBox()
+        Me.addTestpointACV = New System.Windows.Forms.Button()
+        Me.addNominalTxtACV = New System.Windows.Forms.TextBox()
+        Me.ACVoltageUncertainty = New System.Windows.Forms.ListView()
         Me.delBtnFreqACC = New System.Windows.Forms.Button()
         Me.delBtnFreqACV = New System.Windows.Forms.Button()
-        Me.delBtnNomRES = New System.Windows.Forms.Button()
         Me.delBtnNomDCC = New System.Windows.Forms.Button()
-        Me.delBtnNomDCV = New System.Windows.Forms.Button()
-        Me.listViewParamsRES = New System.Windows.Forms.ListView()
-        Me.CheckBoxRES = New System.Windows.Forms.CheckBox()
-        Me.listViewParamsDCC = New System.Windows.Forms.ListView()
         Me.CheckBoxDCC = New System.Windows.Forms.CheckBox()
-        Me.listViewParamsACC = New System.Windows.Forms.ListView()
         Me.CheckBoxACC = New System.Windows.Forms.CheckBox()
-        Me.listViewParamsDCV = New System.Windows.Forms.ListView()
-        Me.listViewParams = New System.Windows.Forms.ListView()
-        Me.CheckBoxDCV = New System.Windows.Forms.CheckBox()
         Me.CheckBox = New System.Windows.Forms.CheckBox()
         Me.Label11 = New System.Windows.Forms.Label()
-        Me.Panel6 = New System.Windows.Forms.Panel()
         Me.Panel1.SuspendLayout()
         Me.Panel3.SuspendLayout()
         Me.Panel10.SuspendLayout()
@@ -83,7 +107,6 @@ Partial Class newDMMAdmin
         Me.SplitContainer1.SuspendLayout()
         Me.Panel4.SuspendLayout()
         Me.Panel5.SuspendLayout()
-        Me.Panel6.SuspendLayout()
         Me.SuspendLayout()
         '
         'Panel1
@@ -261,8 +284,9 @@ Partial Class newDMMAdmin
         'backBtn
         '
         Me.backBtn.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.backBtn.Cursor = System.Windows.Forms.Cursors.Hand
         Me.backBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.backBtn.Location = New System.Drawing.Point(536, 32)
+        Me.backBtn.Location = New System.Drawing.Point(1225, 32)
         Me.backBtn.Name = "backBtn"
         Me.backBtn.Size = New System.Drawing.Size(136, 40)
         Me.backBtn.TabIndex = 50
@@ -272,17 +296,19 @@ Partial Class newDMMAdmin
         'newSaveBtn
         '
         Me.newSaveBtn.BackColor = System.Drawing.Color.Cyan
+        Me.newSaveBtn.Cursor = System.Windows.Forms.Cursors.Hand
         Me.newSaveBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.newSaveBtn.Location = New System.Drawing.Point(720, 32)
+        Me.newSaveBtn.Location = New System.Drawing.Point(1367, 32)
         Me.newSaveBtn.Name = "newSaveBtn"
-        Me.newSaveBtn.Size = New System.Drawing.Size(136, 40)
+        Me.newSaveBtn.Size = New System.Drawing.Size(211, 40)
         Me.newSaveBtn.TabIndex = 49
         Me.newSaveBtn.Text = "Save"
         Me.newSaveBtn.UseVisualStyleBackColor = False
         '
         'SplitContainer1
         '
-        Me.SplitContainer1.Location = New System.Drawing.Point(16, 16)
+        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer1.Location = New System.Drawing.Point(300, 0)
         Me.SplitContainer1.Name = "SplitContainer1"
         Me.SplitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
@@ -294,8 +320,8 @@ Partial Class newDMMAdmin
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.Panel5)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1544, 960)
-        Me.SplitContainer1.SplitterDistance = 210
+        Me.SplitContainer1.Size = New System.Drawing.Size(1602, 991)
+        Me.SplitContainer1.SplitterDistance = 192
         Me.SplitContainer1.TabIndex = 51
         '
         'Panel4
@@ -318,7 +344,7 @@ Partial Class newDMMAdmin
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel4.Location = New System.Drawing.Point(0, 0)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(1544, 210)
+        Me.Panel4.Size = New System.Drawing.Size(1602, 192)
         Me.Panel4.TabIndex = 1
         '
         'Label6
@@ -439,35 +465,383 @@ Partial Class newDMMAdmin
         '
         Me.Panel5.AutoScroll = True
         Me.Panel5.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.Panel5.Controls.Add(Me.Panel6)
+        Me.Panel5.Controls.Add(Me.RESUncertainty)
+        Me.Panel5.Controls.Add(Me.addRangeUnitRES)
+        Me.Panel5.Controls.Add(Me.addRangeTxtRES)
+        Me.Panel5.Controls.Add(Me.addTestpointRES)
+        Me.Panel5.Controls.Add(Me.addNominalTxtRES)
+        Me.Panel5.Controls.Add(Me.delBtnNomRES)
+        Me.Panel5.Controls.Add(Me.CheckBoxRES)
+        Me.Panel5.Controls.Add(Me.DCVoltageUncertainty)
+        Me.Panel5.Controls.Add(Me.addRangeUnitDCV)
+        Me.Panel5.Controls.Add(Me.addRangeTxtDCV)
+        Me.Panel5.Controls.Add(Me.addTestpointDCV)
+        Me.Panel5.Controls.Add(Me.addNominalTxtDCV)
+        Me.Panel5.Controls.Add(Me.delBtnNomDCV)
+        Me.Panel5.Controls.Add(Me.CheckBoxDCV)
+        Me.Panel5.Controls.Add(Me.DCCUncertainty)
+        Me.Panel5.Controls.Add(Me.addFrequencyUnitACC)
+        Me.Panel5.Controls.Add(Me.addRangeUnitACC)
+        Me.Panel5.Controls.Add(Me.addRangeTxtACC)
+        Me.Panel5.Controls.Add(Me.addFrequencyTxtACC)
+        Me.Panel5.Controls.Add(Me.addTestpointACC)
+        Me.Panel5.Controls.Add(Me.addNominalTxtACC)
+        Me.Panel5.Controls.Add(Me.addRangeUnitDCC)
+        Me.Panel5.Controls.Add(Me.addRangeTxtDCC)
+        Me.Panel5.Controls.Add(Me.addTestpointDCC)
+        Me.Panel5.Controls.Add(Me.addNominalTxtDCC)
+        Me.Panel5.Controls.Add(Me.ACCUncertainty)
+        Me.Panel5.Controls.Add(Me.addFrequencyUnitACV)
+        Me.Panel5.Controls.Add(Me.addRangeUnitACV)
+        Me.Panel5.Controls.Add(Me.addRangeTxtACV)
+        Me.Panel5.Controls.Add(Me.addFrequencyTxtACV)
+        Me.Panel5.Controls.Add(Me.addTestpointACV)
+        Me.Panel5.Controls.Add(Me.addNominalTxtACV)
+        Me.Panel5.Controls.Add(Me.ACVoltageUncertainty)
         Me.Panel5.Controls.Add(Me.delBtnFreqACC)
         Me.Panel5.Controls.Add(Me.delBtnFreqACV)
-        Me.Panel5.Controls.Add(Me.delBtnNomRES)
         Me.Panel5.Controls.Add(Me.delBtnNomDCC)
-        Me.Panel5.Controls.Add(Me.delBtnNomDCV)
-        Me.Panel5.Controls.Add(Me.listViewParamsRES)
-        Me.Panel5.Controls.Add(Me.CheckBoxRES)
-        Me.Panel5.Controls.Add(Me.listViewParamsDCC)
         Me.Panel5.Controls.Add(Me.CheckBoxDCC)
-        Me.Panel5.Controls.Add(Me.listViewParamsACC)
         Me.Panel5.Controls.Add(Me.CheckBoxACC)
-        Me.Panel5.Controls.Add(Me.listViewParamsDCV)
-        Me.Panel5.Controls.Add(Me.listViewParams)
-        Me.Panel5.Controls.Add(Me.CheckBoxDCV)
         Me.Panel5.Controls.Add(Me.CheckBox)
         Me.Panel5.Controls.Add(Me.Label11)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel5.Location = New System.Drawing.Point(0, 0)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(1544, 746)
+        Me.Panel5.Size = New System.Drawing.Size(1602, 795)
         Me.Panel5.TabIndex = 29
+        '
+        'Panel6
+        '
+        Me.Panel6.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.Panel6.Location = New System.Drawing.Point(0, 3374)
+        Me.Panel6.Name = "Panel6"
+        Me.Panel6.Size = New System.Drawing.Size(1585, 84)
+        Me.Panel6.TabIndex = 197
+        '
+        'RESUncertainty
+        '
+        Me.RESUncertainty.BackColor = System.Drawing.Color.MintCream
+        Me.RESUncertainty.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.RESUncertainty.HideSelection = False
+        Me.RESUncertainty.Location = New System.Drawing.Point(38, 1447)
+        Me.RESUncertainty.Name = "RESUncertainty"
+        Me.RESUncertainty.Size = New System.Drawing.Size(1540, 599)
+        Me.RESUncertainty.TabIndex = 196
+        Me.RESUncertainty.UseCompatibleStateImageBehavior = False
+        '
+        'addRangeUnitRES
+        '
+        Me.addRangeUnitRES.FormattingEnabled = True
+        Me.addRangeUnitRES.Location = New System.Drawing.Point(525, 1416)
+        Me.addRangeUnitRES.Name = "addRangeUnitRES"
+        Me.addRangeUnitRES.Size = New System.Drawing.Size(84, 21)
+        Me.addRangeUnitRES.TabIndex = 195
+        '
+        'addRangeTxtRES
+        '
+        Me.addRangeTxtRES.FormattingEnabled = True
+        Me.addRangeTxtRES.Location = New System.Drawing.Point(351, 1417)
+        Me.addRangeTxtRES.Name = "addRangeTxtRES"
+        Me.addRangeTxtRES.Size = New System.Drawing.Size(169, 21)
+        Me.addRangeTxtRES.TabIndex = 194
+        '
+        'addTestpointRES
+        '
+        Me.addTestpointRES.BackColor = System.Drawing.Color.Cyan
+        Me.addTestpointRES.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.addTestpointRES.Location = New System.Drawing.Point(879, 1413)
+        Me.addTestpointRES.Name = "addTestpointRES"
+        Me.addTestpointRES.Size = New System.Drawing.Size(256, 24)
+        Me.addTestpointRES.TabIndex = 192
+        Me.addTestpointRES.Text = "Add New Testpoint"
+        Me.addTestpointRES.UseVisualStyleBackColor = False
+        '
+        'addNominalTxtRES
+        '
+        Me.addNominalTxtRES.BackColor = System.Drawing.SystemColors.Window
+        Me.addNominalTxtRES.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.addNominalTxtRES.Location = New System.Drawing.Point(615, 1415)
+        Me.addNominalTxtRES.Name = "addNominalTxtRES"
+        Me.addNominalTxtRES.Size = New System.Drawing.Size(258, 23)
+        Me.addNominalTxtRES.TabIndex = 191
+        '
+        'delBtnNomRES
+        '
+        Me.delBtnNomRES.BackColor = System.Drawing.Color.Cyan
+        Me.delBtnNomRES.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.delBtnNomRES.Location = New System.Drawing.Point(197, 1414)
+        Me.delBtnNomRES.Name = "delBtnNomRES"
+        Me.delBtnNomRES.Size = New System.Drawing.Size(144, 24)
+        Me.delBtnNomRES.TabIndex = 190
+        Me.delBtnNomRES.Text = "Delete"
+        Me.delBtnNomRES.UseVisualStyleBackColor = False
+        '
+        'CheckBoxRES
+        '
+        Me.CheckBoxRES.AutoSize = True
+        Me.CheckBoxRES.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.CheckBoxRES.Location = New System.Drawing.Point(14, 1414)
+        Me.CheckBoxRES.Name = "CheckBoxRES"
+        Me.CheckBoxRES.Size = New System.Drawing.Size(161, 27)
+        Me.CheckBoxRES.TabIndex = 188
+        Me.CheckBoxRES.Text = "RESISTANCE:"
+        Me.CheckBoxRES.UseVisualStyleBackColor = True
+        '
+        'DCVoltageUncertainty
+        '
+        Me.DCVoltageUncertainty.BackColor = System.Drawing.Color.MintCream
+        Me.DCVoltageUncertainty.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.DCVoltageUncertainty.HideSelection = False
+        Me.DCVoltageUncertainty.Location = New System.Drawing.Point(38, 108)
+        Me.DCVoltageUncertainty.Name = "DCVoltageUncertainty"
+        Me.DCVoltageUncertainty.Size = New System.Drawing.Size(1540, 599)
+        Me.DCVoltageUncertainty.TabIndex = 187
+        Me.DCVoltageUncertainty.UseCompatibleStateImageBehavior = False
+        '
+        'addRangeUnitDCV
+        '
+        Me.addRangeUnitDCV.FormattingEnabled = True
+        Me.addRangeUnitDCV.Location = New System.Drawing.Point(514, 69)
+        Me.addRangeUnitDCV.Name = "addRangeUnitDCV"
+        Me.addRangeUnitDCV.Size = New System.Drawing.Size(84, 21)
+        Me.addRangeUnitDCV.TabIndex = 186
+        '
+        'addRangeTxtDCV
+        '
+        Me.addRangeTxtDCV.FormattingEnabled = True
+        Me.addRangeTxtDCV.Location = New System.Drawing.Point(340, 70)
+        Me.addRangeTxtDCV.Name = "addRangeTxtDCV"
+        Me.addRangeTxtDCV.Size = New System.Drawing.Size(169, 21)
+        Me.addRangeTxtDCV.TabIndex = 185
+        '
+        'addTestpointDCV
+        '
+        Me.addTestpointDCV.BackColor = System.Drawing.Color.Cyan
+        Me.addTestpointDCV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.addTestpointDCV.Location = New System.Drawing.Point(867, 66)
+        Me.addTestpointDCV.Name = "addTestpointDCV"
+        Me.addTestpointDCV.Size = New System.Drawing.Size(259, 24)
+        Me.addTestpointDCV.TabIndex = 183
+        Me.addTestpointDCV.Text = "Add New Testpoint"
+        Me.addTestpointDCV.UseVisualStyleBackColor = False
+        '
+        'addNominalTxtDCV
+        '
+        Me.addNominalTxtDCV.BackColor = System.Drawing.SystemColors.Window
+        Me.addNominalTxtDCV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.addNominalTxtDCV.Location = New System.Drawing.Point(604, 67)
+        Me.addNominalTxtDCV.Name = "addNominalTxtDCV"
+        Me.addNominalTxtDCV.Size = New System.Drawing.Size(258, 23)
+        Me.addNominalTxtDCV.TabIndex = 182
+        '
+        'delBtnNomDCV
+        '
+        Me.delBtnNomDCV.BackColor = System.Drawing.Color.Cyan
+        Me.delBtnNomDCV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.delBtnNomDCV.Location = New System.Drawing.Point(189, 70)
+        Me.delBtnNomDCV.Name = "delBtnNomDCV"
+        Me.delBtnNomDCV.Size = New System.Drawing.Size(144, 24)
+        Me.delBtnNomDCV.TabIndex = 181
+        Me.delBtnNomDCV.Text = "Delete"
+        Me.delBtnNomDCV.UseVisualStyleBackColor = False
+        '
+        'CheckBoxDCV
+        '
+        Me.CheckBoxDCV.AutoSize = True
+        Me.CheckBoxDCV.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.CheckBoxDCV.Location = New System.Drawing.Point(22, 70)
+        Me.CheckBoxDCV.Name = "CheckBoxDCV"
+        Me.CheckBoxDCV.Size = New System.Drawing.Size(161, 27)
+        Me.CheckBoxDCV.TabIndex = 179
+        Me.CheckBoxDCV.Text = "DC VOLTAGE:"
+        Me.CheckBoxDCV.UseVisualStyleBackColor = True
+        '
+        'DCCUncertainty
+        '
+        Me.DCCUncertainty.BackColor = System.Drawing.Color.MintCream
+        Me.DCCUncertainty.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.DCCUncertainty.HideSelection = False
+        Me.DCCUncertainty.Location = New System.Drawing.Point(38, 2110)
+        Me.DCCUncertainty.Name = "DCCUncertainty"
+        Me.DCCUncertainty.Size = New System.Drawing.Size(1540, 599)
+        Me.DCCUncertainty.TabIndex = 171
+        Me.DCCUncertainty.UseCompatibleStateImageBehavior = False
+        '
+        'addFrequencyUnitACC
+        '
+        Me.addFrequencyUnitACC.FormattingEnabled = True
+        Me.addFrequencyUnitACC.Location = New System.Drawing.Point(1045, 2744)
+        Me.addFrequencyUnitACC.Name = "addFrequencyUnitACC"
+        Me.addFrequencyUnitACC.Size = New System.Drawing.Size(73, 21)
+        Me.addFrequencyUnitACC.TabIndex = 170
+        '
+        'addRangeUnitACC
+        '
+        Me.addRangeUnitACC.FormattingEnabled = True
+        Me.addRangeUnitACC.Location = New System.Drawing.Point(505, 2746)
+        Me.addRangeUnitACC.Name = "addRangeUnitACC"
+        Me.addRangeUnitACC.Size = New System.Drawing.Size(84, 21)
+        Me.addRangeUnitACC.TabIndex = 169
+        '
+        'addRangeTxtACC
+        '
+        Me.addRangeTxtACC.FormattingEnabled = True
+        Me.addRangeTxtACC.Location = New System.Drawing.Point(331, 2746)
+        Me.addRangeTxtACC.Name = "addRangeTxtACC"
+        Me.addRangeTxtACC.Size = New System.Drawing.Size(169, 21)
+        Me.addRangeTxtACC.TabIndex = 168
+        '
+        'addFrequencyTxtACC
+        '
+        Me.addFrequencyTxtACC.BackColor = System.Drawing.SystemColors.Window
+        Me.addFrequencyTxtACC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.addFrequencyTxtACC.Location = New System.Drawing.Point(859, 2744)
+        Me.addFrequencyTxtACC.Name = "addFrequencyTxtACC"
+        Me.addFrequencyTxtACC.Size = New System.Drawing.Size(179, 23)
+        Me.addFrequencyTxtACC.TabIndex = 165
+        '
+        'addTestpointACC
+        '
+        Me.addTestpointACC.BackColor = System.Drawing.Color.Cyan
+        Me.addTestpointACC.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.addTestpointACC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.addTestpointACC.Location = New System.Drawing.Point(1123, 2744)
+        Me.addTestpointACC.Name = "addTestpointACC"
+        Me.addTestpointACC.Size = New System.Drawing.Size(264, 24)
+        Me.addTestpointACC.TabIndex = 166
+        Me.addTestpointACC.Text = "Add New Testpoint"
+        Me.addTestpointACC.UseVisualStyleBackColor = False
+        '
+        'addNominalTxtACC
+        '
+        Me.addNominalTxtACC.BackColor = System.Drawing.SystemColors.Window
+        Me.addNominalTxtACC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.addNominalTxtACC.Location = New System.Drawing.Point(595, 2744)
+        Me.addNominalTxtACC.Name = "addNominalTxtACC"
+        Me.addNominalTxtACC.Size = New System.Drawing.Size(258, 23)
+        Me.addNominalTxtACC.TabIndex = 164
+        '
+        'addRangeUnitDCC
+        '
+        Me.addRangeUnitDCC.FormattingEnabled = True
+        Me.addRangeUnitDCC.Location = New System.Drawing.Point(525, 2076)
+        Me.addRangeUnitDCC.Name = "addRangeUnitDCC"
+        Me.addRangeUnitDCC.Size = New System.Drawing.Size(84, 21)
+        Me.addRangeUnitDCC.TabIndex = 163
+        '
+        'addRangeTxtDCC
+        '
+        Me.addRangeTxtDCC.FormattingEnabled = True
+        Me.addRangeTxtDCC.Location = New System.Drawing.Point(351, 2077)
+        Me.addRangeTxtDCC.Name = "addRangeTxtDCC"
+        Me.addRangeTxtDCC.Size = New System.Drawing.Size(169, 21)
+        Me.addRangeTxtDCC.TabIndex = 162
+        '
+        'addTestpointDCC
+        '
+        Me.addTestpointDCC.BackColor = System.Drawing.Color.Cyan
+        Me.addTestpointDCC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.addTestpointDCC.Location = New System.Drawing.Point(879, 2073)
+        Me.addTestpointDCC.Name = "addTestpointDCC"
+        Me.addTestpointDCC.Size = New System.Drawing.Size(263, 24)
+        Me.addTestpointDCC.TabIndex = 160
+        Me.addTestpointDCC.Text = "Add New Testpoint"
+        Me.addTestpointDCC.UseVisualStyleBackColor = False
+        '
+        'addNominalTxtDCC
+        '
+        Me.addNominalTxtDCC.BackColor = System.Drawing.SystemColors.Window
+        Me.addNominalTxtDCC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.addNominalTxtDCC.Location = New System.Drawing.Point(615, 2075)
+        Me.addNominalTxtDCC.Name = "addNominalTxtDCC"
+        Me.addNominalTxtDCC.Size = New System.Drawing.Size(258, 23)
+        Me.addNominalTxtDCC.TabIndex = 159
+        '
+        'ACCUncertainty
+        '
+        Me.ACCUncertainty.BackColor = System.Drawing.Color.MintCream
+        Me.ACCUncertainty.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.ACCUncertainty.HideSelection = False
+        Me.ACCUncertainty.Location = New System.Drawing.Point(38, 2775)
+        Me.ACCUncertainty.Name = "ACCUncertainty"
+        Me.ACCUncertainty.Size = New System.Drawing.Size(1540, 599)
+        Me.ACCUncertainty.TabIndex = 158
+        Me.ACCUncertainty.UseCompatibleStateImageBehavior = False
+        '
+        'addFrequencyUnitACV
+        '
+        Me.addFrequencyUnitACV.FormattingEnabled = True
+        Me.addFrequencyUnitACV.Location = New System.Drawing.Point(1053, 747)
+        Me.addFrequencyUnitACV.Name = "addFrequencyUnitACV"
+        Me.addFrequencyUnitACV.Size = New System.Drawing.Size(73, 21)
+        Me.addFrequencyUnitACV.TabIndex = 149
+        '
+        'addRangeUnitACV
+        '
+        Me.addRangeUnitACV.FormattingEnabled = True
+        Me.addRangeUnitACV.Location = New System.Drawing.Point(513, 747)
+        Me.addRangeUnitACV.Name = "addRangeUnitACV"
+        Me.addRangeUnitACV.Size = New System.Drawing.Size(84, 21)
+        Me.addRangeUnitACV.TabIndex = 148
+        '
+        'addRangeTxtACV
+        '
+        Me.addRangeTxtACV.FormattingEnabled = True
+        Me.addRangeTxtACV.Location = New System.Drawing.Point(339, 747)
+        Me.addRangeTxtACV.Name = "addRangeTxtACV"
+        Me.addRangeTxtACV.Size = New System.Drawing.Size(169, 21)
+        Me.addRangeTxtACV.TabIndex = 147
+        '
+        'addFrequencyTxtACV
+        '
+        Me.addFrequencyTxtACV.BackColor = System.Drawing.SystemColors.Window
+        Me.addFrequencyTxtACV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.addFrequencyTxtACV.Location = New System.Drawing.Point(867, 747)
+        Me.addFrequencyTxtACV.Name = "addFrequencyTxtACV"
+        Me.addFrequencyTxtACV.Size = New System.Drawing.Size(179, 23)
+        Me.addFrequencyTxtACV.TabIndex = 134
+        '
+        'addTestpointACV
+        '
+        Me.addTestpointACV.BackColor = System.Drawing.Color.Cyan
+        Me.addTestpointACV.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.addTestpointACV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
+        Me.addTestpointACV.Location = New System.Drawing.Point(1131, 747)
+        Me.addTestpointACV.Name = "addTestpointACV"
+        Me.addTestpointACV.Size = New System.Drawing.Size(264, 24)
+        Me.addTestpointACV.TabIndex = 135
+        Me.addTestpointACV.Text = "Add New Testpoint"
+        Me.addTestpointACV.UseVisualStyleBackColor = False
+        '
+        'addNominalTxtACV
+        '
+        Me.addNominalTxtACV.BackColor = System.Drawing.SystemColors.Window
+        Me.addNominalTxtACV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.addNominalTxtACV.Location = New System.Drawing.Point(603, 747)
+        Me.addNominalTxtACV.Name = "addNominalTxtACV"
+        Me.addNominalTxtACV.Size = New System.Drawing.Size(258, 23)
+        Me.addNominalTxtACV.TabIndex = 58
+        '
+        'ACVoltageUncertainty
+        '
+        Me.ACVoltageUncertainty.BackColor = System.Drawing.Color.MintCream
+        Me.ACVoltageUncertainty.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.ACVoltageUncertainty.HideSelection = False
+        Me.ACVoltageUncertainty.Location = New System.Drawing.Point(38, 780)
+        Me.ACVoltageUncertainty.Name = "ACVoltageUncertainty"
+        Me.ACVoltageUncertainty.Size = New System.Drawing.Size(1540, 599)
+        Me.ACVoltageUncertainty.TabIndex = 132
+        Me.ACVoltageUncertainty.UseCompatibleStateImageBehavior = False
         '
         'delBtnFreqACC
         '
         Me.delBtnFreqACC.BackColor = System.Drawing.Color.Cyan
         Me.delBtnFreqACC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnFreqACC.Location = New System.Drawing.Point(630, 99)
+        Me.delBtnFreqACC.Location = New System.Drawing.Point(181, 2744)
         Me.delBtnFreqACC.Name = "delBtnFreqACC"
-        Me.delBtnFreqACC.Size = New System.Drawing.Size(297, 24)
+        Me.delBtnFreqACC.Size = New System.Drawing.Size(144, 24)
         Me.delBtnFreqACC.TabIndex = 131
         Me.delBtnFreqACC.Text = "Delete"
         Me.delBtnFreqACC.UseVisualStyleBackColor = False
@@ -475,151 +849,53 @@ Partial Class newDMMAdmin
         'delBtnFreqACV
         '
         Me.delBtnFreqACV.BackColor = System.Drawing.Color.Cyan
+        Me.delBtnFreqACV.Cursor = System.Windows.Forms.Cursors.Hand
         Me.delBtnFreqACV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, CType(0, Byte))
-        Me.delBtnFreqACV.Location = New System.Drawing.Point(14, 99)
+        Me.delBtnFreqACV.Location = New System.Drawing.Point(189, 747)
         Me.delBtnFreqACV.Name = "delBtnFreqACV"
-        Me.delBtnFreqACV.Size = New System.Drawing.Size(297, 24)
+        Me.delBtnFreqACV.Size = New System.Drawing.Size(144, 24)
         Me.delBtnFreqACV.TabIndex = 127
         Me.delBtnFreqACV.Text = "Delete"
         Me.delBtnFreqACV.UseVisualStyleBackColor = False
-        '
-        'delBtnNomRES
-        '
-        Me.delBtnNomRES.BackColor = System.Drawing.Color.Cyan
-        Me.delBtnNomRES.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnNomRES.Location = New System.Drawing.Point(1236, 99)
-        Me.delBtnNomRES.Name = "delBtnNomRES"
-        Me.delBtnNomRES.Size = New System.Drawing.Size(291, 24)
-        Me.delBtnNomRES.TabIndex = 118
-        Me.delBtnNomRES.Text = "Delete"
-        Me.delBtnNomRES.UseVisualStyleBackColor = False
         '
         'delBtnNomDCC
         '
         Me.delBtnNomDCC.BackColor = System.Drawing.Color.Cyan
         Me.delBtnNomDCC.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnNomDCC.Location = New System.Drawing.Point(938, 99)
+        Me.delBtnNomDCC.Location = New System.Drawing.Point(197, 2077)
         Me.delBtnNomDCC.Name = "delBtnNomDCC"
-        Me.delBtnNomDCC.Size = New System.Drawing.Size(288, 24)
+        Me.delBtnNomDCC.Size = New System.Drawing.Size(144, 24)
         Me.delBtnNomDCC.TabIndex = 117
         Me.delBtnNomDCC.Text = "Delete"
         Me.delBtnNomDCC.UseVisualStyleBackColor = False
-        '
-        'delBtnNomDCV
-        '
-        Me.delBtnNomDCV.BackColor = System.Drawing.Color.Cyan
-        Me.delBtnNomDCV.Font = New System.Drawing.Font("Courier10 BT", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.delBtnNomDCV.Location = New System.Drawing.Point(322, 99)
-        Me.delBtnNomDCV.Name = "delBtnNomDCV"
-        Me.delBtnNomDCV.Size = New System.Drawing.Size(290, 24)
-        Me.delBtnNomDCV.TabIndex = 115
-        Me.delBtnNomDCV.Text = "Delete"
-        Me.delBtnNomDCV.UseVisualStyleBackColor = False
-        '
-        'listViewParamsRES
-        '
-        Me.listViewParamsRES.BackColor = System.Drawing.Color.Cyan
-        Me.listViewParamsRES.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParamsRES.HideSelection = False
-        Me.listViewParamsRES.Location = New System.Drawing.Point(1236, 129)
-        Me.listViewParamsRES.Name = "listViewParamsRES"
-        Me.listViewParamsRES.Size = New System.Drawing.Size(291, 599)
-        Me.listViewParamsRES.TabIndex = 109
-        Me.listViewParamsRES.UseCompatibleStateImageBehavior = False
-        '
-        'CheckBoxRES
-        '
-        Me.CheckBoxRES.AutoSize = True
-        Me.CheckBoxRES.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxRES.Location = New System.Drawing.Point(1236, 73)
-        Me.CheckBoxRES.Name = "CheckBoxRES"
-        Me.CheckBoxRES.Size = New System.Drawing.Size(161, 27)
-        Me.CheckBoxRES.TabIndex = 105
-        Me.CheckBoxRES.Text = "RESISTANCE:"
-        Me.CheckBoxRES.UseVisualStyleBackColor = True
-        '
-        'listViewParamsDCC
-        '
-        Me.listViewParamsDCC.BackColor = System.Drawing.Color.Cyan
-        Me.listViewParamsDCC.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParamsDCC.HideSelection = False
-        Me.listViewParamsDCC.Location = New System.Drawing.Point(938, 129)
-        Me.listViewParamsDCC.Name = "listViewParamsDCC"
-        Me.listViewParamsDCC.Size = New System.Drawing.Size(288, 599)
-        Me.listViewParamsDCC.TabIndex = 100
-        Me.listViewParamsDCC.UseCompatibleStateImageBehavior = False
         '
         'CheckBoxDCC
         '
         Me.CheckBoxDCC.AutoSize = True
         Me.CheckBoxDCC.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxDCC.Location = New System.Drawing.Point(938, 73)
+        Me.CheckBoxDCC.Location = New System.Drawing.Point(14, 2077)
         Me.CheckBoxDCC.Name = "CheckBoxDCC"
         Me.CheckBoxDCC.Size = New System.Drawing.Size(161, 27)
         Me.CheckBoxDCC.TabIndex = 96
         Me.CheckBoxDCC.Text = "DC CURRENT:"
         Me.CheckBoxDCC.UseVisualStyleBackColor = True
         '
-        'listViewParamsACC
-        '
-        Me.listViewParamsACC.BackColor = System.Drawing.Color.Cyan
-        Me.listViewParamsACC.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParamsACC.HideSelection = False
-        Me.listViewParamsACC.Location = New System.Drawing.Point(630, 129)
-        Me.listViewParamsACC.Name = "listViewParamsACC"
-        Me.listViewParamsACC.Size = New System.Drawing.Size(297, 599)
-        Me.listViewParamsACC.TabIndex = 91
-        Me.listViewParamsACC.UseCompatibleStateImageBehavior = False
-        '
         'CheckBoxACC
         '
         Me.CheckBoxACC.AutoSize = True
         Me.CheckBoxACC.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxACC.Location = New System.Drawing.Point(630, 73)
+        Me.CheckBoxACC.Location = New System.Drawing.Point(14, 2742)
         Me.CheckBoxACC.Name = "CheckBoxACC"
         Me.CheckBoxACC.Size = New System.Drawing.Size(161, 27)
         Me.CheckBoxACC.TabIndex = 87
         Me.CheckBoxACC.Text = "AC CURRENT:"
         Me.CheckBoxACC.UseVisualStyleBackColor = True
         '
-        'listViewParamsDCV
-        '
-        Me.listViewParamsDCV.BackColor = System.Drawing.Color.Cyan
-        Me.listViewParamsDCV.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParamsDCV.HideSelection = False
-        Me.listViewParamsDCV.Location = New System.Drawing.Point(322, 129)
-        Me.listViewParamsDCV.Name = "listViewParamsDCV"
-        Me.listViewParamsDCV.Size = New System.Drawing.Size(290, 599)
-        Me.listViewParamsDCV.TabIndex = 82
-        Me.listViewParamsDCV.UseCompatibleStateImageBehavior = False
-        '
-        'listViewParams
-        '
-        Me.listViewParams.BackColor = System.Drawing.Color.Cyan
-        Me.listViewParams.Font = New System.Drawing.Font("Courier10 BT", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.listViewParams.HideSelection = False
-        Me.listViewParams.Location = New System.Drawing.Point(14, 129)
-        Me.listViewParams.Name = "listViewParams"
-        Me.listViewParams.Size = New System.Drawing.Size(297, 599)
-        Me.listViewParams.TabIndex = 58
-        Me.listViewParams.UseCompatibleStateImageBehavior = False
-        '
-        'CheckBoxDCV
-        '
-        Me.CheckBoxDCV.AutoSize = True
-        Me.CheckBoxDCV.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBoxDCV.Location = New System.Drawing.Point(322, 73)
-        Me.CheckBoxDCV.Name = "CheckBoxDCV"
-        Me.CheckBoxDCV.Size = New System.Drawing.Size(161, 27)
-        Me.CheckBoxDCV.TabIndex = 54
-        Me.CheckBoxDCV.Text = "DC VOLTAGE:"
-        Me.CheckBoxDCV.UseVisualStyleBackColor = True
-        '
         'CheckBox
         '
         Me.CheckBox.AutoSize = True
         Me.CheckBox.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBox.Location = New System.Drawing.Point(22, 72)
+        Me.CheckBox.Location = New System.Drawing.Point(22, 747)
         Me.CheckBox.Name = "CheckBox"
         Me.CheckBox.Size = New System.Drawing.Size(161, 27)
         Me.CheckBox.TabIndex = 53
@@ -637,22 +913,12 @@ Partial Class newDMMAdmin
         Me.Label11.TabIndex = 47
         Me.Label11.Text = "PARAMETERS"
         '
-        'Panel6
-        '
-        Me.Panel6.AutoScroll = True
-        Me.Panel6.Controls.Add(Me.SplitContainer1)
-        Me.Panel6.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel6.Location = New System.Drawing.Point(300, 0)
-        Me.Panel6.Name = "Panel6"
-        Me.Panel6.Size = New System.Drawing.Size(1602, 991)
-        Me.Panel6.TabIndex = 52
-        '
         'newDMMAdmin
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1902, 991)
-        Me.Controls.Add(Me.Panel6)
+        Me.Controls.Add(Me.SplitContainer1)
         Me.Controls.Add(Me.Panel1)
         Me.Name = "newDMMAdmin"
         Me.Text = " "
@@ -672,7 +938,6 @@ Partial Class newDMMAdmin
         Me.Panel4.PerformLayout()
         Me.Panel5.ResumeLayout(False)
         Me.Panel5.PerformLayout()
-        Me.Panel6.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -705,22 +970,46 @@ Partial Class newDMMAdmin
     Friend WithEvents CheckBox7 As System.Windows.Forms.CheckBox
     Friend WithEvents CheckBox8 As System.Windows.Forms.CheckBox
     Friend WithEvents Label10 As System.Windows.Forms.Label
-    Friend WithEvents Panel6 As System.Windows.Forms.Panel
     Friend WithEvents Panel5 As System.Windows.Forms.Panel
     Friend WithEvents delBtnFreqACC As System.Windows.Forms.Button
     Friend WithEvents delBtnFreqACV As System.Windows.Forms.Button
-    Friend WithEvents delBtnNomRES As System.Windows.Forms.Button
     Friend WithEvents delBtnNomDCC As System.Windows.Forms.Button
-    Friend WithEvents delBtnNomDCV As System.Windows.Forms.Button
-    Friend WithEvents listViewParamsRES As System.Windows.Forms.ListView
-    Friend WithEvents CheckBoxRES As System.Windows.Forms.CheckBox
-    Friend WithEvents listViewParamsDCC As System.Windows.Forms.ListView
     Friend WithEvents CheckBoxDCC As System.Windows.Forms.CheckBox
-    Friend WithEvents listViewParamsACC As System.Windows.Forms.ListView
     Friend WithEvents CheckBoxACC As System.Windows.Forms.CheckBox
-    Friend WithEvents listViewParamsDCV As System.Windows.Forms.ListView
-    Friend WithEvents listViewParams As System.Windows.Forms.ListView
-    Friend WithEvents CheckBoxDCV As System.Windows.Forms.CheckBox
     Friend WithEvents CheckBox As System.Windows.Forms.CheckBox
     Friend WithEvents Label11 As System.Windows.Forms.Label
+    Friend WithEvents ACVoltageUncertainty As ListView
+    Friend WithEvents addFrequencyTxtACV As TextBox
+    Friend WithEvents addTestpointACV As Button
+    Friend WithEvents addNominalTxtACV As TextBox
+    Friend WithEvents addFrequencyUnitACV As ComboBox
+    Friend WithEvents addRangeUnitACV As ComboBox
+    Friend WithEvents addRangeTxtACV As ComboBox
+    Friend WithEvents ACCUncertainty As ListView
+    Friend WithEvents addRangeUnitDCC As ComboBox
+    Friend WithEvents addRangeTxtDCC As ComboBox
+    Friend WithEvents addTestpointDCC As Button
+    Friend WithEvents addNominalTxtDCC As TextBox
+    Friend WithEvents DCCUncertainty As ListView
+    Friend WithEvents addFrequencyUnitACC As ComboBox
+    Friend WithEvents addRangeUnitACC As ComboBox
+    Friend WithEvents addRangeTxtACC As ComboBox
+    Friend WithEvents addFrequencyTxtACC As TextBox
+    Friend WithEvents addTestpointACC As Button
+    Friend WithEvents addNominalTxtACC As TextBox
+    Friend WithEvents RESUncertainty As ListView
+    Friend WithEvents addRangeUnitRES As ComboBox
+    Friend WithEvents addRangeTxtRES As ComboBox
+    Friend WithEvents addTestpointRES As Button
+    Friend WithEvents addNominalTxtRES As TextBox
+    Friend WithEvents delBtnNomRES As Button
+    Friend WithEvents CheckBoxRES As CheckBox
+    Friend WithEvents DCVoltageUncertainty As ListView
+    Friend WithEvents addRangeUnitDCV As ComboBox
+    Friend WithEvents addRangeTxtDCV As ComboBox
+    Friend WithEvents addTestpointDCV As Button
+    Friend WithEvents addNominalTxtDCV As TextBox
+    Friend WithEvents delBtnNomDCV As Button
+    Friend WithEvents CheckBoxDCV As CheckBox
+    Friend WithEvents Panel6 As Panel
 End Class

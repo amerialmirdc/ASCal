@@ -124,12 +124,14 @@ C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x8
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.CoreCompileInputs.cache
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.Up2Date
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.frmMain.resources
+C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.calibratingResult.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.AssemblyReference.cache
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.ResolveComReference.cache
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.dmmManagementAdmin.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.editDMMAdmin.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.jobDashAdmin.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.newDMMAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.FrmMain.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.calibratingResult.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.jobPreview.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.jobDashboard.resources
@@ -147,6 +149,7 @@ C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.login.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.Resources.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.GenerateResource.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.CoreCompileInputs.cache
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ASCal.exe.config
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ASCal.exe
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\ASCal.pdb
@@ -186,11 +189,11 @@ C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Syst
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\System.Numerics.Vectors.xml
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\EnvDTE.xml
-C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.CoreCompileInputs.cache
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.Up2Date
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.exe
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.xml
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.pdb
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.exe.config
-C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.FrmMain.resources
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.calibratingResult.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.newCalResult.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Newtonsoft.Json.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Newtonsoft.Json.xml

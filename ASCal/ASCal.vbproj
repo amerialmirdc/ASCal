@@ -118,6 +118,9 @@
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RBush, Version=4.0.0.0, Culture=neutral, PublicKeyToken=c77e27b81f4d0187, processorArchitecture=MSIL">
@@ -170,6 +173,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\TouchlessLib.dll</HintPath>
     </Reference>
+    <Reference Include="UIAutomationClient" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WebCamLib, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\WebCamLib.dll</HintPath>
@@ -282,11 +287,17 @@
     <Compile Include="Forms\Admin\newCompanyForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Technician\newCalResult.Designer.vb">
+      <DependentUpon>newCalResult.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Technician\newCalResult.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Module\CalRowEngine.vb" />
     <Compile Include="Module\excelCalculated.vb" />
     <Compile Include="Module\excelHelper.vb" />
     <Compile Include="Module\defaultParameters.vb" />
-    <Compile Include="Module\CalibratingResultMappings.Module.vb" />
+    <Compile Include="Module\CalibratingResultMappings.vb" />
     <Compile Include="Module\UIHelper.vb" />
     <Compile Include="Module\SessionManager.vb" />
     <Compile Include="Module\SQLiteHelper.vb" />
@@ -398,6 +409,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\login.resx">
       <DependentUpon>login.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Technician\newCalResult.resx">
+      <DependentUpon>newCalResult.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

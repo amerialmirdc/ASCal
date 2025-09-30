@@ -1,0 +1,9 @@
+{
+  "model": "Fluke 87V",
+  "rows": [
+    { "group":"DCV", "range":"6", "unit1":"V", "nominal":"0.6", "unit2":"V", "frequency":"", "unit":"V" },
+    { "group":"DCV", "range":"6", "unit1":"V", "nominal":"5.0", "unit2":"V", "frequency":"", "unit":"V" },
+    { "group":"RES", "range":"60", "unit1":"kΩ", "nominal":"10", "unit2":"kΩ", "frequency":"", "unit":"Ω" }
+    // ...
+  ]
+}

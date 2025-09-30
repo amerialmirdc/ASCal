@@ -106,23 +106,6 @@ Public Class calibrate
             videoSource = cam
             AddHandler videoSource.NewFrame, AddressOf VideoSource_NewFrame
             videoSource.Start()
-
-            ' --- NEW: Ask the user to capture once camera is started ---
-            Dim resp = MessageBox.Show(
-            "Camera is ready. Do you want to capture now?",
-            "Capture",
-            MessageBoxButtons.OKCancel,
-            MessageBoxIcon.Question
-        )
-
-            If resp = DialogResult.OK Then
-                ' Option A (no refactor): reuse the existing click handler
-                BtnCapture_Click(BtnCapture, EventArgs.Empty)
-
-                ' Option B (if you created a helper like PerformCapture()):
-                ' PerformCapture()
-            End If
-            ' -------------------------------------------------------------
         Else
             MessageBox.Show("No camera devices found.")
         End If
@@ -395,6 +378,19 @@ Public Class calibrate
         End If
     End Sub
 
+    Private Sub StopCamera()
+        Try
+            If videoSource IsNot Nothing Then
+                RemoveHandler videoSource.NewFrame, AddressOf VideoSource_NewFrame
+                If videoSource.IsRunning Then
+                    videoSource.SignalToStop()
+                    videoSource.WaitForStop()
+                End If
+            End If
+        Catch
+        End Try
+    End Sub
+
     Private Sub LoadCompaniesFromDatabase()
         companyDict.Clear()
         Try
@@ -615,25 +611,25 @@ Public Class calibrate
 #Region "Required Fields"
 
     Private Function AllInputsFilledInPanel(panel As Panel) As Boolean
-        Dim excludedFields As New List(Of String) From {"dmmSearch", "specificSite", "refstand4", "DateTimePicker1", "TextBox23", "TextBox21", "TextBox19", "TextBox25", "refstand3", "refstand2", "refstand2", "refstand6", "refstand5", "refstand4", "DateTimePicker1", "TextBox31", "TextBox19", "TextBox27", "TextBox25", "TextBox28", "TextBox26", "TextBox29", "TextBox30", "TextBox20", "TextBox22", "TextBox24", "compAdd"}
-        For Each ctrl As Control In panel.Controls
-            If TypeOf ctrl Is TextBox AndAlso Not excludedFields.Contains(ctrl.Name) Then
-                If String.IsNullOrWhiteSpace(ctrl.Text) Then
-                    ctrl.BackColor = Color.MistyRose
-                    MessageBox.Show("Please complete all required fields.", "Incomplete", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                    ctrl.Focus()
-                    Return False
-                Else
-                    ctrl.BackColor = Color.White
-                End If
-            End If
-        Next
+        'Dim excludedFields As New List(Of String) From {"dmmSearch", "specificSite", "refstand4", "DateTimePicker1", "TextBox23", "TextBox21", "TextBox19", "TextBox25", "refstand3", "refstand2", "refstand2", "refstand6", "refstand5", "refstand4", "DateTimePicker1", "TextBox31", "TextBox19", "TextBox27", "TextBox25", "TextBox28", "TextBox26", "TextBox29", "TextBox30", "TextBox20", "TextBox22", "TextBox24", "compAdd"}
+        'For Each ctrl As Control In panel.Controls
+        '    If TypeOf ctrl Is TextBox AndAlso Not excludedFields.Contains(ctrl.Name) Then
+        '        If String.IsNullOrWhiteSpace(ctrl.Text) Then
+        '            ctrl.BackColor = Color.MistyRose
+        '            MessageBox.Show("Please complete all required fields.", "Incomplete", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        '            ctrl.Focus()
+        '            Return False
+        '        Else
+        '            ctrl.BackColor = Color.White
+        '        End If
+        '    End If
+        'Next
 
-        If String.IsNullOrWhiteSpace(contextMenuCompanies.Text) OrElse Not companyDict.ContainsKey(contextMenuCompanies.Text.Trim()) Then
-            MessageBox.Show("Please select a valid calibration company from the list.", "Missing Company", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            contextMenuCompanies.Focus()
-            Return False
-        End If
+        'If String.IsNullOrWhiteSpace(contextMenuCompanies.Text) OrElse Not companyDict.ContainsKey(contextMenuCompanies.Text.Trim()) Then
+        '    MessageBox.Show("Please select a valid calibration company from the list.", "Missing Company", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        '    contextMenuCompanies.Focus()
+        '    Return False
+        'End If
 
         Dim anyChecked As Boolean =
             (cLParamACV.CheckedItems.Count > 0) OrElse
@@ -657,6 +653,9 @@ Public Class calibrate
 
     Private Sub btnStartCalibration_Click(sender As Object, e As EventArgs) Handles btnStartCalibration.Click
         If Not AllInputsFilledInPanel(mainPanelCalibrateInp) Then Exit Sub
+
+        ' <<< ensure the device is released BEFORE opening the next form
+        StopCamera()
 
         Dim allParams As New List(Of String)
         For Each it As Object In cLParamACV.CheckedItems : allParams.Add(it.ToString()) : Next
@@ -974,7 +973,16 @@ Public Class calibrate
             Exit Sub
         End If
 
-        raw = RunOcrOnImage(capturePath)
+        ' >>> Show waiting cursor for the whole OCR block
+        Using New WaitCursorScope(Me)
+            ' Try UIA path first (fast/robust when available)
+            raw = RunOcrOnImage_Uia(capturePath)
+
+            ' Fallback to legacy keystroke path if UIA failed
+            If String.IsNullOrWhiteSpace(raw) Then
+                raw = RunOcrOnImage(capturePath)
+            End If
+        End Using
     End Sub
 
     Private Sub CloseSnippingToolInstances(Optional timeoutMs As Integer = 1000)
@@ -1447,6 +1455,291 @@ Public Class calibrate
         "ELECTRONICS", "SYSTEMS", "PRODUCTS", "INTERNATIONAL"
     }
 
+    ' ===== UI Automation helpers =====
+
+    Private Function WaitForDescendant(root As AutomationElement,
+                                   condition As Condition,
+                                   timeoutMs As Integer,
+                                   Optional pollingMs As Integer = 80) As AutomationElement
+        Dim sw As Stopwatch = Stopwatch.StartNew()
+        Do
+            Dim found = root.FindFirst(TreeScope.Descendants, condition)
+            If found IsNot Nothing Then Return found
+            Thread.Sleep(pollingMs)
+        Loop While sw.ElapsedMilliseconds < timeoutMs
+        Return Nothing
+    End Function
+
+    Private Function FindByNameOrId(root As AutomationElement,
+                                names As IEnumerable(Of String),
+                                ids As IEnumerable(Of String),
+                                timeoutMs As Integer) As AutomationElement
+        Dim anyNames = names?.
+        Where(Function(s) Not String.IsNullOrWhiteSpace(s)).
+        Select(Function(s) New PropertyCondition(AutomationElement.NameProperty, s)).
+        ToArray()
+
+        Dim anyIds = ids?.
+        Where(Function(s) Not String.IsNullOrWhiteSpace(s)).
+        Select(Function(s) New PropertyCondition(AutomationElement.AutomationIdProperty, s)).
+        ToArray()
+
+        Dim cond As Condition = Nothing
+
+        ' Names
+        If anyNames IsNot Nothing AndAlso anyNames.Length > 0 Then
+            cond = If(anyNames.Length = 1,
+                  DirectCast(anyNames(0), Condition),
+                  New OrCondition(anyNames))
+        End If
+
+        ' IDs
+        If anyIds IsNot Nothing AndAlso anyIds.Length > 0 Then
+            Dim idCond As Condition =
+            If(anyIds.Length = 1,
+               DirectCast(anyIds(0), Condition),
+               New OrCondition(anyIds))
+
+            cond = If(cond Is Nothing,
+                  idCond,
+                  New OrCondition(cond, idCond))
+        End If
+
+        If cond Is Nothing Then Return Nothing
+        Return WaitForDescendant(root, cond, timeoutMs)
+    End Function
+
+    Private Function InvokeIfPossible(el As AutomationElement) As Boolean
+        If el Is Nothing Then Return False
+        Dim pat = TryCast(el.GetCurrentPattern(InvokePattern.Pattern), InvokePattern)
+        If pat Is Nothing Then Return False
+        pat.Invoke()
+        Return True
+    End Function
+
+    Private Function SetValueIfPossible(el As AutomationElement, text As String) As Boolean
+        If el Is Nothing Then Return False
+        Dim val = TryCast(el.GetCurrentPattern(ValuePattern.Pattern), ValuePattern)
+        If val Is Nothing OrElse val.Current.IsReadOnly Then Return False
+        val.SetValue(text)
+        Return True
+    End Function
+
+    Private Function StartOrAttachSnippingTool() As AutomationElement
+        ' Try attach
+        For Each p In Process.GetProcessesByName("SnippingTool")
+            If Not p.HasExited AndAlso p.MainWindowHandle <> IntPtr.Zero Then
+                Try : p.WaitForInputIdle(1500) : Catch : End Try
+                Dim ae = AutomationElement.FromHandle(p.MainWindowHandle)
+                If ae IsNot Nothing Then Return ae
+            End If
+        Next
+
+        ' Start (Windows 11 path tends to be SnippingTool.exe on PATH)
+        Dim proc As Process = Nothing
+        Try
+            proc = Process.Start(New ProcessStartInfo With {
+            .FileName = "SnippingTool.exe",
+            .UseShellExecute = True,
+            .WindowStyle = ProcessWindowStyle.Minimized
+        })
+        Catch
+            Return Nothing
+        End Try
+
+        Try : proc.WaitForInputIdle(3000) : Catch : End Try
+        If proc.MainWindowHandle = IntPtr.Zero Then
+            ' Give the shell a moment to surface the window
+            Thread.Sleep(600)
+        End If
+        If proc Is Nothing OrElse proc.HasExited Then Return Nothing
+        Return AutomationElement.FromHandle(proc.MainWindowHandle)
+    End Function
+
+    ' ---------- OPEN-WITH-ARG + UIA OCR (robust) ----------
+    Private Function RunOcrOnImage_Uia(imagePath As String) As String
+        If String.IsNullOrWhiteSpace(imagePath) OrElse Not File.Exists(imagePath) Then Return ""
+
+        ' Clear clipboard so any text we see is fresh
+        Try : Clipboard.Clear() : Catch : End Try
+
+        ' 1) Start Snipping Tool directly in editor mode by passing the image path
+        Dim proc As Process = Nothing
+        Try
+            Dim psi As New ProcessStartInfo With {
+            .FileName = "SnippingTool.exe",
+            .Arguments = QuotePath(imagePath),
+            .UseShellExecute = True,
+            .WindowStyle = ProcessWindowStyle.Minimized
+        }
+            proc = Process.Start(psi)
+        Catch
+            Try
+                Dim psi As New ProcessStartInfo With {
+                .FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                         "Microsoft\WindowsApps\SnippingTool.exe"),
+                .Arguments = QuotePath(imagePath),
+                .UseShellExecute = True,
+                .WindowStyle = ProcessWindowStyle.Minimized
+            }
+                proc = Process.Start(psi)
+            Catch
+                Return ""
+            End Try
+        End Try
+        If proc Is Nothing Then Return ""
+
+        Try : proc.WaitForInputIdle(4000) : Catch : End Try
+
+        ' 2) Get Automation root for the editor window
+        Dim root As AutomationElement = Nothing
+        Dim sw As Stopwatch = Stopwatch.StartNew()
+        Do
+            If proc.HasExited Then Exit Do
+            If proc.MainWindowHandle <> IntPtr.Zero Then
+                Try : root = AutomationElement.FromHandle(proc.MainWindowHandle) : Catch : End Try
+            End If
+            If root IsNot Nothing Then Exit Do
+            Thread.Sleep(120)
+        Loop While sw.ElapsedMilliseconds < 6000
+        If root Is Nothing Then Return ""
+
+        ' Optional: hide to avoid flicker after UI is ready
+        Try : HideSnippingToolRobust(600) : Catch : End Try
+
+        ' 3) Open OCR (Text actions). Labels/ids vary wildly across builds.
+        Dim textActions = FindByNameOrId(
+        root,
+        names:=New String() {
+            "Text actions", "Text", "Text Actions",
+            "Text from image", "Extract text", "Text extraction"
+        },
+        ids:=New String() {
+            "TextActions", "TextButton", "TextToolButton",
+            "TextFromImage", "ExtractText", "TextExtraction"
+        },
+        timeoutMs:=6000
+    )
+        If textActions Is Nothing OrElse Not InvokeIfPossible(textActions) Then
+            ' Some builds put it under the three-dots overflow
+            Dim more = FindByNameOrId(
+            root,
+            names:=New String() {"More app bar", "More options", "More"},
+            ids:=New String() {"AppBarMoreOptionsButton"},
+            timeoutMs:=2500
+        )
+            If more IsNot Nothing Then InvokeIfPossible(more)
+            textActions = FindByNameOrId(
+            root,
+            names:=New String() {
+                "Text actions", "Text", "Text Actions",
+                "Text from image", "Extract text", "Text extraction"
+            },
+            ids:=New String() {
+                "TextActions", "TextButton", "TextToolButton",
+                "TextFromImage", "ExtractText", "TextExtraction"
+            },
+            timeoutMs:=3500
+        )
+            If textActions Is Nothing OrElse Not InvokeIfPossible(textActions) Then
+                Return "" ' Let caller decide a fallback
+            End If
+        End If
+
+        ' 4) Click "Copy all text"
+        Dim copyAll = FindByNameOrId(
+        root,
+        names:=New String() {"Copy all text", "Copy text", "Copy", "Copy extracted text"},
+        ids:=New String() {"CopyAllText", "CopyText"},
+        timeoutMs:=4000
+    )
+        If copyAll Is Nothing OrElse Not InvokeIfPossible(copyAll) Then
+            ' Often ENTER triggers the first action in the opened pane
+            Try : My.Computer.Keyboard.SendKeys("{ENTER}", True) : Catch : End Try
+        End If
+
+        ' 5) Read clipboard (give OCR a moment)
+        Dim result As String = ""
+        Dim waited As Integer = 0
+        Do
+            Try
+                If Clipboard.ContainsText(TextDataFormat.UnicodeText) Then
+                    result = Clipboard.GetText(TextDataFormat.UnicodeText)
+                ElseIf Clipboard.ContainsText() Then
+                    result = Clipboard.GetText()
+                End If
+            Catch
+            End Try
+            If Not String.IsNullOrWhiteSpace(result) Then Exit Do
+            Thread.Sleep(160) : waited += 160
+        Loop While waited < 6000
+
+        Return NormalizeOcrText(result)
+    End Function
+
+    ' ---------- helpers ----------
+    Private Function QuotePath(p As String) As String
+        If String.IsNullOrEmpty(p) Then Return ""
+        If p.Contains("""") Then Return p ' already quoted weirdly; best effort
+        If p.Contains(" ") OrElse p.Contains("("c) OrElse p.Contains(")"c) Then
+            Return """" & p & """"
+        End If
+        Return p
+    End Function
+
 #End Region
+
+    ' ===== Simple file logger =====
+    Private ReadOnly uiaLogPath As String = IO.Path.Combine(IO.Path.GetTempPath(), "ascal_uia.log")
+
+    Private ReadOnly uiaLogLock As New Object()
+
+    Private Sub Log(line As String)
+        Try
+            SyncLock uiaLogLock
+                IO.File.AppendAllText(uiaLogPath,
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {line}{Environment.NewLine}")
+            End SyncLock
+        Catch
+            ' ignore logging errors
+        End Try
+    End Sub
+
+    Private Sub ClearLog()
+        Try
+            If IO.File.Exists(uiaLogPath) Then IO.File.Delete(uiaLogPath)
+        Catch
+        End Try
+    End Sub
+
+    ' Scoped wait-cursor helper: sets the app to "busy" and restores on dispose.
+    Private NotInheritable Class WaitCursorScope
+        Implements IDisposable
+
+        Private ReadOnly _owner As Form
+        Private ReadOnly _prevUseWait As Boolean
+        Private ReadOnly _prevCursor As Cursor
+
+        Public Sub New(owner As Form)
+            _owner = owner
+            _prevUseWait = owner.UseWaitCursor
+            _prevCursor = Cursor.Current
+
+            owner.UseWaitCursor = True          ' all controls show wait cursor
+            Cursor.Current = Cursors.WaitCursor ' current mouse immediately shows spinner
+            Application.DoEvents()              ' push UI update now
+        End Sub
+
+        Public Sub Dispose() Implements IDisposable.Dispose
+            Try
+                Cursor.Current = _prevCursor
+                _owner.UseWaitCursor = _prevUseWait
+                Application.DoEvents()
+            Catch
+                ' ignore restore errors
+            End Try
+        End Sub
+
+    End Class
 
 End Class

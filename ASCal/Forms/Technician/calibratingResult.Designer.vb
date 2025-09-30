@@ -24,15 +24,10 @@ Partial Class calibratingResult
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.btnExportReportExcel = New System.Windows.Forms.Button()
-        Me.btnAutoFillNominalBulk = New System.Windows.Forms.Button()
-        Me.btnStopFill = New System.Windows.Forms.Button()
         Me.Panel8 = New System.Windows.Forms.Panel()
         Me.logoutBtn = New System.Windows.Forms.Button()
-        Me.btnAutoFillNominalSeq = New System.Windows.Forms.Button()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.jobDashBtn = New System.Windows.Forms.Button()
-        Me.btnAutoFill60 = New System.Windows.Forms.Button()
         Me.Panel3 = New System.Windows.Forms.Panel()
         Me.calibrateBtn = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
@@ -1216,13 +1211,8 @@ Partial Class calibratingResult
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.Color.Cyan
-        Me.Panel1.Controls.Add(Me.btnExportReportExcel)
-        Me.Panel1.Controls.Add(Me.btnAutoFillNominalBulk)
-        Me.Panel1.Controls.Add(Me.btnStopFill)
         Me.Panel1.Controls.Add(Me.Panel8)
-        Me.Panel1.Controls.Add(Me.btnAutoFillNominalSeq)
         Me.Panel1.Controls.Add(Me.Panel4)
-        Me.Panel1.Controls.Add(Me.btnAutoFill60)
         Me.Panel1.Controls.Add(Me.Panel3)
         Me.Panel1.Controls.Add(Me.Panel2)
         Me.Panel1.Cursor = System.Windows.Forms.Cursors.Default
@@ -1231,33 +1221,6 @@ Partial Class calibratingResult
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(300, 1061)
         Me.Panel1.TabIndex = 23
-        '
-        'btnExportReportExcel
-        '
-        Me.btnExportReportExcel.Location = New System.Drawing.Point(97, 411)
-        Me.btnExportReportExcel.Name = "btnExportReportExcel"
-        Me.btnExportReportExcel.Size = New System.Drawing.Size(117, 23)
-        Me.btnExportReportExcel.TabIndex = 7
-        Me.btnExportReportExcel.Text = "Export"
-        Me.btnExportReportExcel.UseVisualStyleBackColor = True
-        '
-        'btnAutoFillNominalBulk
-        '
-        Me.btnAutoFillNominalBulk.Location = New System.Drawing.Point(97, 375)
-        Me.btnAutoFillNominalBulk.Name = "btnAutoFillNominalBulk"
-        Me.btnAutoFillNominalBulk.Size = New System.Drawing.Size(117, 23)
-        Me.btnAutoFillNominalBulk.TabIndex = 6
-        Me.btnAutoFillNominalBulk.Text = "Nominal bulk"
-        Me.btnAutoFillNominalBulk.UseVisualStyleBackColor = True
-        '
-        'btnStopFill
-        '
-        Me.btnStopFill.Location = New System.Drawing.Point(139, 459)
-        Me.btnStopFill.Name = "btnStopFill"
-        Me.btnStopFill.Size = New System.Drawing.Size(75, 23)
-        Me.btnStopFill.TabIndex = 2
-        Me.btnStopFill.Text = "Cancel"
-        Me.btnStopFill.UseVisualStyleBackColor = True
         '
         'Panel8
         '
@@ -1284,15 +1247,6 @@ Partial Class calibratingResult
         Me.logoutBtn.Text = "LOGOUT"
         Me.logoutBtn.UseVisualStyleBackColor = False
         '
-        'btnAutoFillNominalSeq
-        '
-        Me.btnAutoFillNominalSeq.Location = New System.Drawing.Point(97, 334)
-        Me.btnAutoFillNominalSeq.Name = "btnAutoFillNominalSeq"
-        Me.btnAutoFillNominalSeq.Size = New System.Drawing.Size(117, 23)
-        Me.btnAutoFillNominalSeq.TabIndex = 1
-        Me.btnAutoFillNominalSeq.Text = "Nominal entry"
-        Me.btnAutoFillNominalSeq.UseVisualStyleBackColor = True
-        '
         'Panel4
         '
         Me.Panel4.Controls.Add(Me.jobDashBtn)
@@ -1316,15 +1270,6 @@ Partial Class calibratingResult
         Me.jobDashBtn.TabIndex = 0
         Me.jobDashBtn.Text = "JOB DASHBOARD"
         Me.jobDashBtn.UseVisualStyleBackColor = True
-        '
-        'btnAutoFill60
-        '
-        Me.btnAutoFill60.Location = New System.Drawing.Point(139, 295)
-        Me.btnAutoFill60.Name = "btnAutoFill60"
-        Me.btnAutoFill60.Size = New System.Drawing.Size(75, 23)
-        Me.btnAutoFill60.TabIndex = 0
-        Me.btnAutoFill60.Text = "AutoFill 60"
-        Me.btnAutoFill60.UseVisualStyleBackColor = True
         '
         'Panel3
         '
@@ -12676,7 +12621,7 @@ Partial Class calibratingResult
         '
         Me.Label641.AutoSize = True
         Me.Label641.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label641.Location = New System.Drawing.Point(675, 489)
+        Me.Label641.Location = New System.Drawing.Point(675, 415)
         Me.Label641.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label641.Name = "Label641"
         Me.Label641.Size = New System.Drawing.Size(109, 19)
@@ -12686,7 +12631,7 @@ Partial Class calibratingResult
         'DMMrange
         '
         Me.DMMrange.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMrange.Location = New System.Drawing.Point(788, 486)
+        Me.DMMrange.Location = New System.Drawing.Point(788, 412)
         Me.DMMrange.Margin = New System.Windows.Forms.Padding(2)
         Me.DMMrange.Name = "DMMrange"
         Me.DMMrange.ReadOnly = True
@@ -12873,7 +12818,7 @@ Partial Class calibratingResult
         '
         Me.Label629.AutoSize = True
         Me.Label629.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label629.Location = New System.Drawing.Point(654, 532)
+        Me.Label629.Location = New System.Drawing.Point(654, 458)
         Me.Label629.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label629.Name = "Label629"
         Me.Label629.Size = New System.Drawing.Size(129, 19)
@@ -12883,7 +12828,7 @@ Partial Class calibratingResult
         'DMMtxtparameter
         '
         Me.DMMtxtparameter.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMtxtparameter.Location = New System.Drawing.Point(788, 446)
+        Me.DMMtxtparameter.Location = New System.Drawing.Point(788, 372)
         Me.DMMtxtparameter.Margin = New System.Windows.Forms.Padding(2)
         Me.DMMtxtparameter.Name = "DMMtxtparameter"
         Me.DMMtxtparameter.ReadOnly = True
@@ -12894,7 +12839,7 @@ Partial Class calibratingResult
         '
         Me.Label630.AutoSize = True
         Me.Label630.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label630.Location = New System.Drawing.Point(636, 450)
+        Me.Label630.Location = New System.Drawing.Point(636, 376)
         Me.Label630.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label630.Name = "Label630"
         Me.Label630.Size = New System.Drawing.Size(149, 19)
@@ -12907,7 +12852,7 @@ Partial Class calibratingResult
         Me.RichTextBox1.Location = New System.Drawing.Point(632, 74)
         Me.RichTextBox1.Margin = New System.Windows.Forms.Padding(2)
         Me.RichTextBox1.Name = "RichTextBox1"
-        Me.RichTextBox1.Size = New System.Drawing.Size(300, 361)
+        Me.RichTextBox1.Size = New System.Drawing.Size(300, 288)
         Me.RichTextBox1.TabIndex = 24
         Me.RichTextBox1.Text = ""
         '
@@ -12958,7 +12903,7 @@ Partial Class calibratingResult
         'DMMreading
         '
         Me.DMMreading.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMreading.Location = New System.Drawing.Point(788, 528)
+        Me.DMMreading.Location = New System.Drawing.Point(788, 454)
         Me.DMMreading.Margin = New System.Windows.Forms.Padding(2)
         Me.DMMreading.Name = "DMMreading"
         Me.DMMreading.ReadOnly = True
@@ -14249,11 +14194,6 @@ Partial Class calibratingResult
     Friend WithEvents Label435 As Label
     Friend WithEvents Label436 As Label
     Friend WithEvents Label437 As Label
-    Friend WithEvents btnAutoFill60 As Button
-    Friend WithEvents btnStopFill As Button
-    Friend WithEvents btnAutoFillNominalSeq As Button
-    Friend WithEvents btnAutoFillNominalBulk As Button
-    Friend WithEvents btnExportReportExcel As Button
     Friend WithEvents ButtonDisable As Button
     Friend WithEvents Label629 As Label
     Friend WithEvents DMMtxtparameter As TextBox
@@ -14273,7 +14213,6 @@ Partial Class calibratingResult
     Friend WithEvents CmbPort As ComboBox
     Friend WithEvents Label633 As Label
     Friend WithEvents Label634 As Label
-    Friend WithEvents KryptonWebBrowser1 As Krypton.Toolkit.KryptonWebBrowser
     Friend WithEvents SerialPort1 As IO.Ports.SerialPort
     Friend WithEvents Label635 As Label
     Friend WithEvents Label636 As Label
@@ -14292,4 +14231,5 @@ Partial Class calibratingResult
     Friend WithEvents PictureBox9 As PictureBox
     Friend WithEvents Label641 As Label
     Friend WithEvents DMMrange As TextBox
+    Friend WithEvents KryptonWebBrowser1 As Krypton.Toolkit.KryptonWebBrowser
 End Class
