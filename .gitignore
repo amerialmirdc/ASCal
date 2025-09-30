@@ -34,11 +34,12 @@ GeneratedFiles/
 # Others
 *.swp
 *.tmp
-/ASCal/~$mapping.xlsx
+/ASCal/bin/Debug/Job_Export
 /ASCal/bin/Debug/CapturedImage/AAAA.jpg
 /ASCal/bin/Debug/CapturedImage
 /ASCal/bin/Debug/ASCal.exe
 /ASCal/bin/Debug/ASCal.pdb
+/ASCal/Forms/Technician/calibrate.Designer.vb
 /ASCal/obj/x86/Debug/ASCal.exe
 /ASCal/obj/x86/Debug/ASCal.pdb
 /ASCal/bin/Debug/Job_Export
