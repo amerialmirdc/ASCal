@@ -41,7 +41,7 @@ Partial Class dmmManagementAdmin
         Me.nextBtn = New System.Windows.Forms.Button()
         Me.DMMDetails = New System.Windows.Forms.FlowLayoutPanel()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.newDmm = New System.Windows.Forms.Button()
+        Me.newDmmBtn = New System.Windows.Forms.Button()
         Me.userPanel = New System.Windows.Forms.Panel()
         Me.dataGridDMM = New System.Windows.Forms.DataGridView()
         Me.Panel1.SuspendLayout()
@@ -227,7 +227,7 @@ Partial Class dmmManagementAdmin
         Me.Panel6.Controls.Add(Me.nextBtn)
         Me.Panel6.Controls.Add(Me.DMMDetails)
         Me.Panel6.Controls.Add(Me.Label1)
-        Me.Panel6.Controls.Add(Me.newDmm)
+        Me.Panel6.Controls.Add(Me.newDmmBtn)
         Me.Panel6.Controls.Add(Me.userPanel)
         Me.Panel6.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel6.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
@@ -292,15 +292,15 @@ Partial Class dmmManagementAdmin
         Me.Label1.TabIndex = 2
         Me.Label1.Text = "DMM MANAGEMENT"
         '
-        'newDmm
+        'newDmmBtn
         '
-        Me.newDmm.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.newDmm.Location = New System.Drawing.Point(708, 88)
-        Me.newDmm.Name = "newDmm"
-        Me.newDmm.Size = New System.Drawing.Size(200, 40)
-        Me.newDmm.TabIndex = 1
-        Me.newDmm.Text = "ENROLL NEW DMM"
-        Me.newDmm.UseVisualStyleBackColor = True
+        Me.newDmmBtn.Font = New System.Drawing.Font("Courier10 BT", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.newDmmBtn.Location = New System.Drawing.Point(708, 88)
+        Me.newDmmBtn.Name = "newDmmBtn"
+        Me.newDmmBtn.Size = New System.Drawing.Size(200, 40)
+        Me.newDmmBtn.TabIndex = 1
+        Me.newDmmBtn.Text = "ENROLL NEW DMM"
+        Me.newDmmBtn.UseVisualStyleBackColor = True
         '
         'userPanel
         '
@@ -364,7 +364,7 @@ Partial Class dmmManagementAdmin
     Friend WithEvents prevBtn As Button
     Friend WithEvents nextBtn As Button
     Friend WithEvents DMMDetails As FlowLayoutPanel
-    Friend WithEvents newDmm As Button
+    Friend WithEvents newDmmBtn As Button
     Friend WithEvents userPanel As Panel
     Friend WithEvents dataGridDMM As DataGridView
 End Class

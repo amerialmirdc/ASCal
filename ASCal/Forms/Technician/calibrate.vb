@@ -38,6 +38,8 @@ Public Class calibrate
 
     Private snipReady As Boolean = False
 
+    Private currentTemplatePath As String = ""
+
 #Region "Navbar and Form Load"
 
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoutBtn.Click, logoBtn.Click, jobDashBtn.Click
@@ -654,7 +656,7 @@ Public Class calibrate
     Private Sub btnStartCalibration_Click(sender As Object, e As EventArgs) Handles btnStartCalibration.Click
         If Not AllInputsFilledInPanel(mainPanelCalibrateInp) Then Exit Sub
 
-        ' <<< ensure the device is released BEFORE opening the next form
+        ' ensure the device is released BEFORE opening the next form
         StopCamera()
 
         Dim allParams As New List(Of String)
@@ -672,52 +674,91 @@ Public Class calibrate
         If cLParamRES.CheckedItems.Count > 0 Then activeCategories.Add("RESISTANCE")
 
         Dim cr As New calibratingResult() With {
-            .JobId = 0,
-            .WorkOrderNumber = workOrderNo.Text,
-            .CompanyName = contextMenuCompanies.Text.Trim(),
-            .CompanyAddress = compAdd.Text.Trim(),
-            .Model = dmmmodel.Text.Trim(),
-            .Manufacturer = manufaacturer.Text.Trim(),
-            .Description = dmmdescription.Text.Trim(),
-            .TechnicianInitials = technicalID.Text.Trim(),
-            .TechnicianName = CurrentUser.Name,
-            .CalibrationType = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), ""),
-            .SpecificSite = specificSite.Text.Trim(),
-            .SerialNumber = serialNumber.Text.Trim(),
-            .SelectedParameters = allParams,
-            .ActiveCategories = activeCategories,
-            .Range = range.Text.Trim(),
-            .Readability = readability.Text.Trim(),
-            .PrevSesCalCert = prevCalCert.Text.Trim(),
-            .AccuracyHeader = accuracy.Text.Trim(),
-            .PreviousTechnician = prevTech.Text.Trim(),
-            .ReceivedDate = receivedDate.Value.ToString("dd-MMM-yyyy"),
-            .CalibrationDate = calibrationDate.Value.ToString("dd-MMM-yyyy"),
-            .OptionsInstalled = optionsInstalled.Text.Trim(),
-            .CustomerPO = customerPO.Text.Trim(),
-            .AssetNumber = assetNumber.Text.Trim(),
-            .TempStart = txtTempStart.Text.Trim(),
-            .TempEnd = txtTempEnd.Text.Trim(),
-            .HumidityStart = txtHumidityStart.Text.Trim(),
-            .HumidityEnd = txtHumidityEnd.Text.Trim(),
-            .RefDesc1 = RefCal_description1.Text.Trim(),
-            .RefSN1 = RefCal_serialNo1.Text.Trim(),
-            .RefCalRef1 = RefCal_calReportRef1.Text.Trim(),
-            .RefDue1 = If(refCal_DueDate1.Enabled, refCal_DueDate1.Value.ToString("dd-MMM-yyyy"), ""),
-            .RefDesc2 = RefCal_description2.Text.Trim(),
-            .RefSN2 = RefCal_serialNo2.Text.Trim(),
-            .RefCalRef2 = RefCal_calReportRef2.Text.Trim(),
-            .RefDue2 = If(refCal_DueDate2.Enabled, refCal_DueDate2.Value.ToString("dd-MMM-yyyy"), ""),
-            .AccDesc1 = accUsed_Description1.Text.Trim(),
-            .AccSN1 = accUsed_SerialNo1.Text.Trim(),
-            .AccCalBrand1 = accUsed_Brand1.Text.Trim(),
-            .AccModel1 = accUsed_Model1.Text.Trim(),
-            .AccDesc2 = accUsed_Description2.Text.Trim(),
-            .AccSN2 = accUsed_SerialNo2.Text.Trim(),
-            .AccCalBrand2 = accUsed_Brand2.Text.Trim(),
-            .AccModel2 = accUsed_Model2.Text.Trim(),
-            .calMathod = calMethod.Text.Trim()
-        }
+        .JobId = 0,
+        .WorkOrderNumber = workOrderNo.Text,
+        .CompanyName = contextMenuCompanies.Text.Trim(),
+        .CompanyAddress = compAdd.Text.Trim(),
+        .Model = dmmmodel.Text.Trim(),
+        .Manufacturer = manufaacturer.Text.Trim(),
+        .Description = dmmdescription.Text.Trim(),
+        .TechnicianInitials = technicalID.Text.Trim(),
+        .TechnicianName = CurrentUser.Name,
+        .CalibrationType = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), ""),
+        .SpecificSite = specificSite.Text.Trim(),
+        .SerialNumber = serialNumber.Text.Trim(),
+        .SelectedParameters = allParams,
+        .ActiveCategories = activeCategories,
+        .Range = range.Text.Trim(),
+        .Readability = readability.Text.Trim(),
+        .PrevSesCalCert = prevCalCert.Text.Trim(),
+        .AccuracyHeader = accuracy.Text.Trim(),
+        .PreviousTechnician = prevTech.Text.Trim(),
+        .ReceivedDate = receivedDate.Value.ToString("dd-MMM-yyyy"),
+        .CalibrationDate = calibrationDate.Value.ToString("dd-MMM-yyyy"),
+        .OptionsInstalled = optionsInstalled.Text.Trim(),
+        .CustomerPO = customerPO.Text.Trim(),
+        .AssetNumber = assetNumber.Text.Trim(),
+        .TempStart = txtTempStart.Text.Trim(),
+        .TempEnd = txtTempEnd.Text.Trim(),
+        .HumidityStart = txtHumidityStart.Text.Trim(),
+        .HumidityEnd = txtHumidityEnd.Text.Trim(),
+        .RefDesc1 = RefCal_description1.Text.Trim(),
+        .RefSN1 = RefCal_serialNo1.Text.Trim(),
+        .RefCalRef1 = RefCal_calReportRef1.Text.Trim(),
+        .RefDue1 = If(refCal_DueDate1.Enabled, refCal_DueDate1.Value.ToString("dd-MMM-yyyy"), ""),
+        .RefDesc2 = RefCal_description2.Text.Trim(),
+        .RefSN2 = RefCal_serialNo2.Text.Trim(),
+        .RefCalRef2 = RefCal_calReportRef2.Text.Trim(),
+        .RefDue2 = If(refCal_DueDate2.Enabled, refCal_DueDate2.Value.ToString("dd-MMM-yyyy"), ""),
+        .AccDesc1 = accUsed_Description1.Text.Trim(),
+        .AccSN1 = accUsed_SerialNo1.Text.Trim(),
+        .AccCalBrand1 = accUsed_Brand1.Text.Trim(),
+        .AccModel1 = accUsed_Model1.Text.Trim(),
+        .AccDesc2 = accUsed_Description2.Text.Trim(),
+        .AccSN2 = accUsed_SerialNo2.Text.Trim(),
+        .AccCalBrand2 = accUsed_Brand2.Text.Trim(),
+        .AccModel2 = accUsed_Model2.Text.Trim(),
+        .calMathod = calMethod.Text.Trim()
+    }
+
+        ' --- Resolve the per-model template path now (Model + Mfr + Desc) with fallbacks ---
+        Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+        Dim tmplDir = IO.Path.Combine(appData, "DMMCal", "Templates")
+        If Not IO.Directory.Exists(tmplDir) Then IO.Directory.CreateDirectory(tmplDir)
+
+        Dim m = dmmmodel.Text.Trim()
+        Dim mf = manufaacturer.Text.Trim()
+        Dim ds = dmmdescription.Text.Trim()
+
+        Dim p3 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}__{Slug(ds)}.xlsx")
+        Dim p2 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}.xlsx")
+        Dim p1 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}.xlsx")
+
+        If IO.File.Exists(p3) Then
+            currentTemplatePath = p3
+        ElseIf IO.File.Exists(p2) Then
+            currentTemplatePath = p2
+        ElseIf IO.File.Exists(p1) Then
+            currentTemplatePath = p1
+        Else
+            Dim prefix = Slug(m)
+            Dim candidates = IO.Directory.GetFiles(tmplDir, prefix & "*.xlsx", IO.SearchOption.TopDirectoryOnly)
+            currentTemplatePath = If(candidates.Length > 0,
+                                 candidates.OrderByDescending(Function(f) IO.File.GetLastWriteTimeUtc(f)).First(),
+                                 "")
+        End If
+
+        ' Open the template if found (non-fatal if this fails)
+        If Not String.IsNullOrWhiteSpace(currentTemplatePath) AndAlso IO.File.Exists(currentTemplatePath) Then
+            Try
+                Process.Start(New ProcessStartInfo With {
+                .FileName = currentTemplatePath,
+                .UseShellExecute = True
+            })
+            Catch
+                ' swallow – not fatal for starting calibration
+            End Try
+        End If
 
         cr.Show()
         Me.Close()
@@ -1414,7 +1455,35 @@ Public Class calibrate
         manufaacturer.Text = manufacturer
         dmmdescription.Text = description
 
-        ' Rebuild parameter lists for this model (same logic as your grid handler)
+        ' --- Resolve template path for this exact DMM (Model + Mfr + Desc), with fallbacks (no new funcs/UI) ---
+        Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+        Dim tmplDir = IO.Path.Combine(appData, "DMMCal", "Templates")
+        If Not IO.Directory.Exists(tmplDir) Then IO.Directory.CreateDirectory(tmplDir)
+
+        Dim m = model
+        Dim mf = manufacturer
+        Dim ds = description
+
+        ' Most specific → least specific → newest {Model}*.xlsx
+        Dim p3 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}__{Slug(ds)}.xlsx")
+        Dim p2 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}.xlsx")
+        Dim p1 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}.xlsx")
+
+        If IO.File.Exists(p3) Then
+            currentTemplatePath = p3
+        ElseIf IO.File.Exists(p2) Then
+            currentTemplatePath = p2
+        ElseIf IO.File.Exists(p1) Then
+            currentTemplatePath = p1
+        Else
+            Dim prefix = Slug(m)
+            Dim candidates = IO.Directory.GetFiles(tmplDir, prefix & "*.xlsx", IO.SearchOption.TopDirectoryOnly)
+            currentTemplatePath = If(candidates.Length > 0,
+                                 candidates.OrderByDescending(Function(f) IO.File.GetLastWriteTimeUtc(f)).First(),
+                                 "")
+        End If
+
+        ' --- Rebuild parameter lists for this model (existing logic) ---
         For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
             clb.Items.Clear()
         Next
@@ -1426,6 +1495,7 @@ Public Class calibrate
 
             clb.Items.Add("[" & category.ToUpper() & "]")
             clb.SetItemCheckState(clb.Items.Count - 1, CheckState.Unchecked)
+
             For Each rangeKey As Object In grouped(category).Keys
                 clb.Items.Add("  → Range: " & rangeKey.ToString())
                 For Each nominal As Object In grouped(category)(rangeKey)
@@ -1741,5 +1811,62 @@ Public Class calibrate
         End Sub
 
     End Class
+
+    ' --- Same path logic as newDMMAdmin ---
+    Private Shared Function GetPerModelTemplatePath(modelText As String) As String
+        Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+        Dim dir = IO.Path.Combine(appData, "DMMCal", "Templates")
+        If Not IO.Directory.Exists(dir) Then IO.Directory.CreateDirectory(dir)
+        Dim modelSlug = Slug(If(modelText, ""))
+        If String.IsNullOrWhiteSpace(modelSlug) Then modelSlug = "UnnamedModel"
+        Return IO.Path.Combine(dir, modelSlug & ".xlsx")
+    End Function
+
+    ' helper to make a safe file name from the model text (same as newDMMAdmin)
+    Private Shared Function Slug(s As String) As String
+        Dim t As String = (If(s, "")).Trim()
+        t = System.Text.RegularExpressions.Regex.Replace(t, "[^\w\-]+", "_")
+        If t.Length > 100 Then t = t.Substring(0, 100)
+        If String.IsNullOrWhiteSpace(t) Then t = "UnnamedModel"
+        Return t
+    End Function
+
+    ' Finds the best-matching template for the current DMM selection
+    Private Function ResolveTemplatePathForCurrent() As String
+        Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+        Dim tmplDir = IO.Path.Combine(appData, "DMMCal", "Templates")
+        If Not IO.Directory.Exists(tmplDir) Then IO.Directory.CreateDirectory(tmplDir)
+
+        Dim m As String = dmmmodel.Text.Trim()
+        Dim mf As String = manufaacturer.Text.Trim()
+        Dim ds As String = dmmdescription.Text.Trim()
+
+        ' Check if the model is "Fluke 114" and look for the specific file in the same directory as the .exe
+        If m = "Fluke 114" Then
+            Dim exeDirectory As String = Application.StartupPath
+            Dim filePath As String = IO.Path.Combine(exeDirectory, "Fluke_114.xlsx")
+            If IO.File.Exists(filePath) Then
+                Return filePath
+            End If
+        End If
+
+        ' Most specific → least specific → newest {Model}*.xlsx
+        Dim p3 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}__{Slug(ds)}.xlsx")
+        Dim p2 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}.xlsx")
+        Dim p1 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}.xlsx")
+
+        If IO.File.Exists(p3) Then Return p3
+        If IO.File.Exists(p2) Then Return p2
+        If IO.File.Exists(p1) Then Return p1
+
+        ' Last resort: any file starting with the model slug; pick the newest
+        Dim prefix = Slug(m)
+        Dim candidates = IO.Directory.GetFiles(tmplDir, prefix & "*.xlsx", IO.SearchOption.TopDirectoryOnly)
+        If candidates.Length > 0 Then
+            Return candidates.OrderByDescending(Function(f) IO.File.GetLastWriteTimeUtc(f)).First()
+        End If
+
+        Return ""
+    End Function
 
 End Class

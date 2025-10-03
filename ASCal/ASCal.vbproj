@@ -203,6 +203,12 @@
     <Compile Include="Forms\Admin\jobDashAdmin.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Admin\NEWDMMUp.Designer.vb">
+      <DependentUpon>NEWDMMUp.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Admin\NEWDMMUp.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\SERIAL\SerialandOCR.Designer.vb">
       <DependentUpon>SerialandOCR.vb</DependentUpon>
     </Compile>
@@ -358,6 +364,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Admin\jobDashAdmin.resx">
       <DependentUpon>jobDashAdmin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Admin\NEWDMMUp.resx">
+      <DependentUpon>NEWDMMUp.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Admin\newDMMAdmin.resx">
       <DependentUpon>newDmmAdmin.vb</DependentUpon>

@@ -197,3 +197,4 @@ C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.newCalResult.resources
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Newtonsoft.Json.dll
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Newtonsoft.Json.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.NEWDMM.resources

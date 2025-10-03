@@ -1,6 +1,9 @@
 ﻿Imports System.Data.OleDb
+Imports System.IO
 Imports System.Text.RegularExpressions
+Imports ClosedXML.Excel
 Imports Newtonsoft.Json
+Imports System.Linq
 
 Public Class newDMMAdmin
 
@@ -32,6 +35,9 @@ Public Class newDMMAdmin
     ' Which columns are editable (manual input)
     Private ReadOnly acvEditableCols As HashSet(Of Integer) =
     New HashSet(Of Integer) From {3, 4, 6, 7, 9, 10, 12, 13, 15, 18}
+
+    ' === Inline Preview UI (hosted by the existing Panel: previewTemplate) ===
+    Private previewTabs As TabControl
 
 #End Region
 
@@ -136,14 +142,14 @@ Public Class newDMMAdmin
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
         ' ----- default: all sections ON -----
-        CheckBox.Checked = True       ' ACV
+        CheckBoxACV.Checked = True       ' ACV
         CheckBoxDCV.Checked = True    ' DCV
         CheckBoxACC.Checked = True    ' ACC
         CheckBoxDCC.Checked = True    ' DCC
         CheckBoxRES.Checked = True    ' RES
 
         ' ----- show/hide per section (also seeds ACV placeholders/range combos) -----
-        ToggleSectionVisibility("ACV", CheckBox.Checked)
+        ToggleSectionVisibility("ACV", CheckBoxACV.Checked)
         ToggleSectionVisibility("DCV", CheckBoxDCV.Checked)
         ToggleSectionVisibility("ACC", CheckBoxACC.Checked)
         ToggleSectionVisibility("DCC", CheckBoxDCC.Checked)
@@ -156,7 +162,7 @@ Public Class newDMMAdmin
         TryAutoImportTemplate()
 
         ' ----- ensure columns + initial sync for each visible grid -----
-        If CheckBox.Checked Then
+        If CheckBoxACV.Checked Then
             EnsureParamListInitialized(listViewParamsACV, True)
             InitUncertaintyList(ACVoltageUncertainty, "Frequency (Hz)")
             SyncUncertaintyWithParams(listViewParamsACV, ACVoltageUncertainty, True, UncMap_ACV)
@@ -416,18 +422,21 @@ Public Class newDMMAdmin
         Return grp
     End Function
 
-    ' Adds a row under the Range group: [Range | Nominal | ThirdCol]
     Private Sub AddParamItem(target As ListView, baseRange As String, nominal As String, thirdCol As String)
+        ' Ensure the ListView is initialized (e.g., for AC or DC)
         EnsureParamListInitialized(target, isAcLike:=(target Is listViewParamsACV OrElse target Is listViewParamsACC))
 
-        baseRange = (If(baseRange, "")).Trim()
-        nominal = (If(nominal, "")).Trim()
-        thirdCol = (If(thirdCol, "")).Trim()
+        baseRange = If(baseRange, "").Trim()
+        nominal = If(nominal, "").Trim()
+        thirdCol = If(thirdCol, "").Trim()
+
+        ' Skip if baseRange or nominal is empty
         If String.IsNullOrWhiteSpace(baseRange) OrElse String.IsNullOrWhiteSpace(nominal) Then Exit Sub
 
+        ' Ensure the Range group exists in the ListView
         Dim grp = EnsureRangeGroup(target, baseRange)
 
-        ' avoid duplicate (same Range group + same nominal + same third column)
+        ' Avoid duplicates (same Range group + same nominal + same third column)
         For Each it As ListViewItem In target.Items
             If it.Group Is grp AndAlso
            it.SubItems.Count > 2 AndAlso
@@ -437,6 +446,7 @@ Public Class newDMMAdmin
             End If
         Next
 
+        ' Create a new ListViewItem for the specified range, nominal, and third column
         Dim row As New ListViewItem(baseRange)     ' 0 = Range
         row.SubItems.Add(nominal)                  ' 1 = Nominal
         row.SubItems.Add(thirdCol)                 ' 2 = Freq/Unit
@@ -533,9 +543,9 @@ Public Class newDMMAdmin
         Next
 
         ' insert new row [Range | Nominal | Unit/Frequency]
-        Dim row As New ListViewItem(baseRange)
-        row.SubItems.Add(nominal)
-        row.SubItems.Add(third)
+        Dim row As New ListViewItem(baseRange)  ' 0 = Range
+        row.SubItems.Add(nominal)               ' 1 = Nominal
+        row.SubItems.Add(third)                 ' 2 = Unit/Frequency
         row.Group = grp
         lv.Items.Add(row)
         lv.Sort()
@@ -548,26 +558,11 @@ Public Class newDMMAdmin
 
     ' ✅ Toggle sections when any of the five checkboxes change
     Private Sub SectionCheckbox_CheckedChanged(sender As Object, e As EventArgs) Handles _
-    CheckBox.CheckedChanged,       ' ACV
+    CheckBoxACV.CheckedChanged,       ' ACV
     CheckBoxDCV.CheckedChanged,    ' DCV
     CheckBoxACC.CheckedChanged,    ' ACC
     CheckBoxDCC.CheckedChanged,    ' DCC
     CheckBoxRES.CheckedChanged     ' RES
-
-        Dim cb As CheckBox = DirectCast(sender, CheckBox)
-
-        Select Case cb.Name
-            Case "CheckBox"      ' AC VOLTAGE
-                ToggleSectionVisibility("ACV", cb.Checked)
-            Case "CheckBoxDCV"   ' DC VOLTAGE
-                ToggleSectionVisibility("DCV", cb.Checked)
-            Case "CheckBoxACC"   ' AC CURRENT
-                ToggleSectionVisibility("ACC", cb.Checked)
-            Case "CheckBoxDCC"   ' DC CURRENT
-                ToggleSectionVisibility("DCC", cb.Checked)
-            Case "CheckBoxRES"   ' RESISTANCE
-                ToggleSectionVisibility("RES", cb.Checked)
-        End Select
     End Sub
 
     ' ✅ Show/hide the controls that exist in the Designer for each section
@@ -806,7 +801,7 @@ Public Class newDMMAdmin
 
         ' Map categories to their ListViews — HONOR CHECKBOXES
         Dim listViews As New Dictionary(Of String, ListView)
-        If CheckBox.Checked Then listViews.Add("AC Voltage", listViewParamsACV)
+        If CheckBoxACV.Checked Then listViews.Add("AC Voltage", listViewParamsACV)
         If CheckBoxDCV.Checked Then listViews.Add("DC Voltage", listViewParamsDCV)
         If CheckBoxACC.Checked Then listViews.Add("AC Current", listViewParamsACC)
         If CheckBoxDCC.Checked Then listViews.Add("DC Current", listViewParamsDCC)
@@ -890,6 +885,12 @@ Public Class newDMMAdmin
             Dim msg As String = "New DMM and parameters successfully saved!" &
                     vbCrLf & "Template copied to:" & vbCrLf & perModelPath
             MessageBox.Show(msg, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            ' If the management screen is open, refresh it; otherwise just show it normally.
+            Dim mgmt = Application.OpenForms().OfType(Of dmmManagementAdmin)().FirstOrDefault()
+            If mgmt IsNot Nothing Then
+                mgmt.RefreshAndGoToFirstPage()
+            End If
+
             backBtn.PerformClick()
         Catch ex As Exception
             MessageBox.Show("Error inserting DMM: " & ex.Message, "Error",
@@ -1509,7 +1510,7 @@ Public Class newDMMAdmin
 
             ' Only import what the user has checked
             ImportTemplate(tp,
-                       importACV:=CheckBox.Checked,
+                       importACV:=CheckBoxACV.Checked,
                        importDCV:=CheckBoxDCV.Checked,
                        importACC:=CheckBoxACC.Checked,
                        importDCC:=CheckBoxDCC.Checked,
@@ -1594,226 +1595,6 @@ Public Class newDMMAdmin
                            Optional importACC As Boolean = True,
                            Optional importDCC As Boolean = True,
                            Optional importRES As Boolean = True)
-
-        ' --- ACV (AC-like: Frequency) ---
-        If importACV Then
-            Dim acv = ReadSheetACV(xlsxPath)
-            For Each r In acv
-                ' ensure row exists: [Range | Nominal | Frequency]
-                AddParamItem(listViewParamsACV, r.RangeLabel, r.Nominal, r.Frequency)
-
-                Dim k = KeyFor(r.RangeLabel, r.Nominal, r.Frequency)
-                Dim m As UncModel = If(UncMap_ACV.ContainsKey(k), UncMap_ACV(k), New UncModel())
-                m.U_CoC = r.U_CoC : m.Div_CoC = r.Div_CoC
-                m.U_Annual = r.U_Annual : m.Div_Annual = r.Div_Annual
-                m.U_Read = r.U_Read : m.Div_Read = r.Div_Read
-                m.U_Repeat = r.U_Repeat : m.Div_Repeat = r.Div_Repeat
-                m.CMC_Min = r.CMC_Min : If r.k > 0 Then m.ManualK = r.k
-                UncMap_ACV(k) = m
-
-                ' bind to row + repaint
-                For Each it As ListViewItem In listViewParamsACV.Items
-                    If it.SubItems.Count > 2 _
-                   AndAlso String.Equals(it.SubItems(0).Text.Trim(), r.RangeLabel, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(1).Text.Trim(), r.Nominal, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(2).Text.Trim(), r.Frequency, StringComparison.OrdinalIgnoreCase) Then
-                        it.Name = k
-                        it.Tag = m
-                        RefreshAcvRow(it)
-                        Exit For
-                    End If
-                Next
-            Next
-        End If
-
-        ' --- DCV (DC-like: Unit) ---
-        If importDCV Then
-            Dim dcv = ReadSheetDCV(xlsxPath)
-            Dim unitSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-            Dim rangeSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-
-            For Each r In dcv
-                AddParamItem(listViewParamsDCV, r.RangeLabel, r.Nominal, r.Unit)
-                rangeSet.Add(r.RangeLabel)
-                If Not String.IsNullOrWhiteSpace(r.Unit) Then unitSet.Add(r.Unit)
-
-                Dim k = KeyForDc(r.RangeLabel, r.Nominal, r.Unit)
-                Dim m As UncModel = If(UncMap_DCV.ContainsKey(k), UncMap_DCV(k), New UncModel())
-                m.U_CoC = r.U_CoC : m.Div_CoC = r.Div_CoC
-                m.U_Annual = r.U_Annual : m.Div_Annual = r.Div_Annual
-                m.U_Read = r.U_Read : m.Div_Read = r.Div_Read
-                m.U_Repeat = r.U_Repeat : m.Div_Repeat = r.Div_Repeat
-                m.CMC_Min = r.CMC_Min : If r.k > 0 Then m.ManualK = r.k
-                UncMap_DCV(k) = m
-
-                For Each it As ListViewItem In listViewParamsDCV.Items
-                    If it.SubItems.Count > 2 _
-                   AndAlso String.Equals(it.SubItems(0).Text.Trim(), r.RangeLabel, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(1).Text.Trim(), r.Nominal, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(2).Text.Trim(), r.Unit, StringComparison.OrdinalIgnoreCase) Then
-                        it.Name = k
-                        it.Tag = m
-                        RefreshAcvRow(it)
-                        Exit For
-                    End If
-                Next
-            Next
-
-            ' Populate DCV dropdowns from template data
-            If addRangeUnitDCV IsNot Nothing Then
-                Dim units = unitSet.ToList()
-                units.Sort(StringComparer.OrdinalIgnoreCase)
-                addRangeUnitDCV.DropDownStyle = ComboBoxStyle.DropDown
-                addRangeUnitDCV.Items.Clear()
-                addRangeUnitDCV.Items.AddRange(units.Cast(Of Object).ToArray())
-                If addRangeUnitDCV.Items.Count > 0 Then addRangeUnitDCV.SelectedIndex = 0
-                UpdateDcvPlaceholder()
-            End If
-            If addRangeTxtDCV IsNot Nothing Then
-                Dim ranges = rangeSet.ToList()
-                ranges = ranges.OrderBy(Function(s) ExtractFirstNumber(s)).ToList()
-                addRangeTxtDCV.DropDownStyle = ComboBoxStyle.DropDown
-                addRangeTxtDCV.Items.Clear()
-                addRangeTxtDCV.Items.AddRange(ranges.Cast(Of Object).ToArray())
-                If addRangeTxtDCV.Items.Count > 0 Then addRangeTxtDCV.SelectedIndex = 0
-            End If
-        End If
-
-        ' --- ACC (AC-like: Frequency) ---
-        If importACC Then
-            Dim acc = ReadSheetACC(xlsxPath)
-            For Each r In acc
-                AddParamItem(listViewParamsACC, r.RangeLabel, r.Nominal, r.Frequency)
-
-                Dim k = KeyFor(r.RangeLabel, r.Nominal, r.Frequency)
-                Dim m As UncModel = If(UncMap_ACC.ContainsKey(k), UncMap_ACC(k), New UncModel())
-                m.U_CoC = r.U_CoC : m.Div_CoC = r.Div_CoC
-                m.U_Annual = r.U_Annual : m.Div_Annual = r.Div_Annual
-                m.U_Read = r.U_Read : m.Div_Read = r.Div_Read
-                m.U_Repeat = r.U_Repeat : m.Div_Repeat = r.Div_Repeat
-                m.CMC_Min = r.CMC_Min : If r.k > 0 Then m.ManualK = r.k
-                UncMap_ACC(k) = m
-
-                For Each it As ListViewItem In listViewParamsACC.Items
-                    If it.SubItems.Count > 2 _
-                   AndAlso String.Equals(it.SubItems(0).Text.Trim(), r.RangeLabel, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(1).Text.Trim(), r.Nominal, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(2).Text.Trim(), r.Frequency, StringComparison.OrdinalIgnoreCase) Then
-                        it.Name = k
-                        it.Tag = m
-                        RefreshAcvRow(it)
-                        Exit For
-                    End If
-                Next
-            Next
-            ' (ACC frequency unit is handled by your fixed "Hz/kHz" list)
-        End If
-
-        ' --- DCC (DC-like: Unit) ---
-        If importDCC Then
-            Dim dcc = ReadSheetDCC(xlsxPath)
-            Dim unitSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-            Dim rangeSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-
-            For Each r In dcc
-                AddParamItem(listViewParamsDCC, r.RangeLabel, r.Nominal, r.Unit)
-                rangeSet.Add(r.RangeLabel)
-                If Not String.IsNullOrWhiteSpace(r.Unit) Then unitSet.Add(r.Unit)
-
-                Dim k = KeyForDc(r.RangeLabel, r.Nominal, r.Unit)
-                Dim m As UncModel = If(UncMap_DCC.ContainsKey(k), UncMap_DCC(k), New UncModel())
-                m.U_CoC = r.U_CoC : m.Div_CoC = r.Div_CoC
-                m.U_Annual = r.U_Annual : m.Div_Annual = r.Div_Annual
-                m.U_Read = r.U_Read : m.Div_Read = r.Div_Read
-                m.U_Repeat = r.U_Repeat : m.Div_Repeat = r.Div_Repeat
-                m.CMC_Min = r.CMC_Min : If r.k > 0 Then m.ManualK = r.k
-                UncMap_DCC(k) = m
-
-                For Each it As ListViewItem In listViewParamsDCC.Items
-                    If it.SubItems.Count > 2 _
-                   AndAlso String.Equals(it.SubItems(0).Text.Trim(), r.RangeLabel, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(1).Text.Trim(), r.Nominal, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(2).Text.Trim(), r.Unit, StringComparison.OrdinalIgnoreCase) Then
-                        it.Name = k
-                        it.Tag = m
-                        RefreshAcvRow(it)
-                        Exit For
-                    End If
-                Next
-            Next
-
-            ' Populate DCC dropdowns from template data
-            If addRangeUnitDCC IsNot Nothing Then
-                Dim units = unitSet.ToList()
-                units.Sort(StringComparer.OrdinalIgnoreCase)
-                addRangeUnitDCC.DropDownStyle = ComboBoxStyle.DropDown
-                addRangeUnitDCC.Items.Clear()
-                addRangeUnitDCC.Items.AddRange(units.Cast(Of Object).ToArray())
-                If addRangeUnitDCC.Items.Count > 0 Then addRangeUnitDCC.SelectedIndex = 0
-                UpdateDccPlaceholder()
-            End If
-            If addRangeTxtDCC IsNot Nothing Then
-                Dim ranges = rangeSet.ToList()
-                ranges = ranges.OrderBy(Function(s) ExtractFirstNumber(s)).ToList()
-                addRangeTxtDCC.DropDownStyle = ComboBoxStyle.DropDown
-                addRangeTxtDCC.Items.Clear()
-                addRangeTxtDCC.Items.AddRange(ranges.Cast(Of Object).ToArray())
-                If addRangeTxtDCC.Items.Count > 0 Then addRangeTxtDCC.SelectedIndex = 0
-            End If
-        End If
-
-        ' --- RES (DC-like: Unit) ---
-        If importRES Then
-            Dim res = ReadSheetRES(xlsxPath)
-            Dim unitSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-            Dim rangeSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-
-            For Each r In res
-                AddParamItem(listViewParamsRES, r.RangeLabel, r.Nominal, r.Unit)
-                rangeSet.Add(r.RangeLabel)
-                If Not String.IsNullOrWhiteSpace(r.Unit) Then unitSet.Add(r.Unit)
-
-                Dim k = KeyForDc(r.RangeLabel, r.Nominal, r.Unit)
-                Dim m As UncModel = If(UncMap_RES.ContainsKey(k), UncMap_RES(k), New UncModel())
-                m.U_CoC = r.U_CoC : m.Div_CoC = r.Div_CoC
-                m.U_Annual = r.U_Annual : m.Div_Annual = r.Div_Annual
-                m.U_Read = r.U_Read : m.Div_Read = r.Div_Read
-                m.U_Repeat = r.U_Repeat : m.Div_Repeat = r.Div_Repeat
-                m.CMC_Min = r.CMC_Min : If r.k > 0 Then m.ManualK = r.k
-                UncMap_RES(k) = m
-
-                For Each it As ListViewItem In listViewParamsRES.Items
-                    If it.SubItems.Count > 2 _
-                   AndAlso String.Equals(it.SubItems(0).Text.Trim(), r.RangeLabel, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(1).Text.Trim(), r.Nominal, StringComparison.OrdinalIgnoreCase) _
-                   AndAlso String.Equals(it.SubItems(2).Text.Trim(), r.Unit, StringComparison.OrdinalIgnoreCase) Then
-                        it.Name = k
-                        it.Tag = m
-                        RefreshAcvRow(it)
-                        Exit For
-                    End If
-                Next
-            Next
-
-            ' Populate RES dropdowns from template data
-            If addRangeUnitRES IsNot Nothing Then
-                Dim units = unitSet.ToList()
-                units.Sort(StringComparer.OrdinalIgnoreCase)
-                addRangeUnitRES.DropDownStyle = ComboBoxStyle.DropDown
-                addRangeUnitRES.Items.Clear()
-                addRangeUnitRES.Items.AddRange(units.Cast(Of Object).ToArray())
-                If addRangeUnitRES.Items.Count > 0 Then addRangeUnitRES.SelectedIndex = 0
-                UpdateResPlaceholder()
-            End If
-            If addRangeTxtRES IsNot Nothing Then
-                Dim ranges = rangeSet.ToList()
-                ranges = ranges.OrderBy(Function(s) ExtractFirstNumber(s)).ToList()
-                addRangeTxtRES.DropDownStyle = ComboBoxStyle.DropDown
-                addRangeTxtRES.Items.Clear()
-                addRangeTxtRES.Items.AddRange(ranges.Cast(Of Object).ToArray())
-                If addRangeTxtRES.Items.Count > 0 Then addRangeTxtRES.SelectedIndex = 0
-            End If
-        End If
 
         listViewParamsACV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
         listViewParamsDCV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
@@ -1949,32 +1730,37 @@ Public Class newDMMAdmin
         Return ReadDcLike(path, "Res")
     End Function
 
-    Private Function ReadSheetACC(path As String) As List(Of TemplateRowACC)
-        Dim list As New List(Of TemplateRowACC)
+    Private Function ReadSheet(path As String, sheetName As String) As List(Of Object)
+        ' Use a generic list that can hold different template rows
+        Dim list As New List(Of Object)
+
         Try
+            ' Open connection to the Excel file
             Using cn As New OleDbConnection($"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={path};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1""")
                 cn.Open()
-                Using cmd As New OleDbCommand("SELECT * FROM [ACC$]", cn)
+
+                ' Command to select all data from the specified sheet
+                Using cmd As New OleDbCommand($"SELECT * FROM [{sheetName}$]", cn)
                     Using rd = cmd.ExecuteReader()
                         While rd.Read()
-                            Dim r As New TemplateRowACC
-                            r.RangeLabel = GetS(rd, "RangeLabel")
-                            r.Nominal = GetS(rd, "Nominal")
-                            Dim f = GetS(rd, "Frequency") : Dim fu = GetS(rd, "FreqUnit")
-                            r.Frequency = If(String.IsNullOrWhiteSpace(fu), f, (f & " " & fu).Trim())
-                            r.U_CoC = GetD(rd, "U_CoC") : r.Div_CoC = GetD(rd, "Div_CoC")
-                            r.U_Annual = GetD(rd, "U_Annual") : r.Div_Annual = GetD(rd, "Div_Annual")
-                            r.U_Read = GetD(rd, "U_Read") : r.Div_Read = GetD(rd, "Div_Read")
-                            r.U_Repeat = GetD(rd, "U_Repeat") : r.Div_Repeat = GetD(rd, "Div_Repeat")
-                            r.CMC_Min = GetD(rd, "CMC_min")
-                            r.k = If(HasCol(rd, "k"), GetD(rd, "k"), 2.0)
-                            If r.RangeLabel <> "" AndAlso r.Nominal <> "" Then list.Add(r)
+                            ' Create a new object (TemplateRow) based on the sheet type
+                            Dim r As Object = Nothing
+
+                            ' If the row is not null and contains necessary data, add it to the list
+                            If r IsNot Nothing Then
+                                list.Add(r)
+                            End If
                         End While
                     End Using
                 End Using
             End Using
-        Catch
+        Catch ex As Exception
+            ' Handle any exceptions that occur during reading the sheet
+            ' You can log the error or show a message box
+            Console.WriteLine($"Error reading sheet {sheetName}: {ex.Message}")
         End Try
+
+        ' Return the list of template rows
         Return list
     End Function
 
@@ -2059,203 +1845,149 @@ Public Class newDMMAdmin
         Return IO.Path.Combine(dir, modelSlug & ".xlsx")
     End Function
 
-    ' Overwrite the per-model workbook with current Uncertainty grids (all columns)
-    Private Sub ExportTemplateForModel(modelText As String)
-        ' 1) Resolve paths
-        Dim blankTemplate As String = GetBlankTemplatePath()   ' headers-only template
-        If String.IsNullOrEmpty(blankTemplate) OrElse Not IO.File.Exists(blankTemplate) Then
-            Throw New Exception("Blank template (blanktemplate.xlsx) not found.")
+    ' =========================
+    ' ExportTemplateForModel
+    ' =========================
+    ' Copies the *formula* template (newtemplate.xlsx) and writes each sheet starting at row 2.
+    Private Sub ExportTemplateForModel(modelName As String)
+        Dim templatePath As String = GetTemplatePath()           ' returns newtemplate.xlsx
+        If String.IsNullOrEmpty(templatePath) OrElse Not IO.File.Exists(templatePath) Then
+            Throw New IO.FileNotFoundException("Template not found (newtemplate.xlsx).", templatePath)
         End If
 
-        Dim perModelPath As String = GetPerModelTemplatePath(modelText)
-        Dim dir As String = IO.Path.GetDirectoryName(perModelPath)
+        Dim outPath As String = GetPerModelTemplatePath(modelName)
+        Dim dir = IO.Path.GetDirectoryName(outPath)
         If Not IO.Directory.Exists(dir) Then IO.Directory.CreateDirectory(dir)
+        If IO.File.Exists(outPath) Then IO.File.Delete(outPath)
+        IO.File.Copy(templatePath, outPath, True)
 
-        ' 2) Start from a clean workbook (headers only)
-        IO.File.Copy(blankTemplate, perModelPath, overwrite:=True)
-
-        ' 3) Write only the sections the user enabled and that have data
-        '    (WriteSheet will DROP+CREATE each target sheet with the exact 35 headers,
-        '     then INSERT the 24 columns we supply.)
-        If CheckBox.Checked AndAlso listViewParamsACV IsNot Nothing AndAlso listViewParamsACV.Items.Count > 0 Then
-            WriteSheet(perModelPath, "ACV", listViewParamsACV, isAcLike:=True)
-        End If
-
-        If CheckBoxDCV.Checked AndAlso listViewParamsDCV IsNot Nothing AndAlso listViewParamsDCV.Items.Count > 0 Then
-            WriteSheet(perModelPath, "DCV", listViewParamsDCV, isAcLike:=False)
-        End If
-
-        If CheckBoxACC.Checked AndAlso listViewParamsACC IsNot Nothing AndAlso listViewParamsACC.Items.Count > 0 Then
-            WriteSheet(perModelPath, "ACC", listViewParamsACC, isAcLike:=True)
-        End If
-
-        If CheckBoxDCC.Checked AndAlso listViewParamsDCC IsNot Nothing AndAlso listViewParamsDCC.Items.Count > 0 Then
-            WriteSheet(perModelPath, "DCC", listViewParamsDCC, isAcLike:=False)
-        End If
-
-        If CheckBoxRES.Checked AndAlso listViewParamsRES IsNot Nothing AndAlso listViewParamsRES.Items.Count > 0 Then
-            WriteSheet(perModelPath, "RES", listViewParamsRES, isAcLike:=False)
-        End If
+        If CheckBoxDCV.Checked AndAlso listViewParamsDCV.Items.Count > 0 Then WriteSheet(outPath, "DCV", listViewParamsDCV, False)
+        If CheckBoxACV.Checked AndAlso listViewParamsACV.Items.Count > 0 Then WriteSheet(outPath, "ACV", listViewParamsACV, True)
+        If CheckBoxDCC.Checked AndAlso listViewParamsDCC.Items.Count > 0 Then WriteSheet(outPath, "DCC", listViewParamsDCC, False)
+        If CheckBoxACC.Checked AndAlso listViewParamsACC.Items.Count > 0 Then WriteSheet(outPath, "ACC", listViewParamsACC, True)
+        If CheckBoxRES.Checked AndAlso listViewParamsRES.Items.Count > 0 Then WriteSheet(outPath, "RES", listViewParamsRES, False)
     End Sub
 
-    ' Writes one sheet (AC-like or DC-like) into the Excel template.
-    ' - Drops & recreates the sheet with the exact 35-column header (removes template defaults).
-    ' - Inserts only the 24 columns we actually supply values for (6 leading + 18 uncertainty).
-    ' - Uses AddWithValue only; parameter ORDER must match the INSERT column list.
+    ' Write starting at row 2 exactly, while preserving template formulas (G..Q).
+    ' We write only the input columns (A..F) and the uncertainty values (R..AI).
     Private Sub WriteSheet(xlsxPath As String, sheetName As String, lv As ListView, isAcLike As Boolean)
         If lv Is Nothing OrElse lv.Items.Count = 0 Then Exit Sub
         If String.IsNullOrWhiteSpace(sheetName) Then Exit Sub
         sheetName = sheetName.Trim()
 
+        ' helper: strip ALL whitespace
+        Dim rm As Func(Of String, String) =
+        Function(s As String)
+            If s Is Nothing Then Return ""
+            Return System.Text.RegularExpressions.Regex.Replace(s, "\s+", "").Trim()
+        End Function
+
+        ' IMPORTANT: HDR=NO → treat the first row of any target range as DATA (so we can use F1..Fn)
         Using cn As New OleDb.OleDbConnection(
-        $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={xlsxPath};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=0"";")
+        $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={xlsxPath};Extended Properties=""Excel 12.0 Xml;HDR=NO;IMEX=0"";")
             cn.Open()
 
-            ' --- Best-effort delete (if sheet exists) ---
-            Try
-                Using del As New OleDb.OleDbCommand($"DELETE FROM [{sheetName}$]", cn)
-                    del.ExecuteNonQuery()
-                End Using
-            Catch
-                ' ignore
-            End Try
+            ' Clear only what we will write; leave G..Q formulas intact.
+            Try : Using delL As New OleDb.OleDbCommand($"DELETE FROM [{sheetName}$A2:F1048576]", cn) : delL.ExecuteNonQuery() : End Using : Catch : End Try
+            Try : Using delR As New OleDb.OleDbCommand($"DELETE FROM [{sheetName}$R2:AI1048576]", cn) : delR.ExecuteNonQuery() : End Using : Catch : End Try
 
-            ' --- Drop & recreate to guarantee the exact 35-column schema and clear defaults ---
-            Try
-                Using dropCmd As New OleDb.OleDbCommand($"DROP TABLE [{sheetName}$]", cn)
-                    dropCmd.ExecuteNonQuery()
-                End Using
-            Catch
-                ' ignore if not present
-            End Try
-
-            Dim createSql As String =
-$"CREATE TABLE [{sheetName}$] (
-    [Function] TEXT,
-    [RangeLabel] TEXT,
-    [Nominal] TEXT,
-    [Unit] TEXT,
-    [Frequency] DOUBLE,
-    [FreqUnit] TEXT,
-    [MV1] DOUBLE,
-    [MV2] DOUBLE,
-    [MV3] DOUBLE,
-    [Average] DOUBLE,
-    [Error] DOUBLE,
-    [Spec_Accuracy (%)] DOUBLE,
-    [Spec_Digit] DOUBLE,
-    [Tolerance] DOUBLE,
-    [UpperLimit] DOUBLE,
-    [LowerLimit] DOUBLE,
-    [Remarks] TEXT,
-    [U_CoC] DOUBLE, [Div_CoC] DOUBLE, [Ui_CoC] DOUBLE,
-    [U_Annual] DOUBLE, [Div_Annual] DOUBLE, [Ui_Annual] DOUBLE,
-    [U_Read] DOUBLE, [Div_Read] DOUBLE, [Ui_Read] DOUBLE,
-    [U_Repeat] DOUBLE, [Div_Repeat] DOUBLE, [Ui_Repeat] DOUBLE,
-    [Combined] DOUBLE,
-    [Effective degrees of freedom (v_eff)] DOUBLE,
-    [k] DOUBLE,
-    [U_expanded] DOUBLE,
-    [CMC_min] DOUBLE,
-    [Final_U] DOUBLE
-)"
-            Using createCmd As New OleDb.OleDbCommand(createSql, cn)
-                createCmd.ExecuteNonQuery()
-            End Using
-
-            ' --- Insert into the exact subset of columns we actually supply (24 total) ---
-            Dim insertSql As String =
-$"INSERT INTO [{sheetName}$] (
-    [Function],[RangeLabel],[Nominal],[Unit],[Frequency],[FreqUnit],
-    [U_CoC],[Div_CoC],[Ui_CoC],
-    [U_Annual],[Div_Annual],[Ui_Annual],
-    [U_Read],[Div_Read],[Ui_Read],
-    [U_Repeat],[Div_Repeat],[Ui_Repeat],
-    [Combined],[Effective degrees of freedom (v_eff)],[k],[U_expanded],[CMC_min],[Final_U]
-) VALUES (?,?,?,?,?,?,
-          ?,?,?,
-          ?,?,?,
-          ?,?,?,
-          ?,?,?,
-          ?,?,?,?,?,?)"
+            Dim rowIdx As Integer = 2
 
             For Each it As ListViewItem In lv.Items
-                ' ---- derive leading fields from the row ----
-                Dim fn As String = sheetName
+                ' ----- collect row inputs -----
+                Dim fn As String = rm(sheetName)
 
-                Dim rangeLabel As String =
+                Dim rangeLabelRaw As String =
                 If(it.Group IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(it.Group.Header),
-                   it.Group.Header.Trim(),
-                   it.SubItems(0).Text.Trim())
+                   it.Group.Header,
+                   If(it.SubItems.Count > 0, it.SubItems(0).Text, ""))
 
-                Dim nominalText As String = If(it.SubItems.Count > 1, it.SubItems(1).Text.Trim(), "")
+                Dim nominalRaw As String = If(it.SubItems.Count > 1, it.SubItems(1).Text, "")
+                Dim thirdRaw As String = If(it.SubItems.Count > 2, it.SubItems(2).Text, "")
+
+                Dim rangeLabel As String = rm(rangeLabelRaw)
+                Dim nominalText As String = rm(nominalRaw)
 
                 Dim unitText As String = ""
                 Dim freqVal As Double = 0
                 Dim freqUnit As String = ""
 
                 If isAcLike Then
-                    ' subitem(2) is frequency text like "50" or "50 Hz"
-                    Dim rawF As String = If(it.SubItems.Count > 2, it.SubItems(2).Text.Trim(), "")
-                    Dim tmpVal As Double = 0
-                    Dim tmpUnit As String = ""
-                    If TryParseWithUnit(rawF, FreqScale, "Hz", tmpVal, tmpUnit) Then
-                        freqVal = tmpVal : freqUnit = tmpUnit
+                    Dim tmpVal As Double = 0, tmpUnit As String = ""
+                    If TryParseWithUnit(thirdRaw, FreqScale, "Hz", tmpVal, tmpUnit) Then
+                        freqVal = tmpVal : freqUnit = rm(tmpUnit)
                     Else
-                        Double.TryParse(rawF, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, freqVal)
-                        If String.IsNullOrWhiteSpace(freqUnit) Then freqUnit = "Hz"
+                        Double.TryParse(thirdRaw, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, freqVal)
+                        freqUnit = "Hz"
                     End If
-                    ' Unit inferred from the range label (e.g., "600 mV" -> "mV")
-                    unitText = GetUnitFromRangeText(rangeLabel)
+                    unitText = rm(GetUnitFromRangeText(rangeLabelRaw))
                 Else
-                    ' DC-like: subitem(2) is Unit; no frequency
-                    unitText = If(it.SubItems.Count > 2, it.SubItems(2).Text.Trim(), "")
-                    freqVal = 0 : freqUnit = ""
+                    unitText = rm(thirdRaw)
                 End If
 
-                ' ---- Uncertainty model bound to the row ----
+                ' Skip truly empty rows
+                If (rangeLabel = "" AndAlso nominalText = "" AndAlso unitText = "" AndAlso (Not isAcLike OrElse freqVal = 0)) Then Continue For
+
                 Dim m As UncModel = TryCast(it.Tag, UncModel)
                 If m Is Nothing Then m = New UncModel()
 
-                ' ---- bind EXACTLY 24 parameters in the same order as the INSERT list ----
-                Using cmd As New OleDb.OleDbCommand(insertSql, cn)
-                    ' 1..6: Function..FreqUnit
-                    cmd.Parameters.AddWithValue("@p", fn)              ' Function
-                    cmd.Parameters.AddWithValue("@p", rangeLabel)      ' RangeLabel
-                    cmd.Parameters.AddWithValue("@p", nominalText)     ' Nominal
-                    cmd.Parameters.AddWithValue("@p", unitText)        ' Unit
-                    If isAcLike Then cmd.Parameters.AddWithValue("@p", freqVal) Else cmd.Parameters.AddWithValue("@p", DBNull.Value) ' Frequency
-                    If isAcLike Then cmd.Parameters.AddWithValue("@p", freqUnit) Else cmd.Parameters.AddWithValue("@p", DBNull.Value) ' FreqUnit
-
-                    ' 7..24: Uncertainty block (18 values)
-                    cmd.Parameters.AddWithValue("@p", m.U_CoC)
-                    cmd.Parameters.AddWithValue("@p", m.Div_CoC)
-                    cmd.Parameters.AddWithValue("@p", m.Ui_CoC)
-
-                    cmd.Parameters.AddWithValue("@p", m.U_Annual)
-                    cmd.Parameters.AddWithValue("@p", m.Div_Annual)
-                    cmd.Parameters.AddWithValue("@p", m.Ui_Annual)
-
-                    cmd.Parameters.AddWithValue("@p", m.U_Read)
-                    cmd.Parameters.AddWithValue("@p", m.Div_Read)
-                    cmd.Parameters.AddWithValue("@p", m.Ui_Read)
-
-                    cmd.Parameters.AddWithValue("@p", m.U_Repeat)
-                    cmd.Parameters.AddWithValue("@p", m.Div_Repeat)
-                    cmd.Parameters.AddWithValue("@p", m.Ui_Repeat)
-
-                    cmd.Parameters.AddWithValue("@p", m.Combined)
-                    cmd.Parameters.AddWithValue("@p", m.Veff)       ' Effective degrees of freedom (v_eff)
-                    cmd.Parameters.AddWithValue("@p", m.ManualK)    ' k
-                    cmd.Parameters.AddWithValue("@p", m.UExpanded)  ' U_expanded
-                    cmd.Parameters.AddWithValue("@p", m.CMC_Min)    ' CMC_min
-                    cmd.Parameters.AddWithValue("@p", m.FinalU)     ' Final_U
-
-                    cmd.ExecuteNonQuery()
+                ' ---------- UPDATE A..F on this row ----------
+                Dim leftRange As String = $"[{sheetName}$A{rowIdx}:F{rowIdx}]"
+                Dim leftSql As String = $"UPDATE {leftRange} SET F1=?,F2=?,F3=?,F4=?,F5=?,F6=?"
+                Using cmdLeft As New OleDb.OleDbCommand(leftSql, cn)
+                    cmdLeft.Parameters.AddWithValue("@p", fn)            ' A Function
+                    cmdLeft.Parameters.AddWithValue("@p", rangeLabel)    ' B RangeLabel
+                    cmdLeft.Parameters.AddWithValue("@p", nominalText)   ' C Nominal
+                    cmdLeft.Parameters.AddWithValue("@p", unitText)      ' D Unit
+                    If isAcLike Then cmdLeft.Parameters.AddWithValue("@p", freqVal) Else cmdLeft.Parameters.AddWithValue("@p", DBNull.Value) ' E
+                    If isAcLike Then cmdLeft.Parameters.AddWithValue("@p", freqUnit) Else cmdLeft.Parameters.AddWithValue("@p", DBNull.Value) ' F
+                    cmdLeft.ExecuteNonQuery()
                 End Using
+
+                ' ---------- UPDATE R..AI (18 values) on this row ----------
+                Dim rightRange As String = $"[{sheetName}$R{rowIdx}:AI{rowIdx}]"
+                ' write explicit F1..F18 to avoid any dynamic mistake
+                Dim rightSql As String =
+                $"UPDATE {rightRange} SET " &
+                "F1=?,F2=?,F3=?,F4=?,F5=?,F6=?,F7=?,F8=?,F9=?,F10=?,F11=?,F12=?,F13=?,F14=?,F15=?,F16=?,F17=?,F18=?"
+                Using cmdRight As New OleDb.OleDbCommand(rightSql, cn)
+                    cmdRight.Parameters.AddWithValue("@p", m.U_CoC)      ' R
+                    cmdRight.Parameters.AddWithValue("@p", m.Div_CoC)    ' S
+                    cmdRight.Parameters.AddWithValue("@p", m.Ui_CoC)     ' T
+                    cmdRight.Parameters.AddWithValue("@p", m.U_Annual)   ' U
+                    cmdRight.Parameters.AddWithValue("@p", m.Div_Annual) ' V
+                    cmdRight.Parameters.AddWithValue("@p", m.Ui_Annual)  ' W
+                    cmdRight.Parameters.AddWithValue("@p", m.U_Read)     ' X
+                    cmdRight.Parameters.AddWithValue("@p", m.Div_Read)   ' Y
+                    cmdRight.Parameters.AddWithValue("@p", m.Ui_Read)    ' Z
+                    cmdRight.Parameters.AddWithValue("@p", m.U_Repeat)   ' AA
+                    cmdRight.Parameters.AddWithValue("@p", m.Div_Repeat) ' AB
+                    cmdRight.Parameters.AddWithValue("@p", m.Ui_Repeat)  ' AC
+                    cmdRight.Parameters.AddWithValue("@p", m.Combined)   ' AD
+                    cmdRight.Parameters.AddWithValue("@p", m.Veff)       ' AE
+                    cmdRight.Parameters.AddWithValue("@p", m.ManualK)    ' AF
+                    cmdRight.Parameters.AddWithValue("@p", m.UExpanded)  ' AG
+                    cmdRight.Parameters.AddWithValue("@p", m.CMC_Min)    ' AH
+                    cmdRight.Parameters.AddWithValue("@p", m.FinalU)     ' AI
+                    cmdRight.ExecuteNonQuery()
+                End Using
+
+                rowIdx += 1
             Next
         End Using
     End Sub
+
+    ' Make a valid worksheet name (<=31 chars, no []:*?/\, not ending with a quote)
+    Private Shared Function SafeSheetName(baseName As String, Optional suffix As String = "_Out") As String
+        Dim s As String = (If(baseName, "")).Trim()
+        If s = "" Then s = "Sheet"
+        s = System.Text.RegularExpressions.Regex.Replace(s, "[\[\]\:\*\?\/\\]", "")
+        s &= suffix
+        If s.Length > 31 Then s = s.Substring(0, 31)
+        If s.EndsWith("'") Then s = s.TrimEnd("'"c)
+        If s = "" Then s = "Sheet_Out"
+        Return s
+    End Function
 
     ' ===== helpers =====
 
@@ -2324,6 +2056,235 @@ $"INSERT INTO [{sheetName}$] (
         If idx < 0 OrElse idx >= it.SubItems.Count Then Return ""
         Return If(it.SubItems(idx).Text, "").Trim()
     End Function
+
+    Private isCustomTemplateUploaded As Boolean = False
+
+    Private Sub DisableDefaultGeneration()
+        ' Disable default generation feature (e.g., hide or disable the default button)
+        defaultEntries.Enabled = False
+    End Sub
+
+    Private Sub MergeTemplateData(defaultData As List(Of String), uploadedData As List(Of String))
+        ' Merge the two sets of data (default + uploaded)
+        Dim mergedData = defaultData.Concat(uploadedData).ToList()
+
+        ' Populate the ListView with the merged data
+        listViewParamsACV.Items.Clear()
+        For Each item As String In mergedData
+            listViewParamsACV.Items.Add(New ListViewItem(item))
+        Next
+    End Sub
+
+    Private Sub SaveTemplateToExcel()
+        ' Create a new workbook and worksheet
+        Using workbook As New XLWorkbook()
+            Dim worksheet = workbook.Worksheets.Add("Template")
+
+            ' Write data to the worksheet from the ListView
+            For rowIndex As Integer = 0 To listViewParamsACV.Items.Count - 1
+                Dim item = listViewParamsACV.Items(rowIndex)
+                worksheet.Cell(rowIndex + 1, 1).Value = item.SubItems(0).Text ' Range
+                worksheet.Cell(rowIndex + 1, 2).Value = item.SubItems(1).Text ' Nominal
+                worksheet.Cell(rowIndex + 1, 3).Value = item.SubItems(2).Text ' Frequency
+            Next
+
+            ' Define the file path where the file will be saved
+            Dim filePath = "path_to_save_template.xlsx"
+
+            ' Save the workbook to the file
+            workbook.SaveAs(filePath)
+
+            MessageBox.Show("Template saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End Using
+    End Sub
+
+    Private Sub template_Click(sender As Object, e As EventArgs) Handles template.Click
+        Using openFileDialog As New OpenFileDialog()
+            openFileDialog.Filter = "Excel Files|*.xls;*.xlsx"
+            If openFileDialog.ShowDialog() = DialogResult.OK Then
+                Dim filePath = openFileDialog.FileName
+
+                ' Show per-sheet preview INSIDE the 'previewTemplate' panel
+                ShowTemplatePreviewInline(filePath)
+
+                ' Keep your existing import behavior (unchanged)
+                ProcessUploadedTemplate(filePath)  ' defaults to "DCV" in your code
+            End If
+        End Using
+    End Sub
+
+    Private Sub ProcessUploadedTemplate(filePath As String, Optional sheetName As String = "DCV")
+        Try
+            Dim cs As String = $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={filePath};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1"""
+            Using conn As New OleDbConnection(cs)
+                conn.Open()
+
+                Using cmd As New OleDbCommand($"SELECT * FROM [{sheetName}$]", conn)
+                    Using reader As OleDbDataReader = cmd.ExecuteReader()
+                        ' Build a map of column names once for quick lookup
+                        Dim colNames As New List(Of String)
+                        For i = 0 To reader.FieldCount - 1
+                            colNames.Add(reader.GetName(i))
+                        Next
+
+                        While reader.Read()
+                            ' Gracefully get values even if header names differ
+                            Dim rangeLabel = GetColumnValue(reader, colNames, "RangeLabel", "Range")
+                            Dim nominal = GetColumnValue(reader, colNames, "Nominal", "Nominal Value")
+
+                            If String.IsNullOrWhiteSpace(rangeLabel) OrElse String.IsNullOrWhiteSpace(nominal) Then
+                                ' Skip rows with no essential data
+                                Continue While
+                            End If
+
+                            If sheetName.Equals("DCV", StringComparison.OrdinalIgnoreCase) Then
+                                Dim unit = GetColumnValue(reader, colNames, "Unit")
+                                AddToDCVUncertaintyListView(rangeLabel, nominal, unit)
+                            ElseIf sheetName.Equals("ACV", StringComparison.OrdinalIgnoreCase) Then
+                                Dim frequency = GetColumnValue(reader, colNames, "Frequency", "Freq", "Hz")
+                                AddToTemplateListView(rangeLabel, nominal, frequency)
+                            End If
+                        End While
+                    End Using
+                End Using
+            End Using
+
+            ' Disable default generation feature after template upload
+            DisableDefaultGeneration()
+        Catch ex As Exception
+            MessageBox.Show($"Error processing template: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+
+        isCustomTemplateUploaded = True
+        DisableDefaultGeneration()
+    End Sub
+
+    ' Utility function to safely get a column by any of several possible names
+    Private Function GetColumnValue(reader As OleDbDataReader, colNames As List(Of String), ParamArray possibleNames() As String) As String
+        For Each possibleName As String In possibleNames
+            For i As Integer = 0 To colNames.Count - 1
+                If String.Equals(colNames(i), possibleName, StringComparison.OrdinalIgnoreCase) Then
+                    If Not reader.IsDBNull(i) Then
+                        Return reader(i).ToString().Trim()
+                    End If
+                End If
+            Next
+        Next
+        Return String.Empty
+    End Function
+
+    ' Add data to Template ListView (for ACV in this case)
+    Private Sub AddToTemplateListView(rangeLabel As String, nominal As String, frequency As String)
+        ' Validate the uploaded data
+        If String.IsNullOrWhiteSpace(rangeLabel) OrElse String.IsNullOrWhiteSpace(nominal) Then
+            MessageBox.Show("Invalid template data: Missing range label or nominal value.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End If
+
+        ' Add the data to the ListView
+        Dim newItem As New ListViewItem({rangeLabel, nominal, frequency})
+        listViewParamsACV.Items.Add(newItem)
+    End Sub
+
+    ' Add data to DCVoltageUncertainty ListView
+    Private Sub AddToDCVUncertaintyListView(rangeLabel As String, nominal As String, unit As String)
+        ' Validate the uploaded data
+        If String.IsNullOrWhiteSpace(rangeLabel) OrElse String.IsNullOrWhiteSpace(nominal) Then
+            MessageBox.Show("Invalid template data: Missing range label or nominal value.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End If
+
+        ' Add the data to the DCVoltageUncertainty ListView
+        Dim newItem As New ListViewItem({rangeLabel, nominal, unit})
+        DCVoltageUncertainty.Items.Add(newItem)
+    End Sub
+
+    Private Sub EnsurePreviewHost()
+        Dim host As Panel = previewTemplate ' ← or whatever panel is your preview area
+        If host Is Nothing Then Exit Sub
+
+        If previewTabs Is Nothing OrElse previewTabs.IsDisposed Then
+            previewTabs = New TabControl With {.Dock = DockStyle.Fill, .Name = "tabPreviewTemplate"}
+            host.Controls.Clear()
+            host.Controls.Add(previewTabs)
+        ElseIf previewTabs.Parent IsNot host Then
+            previewTabs.Parent = host
+            previewTabs.Dock = DockStyle.Fill
+        End If
+    End Sub
+
+    Private Sub ShowTemplatePreviewInline(xlsxPath As String)
+        EnsurePreviewHost()
+        If previewTabs Is Nothing Then Exit Sub
+
+        previewTabs.TabPages.Clear()
+
+        Dim cs = $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={xlsxPath};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1"""
+        Dim tableMap As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
+
+        ' Discover all sheet/table names
+        Using cn As New OleDb.OleDbConnection(cs)
+            cn.Open()
+            Dim schema = cn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, Nothing)
+            If schema IsNot Nothing Then
+                For Each r As DataRow In schema.Rows
+                    Dim raw As String = CStr(r("TABLE_NAME")).Trim()
+                    ' Strip wrapping single quotes if present
+                    If raw.StartsWith("'") AndAlso raw.EndsWith("'") Then
+                        raw = raw.Substring(1, raw.Length - 2)
+                    End If
+
+                    ' Worksheet-like names typically end with "$"
+                    If raw.EndsWith("$", StringComparison.Ordinal) OrElse raw.Contains("$") Then
+                        Dim norm As String = raw.TrimEnd("$"c)
+                        Dim i As Integer = norm.IndexOf("$"c)
+                        If i >= 0 Then
+                            norm = norm.Substring(0, i)
+                        End If
+                        norm = norm.Trim()
+
+                        ' Keep the raw (with $) for SELECT
+                        If Not tableMap.ContainsKey(norm) Then
+                            tableMap(norm) = raw
+                        End If
+                    End If
+                Next
+            End If
+
+            ' Load ALL discovered sheets; build one tab (table) per sheet
+            For Each sheet In tableMap.Keys.OrderBy(Function(s) s, StringComparer.OrdinalIgnoreCase)
+                Dim dt As New DataTable(sheet)
+                Using cmd As New OleDb.OleDbCommand($"SELECT * FROM [{tableMap(sheet)}]", cn)
+                    Using adp As New OleDb.OleDbDataAdapter(cmd)
+                        adp.Fill(dt)
+                    End Using
+                End Using
+
+                Dim tp As New TabPage(sheet)
+                Dim dgv As New DataGridView With {
+                .Dock = DockStyle.Fill,
+                .ReadOnly = True,
+                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells,
+                .AllowUserToAddRows = False,
+                .AllowUserToDeleteRows = False
+            }
+                dgv.DataSource = dt
+                tp.Controls.Add(dgv)
+                previewTabs.TabPages.Add(tp)
+            Next
+        End Using
+
+        ' If nothing matched, show a friendly note
+        If previewTabs.TabPages.Count = 0 Then
+            Dim tp As New TabPage("Preview")
+            tp.Controls.Add(New Label With {
+            .Dock = DockStyle.Fill,
+            .TextAlign = ContentAlignment.MiddleCenter,
+            .Text = "No worksheets were found in the file."
+        })
+            previewTabs.TabPages.Add(tp)
+        End If
+    End Sub
 
 #End Region
 

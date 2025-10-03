@@ -3,6 +3,7 @@
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
+Imports ClosedXML.Excel
 
 Public Class newCalResult
 
@@ -399,8 +400,8 @@ Public Class newCalResult
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
         '''''''''''''''''''''''''''''''''' SIR MEL CODE''''''''''''''''''''''''''''''''''''''''''''''''
-        'When our form loads, auto detect all serial ports in the system And populate the cmbPort Combo box.
 
+        ' When our form loads, auto detect all serial ports in the system And populate the cmbPort Combo box.
         If UseSerialUI Then
             ' --- original COM init moved here if ever needed ---
             myPort = IO.Ports.SerialPort.GetPortNames()
@@ -423,23 +424,7 @@ Public Class newCalResult
             Next
         End If
 
-        If False Then
-            myPort = IO.Ports.SerialPort.GetPortNames() 'Get all com ports available
-            CmbBaud.Items.Add(9600)     'Populate the cmbBaud Combo box to common baud rates used
-
-            For i = 0 To UBound(myPort)
-                CmbPort.Items.Add(myPort(i))
-            Next
-            CmbPort.Text = CmbPort.Items.Item(0)    'Set cmbPort text to the first COM port detected
-            CmbBaud.Text = CmbBaud.Items.Item(0)    'Set cmbBaud text to the first Baud rate on the list
-
-            BtnDisconnect.Enabled = False           'Initially Disconnect Button is Disabled
-        End If
-        '''''''''''''automatic istart
-
         ' ----- Camera init (prefers EXTERNAL USB cam) -----
-
-        ' Restart preview using preferred (external) camera
         Try
             If videoSource IsNot Nothing Then
                 RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
@@ -456,9 +441,6 @@ Public Class newCalResult
         End If
 
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-        ' 1) Mappings (provided by your Module or partial)
-        'InitMappings()
 
         SetCalculating(True)
 
@@ -479,7 +461,6 @@ Public Class newCalResult
         dcComputeTimer = New System.Windows.Forms.Timer() With {.Interval = 1000}
         AddHandler dcComputeTimer.Tick, AddressOf OnDcComputeTimerTick
         HookLiveCompute()
-        'KeepToolButtonsVisible() ' keep your three/four tool buttons on top
 
         ' 4) Excel working copy (portable template resolution)
         Dim templateFile = "template.xlsx"
@@ -487,27 +468,32 @@ Public Class newCalResult
         If Not File.Exists(template) Then template = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", templateFile)
         If Not File.Exists(template) Then
             MessageBox.Show("Missing Excel template: " & templateFile & Environment.NewLine &
-                            "Expected in app folder or Templates\.", "Template Not Found",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        "Expected in app folder or Templates\.", "Template Not Found",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
         Dim workingCopy = Path.Combine(Path.GetTempPath(),
-                                       $"ASCal_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}.xlsx")
+                                   $"ASCal_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}.xlsx")
         Try
             If File.Exists(workingCopy) Then File.Delete(workingCopy)
             File.Copy(template, workingCopy, True)
         Catch ex As Exception
             MessageBox.Show("Unable to prepare Excel template: " & ex.Message, "Template Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
+        ' Using ClosedXML to load the template and bind it to the form
+        Dim templateData As DataTable = LoadTemplateData(workingCopy)
+        UpdateFormWithTemplateData(templateData)
+
+        ' Prepare context
         ctxDc = New CalRowModule.RowContext With {
-            .TemplatePath = workingCopy,
-            .SheetInputsName = "DataSheet",
-            .SheetFormulaName = "DataSheet",
-            .hostControls = Me.Controls
-        }
+        .TemplatePath = workingCopy,
+        .SheetInputsName = "DataSheet",
+        .SheetFormulaName = "DataSheet",
+        .hostControls = Me.Controls
+    }
         CalRowModule.Initialize(ctxDc)
 
         ' 5) Prime first DC row if present
@@ -520,7 +506,6 @@ Public Class newCalResult
             ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, DCV, currentRowIdx)
             CalRowModule.RecalculateNow(ctxDc)
         End If
-
     End Sub
 
     Private Sub calibratingResult_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
@@ -595,6 +580,66 @@ Public Class newCalResult
         End Try
 
         Return cam
+    End Function
+
+    Private Function LoadTemplateData(templatePath As String) As DataTable
+        ' Create a new DataTable to hold the template data
+        Dim templateData As New DataTable()
+
+        ' Use ClosedXML to read the Excel file
+        Using workbook As New XLWorkbook(templatePath)
+            Dim worksheet = workbook.Worksheets(1) ' Assume data is on the first sheet
+            Dim rowCount As Integer = worksheet.RowsUsed().Count()
+            Dim columnCount As Integer = worksheet.ColumnsUsed().Count()
+
+            ' Add columns to the DataTable based on the Excel file's headers (first row)
+            For col As Integer = 1 To columnCount
+                templateData.Columns.Add(worksheet.Cell(1, col).Value.ToString())
+            Next
+
+            ' Add rows of data from the Excel sheet into the DataTable
+            For row As Integer = 2 To rowCount ' Start from row 2 to skip the header
+                Dim dataRow As DataRow = templateData.NewRow()
+                For col As Integer = 1 To columnCount
+                    dataRow(col - 1) = worksheet.Cell(row, col).Value.ToString()
+                Next
+                templateData.Rows.Add(dataRow)
+            Next
+        End Using
+
+        Return templateData
+    End Function
+
+    Private Sub UpdateFormWithTemplateData(templateData As DataTable)
+        ' Iterate through the controls on the form
+        For Each control As Control In Me.Controls
+            If TypeOf control Is TextBox Then
+                ' Check for the corresponding cell value in the template
+                Dim textBox As TextBox = CType(control, TextBox)
+                Dim cellValue As String = GetTemplateCellValue(templateData, textBox.Name)
+                If Not String.IsNullOrEmpty(cellValue) Then
+                    textBox.Text = cellValue
+                End If
+            ElseIf TypeOf control Is Label Then
+                ' Handle labels if needed
+                Dim label As Label = CType(control, Label)
+                Dim labelValue As String = GetTemplateCellValue(templateData, label.Name)
+                If Not String.IsNullOrEmpty(labelValue) Then
+                    label.Text = labelValue
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Function GetTemplateCellValue(templateData As DataTable, controlName As String) As String
+        ' Loop through the DataTable and return the corresponding value
+        For Each row As DataRow In templateData.Rows
+            ' Match control name to the corresponding column
+            If row.Table.Columns.Contains(controlName) Then
+                Return row(controlName).ToString()
+            End If
+        Next
+        Return String.Empty
     End Function
 
     'PURELY VISUAL - CHANGING LANG NG FROM CALIBRATING TO PREVIEW RESULT SA TOP

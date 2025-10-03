@@ -40,6 +40,8 @@ Partial Class newDMMAdmin
         Me.newSaveBtn = New System.Windows.Forms.Button()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.Panel4 = New System.Windows.Forms.Panel()
+        Me.defaultEntries = New System.Windows.Forms.Button()
+        Me.template = New System.Windows.Forms.Button()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.descriptionNew = New System.Windows.Forms.TextBox()
@@ -91,8 +93,9 @@ Partial Class newDMMAdmin
         Me.delBtnNomDCC = New System.Windows.Forms.Button()
         Me.CheckBoxDCC = New System.Windows.Forms.CheckBox()
         Me.CheckBoxACC = New System.Windows.Forms.CheckBox()
-        Me.CheckBox = New System.Windows.Forms.CheckBox()
+        Me.CheckBoxACV = New System.Windows.Forms.CheckBox()
         Me.Label11 = New System.Windows.Forms.Label()
+        Me.previewTemplate = New System.Windows.Forms.Panel()
         Me.Panel1.SuspendLayout()
         Me.Panel3.SuspendLayout()
         Me.Panel10.SuspendLayout()
@@ -327,6 +330,8 @@ Partial Class newDMMAdmin
         'Panel4
         '
         Me.Panel4.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.Panel4.Controls.Add(Me.defaultEntries)
+        Me.Panel4.Controls.Add(Me.template)
         Me.Panel4.Controls.Add(Me.Label6)
         Me.Panel4.Controls.Add(Me.Label1)
         Me.Panel4.Controls.Add(Me.backBtn)
@@ -346,6 +351,26 @@ Partial Class newDMMAdmin
         Me.Panel4.Name = "Panel4"
         Me.Panel4.Size = New System.Drawing.Size(1602, 192)
         Me.Panel4.TabIndex = 1
+        '
+        'defaultEntries
+        '
+        Me.defaultEntries.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu
+        Me.defaultEntries.Location = New System.Drawing.Point(959, 74)
+        Me.defaultEntries.Name = "defaultEntries"
+        Me.defaultEntries.Size = New System.Drawing.Size(107, 26)
+        Me.defaultEntries.TabIndex = 59
+        Me.defaultEntries.Text = "Default"
+        Me.defaultEntries.UseVisualStyleBackColor = True
+        '
+        'template
+        '
+        Me.template.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu
+        Me.template.Location = New System.Drawing.Point(1091, 74)
+        Me.template.Name = "template"
+        Me.template.Size = New System.Drawing.Size(107, 26)
+        Me.template.TabIndex = 58
+        Me.template.Text = "Template"
+        Me.template.UseVisualStyleBackColor = True
         '
         'Label6
         '
@@ -465,6 +490,7 @@ Partial Class newDMMAdmin
         '
         Me.Panel5.AutoScroll = True
         Me.Panel5.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.Panel5.Controls.Add(Me.previewTemplate)
         Me.Panel5.Controls.Add(Me.Panel6)
         Me.Panel5.Controls.Add(Me.RESUncertainty)
         Me.Panel5.Controls.Add(Me.addRangeUnitRES)
@@ -504,7 +530,7 @@ Partial Class newDMMAdmin
         Me.Panel5.Controls.Add(Me.delBtnNomDCC)
         Me.Panel5.Controls.Add(Me.CheckBoxDCC)
         Me.Panel5.Controls.Add(Me.CheckBoxACC)
-        Me.Panel5.Controls.Add(Me.CheckBox)
+        Me.Panel5.Controls.Add(Me.CheckBoxACV)
         Me.Panel5.Controls.Add(Me.Label11)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel5.Location = New System.Drawing.Point(0, 0)
@@ -515,7 +541,7 @@ Partial Class newDMMAdmin
         'Panel6
         '
         Me.Panel6.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel6.Location = New System.Drawing.Point(0, 3374)
+        Me.Panel6.Location = New System.Drawing.Point(0, 4024)
         Me.Panel6.Name = "Panel6"
         Me.Panel6.Size = New System.Drawing.Size(1585, 84)
         Me.Panel6.TabIndex = 197
@@ -891,16 +917,16 @@ Partial Class newDMMAdmin
         Me.CheckBoxACC.Text = "AC CURRENT:"
         Me.CheckBoxACC.UseVisualStyleBackColor = True
         '
-        'CheckBox
+        'CheckBoxACV
         '
-        Me.CheckBox.AutoSize = True
-        Me.CheckBox.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
-        Me.CheckBox.Location = New System.Drawing.Point(22, 747)
-        Me.CheckBox.Name = "CheckBox"
-        Me.CheckBox.Size = New System.Drawing.Size(161, 27)
-        Me.CheckBox.TabIndex = 53
-        Me.CheckBox.Text = "AC VOLTAGE:"
-        Me.CheckBox.UseVisualStyleBackColor = True
+        Me.CheckBoxACV.AutoSize = True
+        Me.CheckBoxACV.Font = New System.Drawing.Font("Courier10 BT", 20.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World)
+        Me.CheckBoxACV.Location = New System.Drawing.Point(22, 747)
+        Me.CheckBoxACV.Name = "CheckBoxACV"
+        Me.CheckBoxACV.Size = New System.Drawing.Size(161, 27)
+        Me.CheckBoxACV.TabIndex = 53
+        Me.CheckBoxACV.Text = "AC VOLTAGE:"
+        Me.CheckBoxACV.UseVisualStyleBackColor = True
         '
         'Label11
         '
@@ -912,6 +938,14 @@ Partial Class newDMMAdmin
         Me.Label11.Size = New System.Drawing.Size(195, 35)
         Me.Label11.TabIndex = 47
         Me.Label11.Text = "PARAMETERS"
+        '
+        'previewTemplate
+        '
+        Me.previewTemplate.BackColor = System.Drawing.Color.White
+        Me.previewTemplate.Location = New System.Drawing.Point(38, 3380)
+        Me.previewTemplate.Name = "previewTemplate"
+        Me.previewTemplate.Size = New System.Drawing.Size(1540, 644)
+        Me.previewTemplate.TabIndex = 199
         '
         'newDMMAdmin
         '
@@ -976,7 +1010,7 @@ Partial Class newDMMAdmin
     Friend WithEvents delBtnNomDCC As System.Windows.Forms.Button
     Friend WithEvents CheckBoxDCC As System.Windows.Forms.CheckBox
     Friend WithEvents CheckBoxACC As System.Windows.Forms.CheckBox
-    Friend WithEvents CheckBox As System.Windows.Forms.CheckBox
+    Friend WithEvents CheckBoxACV As System.Windows.Forms.CheckBox
     Friend WithEvents Label11 As System.Windows.Forms.Label
     Friend WithEvents ACVoltageUncertainty As ListView
     Friend WithEvents addFrequencyTxtACV As TextBox
@@ -1012,4 +1046,7 @@ Partial Class newDMMAdmin
     Friend WithEvents delBtnNomDCV As Button
     Friend WithEvents CheckBoxDCV As CheckBox
     Friend WithEvents Panel6 As Panel
+    Friend WithEvents template As Button
+    Friend WithEvents defaultEntries As Button
+    Friend WithEvents previewTemplate As Panel
 End Class
