@@ -7,7 +7,8 @@ Public Class NEWDMM
     ' one TabControl that lives inside the previewTemplate panel
     Private previewTabs As TabControl
 
-    Private uploadedTemplatePath As String  ' store the last uploaded file
+    ' At class scope:
+    Private uploadedTemplatePath As String
 
     Private Sub NEWDMM_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' optional: snap window to working area like the admin form
@@ -128,7 +129,6 @@ Public Class NEWDMM
             Exit Sub
         End If
 
-        ' Check for duplicates
         Dim existingDmmModels As List(Of String) = LoadAllDMMModels()
         If existingDmmModels.Any(Function(m) m.Equals(modelText, StringComparison.OrdinalIgnoreCase)) Then
             MessageBox.Show("DMM Model already exists. Please check existing entries.", "Conflict",
@@ -136,14 +136,13 @@ Public Class NEWDMM
             Exit Sub
         End If
 
-        ' No parameter listviews in this form, so pass an empty dictionary
-        Dim paramDict As New Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String))))()
+        ' Build parameters straight from the uploaded template (no ListViews on this form)
+        Dim paramDict = BuildParamDictFromExcel(uploadedTemplatePath)
 
         Try
-            ' Save the model/manufacturer/description with empty parameters
             SQLiteHelper.InsertOrUpdateDMM("", modelText, manufacturerText, descriptionText, paramDict)
 
-            ' Optional: copy the uploaded template to your Templates folder under the model name
+            ' Optional: keep a managed copy of the uploaded Excel (remove if not needed)
             If Not String.IsNullOrEmpty(uploadedTemplatePath) AndAlso File.Exists(uploadedTemplatePath) Then
                 Dim templatesRoot As String = Path.Combine(Application.StartupPath, "Templates")
                 If Not Directory.Exists(templatesRoot) Then Directory.CreateDirectory(templatesRoot)
@@ -152,13 +151,107 @@ Public Class NEWDMM
                 File.Copy(uploadedTemplatePath, destPath, True)
             End If
 
-            MessageBox.Show("New DMM successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            ' … after you’ve successfully saved …
+            MessageBox.Show("DMM and parameters saved from template.", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            ' open the management screen
+            Dim mgmt As New dmmManagementAdmin()
+            mgmt.Show()
+
+            ' close or hide the current NEWDMM form
             Me.Close()
         Catch ex As Exception
             MessageBox.Show("Error saving DMM: " & ex.Message, "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+    ' Builds: Category -> RangeLabel -> List of (Nominal, Third)
+    ' AC-like sheets (ACV/ACC) use Third = Frequency; others use Third = Unit
+    Private Function BuildParamDictFromExcel(filePath As String) _
+    As Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String))))
+
+        Dim result As New Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String))))()
+        If String.IsNullOrWhiteSpace(filePath) OrElse Not File.Exists(filePath) Then Return result
+
+        Dim cs = $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={filePath};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1"""
+        Dim tableMap As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
+
+        Using cn As New OleDb.OleDbConnection(cs)
+            cn.Open()
+            Dim schema = cn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, Nothing)
+            If schema IsNot Nothing Then
+                For Each r As DataRow In schema.Rows
+                    Dim raw As String = CStr(r("TABLE_NAME")).Trim()
+                    If raw.StartsWith("'") AndAlso raw.EndsWith("'") Then raw = raw.Substring(1, raw.Length - 2)
+                    If raw.EndsWith("$", StringComparison.Ordinal) OrElse raw.Contains("$") Then
+                        Dim norm As String = raw.TrimEnd("$"c)
+                        Dim i As Integer = norm.IndexOf("$"c) : If i >= 0 Then norm = norm.Substring(0, i)
+                        norm = norm.Trim()
+                        If Not tableMap.ContainsKey(norm) Then tableMap(norm) = raw
+                    End If
+                Next
+            End If
+
+            ' Loop through *all* sheets found, treat sheet name as category
+            For Each sheetName In tableMap.Keys
+                Dim categoryName = sheetName.Trim() ' "ACV","DCmA","DCmV","Continuity", etc.
+                If Not result.ContainsKey(categoryName) Then
+                    result(categoryName) = New Dictionary(Of String, List(Of Tuple(Of String, String)))()
+                End If
+
+                Using cmd As New OleDb.OleDbCommand($"SELECT * FROM [{tableMap(sheetName)}]", cn)
+                    Using reader As OleDb.OleDbDataReader = cmd.ExecuteReader()
+                        If reader Is Nothing Then Continue For
+
+                        ' header names
+                        Dim headers As New List(Of String)
+                        For i = 0 To reader.FieldCount - 1
+                            headers.Add(reader.GetName(i))
+                        Next
+
+                        ' guess which columns to use
+                        ' always try RangeLabel/Range, Nominal/Nominal Value, Frequency/Freq/Hz or Unit
+                        While reader.Read()
+                            Dim rangeLabel = GetColumnValue(reader, headers, "RangeLabel", "Range")
+                            Dim nominal = GetColumnValue(reader, headers, "Nominal", "Nominal Value")
+
+                            ' detect third col automatically: Frequency if present else Unit
+                            Dim third As String = GetColumnValue(reader, headers, "Frequency", "Freq", "Hz")
+                            If String.IsNullOrEmpty(third) Then
+                                third = GetColumnValue(reader, headers, "Unit")
+                            End If
+
+                            If String.IsNullOrWhiteSpace(rangeLabel) OrElse String.IsNullOrWhiteSpace(nominal) Then Continue While
+                            If Not result(categoryName).ContainsKey(rangeLabel) Then
+                                result(categoryName)(rangeLabel) = New List(Of Tuple(Of String, String))()
+                            End If
+                            result(categoryName)(rangeLabel).Add(Tuple.Create(nominal, third))
+                        End While
+                    End Using
+                End Using
+            Next
+        End Using
+
+        Return result
+    End Function
+
+    ' Safe header lookup that accepts multiple possible names
+    Private Function GetColumnValue(reader As OleDbDataReader, headers As List(Of String), ParamArray possibleNames() As String) As String
+        For Each possibleName As String In possibleNames
+            For i As Integer = 0 To headers.Count - 1
+                If String.Equals(headers(i), possibleName, StringComparison.OrdinalIgnoreCase) Then
+                    If Not reader.IsDBNull(i) Then
+                        Return reader(i).ToString().Trim()
+                    Else
+                        Return String.Empty
+                    End If
+                End If
+            Next
+        Next
+        Return String.Empty
+    End Function
 
     ' Returns the full path where this model’s template file lives
     Private Function GetPerModelTemplatePath(modelName As String) As String
@@ -181,6 +274,15 @@ Public Class NEWDMM
 
         ' overwrite if already exists
         File.Copy(masterTemplatePath, destPath, True)
+    End Sub
+
+    Private Sub backBtn_Click(sender As Object, e As EventArgs) Handles backBtn.Click
+        ' open the management screen
+        Dim mgmt As New dmmManagementAdmin()
+        mgmt.Show()
+
+        ' close or hide the current NEWDMM form
+        Me.Close()
     End Sub
 
 End Class

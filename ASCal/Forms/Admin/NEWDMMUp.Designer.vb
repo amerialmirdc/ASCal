@@ -33,6 +33,7 @@ Partial Class NEWDMM
         Me.CheckBox7 = New System.Windows.Forms.CheckBox()
         Me.CheckBox8 = New System.Windows.Forms.CheckBox()
         Me.Panel5 = New System.Windows.Forms.Panel()
+        Me.template = New System.Windows.Forms.Button()
         Me.previewTemplate = New System.Windows.Forms.Panel()
         Me.Panel6 = New System.Windows.Forms.Panel()
         Me.Label11 = New System.Windows.Forms.Label()
@@ -50,8 +51,6 @@ Partial Class NEWDMM
         Me.jobdash = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.template = New System.Windows.Forms.Button()
-        Me.defaultEntries = New System.Windows.Forms.Button()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.backBtn = New System.Windows.Forms.Button()
@@ -180,6 +179,7 @@ Partial Class NEWDMM
         '
         Me.Panel5.AutoScroll = True
         Me.Panel5.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.Panel5.Controls.Add(Me.template)
         Me.Panel5.Controls.Add(Me.previewTemplate)
         Me.Panel5.Controls.Add(Me.Panel6)
         Me.Panel5.Controls.Add(Me.Label11)
@@ -189,20 +189,33 @@ Partial Class NEWDMM
         Me.Panel5.Size = New System.Drawing.Size(1602, 795)
         Me.Panel5.TabIndex = 29
         '
+        'template
+        '
+        Me.template.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu
+        Me.template.BackColor = System.Drawing.Color.Cyan
+        Me.template.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.template.Font = New System.Drawing.Font("Courier10 BT", 10.0!)
+        Me.template.Location = New System.Drawing.Point(222, 11)
+        Me.template.Name = "template"
+        Me.template.Size = New System.Drawing.Size(179, 26)
+        Me.template.TabIndex = 58
+        Me.template.Text = "Upload Template"
+        Me.template.UseVisualStyleBackColor = False
+        '
         'previewTemplate
         '
         Me.previewTemplate.BackColor = System.Drawing.Color.White
-        Me.previewTemplate.Location = New System.Drawing.Point(0, 43)
+        Me.previewTemplate.Location = New System.Drawing.Point(6, 43)
         Me.previewTemplate.Name = "previewTemplate"
-        Me.previewTemplate.Size = New System.Drawing.Size(1585, 762)
+        Me.previewTemplate.Size = New System.Drawing.Size(1584, 704)
         Me.previewTemplate.TabIndex = 199
         '
         'Panel6
         '
         Me.Panel6.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel6.Location = New System.Drawing.Point(0, 805)
+        Me.Panel6.Location = New System.Drawing.Point(0, 753)
         Me.Panel6.Name = "Panel6"
-        Me.Panel6.Size = New System.Drawing.Size(1585, 84)
+        Me.Panel6.Size = New System.Drawing.Size(1602, 42)
         Me.Panel6.TabIndex = 197
         '
         'Label11
@@ -388,31 +401,9 @@ Partial Class NEWDMM
         Me.PictureBox1.TabIndex = 0
         Me.PictureBox1.TabStop = False
         '
-        'template
-        '
-        Me.template.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu
-        Me.template.Location = New System.Drawing.Point(1091, 74)
-        Me.template.Name = "template"
-        Me.template.Size = New System.Drawing.Size(107, 26)
-        Me.template.TabIndex = 58
-        Me.template.Text = "Template"
-        Me.template.UseVisualStyleBackColor = True
-        '
-        'defaultEntries
-        '
-        Me.defaultEntries.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonMenu
-        Me.defaultEntries.Location = New System.Drawing.Point(959, 74)
-        Me.defaultEntries.Name = "defaultEntries"
-        Me.defaultEntries.Size = New System.Drawing.Size(107, 26)
-        Me.defaultEntries.TabIndex = 59
-        Me.defaultEntries.Text = "Default"
-        Me.defaultEntries.UseVisualStyleBackColor = True
-        '
         'Panel4
         '
         Me.Panel4.BackColor = System.Drawing.Color.WhiteSmoke
-        Me.Panel4.Controls.Add(Me.defaultEntries)
-        Me.Panel4.Controls.Add(Me.template)
         Me.Panel4.Controls.Add(Me.Label6)
         Me.Panel4.Controls.Add(Me.Label1)
         Me.Panel4.Controls.Add(Me.backBtn)
@@ -545,7 +536,6 @@ Partial Class NEWDMM
     Friend WithEvents jobdash As Button
     Friend WithEvents Panel2 As Panel
     Friend WithEvents template As Button
-    Friend WithEvents defaultEntries As Button
     Friend WithEvents Panel4 As Panel
     Friend WithEvents Label1 As Label
     Friend WithEvents backBtn As Button

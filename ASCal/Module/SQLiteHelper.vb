@@ -587,9 +587,12 @@ Module SQLiteHelper
         Return results
     End Function
 
-    ' ➕ Inserts or updates DMM model and parameters (with nominal + frequency)
     ' ➕ Inserts or updates DMM model and parameters (with nominal + frequency on the nominal table)
-    Public Sub InsertOrUpdateDMM(originalModelName As String, modelName As String, manufacturer As String, description As String, paramDict As Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String)))))
+    Public Sub InsertOrUpdateDMM(originalModelName As String,
+                             modelName As String,
+                             manufacturer As String,
+                             description As String,
+                             paramDict As Dictionary(Of String, Dictionary(Of String, List(Of Tuple(Of String, String)))))
         Using conn As New SQLiteConnection("Data Source=PersonnelDB.db;Version=3;")
             conn.Open()
             Using transaction As SQLiteTransaction = conn.BeginTransaction()
@@ -603,23 +606,31 @@ Module SQLiteHelper
                         Dim dmmId As Integer = Convert.ToInt32(dmmIdObj)
 
                         ' wipe old values for this DMM
-                        Using deleteNominal As New SQLiteCommand("DELETE FROM dmm_nominal_values WHERE range_id IN (SELECT id FROM dmm_ranges WHERE dmm_id = @dmmId)", conn, transaction)
+                        Using deleteNominal As New SQLiteCommand("
+                        DELETE FROM dmm_nominal_values
+                        WHERE range_id IN (SELECT id FROM dmm_ranges WHERE dmm_id = @dmmId)", conn, transaction)
                             deleteNominal.Parameters.AddWithValue("@dmmId", dmmId)
                             deleteNominal.ExecuteNonQuery()
                         End Using
-                        Using deleteRanges As New SQLiteCommand("DELETE FROM dmm_ranges WHERE dmm_id = @dmmId", conn, transaction)
+                        Using deleteRanges As New SQLiteCommand("
+                        DELETE FROM dmm_ranges WHERE dmm_id = @dmmId", conn, transaction)
                             deleteRanges.Parameters.AddWithValue("@dmmId", dmmId)
                             deleteRanges.ExecuteNonQuery()
                         End Using
 
-                        Using updateCmd As New SQLiteCommand("UPDATE dmm SET manufacturer = @manufacturer, description = @description WHERE ID = @dmmId", conn, transaction)
+                        Using updateCmd As New SQLiteCommand("
+                        UPDATE dmm SET manufacturer = @manufacturer, description = @description
+                        WHERE ID = @dmmId", conn, transaction)
                             updateCmd.Parameters.AddWithValue("@manufacturer", manufacturer)
                             updateCmd.Parameters.AddWithValue("@description", description)
                             updateCmd.Parameters.AddWithValue("@dmmId", dmmId)
                             updateCmd.ExecuteNonQuery()
                         End Using
                     Else
-                        Using insertCmd As New SQLiteCommand("INSERT INTO dmm (model_name, manufacturer, description) VALUES (@modelName, @manufacturer, @description); SELECT last_insert_rowid();", conn, transaction)
+                        Using insertCmd As New SQLiteCommand("
+                        INSERT INTO dmm (model_name, manufacturer, description)
+                        VALUES (@modelName, @manufacturer, @description);
+                        SELECT last_insert_rowid();", conn, transaction)
                             insertCmd.Parameters.AddWithValue("@modelName", modelName)
                             insertCmd.Parameters.AddWithValue("@manufacturer", manufacturer)
                             insertCmd.Parameters.AddWithValue("@description", description)
@@ -629,67 +640,82 @@ Module SQLiteHelper
 
                     Dim newDmmId As Integer = Convert.ToInt32(dmmIdObj)
 
-                    ' 2) Insert ranges and nominals
-                    For Each category In paramDict.Keys
-                        ' resolve category_id
-                        Dim categoryId As Integer
-                        Using categoryIdCmd As New SQLiteCommand("SELECT id FROM parameter_categories WHERE name = @name", conn, transaction)
-                            categoryIdCmd.Parameters.AddWithValue("@name", category)
-                            Dim categoryIdObj As Object = categoryIdCmd.ExecuteScalar()
-                            If categoryIdObj Is Nothing Then Throw New Exception("Category not found: " & category)
-                            categoryId = Convert.ToInt32(categoryIdObj)
-                        End Using
-
-                        Dim isAC As Boolean =
-                        category.Equals("AC Voltage", StringComparison.OrdinalIgnoreCase) OrElse
-                        category.Equals("AC Current", StringComparison.OrdinalIgnoreCase)
-
-                        ' For each range label...
-                        For Each rangePair As KeyValuePair(Of String, List(Of Tuple(Of String, String))) In paramDict(category)
-                            Dim rangeVal As String = rangePair.Key
-                            Dim tupleList As List(Of Tuple(Of String, String)) = rangePair.Value
-
-                            ' Insert the range ONCE (no frequency column here)
-                            Dim rangeId As Integer
-                            Using insertRangeCmd As New SQLiteCommand(
-                            "INSERT INTO dmm_ranges (dmm_id, category_id, range_value) VALUES (@dmmId, @catId, @rangeVal); SELECT last_insert_rowid();",
-                            conn, transaction)
-                                insertRangeCmd.Parameters.AddWithValue("@dmmId", newDmmId)
-                                insertRangeCmd.Parameters.AddWithValue("@catId", categoryId)
-                                insertRangeCmd.Parameters.AddWithValue("@rangeVal", rangeVal)
-                                rangeId = Convert.ToInt32(insertRangeCmd.ExecuteScalar())
+                    ' 2) Insert categories (auto-create), ranges and nominals
+                    If paramDict IsNot Nothing Then
+                        For Each category In paramDict.Keys
+                            ' ---- NEW: ensure category exists; then fetch its id ----
+                            Dim categoryId As Integer
+                            ' create if missing
+                            Using catIns As New SQLiteCommand("
+                            INSERT OR IGNORE INTO parameter_categories(name) VALUES(@name);", conn, transaction)
+                                catIns.Parameters.AddWithValue("@name", category)
+                                catIns.ExecuteNonQuery()
                             End Using
-
-                            ' Insert each nominal under this range
-                            For Each tuple In tupleList
-                                Dim nominalValue As String = tuple.Item1
-                                Dim secondCol As String = tuple.Item2  ' AC=frequency; others=unit
-
-                                If isAC Then
-                                    ' AC: write frequency to the nominal_values table
-                                    Using insertNominalCmd As New SQLiteCommand(
-                                    "INSERT INTO dmm_nominal_values (range_id, nominal_value, frequency) VALUES (@rangeId, @nominal, @freq)",
-                                    conn, transaction)
-                                        insertNominalCmd.Parameters.AddWithValue("@rangeId", rangeId)
-                                        insertNominalCmd.Parameters.AddWithValue("@nominal", nominalValue)
-                                        insertNominalCmd.Parameters.AddWithValue("@freq", secondCol)
-                                        insertNominalCmd.ExecuteNonQuery()
-                                    End Using
-                                Else
-                                    ' DC/RES: combine value + unit into the nominal string (no frequency column here)
-                                    Dim nominalCombined As String =
-                                    If(String.IsNullOrWhiteSpace(secondCol), nominalValue, (nominalValue & " " & secondCol).Trim())
-                                    Using insertNominalCmd As New SQLiteCommand(
-                                    "INSERT INTO dmm_nominal_values (range_id, nominal_value) VALUES (@rangeId, @nominal)",
-                                    conn, transaction)
-                                        insertNominalCmd.Parameters.AddWithValue("@rangeId", rangeId)
-                                        insertNominalCmd.Parameters.AddWithValue("@nominal", nominalCombined)
-                                        insertNominalCmd.ExecuteNonQuery()
-                                    End Using
+                            ' fetch id
+                            Using catSel As New SQLiteCommand("
+                            SELECT id FROM parameter_categories WHERE name=@name;", conn, transaction)
+                                catSel.Parameters.AddWithValue("@name", category)
+                                Dim categoryIdObj As Object = catSel.ExecuteScalar()
+                                If categoryIdObj Is Nothing Then
+                                    Throw New Exception("Failed to resolve category id for: " & category)
                                 End If
+                                categoryId = Convert.ToInt32(categoryIdObj)
+                            End Using
+                            ' -------------------------------------------------------
+
+                            Dim isAC As Boolean =
+                            category.Equals("AC Voltage", StringComparison.OrdinalIgnoreCase) OrElse
+                            category.Equals("AC Current", StringComparison.OrdinalIgnoreCase)
+
+                            ' For each range label...
+                            For Each rangePair As KeyValuePair(Of String, List(Of Tuple(Of String, String))) In paramDict(category)
+                                Dim rangeVal As String = rangePair.Key
+                                Dim tupleList As List(Of Tuple(Of String, String)) = rangePair.Value
+
+                                ' Insert the range ONCE (no frequency column here)
+                                Dim rangeId As Integer
+                                Using insertRangeCmd As New SQLiteCommand("
+                                INSERT INTO dmm_ranges (dmm_id, category_id, range_value)
+                                VALUES (@dmmId, @catId, @rangeVal);
+                                SELECT last_insert_rowid();", conn, transaction)
+                                    insertRangeCmd.Parameters.AddWithValue("@dmmId", newDmmId)
+                                    insertRangeCmd.Parameters.AddWithValue("@catId", categoryId)
+                                    insertRangeCmd.Parameters.AddWithValue("@rangeVal", rangeVal)
+                                    rangeId = Convert.ToInt32(insertRangeCmd.ExecuteScalar())
+                                End Using
+
+                                ' Insert each nominal under this range
+                                For Each tuple In tupleList
+                                    Dim nominalValue As String = tuple.Item1
+                                    Dim secondCol As String = tuple.Item2  ' AC=frequency; others=unit/text
+
+                                    If isAC Then
+                                        ' AC: write frequency to the nominal_values table
+                                        Using insertNominalCmd As New SQLiteCommand("
+                                        INSERT INTO dmm_nominal_values (range_id, nominal_value, frequency)
+                                        VALUES (@rangeId, @nominal, @freq)", conn, transaction)
+                                            insertNominalCmd.Parameters.AddWithValue("@rangeId", rangeId)
+                                            insertNominalCmd.Parameters.AddWithValue("@nominal", nominalValue)
+                                            insertNominalCmd.Parameters.AddWithValue("@freq", secondCol)
+                                            insertNominalCmd.ExecuteNonQuery()
+                                        End Using
+                                    Else
+                                        ' DC/RES/others: combine unit if present into the nominal string
+                                        Dim nominalCombined As String =
+                                        If(String.IsNullOrWhiteSpace(secondCol), nominalValue,
+                                           (nominalValue & " " & secondCol).Trim())
+                                        Using insertNominalCmd As New SQLiteCommand("
+                                        INSERT INTO dmm_nominal_values (range_id, nominal_value)
+                                        VALUES (@rangeId, @nominal)", conn, transaction)
+                                            insertNominalCmd.Parameters.AddWithValue("@rangeId", rangeId)
+                                            insertNominalCmd.Parameters.AddWithValue("@nominal", nominalCombined)
+                                            insertNominalCmd.ExecuteNonQuery()
+                                        End Using
+                                    End If
+                                Next
                             Next
                         Next
-                    Next
+                    End If
 
                     transaction.Commit()
                 Catch ex As Exception

@@ -191,6 +191,7 @@ Public Class dmmManagementAdmin
     End Sub
 
     ' Centralized: read from DB and paint the right panel
+    ' Centralized: read from DB and paint the right panel
     Private Sub RenderDetailsFor(modelName As String)
         If String.IsNullOrWhiteSpace(modelName) Then Exit Sub
         currentSelectedModel = modelName
@@ -214,6 +215,15 @@ Public Class dmmManagementAdmin
 
         ' group by category and build panels
         For Each categoryGroup In parameters.GroupBy(Function(p) p.Category)
+
+            ' Decide how to label the 3rd value for this category:
+            ' AC-like → "Frequency", else → "Unit"
+            Dim cat As String = If(categoryGroup.Key, "")
+            Dim isAcLike As Boolean =
+            cat.IndexOf("ac voltage", StringComparison.OrdinalIgnoreCase) >= 0 OrElse
+            cat.IndexOf("ac current", StringComparison.OrdinalIgnoreCase) >= 0
+            Dim thirdLabel As String = If(isAcLike, "Frequency", "Unit")
+
             Dim catPanel As New TableLayoutPanel With {
             .ColumnCount = 1,
             .AutoSize = True,
@@ -226,7 +236,7 @@ Public Class dmmManagementAdmin
         }
 
             Dim categoryLabel As New Label With {
-            .Text = "PARAMETER: " & categoryGroup.Key,
+            .Text = "PARAMETER: " & cat,
             .Font = New Font("Courier New", 12, FontStyle.Bold),
             .BackColor = Color.AliceBlue,
             .AutoSize = False,
@@ -249,15 +259,11 @@ Public Class dmmManagementAdmin
                 For Each param In rangeGroup
                     For Each pair In param.NominalValuesWithFreq
                         Dim nominalVal As String = pair.Item1
-                        Dim freqVal As String = pair.Item2
-
-                        Dim showFrequency As Boolean =
-                        categoryGroup.Key.IndexOf("ac voltage", StringComparison.OrdinalIgnoreCase) >= 0 OrElse
-                        categoryGroup.Key.IndexOf("ac current", StringComparison.OrdinalIgnoreCase) >= 0
+                        Dim thirdVal As String = pair.Item2   ' Frequency for AC, Unit for DC/RES
 
                         Dim labelText As String = "   → Nominal: " & nominalVal
-                        If showFrequency AndAlso Not String.IsNullOrWhiteSpace(freqVal) Then
-                            labelText &= ", Frequency: " & freqVal
+                        If Not String.IsNullOrWhiteSpace(thirdVal) Then
+                            labelText &= $", {thirdLabel}: " & thirdVal
                         End If
 
                         catPanel.Controls.Add(New Label With {
