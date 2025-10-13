@@ -87,6 +87,9 @@
         passwordTextbox.UseSystemPasswordChar = True
         showPassBtn.Text = "Show"
 
+        usernameTextbox.Text = "dan"
+        passwordTextbox.Text = "a"
+
     End Sub
 
 End Class

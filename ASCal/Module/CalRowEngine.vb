@@ -552,4 +552,48 @@ Module CalRowModule
         End Try
     End Sub
 
+    ' === Lightweight worksheet access for read-only scenarios (A/B/E filtering) ===
+
+    ' Opens Excel, gives your callback the Worksheet COM object, then closes everything safely.
+    Public Sub WithWorksheet(ctx As RowContext, work As Action(Of Object))
+        If ctx Is Nothing Then Throw New ArgumentNullException(NameOf(ctx))
+        If work Is Nothing Then Throw New ArgumentNullException(NameOf(work))
+
+        Dim xl As Object = Nothing, wb As Object = Nothing, ws As Object = Nothing
+        Try
+            xl = CreateObject("Excel.Application")
+            CallByName(xl, "DisplayAlerts", CallType.Let, False)
+            CallByName(xl, "Visible", CallType.Let, False)
+
+            wb = CallByName(CallByName(xl, "Workbooks", CallType.Get), "Open", CallType.Method, ctx.TemplatePath)
+            ws = GetWorksheet(wb, ctx.SheetInputsName) ' you already use this in DoExcelRoundtrip
+
+            work(ws)
+        Finally
+            If wb IsNot Nothing Then CallByName(wb, "Close", CallType.Method, False)
+            If xl IsNot Nothing Then CallByName(xl, "Quit", CallType.Method)
+            SafeRelease(ws) : SafeRelease(wb) : SafeRelease(xl)
+        End Try
+    End Sub
+
+    ' Read a cell by A1 address from a Worksheet COM object. Returns the displayed text.
+    Public Function ReadCell(ws As Object, addr As String) As String
+        If ws Is Nothing OrElse String.IsNullOrWhiteSpace(addr) Then Return ""
+        Dim rng As Object = Nothing
+        Try
+            rng = CallByName(ws, "Range", CallType.Get, addr)
+            ' Prefer .Text (formatted) so comparisons behave like what the user sees in the template
+            Dim txt As String = TryCast(CallByName(rng, "Text", CallType.Get), String)
+            If txt Is Nothing Then txt = CStr(CallByName(rng, "Value", CallType.Get))
+            Return If(txt, "").Trim()
+        Finally
+            SafeRelease(rng)
+        End Try
+    End Function
+
+    ' Optional convenience: read by (columnLetter, rowNumber) -> A1
+    Public Function ReadCell(ws As Object, colLetter As String, row As Integer) As String
+        Return ReadCell(ws, colLetter & row.ToString())
+    End Function
+
 End Module

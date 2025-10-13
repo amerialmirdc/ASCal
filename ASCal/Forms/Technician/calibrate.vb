@@ -96,11 +96,8 @@ Public Class calibrate
         PopulateDataGrid()
 
         dataGridResultDMM.ClearSelection()
-        cLParamACV.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
-        cLParamDCV.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
-        cLParamACC.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
-        cLParamDCC.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
-        cLParamRES.Font = New Font("Courier10 BT", 14, FontStyle.Regular)
+
+        ' (removed all cLParam*.Font lines – controls no longer exist)
 
         ' ----- Camera init (prefers external webcam) -----
         Dim cam = CreatePreferredCamera()
@@ -511,17 +508,6 @@ Public Class calibrate
 
 #Region "Checkbox for Parameter"
 
-    Private Function GetCheckedListBoxForCategory(category As String) As CheckedListBox
-        Select Case category.Trim().ToUpper()
-            Case "AC VOLTAGE" : Return cLParamACV
-            Case "DC VOLTAGE" : Return cLParamDCV
-            Case "AC CURRENT" : Return cLParamACC
-            Case "DC CURRENT" : Return cLParamDCC
-            Case "RESISTANCE" : Return cLParamRES
-            Case Else : Return Nothing
-        End Select
-    End Function
-
     Private Sub dataGridResult_CellMouseMove(sender As Object, e As DataGridViewCellMouseEventArgs) Handles dataGridResultDMM.CellMouseMove
         dataGridResultDMM.Cursor = If(e.RowIndex >= 0, Cursors.Hand, Cursors.Default)
     End Sub
@@ -581,31 +567,26 @@ Public Class calibrate
         End If
     End Sub
 
-    Private Sub cLParams_MouseUp(sender As Object, e As MouseEventArgs) _
-    Handles cLParamACV.MouseUp,
-            cLParamDCV.MouseUp,
-            cLParamACC.MouseUp,
-            cLParamDCC.MouseUp,
-            cLParamRES.MouseUp
-
-        HandleCheckedListBoxClick(DirectCast(sender, CheckedListBox), e)
-
-    End Sub
-
-    Private Sub SetAllItemsChecked(isChecked As Boolean)
-        For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
-            For i As Integer = 0 To clb.Items.Count - 1
-                clb.SetItemChecked(i, isChecked)
-            Next
+    Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
+        For Each ctrl As Control In flowParameters.Controls
+            If TypeOf ctrl Is CheckedListBox Then
+                Dim clb = DirectCast(ctrl, CheckedListBox)
+                For i As Integer = 0 To clb.Items.Count - 1
+                    clb.SetItemChecked(i, True)
+                Next
+            End If
         Next
     End Sub
 
-    Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
-        SetAllItemsChecked(True)
-    End Sub
-
     Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUnselectAll.Click
-        SetAllItemsChecked(False)
+        For Each ctrl As Control In flowParameters.Controls
+            If TypeOf ctrl Is CheckedListBox Then
+                Dim clb = DirectCast(ctrl, CheckedListBox)
+                For i As Integer = 0 To clb.Items.Count - 1
+                    clb.SetItemChecked(i, False)
+                Next
+            End If
+        Next
     End Sub
 
 #End Region
@@ -613,36 +594,30 @@ Public Class calibrate
 #Region "Required Fields"
 
     Private Function AllInputsFilledInPanel(panel As Panel) As Boolean
-        'Dim excludedFields As New List(Of String) From {"dmmSearch", "specificSite", "refstand4", "DateTimePicker1", "TextBox23", "TextBox21", "TextBox19", "TextBox25", "refstand3", "refstand2", "refstand2", "refstand6", "refstand5", "refstand4", "DateTimePicker1", "TextBox31", "TextBox19", "TextBox27", "TextBox25", "TextBox28", "TextBox26", "TextBox29", "TextBox30", "TextBox20", "TextBox22", "TextBox24", "compAdd"}
-        'For Each ctrl As Control In panel.Controls
-        '    If TypeOf ctrl Is TextBox AndAlso Not excludedFields.Contains(ctrl.Name) Then
-        '        If String.IsNullOrWhiteSpace(ctrl.Text) Then
-        '            ctrl.BackColor = Color.MistyRose
-        '            MessageBox.Show("Please complete all required fields.", "Incomplete", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        '            ctrl.Focus()
-        '            Return False
-        '        Else
-        '            ctrl.BackColor = Color.White
-        '        End If
-        '    End If
-        'Next
-
+        ' --- Optional: basic textbox/company validation (uncomment if you want it) ---
         'If String.IsNullOrWhiteSpace(contextMenuCompanies.Text) OrElse Not companyDict.ContainsKey(contextMenuCompanies.Text.Trim()) Then
         '    MessageBox.Show("Please select a valid calibration company from the list.", "Missing Company", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         '    contextMenuCompanies.Focus()
         '    Return False
         'End If
 
-        Dim anyChecked As Boolean =
-            (cLParamACV.CheckedItems.Count > 0) OrElse
-            (cLParamDCV.CheckedItems.Count > 0) OrElse
-            (cLParamACC.CheckedItems.Count > 0) OrElse
-            (cLParamDCC.CheckedItems.Count > 0) OrElse
-            (cLParamRES.CheckedItems.Count > 0)
+        ' Ensure the selected DMM has at least one parameter saved in DB
+        Dim model As String = dmmmodel.Text.Trim()
+        Dim grouped = SQLiteHelper.LoadGroupedDMMParameters(model)
 
-        If Not anyChecked Then
-            MessageBox.Show("Please select at least one calibration parameter.", "Missing Parameters", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            cLParamACV.Focus()
+        Dim hasAnyParams As Boolean = False
+        If grouped IsNot Nothing AndAlso grouped.Count > 0 Then
+            For Each cat In grouped.Keys
+                If grouped(cat) IsNot Nothing AndAlso grouped(cat).Count > 0 Then
+                    hasAnyParams = True
+                    Exit For
+                End If
+            Next
+        End If
+
+        If Not hasAnyParams Then
+            MessageBox.Show("This DMM has no saved parameters in the database. Please assign a template and save its parameters first.",
+                        "No Parameters", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return False
         End If
 
@@ -654,114 +629,136 @@ Public Class calibrate
 #Region "Start Calibration button and transfer of data"
 
     Private Sub btnStartCalibration_Click(sender As Object, e As EventArgs) Handles btnStartCalibration.Click
+
         If Not AllInputsFilledInPanel(mainPanelCalibrateInp) Then Exit Sub
 
-        ' ensure the device is released BEFORE opening the next form
-        StopCamera()
+        ' show busy cursor + block double-clicks
+        btnStartCalibration.Enabled = False
+        Dim oldText = btnStartCalibration.Text
+        btnStartCalibration.Text = "Loading..."
+        Me.Cursor = Cursors.WaitCursor
+        Application.UseWaitCursor = True
+        Application.DoEvents()
 
-        Dim allParams As New List(Of String)
-        For Each it As Object In cLParamACV.CheckedItems : allParams.Add(it.ToString()) : Next
-        For Each it As Object In cLParamDCV.CheckedItems : allParams.Add(it.ToString()) : Next
-        For Each it As Object In cLParamACC.CheckedItems : allParams.Add(it.ToString()) : Next
-        For Each it As Object In cLParamDCC.CheckedItems : allParams.Add(it.ToString()) : Next
-        For Each it As Object In cLParamRES.CheckedItems : allParams.Add(it.ToString()) : Next
+        Try
 
-        Dim activeCategories As New List(Of String)
-        If cLParamACV.CheckedItems.Count > 0 Then activeCategories.Add("AC VOLTAGE")
-        If cLParamDCV.CheckedItems.Count > 0 Then activeCategories.Add("DC VOLTAGE")
-        If cLParamACC.CheckedItems.Count > 0 Then activeCategories.Add("AC CURRENT")
-        If cLParamDCC.CheckedItems.Count > 0 Then activeCategories.Add("DC CURRENT")
-        If cLParamRES.CheckedItems.Count > 0 Then activeCategories.Add("RESISTANCE")
+            ' 1) Release camera before switching forms
+            StopCamera()
 
-        Dim cr As New calibratingResult() With {
-        .JobId = 0,
-        .WorkOrderNumber = workOrderNo.Text,
-        .CompanyName = contextMenuCompanies.Text.Trim(),
-        .CompanyAddress = compAdd.Text.Trim(),
-        .Model = dmmmodel.Text.Trim(),
-        .Manufacturer = manufaacturer.Text.Trim(),
-        .Description = dmmdescription.Text.Trim(),
-        .TechnicianInitials = technicalID.Text.Trim(),
-        .TechnicianName = CurrentUser.Name,
-        .CalibrationType = If(CheckedListBox1.CheckedItems.Count > 0, CheckedListBox1.CheckedItems(0).ToString(), ""),
-        .SpecificSite = specificSite.Text.Trim(),
-        .SerialNumber = serialNumber.Text.Trim(),
-        .SelectedParameters = allParams,
-        .ActiveCategories = activeCategories,
-        .Range = range.Text.Trim(),
-        .Readability = readability.Text.Trim(),
-        .PrevSesCalCert = prevCalCert.Text.Trim(),
-        .AccuracyHeader = accuracy.Text.Trim(),
-        .PreviousTechnician = prevTech.Text.Trim(),
-        .ReceivedDate = receivedDate.Value.ToString("dd-MMM-yyyy"),
-        .CalibrationDate = calibrationDate.Value.ToString("dd-MMM-yyyy"),
-        .OptionsInstalled = optionsInstalled.Text.Trim(),
-        .CustomerPO = customerPO.Text.Trim(),
-        .AssetNumber = assetNumber.Text.Trim(),
-        .TempStart = txtTempStart.Text.Trim(),
-        .TempEnd = txtTempEnd.Text.Trim(),
-        .HumidityStart = txtHumidityStart.Text.Trim(),
-        .HumidityEnd = txtHumidityEnd.Text.Trim(),
-        .RefDesc1 = RefCal_description1.Text.Trim(),
-        .RefSN1 = RefCal_serialNo1.Text.Trim(),
-        .RefCalRef1 = RefCal_calReportRef1.Text.Trim(),
-        .RefDue1 = If(refCal_DueDate1.Enabled, refCal_DueDate1.Value.ToString("dd-MMM-yyyy"), ""),
-        .RefDesc2 = RefCal_description2.Text.Trim(),
-        .RefSN2 = RefCal_serialNo2.Text.Trim(),
-        .RefCalRef2 = RefCal_calReportRef2.Text.Trim(),
-        .RefDue2 = If(refCal_DueDate2.Enabled, refCal_DueDate2.Value.ToString("dd-MMM-yyyy"), ""),
-        .AccDesc1 = accUsed_Description1.Text.Trim(),
-        .AccSN1 = accUsed_SerialNo1.Text.Trim(),
-        .AccCalBrand1 = accUsed_Brand1.Text.Trim(),
-        .AccModel1 = accUsed_Model1.Text.Trim(),
-        .AccDesc2 = accUsed_Description2.Text.Trim(),
-        .AccSN2 = accUsed_SerialNo2.Text.Trim(),
-        .AccCalBrand2 = accUsed_Brand2.Text.Trim(),
-        .AccModel2 = accUsed_Model2.Text.Trim(),
-        .calMathod = calMethod.Text.Trim()
-    }
+            ' 2) Collect parameters (SelectedParameters) and active categories from the UI you built
+            Dim allParams As New List(Of String)
+            Dim activeCategories As New List(Of String)
 
-        ' --- Resolve the per-model template path now (Model + Mfr + Desc) with fallbacks ---
-        Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-        Dim tmplDir = IO.Path.Combine(appData, "DMMCal", "Templates")
-        If Not IO.Directory.Exists(tmplDir) Then IO.Directory.CreateDirectory(tmplDir)
+            For Each ctrl As Control In flowParameters.Controls
+                Dim clb = TryCast(ctrl, CheckedListBox)
+                If clb Is Nothing Then Continue For
 
-        Dim m = dmmmodel.Text.Trim()
-        Dim mf = manufaacturer.Text.Trim()
-        Dim ds = dmmdescription.Text.Trim()
+                ' Use the visible category/group text as the FUNCTION key (this is what col A contains).
+                ' This MUST match the sheet's col A text after uppercasing & OHM→Ω to filter properly.
+                Dim categoryRaw As String = If(TryCast(clb.Tag, String), "").Trim()
+                Dim functionText As String = categoryRaw.Replace("OHM", "Ω").Trim()   ' align with parser
 
-        Dim p3 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}__{Slug(ds)}.xlsx")
-        Dim p2 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}.xlsx")
-        Dim p1 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}.xlsx")
+                Dim anyCheckedInCat As Boolean = False
+                Dim lastRange As String = ""
 
-        If IO.File.Exists(p3) Then
-            currentTemplatePath = p3
-        ElseIf IO.File.Exists(p2) Then
-            currentTemplatePath = p2
-        ElseIf IO.File.Exists(p1) Then
-            currentTemplatePath = p1
-        Else
-            Dim prefix = Slug(m)
-            Dim candidates = IO.Directory.GetFiles(tmplDir, prefix & "*.xlsx", IO.SearchOption.TopDirectoryOnly)
-            currentTemplatePath = If(candidates.Length > 0,
-                                 candidates.OrderByDescending(Function(f) IO.File.GetLastWriteTimeUtc(f)).First(),
-                                 "")
-        End If
+                ' Walk all items so each checked Nominal is paired with its current Range
+                For i As Integer = 0 To clb.Items.Count - 1
+                    Dim rawLine As String = If(clb.Items(i), "").ToString().Trim()
+                    Dim isChecked As Boolean = clb.GetItemChecked(i)
 
-        ' Open the template if found (non-fatal if this fails)
-        If Not String.IsNullOrWhiteSpace(currentTemplatePath) AndAlso IO.File.Exists(currentTemplatePath) Then
-            Try
-                Process.Start(New ProcessStartInfo With {
-                .FileName = currentTemplatePath,
-                .UseShellExecute = True
-            })
-            Catch
-                ' swallow – not fatal for starting calibration
-            End Try
-        End If
+                    If rawLine.StartsWith("→ Range:", StringComparison.OrdinalIgnoreCase) Then
+                        lastRange = rawLine.Substring(rawLine.IndexOf(":"c) + 1).Trim()
 
-        cr.Show()
-        Me.Close()
+                    ElseIf rawLine.StartsWith("→ Nominal:", StringComparison.OrdinalIgnoreCase) _
+                OrElse rawLine.StartsWith("Nominal:", StringComparison.OrdinalIgnoreCase) Then
+
+                        If isChecked Then
+                            anyCheckedInCat = True
+
+                            Dim nominalText As String = rawLine.Substring(rawLine.IndexOf(":"c) + 1).Trim()
+
+                            ' IMPORTANT: “Unit:” must carry the FUNCTION text (e.g., "DC VOLTAGE", "AC CURRENT", "RESISTANCE").
+                            ' Frequency is left blank unless you explicitly parse a numeric Hz value that matches column E.
+                            Dim canon As String =
+                        $"Range: {lastRange} | Nominal: {nominalText} | Unit: {functionText} | Frequency:"
+
+                            allParams.Add(canon)
+                        End If
+                    End If
+                Next
+
+                If anyCheckedInCat AndAlso functionText <> "" Then
+                    ' Keep a case-insensitive set of active categories/functions
+                    If Not activeCategories.Any(Function(s) s.Equals(functionText, StringComparison.OrdinalIgnoreCase)) Then
+                        activeCategories.Add(functionText)
+                    End If
+                End If
+            Next
+
+            ' finally pass these to calibratingResult
+
+            activeCategories = activeCategories
+
+            ' 3) Build the result form payload (matches calibratingResult properties)
+            Dim cr As New calibratingResult() With {
+            .JobId = 0,
+            .WorkOrderNumber = workOrderNo.Text,
+            .CompanyName = contextMenuCompanies.Text.Trim(),
+            .CompanyAddress = compAdd.Text.Trim(),
+            .Model = dmmmodel.Text.Trim(),
+            .Manufacturer = manufaacturer.Text.Trim(),
+            .Description = dmmdescription.Text.Trim(),
+            .TechnicianInitials = technicalID.Text.Trim(),
+            .TechnicianName = CurrentUser.Name,
+            .CalibrationType = If(CheckedListBox1 IsNot Nothing AndAlso CheckedListBox1.CheckedItems.Count > 0,
+                                  CheckedListBox1.CheckedItems(0).ToString(),
+                                  String.Empty),
+            .SpecificSite = specificSite.Text.Trim(),
+            .SerialNumber = serialNumber.Text.Trim(),
+            .SelectedParameters = allParams,      ' parsed on result form load (regex) :contentReference[oaicite:4]{index=4}
+            .ActiveCategories = activeCategories, ' used to choose visible groups :contentReference[oaicite:5]{index=5}
+            .Range = range.Text.Trim(),
+            .Readability = readability.Text.Trim(),
+            .PrevSesCalCert = prevCalCert.Text.Trim(),
+            .AccuracyHeader = accuracy.Text.Trim(),
+            .PreviousTechnician = prevTech.Text.Trim(),
+            .ReceivedDate = receivedDate.Value.ToString("dd-MMM-yyyy"),
+            .CalibrationDate = calibrationDate.Value.ToString("dd-MMM-yyyy"),
+            .OptionsInstalled = optionsInstalled.Text.Trim(),
+            .CustomerPO = customerPO.Text.Trim(),
+            .AssetNumber = assetNumber.Text.Trim(),
+            .TempStart = txtTempStart.Text.Trim(),
+            .TempEnd = txtTempEnd.Text.Trim(),
+            .HumidityStart = txtHumidityStart.Text.Trim(),
+            .HumidityEnd = txtHumidityEnd.Text.Trim(),
+            .RefDesc1 = RefCal_description1.Text.Trim(),
+            .RefSN1 = RefCal_serialNo1.Text.Trim(),
+            .RefCalRef1 = RefCal_calReportRef1.Text.Trim(),
+            .RefDue1 = If(refCal_DueDate1.Enabled, refCal_DueDate1.Value.ToString("dd-MMM-yyyy"), ""),
+            .RefDesc2 = RefCal_description2.Text.Trim(),
+            .RefSN2 = RefCal_serialNo2.Text.Trim(),
+            .RefCalRef2 = RefCal_calReportRef2.Text.Trim(),
+            .RefDue2 = If(refCal_DueDate2.Enabled, refCal_DueDate2.Value.ToString("dd-MMM-yyyy"), ""),
+            .AccDesc1 = accUsed_Description1.Text.Trim(),
+            .AccSN1 = accUsed_SerialNo1.Text.Trim(),
+            .AccCalBrand1 = accUsed_Brand1.Text.Trim(),
+            .AccModel1 = accUsed_Model1.Text.Trim(),
+            .AccDesc2 = accUsed_Description2.Text.Trim(),
+            .AccSN2 = accUsed_SerialNo2.Text.Trim(),
+            .AccCalBrand2 = accUsed_Brand2.Text.Trim(),
+            .AccModel2 = accUsed_Model2.Text.Trim(),
+            .calMathod = calMethod.Text.Trim()
+        }
+
+            ' 4) Show result form (it will: find the template, copy a working .xlsx, init mappings, and precompute) :contentReference[oaicite:6]{index=6}
+            cr.Show()
+            Me.Close()
+        Finally
+            Application.UseWaitCursor = False
+            Me.Cursor = Cursors.Default
+            btnStartCalibration.Text = oldText
+            btnStartCalibration.Enabled = True
+        End Try
     End Sub
 
 #End Region
@@ -1455,7 +1452,7 @@ Public Class calibrate
         manufaacturer.Text = manufacturer
         dmmdescription.Text = description
 
-        ' --- Resolve template path for this exact DMM (Model + Mfr + Desc), with fallbacks (no new funcs/UI) ---
+        ' --- Resolve template path (unchanged) ---
         Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
         Dim tmplDir = IO.Path.Combine(appData, "DMMCal", "Templates")
         If Not IO.Directory.Exists(tmplDir) Then IO.Directory.CreateDirectory(tmplDir)
@@ -1464,7 +1461,6 @@ Public Class calibrate
         Dim mf = manufacturer
         Dim ds = description
 
-        ' Most specific → least specific → newest {Model}*.xlsx
         Dim p3 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}__{Slug(ds)}.xlsx")
         Dim p2 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}__{Slug(mf)}.xlsx")
         Dim p1 As String = IO.Path.Combine(tmplDir, $"{Slug(m)}.xlsx")
@@ -1479,29 +1475,39 @@ Public Class calibrate
             Dim prefix = Slug(m)
             Dim candidates = IO.Directory.GetFiles(tmplDir, prefix & "*.xlsx", IO.SearchOption.TopDirectoryOnly)
             currentTemplatePath = If(candidates.Length > 0,
-                                 candidates.OrderByDescending(Function(f) IO.File.GetLastWriteTimeUtc(f)).First(),
-                                 "")
+                             candidates.OrderByDescending(Function(f) IO.File.GetLastWriteTimeUtc(f)).First(),
+                             "")
         End If
 
-        ' --- Rebuild parameter lists for this model (existing logic) ---
-        For Each clb As CheckedListBox In {cLParamACV, cLParamDCV, cLParamACC, cLParamDCC, cLParamRES}
-            clb.Items.Clear()
-        Next
+        ' --- dynamically rebuild parameter checklists ---
+        flowParameters.Controls.Clear()
 
         Dim grouped = SQLiteHelper.LoadGroupedDMMParameters(model)
         For Each category In grouped.Keys
-            Dim clb As CheckedListBox = GetCheckedListBoxForCategory(category)
-            If clb Is Nothing Then Continue For
-
+            ' Create a CheckedListBox for this category
+            Dim clb As New CheckedListBox With {
+            .Width = 300,
+            .Height = 400,
+            .CheckOnClick = True,
+            .Font = New Font("Courier New", 10, FontStyle.Regular),
+            .Tag = category
+        }
             clb.Items.Add("[" & category.ToUpper() & "]")
-            clb.SetItemCheckState(clb.Items.Count - 1, CheckState.Unchecked)
 
-            For Each rangeKey As Object In grouped(category).Keys
-                clb.Items.Add("  → Range: " & rangeKey.ToString())
-                For Each nominal As Object In grouped(category)(rangeKey)
-                    clb.Items.Add("      → Nominal: " & nominal.ToString())
+            ' Add items (range + nominal)
+            For Each rangeKey In grouped(category).Keys
+                clb.Items.Add("→ Range: " & rangeKey.ToString())
+                For Each nominal In grouped(category)(rangeKey)
+                    clb.Items.Add("    → Nominal: " & nominal.ToString())
                 Next
             Next
+
+            ' Optional: hook your click handler to allow cascade select
+            AddHandler clb.MouseUp, Sub(s, e)
+                                        HandleCheckedListBoxClick(DirectCast(s, CheckedListBox), e)
+                                    End Sub
+
+            flowParameters.Controls.Add(clb)
         Next
     End Sub
 
