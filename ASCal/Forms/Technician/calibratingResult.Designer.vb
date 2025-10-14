@@ -411,14 +411,16 @@ Partial Class calibratingResult
         '
         'ButtonDisable
         '
+        Me.ButtonDisable.BackColor = System.Drawing.Color.Red
         Me.ButtonDisable.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.ButtonDisable.ForeColor = System.Drawing.Color.White
         Me.ButtonDisable.Location = New System.Drawing.Point(1088, 420)
         Me.ButtonDisable.Margin = New System.Windows.Forms.Padding(2)
         Me.ButtonDisable.Name = "ButtonDisable"
-        Me.ButtonDisable.Size = New System.Drawing.Size(97, 30)
+        Me.ButtonDisable.Size = New System.Drawing.Size(115, 30)
         Me.ButtonDisable.TabIndex = 44
-        Me.ButtonDisable.Text = "Button2"
-        Me.ButtonDisable.UseVisualStyleBackColor = True
+        Me.ButtonDisable.Text = "ABORT"
+        Me.ButtonDisable.UseVisualStyleBackColor = False
         '
         'Label629
         '

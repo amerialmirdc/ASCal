@@ -7,42 +7,6 @@ Imports System.Windows.Forms
 
 Module CalibratingResultMappings
 
-    ''=========================
-    '' Internal data model (names aligned with ParamGroup)
-    ''=========================
-    'Private Class Block
-    '    Public Key As String
-    '    Public StartRow As Integer
-
-    '    ' descriptors
-    '    Public COL_FUNCTION As String()
-
-    '    Public RangeLabel As String()
-    '    Public Nominal As String()
-    '    Public Unit As String()
-    '    Public Frequency As String()
-    '    Public FreqUnit As String()
-
-    '    ' inputs
-    '    Public MV1 As String()
-
-    '    Public MV2 As String()
-    '    Public MV3 As String()
-
-    '    ' outputs
-    '    Public AVG As String()
-
-    '    Public ERR As String()
-    '    Public UNC As String()
-
-    '    ' limits + remarks
-    '    Public TOL As String()
-
-    '    Public UP As String()
-    '    Public LO As String()
-    '    Public Remarks As String()
-    'End Class
-
     <Extension()>
     Public Sub InitMappings(frm As calibratingResult)
 
@@ -74,62 +38,40 @@ Module CalibratingResultMappings
         Dim Groups As IDictionary = TryCast(fiGroups.GetValue(frm), IDictionary)
         If Groups Is Nothing Then Throw New InvalidOperationException("Groups is not a dictionary on calibratingResult.")
 
-        ' ---------- sheet name + ctx instance (no ?. chain) ----------
-        Dim sheetName As String = "DEFAULT"   ' safe default
+        ' ---------- sheet name + ctx instance ----------
+        Dim sheetName As String = "DEFAULT"
         Dim ctx As Object = Nothing
 
-        Try
-            Dim ctxDcField As FieldInfo = frm.GetType().GetField("ctxDc", BindingFlags.Instance Or BindingFlags.NonPublic)
-            If ctxDcField IsNot Nothing Then
-                ctx = ctxDcField.GetValue(frm)           ' <-- this is the instance we must pass to WithWorksheet
-                If ctx IsNot Nothing Then
-                    Dim prop As PropertyInfo = ctx.GetType().GetProperty("SheetInputsName", BindingFlags.Instance Or BindingFlags.Public Or BindingFlags.NonPublic)
-                    If prop IsNot Nothing Then
-                        Dim val As Object = prop.GetValue(ctx, Nothing)
-                        If val IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(val.ToString()) Then
-                            sheetName = val.ToString()
-                        End If
+        Dim ctxDcField As FieldInfo = frm.GetType().GetField("ctxDc", BindingFlags.Instance Or BindingFlags.NonPublic)
+        If ctxDcField IsNot Nothing Then
+            ctx = ctxDcField.GetValue(frm)
+            If ctx IsNot Nothing Then
+                Dim field As FieldInfo = ctx.GetType().GetField("SheetInputsName", BindingFlags.Instance Or BindingFlags.Public Or BindingFlags.NonPublic)
+                If field IsNot Nothing Then
+                    Dim val As Object = field.GetValue(ctx)
+                    If val IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(val.ToString()) Then
+                        sheetName = val.ToString()
                     End If
                 End If
             End If
-        Catch
-            ' keep default
-        End Try
-
+        End If
         If String.IsNullOrWhiteSpace(sheetName) Then sheetName = "DEFAULT"
 
-        ' Make a unique key if needed to avoid overwriting another mapping
-        Dim baseKey As String = sheetName
+        ' ---------- ensure unique key (keep your behavior) ----------
+        Dim uniqueKey As String = sheetName
         Dim suffix As Integer = 1
-        While Groups.Contains(baseKey)
-            baseKey = sheetName & "_" & suffix.ToString()
+        While Groups.Contains(uniqueKey)
+            uniqueKey = sheetName & "_" & suffix.ToString()
             suffix += 1
         End While
-        sheetName = baseKey
+        sheetName = uniqueKey   ' final dictionary key
 
-        ' ---------- resolve the sheet container to scope control lookups ----------
+        ' ---------- scope control lookups ----------
         Dim sheetScope As Control = Nothing
-
-        ' 1) Try a control whose Name == sheetName
         Dim byName() As Control = frm.Controls.Find(sheetName, True)
         If byName IsNot Nothing AndAlso byName.Length > 0 Then
             sheetScope = byName(0)
         End If
-
-        ' 2) Try a TabPage whose Text matches sheetName
-        If sheetScope Is Nothing Then
-            For Each tc As TabControl In frm.Controls.OfType(Of TabControl)()
-                For Each tp As TabPage In tc.TabPages
-                    If String.Equals(tp.Text, sheetName, StringComparison.OrdinalIgnoreCase) Then
-                        sheetScope = tp
-                        Exit For
-                    End If
-                Next
-                If sheetScope IsNot Nothing Then Exit For
-            Next
-        End If
-
-        ' 3) Fallback to the whole form
         If sheetScope Is Nothing Then sheetScope = frm
 
         ' ---------- helpers (SCOPED to the current sheet) ----------
@@ -160,7 +102,6 @@ Module CalibratingResultMappings
                 fi.SetValue(pgObj, value)
             End Sub
 
-        ' Build an array of names up to N, inserting Nothing where a control is missing — SCOPED
         Dim namesUpToN As Func(Of String, Integer, String()) =
             Function(baseName As String, maxCount As Integer) As String()
                 Dim list As New List(Of String)()
@@ -172,11 +113,11 @@ Module CalibratingResultMappings
                 Return list.ToArray()
             End Function
 
-        ' tuple setters that ALWAYS allocate length=maxCount and ALWAYS assign a valid Excel address
+        ' NOTE: use *named* tuple elements so the rest of the code can access .lbl / .tb / .cell
         Dim setLBCellsN As Action(Of Object, String, String, Integer, String()) =
             Sub(pgObj As Object, fieldName As String, col As String, rowStart As Integer, namesArr As String())
                 Dim len As Integer = If(namesArr Is Nothing, 0, namesArr.Length)
-                Dim arr(If(len = 0, 0, len - 1)) As (Label, String)
+                Dim arr(If(len = 0, 0, len - 1)) As (lbl As Label, cell As String)
                 For i As Integer = 0 To len - 1
                     Dim lb As Label = FindLabel(namesArr(i))
                     Dim cellAddr As String = col & (rowStart + i).ToString()
@@ -188,7 +129,7 @@ Module CalibratingResultMappings
         Dim setTBCellsN As Action(Of Object, String, String, Integer, String()) =
             Sub(pgObj As Object, fieldName As String, col As String, rowStart As Integer, namesArr As String())
                 Dim len As Integer = If(namesArr Is Nothing, 0, namesArr.Length)
-                Dim arr(If(len = 0, 0, len - 1)) As (TextBox, String)
+                Dim arr(If(len = 0, 0, len - 1)) As (tb As TextBox, cell As String)
                 For i As Integer = 0 To len - 1
                     Dim tb As TextBox = FindTextBox(namesArr(i))
                     Dim cellAddr As String = col & (rowStart + i).ToString()
@@ -197,21 +138,19 @@ Module CalibratingResultMappings
                 SetPgField(pgObj, fieldName, arr)
             End Sub
 
-        ' ---------- determine max row count from TEMPLATE (Column A only) ----------
+        ' ---------- Determine max row count from TEMPLATE (Column A only) ----------
         Dim startRow As Integer = 2
-        Dim maxScan As Integer = 5000
+        Dim maxScan As Integer = 50
         Dim lastNonEmptyRow As Integer = 0
         Dim sawAny As Boolean = False
         Dim blankStreak As Integer = 0
-        Const StopAfterBlanks As Integer = 200
+        Const StopAfterBlanks As Integer = 25
 
         Try
-            ' IMPORTANT: pass the ctx INSTANCE, not a FieldInfo
             CalRowModule.WithWorksheet(ctx, Sub(ws As Object)
                                                 For r As Integer = startRow To startRow + maxScan - 1
                                                     Dim aVal = CalRowModule.ReadCell(ws, "A" & r)
                                                     Dim aTxt As String = If(aVal Is Nothing, "", CStr(aVal)).Trim()
-
                                                     If aTxt.Length > 0 Then
                                                         sawAny = True
                                                         lastNonEmptyRow = r
@@ -226,16 +165,10 @@ Module CalibratingResultMappings
             ' ignore and fall back to defaults
         End Try
 
-        ' EXACT formula: actual last row minus (startRow - 1)
-        Dim maxRows As Integer
-        If lastNonEmptyRow >= startRow Then
-            maxRows = lastNonEmptyRow - (startRow - 1)
-        Else
-            maxRows = 1
-        End If
+        Dim maxRows As Integer = If(lastNonEmptyRow >= startRow, lastNonEmptyRow - (startRow - 1), 1)
 
-        ' ---------- build the names arrays using TEMPLATE row count ----------
-        Dim rowCount As Integer = Math.Max(1, Math.Min(maxRows, 1000))  ' cap to keep UI snappy
+        ' ---------- Build the names arrays using TEMPLATE row count ----------
+        Dim rowCount As Integer = Math.Max(1, Math.Min(maxRows, 1000))
 
         Dim names_COL_FUNCTION() As String = namesUpToN("COL_FUNCTION", rowCount)
         Dim names_RANGE() As String = namesUpToN("RANGE", rowCount)
@@ -257,7 +190,7 @@ Module CalibratingResultMappings
         Dim names_LO() As String = namesUpToN("LO", rowCount)
         Dim names_REM() As String = namesUpToN("REM", rowCount)
 
-        ' ---------- build ParamGroup and map ----------
+        ' ---------- Build ParamGroup and map ----------
         Dim pg As Object = Activator.CreateInstance(paramGroupType, True)
 
         ' Descriptors
@@ -286,7 +219,26 @@ Module CalibratingResultMappings
 
         SetPgField(pg, "TemplateRowCount", rowCount)
 
+        ' ---------- Identity / grouping ----------
+        Dim baseOnly As String = sheetName
+        Dim idx As Integer = 0
+        Dim cutIdx As Integer = sheetName.LastIndexOf("_"c)
+        If cutIdx > 0 Then
+            Dim n As Integer
+            If Integer.TryParse(sheetName.Substring(cutIdx + 1), n) Then
+                idx = n
+                baseOnly = sheetName.Substring(0, cutIdx)
+            End If
+        End If
+
+        SetPgField(pg, "SheetKey", sheetName)
+        SetPgField(pg, "SheetBase", baseOnly)
+        SetPgField(pg, "SheetIndex", idx)
+        SetPgField(pg, "SheetId", baseOnly.ToLowerInvariant() & ":" & idx.ToString())
+
+        ' ---------- add to Groups ----------
         Groups(sheetName) = pg
+
     End Sub
 
 End Module

@@ -36,12 +36,6 @@ Public Class calibratingResult
         End Select
     End Sub
 
-    ' was: Private dcComputeTimer As System.Windows.Forms.Timer
-    Private dcComputeTimer As WinForms.Timer
-
-    Private nomSeqTimer As WinForms.Timer = Nothing
-    Private testBurstTimer As WinForms.Timer = Nothing
-
     Private ctxDc As CalRowModule.RowContext
 
     ' Serial ports found on the machine
@@ -71,6 +65,13 @@ Public Class calibratingResult
         Public Remarks As (tb As WinForms.TextBox, cell As String)()
 
         Public TemplateRowCount As Integer   ' how many rows the sheet actually has (by Column A scan)
+
+        ' Identity / grouping
+        Public SheetKey As String      ' actual dictionary key (e.g., "ACV", "ACV_1")
+
+        Public SheetBase As String     ' base name without numeric suffix (e.g., "ACV")
+        Public SheetIndex As Integer   ' 0 for first, 1 for second, etc.
+        Public SheetId As String       ' e.g., "acv:0" – stable, easy to group
 
     End Class
 
@@ -148,16 +149,6 @@ Public Class calibratingResult
 #End Region
 
 #Region "Core compute + OCR hooks + TEMP stubs"
-
-    ' --- minimal fields used by OnDcComputeTimerTick ---
-    Private nomSeqActive As Boolean = False
-
-    Private nomSeqWaitingCompute As Boolean = False
-
-    Private runActive As Boolean = False
-    Private runTotalRows As Integer = 0
-    Private runComputedRows As Integer = 0
-    Private computedKeys As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
 
     Private Function ReorderTupleTB(arr As (tb As TextBox, cell As String)(), order As Integer()) _
         As (tb As TextBox, cell As String)()
@@ -269,65 +260,28 @@ Public Class calibratingResult
         g.FreqUnit = ReorderTupleLBL(g.FreqUnit, order)
     End Sub
 
-    ' --- fast single-row compute path (moved out of TEMP) ---
-    Private dcTargetRowForTick As Integer = -1
-
     ' Accepts 1..N row indices. Single-row → compute now; multi-row → timer.
-    Private Sub StartRowCompute(g As ParamGroup, rowIndices As IEnumerable(Of Integer))
-        If g Is Nothing OrElse ctxDc Is Nothing Then Exit Sub
-        Dim rows = rowIndices?.Where(Function(r) r >= 0).Distinct().OrderBy(Function(r) r).ToList()
-        If rows Is Nothing OrElse rows.Count = 0 Then Exit Sub
-
-        ' Resolve target Excel row from the last requested index.
-        Dim lastIdx As Integer = rows.Last()
-        Dim targetAddr As String = Nothing
-        If g.MV3 IsNot Nothing AndAlso lastIdx < g.MV3.Length AndAlso g.MV3(lastIdx).cell IsNot Nothing Then
-            targetAddr = g.MV3(lastIdx).cell
-        ElseIf g.MV2 IsNot Nothing AndAlso lastIdx < g.MV2.Length AndAlso g.MV2(lastIdx).cell IsNot Nothing Then
-            targetAddr = g.MV2(lastIdx).cell
-        ElseIf g.MV1 IsNot Nothing AndAlso lastIdx < g.MV1.Length AndAlso g.MV1(lastIdx).cell IsNot Nothing Then
-            targetAddr = g.MV1(lastIdx).cell
-        End If
-        If String.IsNullOrWhiteSpace(targetAddr) Then Exit Sub
-
-        dcComputeTimer.Stop()
-        Me.Cursor = Cursors.WaitCursor
-
-        dcTargetRowForTick = GetRowFromAddr(targetAddr)
-        ctxDc.TargetRow = dcTargetRowForTick
-
-        Dim groupLocal = g
-        ctxDc.PreCalculate = Sub(ws)
-                                 For Each i In rows
-                                     WriteInputsRow(ws, groupLocal, i)
-                                 Next
-                             End Sub
-
-        ctxDc.AfterCalculate = Sub(ws)
-                                   For Each i In rows
-                                       ReadOutputsRow(ws, groupLocal, i)
-                                   Next
-                               End Sub
-
-        If rowStopwatch Is Nothing Then rowStopwatch = New System.Diagnostics.Stopwatch()
-        rowStopwatch.Reset()
-        rowStopwatch.Start()
-
-        If rows.Count = 1 Then
-            ' Instant compute for single-row (e.g., after MV3 is filled).
-            Try
-                CalRowModule.RecalculateNow(ctxDc)
-            Finally
-                Me.Cursor = Cursors.Default
-            End Try
-        Else
-            ' Batch compute keeps your async timer flow.
-            dcComputeTimer.Start()
-        End If
-    End Sub
-
+    ' Kick compute for exactly one row and rearm the tick to finish the UI update.
     Private Sub StartRowCompute(g As ParamGroup, rowIdx As Integer)
-        StartRowCompute(g, New Integer() {rowIdx})
+        If g Is Nothing OrElse rowIdx < 0 Then Exit Sub
+
+        ' Resolve Excel row from any MV* mapped address for this row
+        Dim addr As String = Nothing
+        If g.MV3 IsNot Nothing AndAlso rowIdx < g.MV3.Length Then addr = g.MV3(rowIdx).cell
+        If String.IsNullOrWhiteSpace(addr) AndAlso g.MV2 IsNot Nothing AndAlso rowIdx < g.MV2.Length Then addr = g.MV2(rowIdx).cell
+        If String.IsNullOrWhiteSpace(addr) AndAlso g.MV1 IsNot Nothing AndAlso rowIdx < g.MV1.Length Then addr = g.MV1(rowIdx).cell
+        If String.IsNullOrWhiteSpace(addr) Then Exit Sub
+
+        Dim excelRow As Integer = GetRowFromAddr(addr)
+        If excelRow <= 0 Then Exit Sub
+
+        Try : SetSheetsIfChanged(ctxDc, g.SheetKey) : Catch : End Try
+        ctxDc.TargetRow = excelRow
+
+        ' Wire Pre/After for this row and compute now
+        ctxDc.PreCalculate = Sub(ws) WriteInputsRow(ws, g, rowIdx)
+        ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, g, rowIdx)
+        CalRowModule.RecalculateNow(ctxDc)
     End Sub
 
     ' Add inside calibratingResult (e.g., near ApplyCategoriesAndSelection)
@@ -527,14 +481,14 @@ Public Class calibratingResult
 
         If String.IsNullOrWhiteSpace(template) OrElse Not IO.File.Exists(template) Then
             MessageBox.Show("Missing Excel template for this model." & Environment.NewLine &
-                        $"Looked in: {tmplDir}", "Template Not Found",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    $"Looked in: {tmplDir}", "Template Not Found",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
         Dim unique = $"{DateTime.UtcNow:yyyyMMdd_HHmmssfff}_{Guid.NewGuid:N}"
         Dim workingCopy = IO.Path.Combine(IO.Path.GetTempPath(),
-        $"ASCal_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}_{unique}.xlsx")
+    $"ASCal_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}_{unique}.xlsx")
 
         Try
             If IO.File.Exists(workingCopy) Then IO.File.Delete(workingCopy)
@@ -542,21 +496,24 @@ Public Class calibratingResult
             IO.File.Copy(template, workingCopy, True)
         Catch ex As Exception
             MessageBox.Show("Unable to prepare Excel template: " & ex.Message, "Template Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End Try
 
         ' Excel context (keep this)
         ctxDc = New CalRowModule.RowContext With {
-    .TemplatePath = workingCopy,
-    .SheetInputsName = "DataSheet",
-    .SheetFormulaName = "DataSheet",
-    .hostControls = Me.Controls
-}
-        CalRowModule.Initialize(ctxDc)
+        .TemplatePath = workingCopy,
+        .SheetInputsName = "DataSheet",
+        .SheetFormulaName = "DataSheet",
+        .hostControls = Me.Controls}
 
+        CalRowModule.Initialize(ctxDc)
+        If ctxDc Is Nothing Then
+            MessageBox.Show("Failed to initialize Excel context.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End If
         ' ====== SHEET DISCOVERY & MAPPING (include ALL sheets) ======
-        Groups.Clear()
+        'Groups.Clear()
 
         Dim allSheets = GetWorksheetNamesFromXlsx(ctxDc.TemplatePath)
         If allSheets Is Nothing OrElse allSheets.Count = 0 Then
@@ -593,6 +550,39 @@ Public Class calibratingResult
 
         If dataSheets.Count = 0 Then dataSheets.Add(allSheets(0))  ' fallback
 
+        ' ================= POPULATE namesArr =================
+        Dim namesArr As New List(Of String)()
+        CalRowModule.WithWorksheet(ctxDc, Sub(ws)
+                                              ' Assume we are reading from column A
+                                              Dim row As Integer = 2 ' Starting from row 2
+                                              While True
+                                                  Dim aVal As String = CalRowModule.ReadCell(ws, "A" & row.ToString())
+
+                                                  ' Debugging: Log value to debug output to ensure the value is being read
+                                                  Debug.WriteLine($"Reading row {row}: {aVal}")
+
+                                                  If String.IsNullOrWhiteSpace(aVal) Then
+                                                      Exit While ' Stop if a blank cell is found
+                                                  End If
+                                                  namesArr.Add(aVal) ' Add the value to namesArr
+
+                                                  '' Show the value being populated on UI thread
+                                                  'If Me.InvokeRequired Then
+                                                  '    Me.Invoke(Sub()
+                                                  '                  MessageBox.Show($"Populating name: {aVal}", "Populating Names", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                                                  '              End Sub)
+                                                  'Else
+                                                  '    MessageBox.Show($"Populating name: {aVal}", "Populating Names", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                                                  'End If
+
+                                                  row += 1
+                                              End While
+                                          End Sub)
+
+        ' Convert namesArr to an array
+        Dim namesArrArray As String() = namesArr.ToArray()
+
+        ' Continue with the rest of your logic
         For Each sh In allSheets
             ctxDc.SheetInputsName = sh
             ctxDc.SheetFormulaName = sh
@@ -605,8 +595,8 @@ Public Class calibratingResult
         If Groups Is Nothing Then Groups = New Dictionary(Of String, ParamGroup)(StringComparer.OrdinalIgnoreCase)
         If Groups.Count = 0 Then
             MessageBox.Show("No parameter groups were mapped by InitMappings()." & Environment.NewLine &
-                        "Ensure InitMappings fills Groups(<any key you want>) directly.",
-                        "Mappings Missing", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            "Ensure InitMappings fills Groups(<any key you want>) directly.",
+            "Mappings Missing", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
@@ -616,25 +606,558 @@ Public Class calibratingResult
 
         ' ================= PREVIEW PANEL (populate) =================
         PopulatePreview()
+
         ApplyCategoriesAndSelection()
 
-        ' ================= LIVE COMPUTE WIRING =================
-        dcComputeTimer = New WinForms.Timer() With {.Interval = 500}
-        AddHandler dcComputeTimer.Tick, AddressOf OnDcComputeTimerTick
+        HookLiveCompute()
+    End Sub
 
-        ' ================= PRIME FIRST ROW =================
-        Dim firstGroup = Groups.Values.FirstOrDefault(Function(g) g IsNot Nothing AndAlso g.MV3 IsNot Nothing AndAlso g.MV3.Length > 0)
-        If firstGroup IsNot Nothing Then
-            currentGroup = firstGroup
-            currentRowIdx = 0
-            currentExcelRow = GetRowFromAddr(firstGroup.MV3(0).cell)
-            ctxDc.TargetRow = currentExcelRow
-            ctxDc.PreCalculate = Sub(ws) WriteInputsRow(ws, firstGroup, currentRowIdx)
-            ctxDc.AfterCalculate = Sub(ws) ReadOutputsRow(ws, firstGroup, currentRowIdx)
-            CalRowModule.RecalculateNow(ctxDc)
+    ' --- Render preview UI into a specific FlowLayoutPanel ---
+    Private Sub PopulatePreview(Optional target As FlowLayoutPanel = Nothing)
+
+        ' ---------- Resolve target ----------
+        Dim fl As FlowLayoutPanel = target
+        If fl Is Nothing Then
+            fl = TryCast(Me.Controls.Find("previewcalibrating", True).FirstOrDefault(), FlowLayoutPanel)
+            If fl Is Nothing Then Exit Sub
+            fl.Visible = True
         End If
 
-        HookLiveCompute()
+        fl.SuspendLayout()
+        fl.FlowDirection = FlowDirection.TopDown
+        fl.WrapContents = False
+        Dim oldScroll = fl.AutoScroll
+        fl.AutoScroll = False
+        fl.Controls.Clear()
+
+        ' ---------- Available width ----------
+        Dim availW As Integer = fl.DisplayRectangle.Width
+        If availW <= 0 Then availW = If(fl.Parent IsNot Nothing, fl.Parent.ClientSize.Width, 800)
+        availW = Math.Max(200, availW - fl.Padding.Horizontal - SystemInformation.VerticalScrollBarWidth)
+
+        ' ---------- Column maps (case-insensitive) ----------
+        Dim colLeft As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
+        Dim colWidth As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
+
+        Dim GetW As Func(Of String, Integer) =
+        Function(k As String)
+            Dim v As Integer
+            If colWidth.TryGetValue(k, v) Then Return v
+            Return 80
+        End Function
+
+        Dim GetL As Func(Of String, Integer) =
+        Function(k As String)
+            Dim v As Integer
+            If colLeft.TryGetValue(k, v) Then Return v
+            Return 0
+        End Function
+
+        ' ---------- Header panel ----------
+        Dim hdr As New Panel() With {.Height = 22, .Width = availW}
+        Dim x As Integer = 0
+
+        Dim addHdr =
+        Sub(text As String, left As Integer, width As Integer)
+            Dim lbl As New Label() With {
+                .AutoSize = False, .Text = text, .Left = left, .Top = 2,
+                .Width = width, .Font = New Font(Me.Font, FontStyle.Bold)
+            }
+            hdr.Controls.Add(lbl)
+        End Sub
+
+        Dim addColDynamic =
+        Sub(key As String, values As IEnumerable(Of String), minW As Integer, pad As Integer)
+            Dim seq As IEnumerable(Of String) = If(values, Enumerable.Empty(Of String)())
+            Dim maxWidth As Integer =
+                seq.Select(Function(v) If(v IsNot Nothing, TextRenderer.MeasureText(v, Me.Font).Width, 0)).
+                    DefaultIfEmpty(0).Max()
+            Dim w As Integer = Math.Max(minW, maxWidth + pad)
+            addHdr(key, x, w)
+            colLeft(key) = x
+            colWidth(key) = w
+            x += w
+        End Sub
+
+        Dim addColFixed =
+        Sub(key As String, width As Integer)
+            addHdr(key, x, width)
+            colLeft(key) = x
+            colWidth(key) = width
+            x += width
+        End Sub
+
+        ' ---------- Use insertion order (no sorting) ----------
+        Dim ordered As List(Of ParamGroup) = Groups.Values.ToList()
+
+        ' ---------- Build columns from the FIRST available group ----------
+        For Each g In ordered
+            If g Is Nothing Then Continue For
+            addColDynamic("Function", If(g.COL_FUNCTION IsNot Nothing, g.COL_FUNCTION.Select(Function(t) If(t.lbl Is Nothing, "", t.lbl.Text)), Nothing), 60, 10)
+            addColDynamic("RangeLabel", If(g.RangeLabel IsNot Nothing, g.RangeLabel.Select(Function(t) If(t.lbl Is Nothing, "", t.lbl.Text)), Nothing), 60, 10)
+            addColDynamic("Nominal", If(g.Nominal IsNot Nothing, g.Nominal.Select(Function(t) If(t.lbl Is Nothing, "", t.lbl.Text)), Nothing), 60, 10)
+            addColDynamic("Unit", If(g.Unit IsNot Nothing, g.Unit.Select(Function(t) If(t.lbl Is Nothing, "", t.lbl.Text)), Nothing), 60, 10)
+            addColDynamic("Frequency", If(g.Frequency IsNot Nothing, g.Frequency.Select(Function(t) If(t.lbl Is Nothing, "", t.lbl.Text)), Nothing), 60, 10)
+            addColDynamic("FreqUnit", If(g.FreqUnit IsNot Nothing, g.FreqUnit.Select(Function(t) If(t.lbl Is Nothing, "", t.lbl.Text)), Nothing), 60, 10)
+            Exit For
+        Next
+
+        ' Fixed-width inputs/results columns
+        addColFixed("MV1", 85) : addColFixed("MV2", 85) : addColFixed("MV3", 85)
+        addColFixed("Average", 85) : addColFixed("Error", 85)
+        addColFixed("Tolerance", 85) : addColFixed("UpperLimit", 85) : addColFixed("LowerLimit", 85)
+        addColFixed("Remarks", 140) : addColFixed("Final_U", 85)
+
+        fl.Controls.Add(hdr)
+        fl.SetFlowBreak(hdr, True)
+
+        ' ---------- Per-row placers (prefix names with SHEET NAME = SheetKey) ----------
+        Dim placeLblTuple =
+        Sub(ByRef tup As (Label, String), key As String, value As String, pg As ParamGroup, i As Integer, rowPanel As Panel)
+            Dim sheetName As String = pg.SheetKey   ' actual worksheet/tab name
+            If tup.Item1 Is Nothing Then
+                tup.Item1 = New Label() With {.Name = $"{sheetName}__{key}_{i}", .AutoSize = False, .Height = 20}
+            Else
+                tup.Item1.Name = $"{sheetName}__{key}_{i}"
+            End If
+            If tup.Item1.Parent IsNot rowPanel Then tup.Item1.Parent = rowPanel
+            tup.Item1.Text = value
+            tup.Item1.Visible = True
+            tup.Item1.Left = GetL(key)
+            tup.Item1.Top = 4
+            tup.Item1.Width = GetW(key)
+        End Sub
+
+        Dim placeTbTuple =
+        Sub(ByRef tup As (TextBox, String), key As String, pg As ParamGroup, baseName As String, i As Integer, rowPanel As Panel)
+            Dim sheetName As String = pg.SheetKey
+            If tup.Item1 Is Nothing Then
+                tup.Item1 = New TextBox() With {.Name = $"{sheetName}__{baseName}_{i}"}
+            Else
+                tup.Item1.Name = $"{sheetName}__{baseName}_{i}"
+            End If
+            If tup.Item1.Parent IsNot rowPanel Then tup.Item1.Parent = rowPanel
+            tup.Item1.Visible = True
+            tup.Item1.Width = Math.Max(0, GetW(key) - 6)
+            tup.Item1.Left = GetL(key) + 3
+            tup.Item1.Top = 2
+        End Sub
+
+        Dim placeLbTuple2 =
+        Sub(ByRef tup As (Label, String), key As String, pg As ParamGroup, baseName As String, i As Integer, rowPanel As Panel)
+            Dim sheetName As String = pg.SheetKey
+            If tup.Item1 Is Nothing Then
+                tup.Item1 = New Label() With {.Name = $"{sheetName}__{baseName}_{i}", .AutoSize = False, .Height = 20}
+            Else
+                tup.Item1.Name = $"{sheetName}__{baseName}_{i}"
+            End If
+            If tup.Item1.Parent IsNot rowPanel Then tup.Item1.Parent = rowPanel
+            tup.Item1.Visible = True
+            tup.Item1.Left = GetL(key)
+            tup.Item1.Top = 4
+            tup.Item1.Width = GetW(key)
+        End Sub
+
+        ' ---------- Safe getters (bounds-checked) ----------
+        Dim GetLblText As Func(Of (Label, String)(), Integer, String) =
+        Function(arr As (Label, String)(), idx As Integer) As String
+            If arr Is Nothing OrElse idx < 0 OrElse idx >= arr.Length Then Return ""
+            Dim lb = arr(idx).Item1
+            Return If(lb Is Nothing, "", lb.Text)
+        End Function
+
+        ' ---------- Row builder ----------
+        Dim addRow =
+        Sub(g As ParamGroup, i As Integer)
+            If g Is Nothing Then Exit Sub
+
+            Dim rowPanel As New Panel() With {
+                .Margin = New Padding(0, 0, 0, 6),
+                .Padding = New Padding(0),
+                .BorderStyle = BorderStyle.FixedSingle,
+                .Width = availW,
+                .Height = 26,
+                .BackColor = Color.FromArgb(248, 248, 248)
+            }
+
+            Dim rngTxt As String = GetLblText(g.RangeLabel, i)
+            Dim fnTxt As String = GetLblText(g.COL_FUNCTION, i)
+            Dim nomTxt As String = GetLblText(g.Nominal, i)
+            Dim untTxt As String = GetLblText(g.Unit, i)
+            Dim frqTxt As String = GetLblText(g.Frequency, i)
+            Dim fuTxt As String = GetLblText(g.FreqUnit, i)
+
+            ' --- LEFT LABELS (never reuse last element) ---
+            If g.COL_FUNCTION IsNot Nothing AndAlso i < g.COL_FUNCTION.Length Then
+                placeLblTuple(g.COL_FUNCTION(i), "Function", fnTxt, g, i, rowPanel)
+            Else
+                Dim tmp As (Label, String) = (Nothing, Nothing)
+                placeLblTuple(tmp, "Function", fnTxt, g, i, rowPanel)
+            End If
+
+            If g.RangeLabel IsNot Nothing AndAlso i < g.RangeLabel.Length Then
+                placeLblTuple(g.RangeLabel(i), "RangeLabel", rngTxt, g, i, rowPanel)
+            Else
+                Dim tmp As (Label, String) = (Nothing, Nothing)
+                placeLblTuple(tmp, "RangeLabel", rngTxt, g, i, rowPanel)
+            End If
+
+            If g.Nominal IsNot Nothing AndAlso i < g.Nominal.Length Then
+                placeLblTuple(g.Nominal(i), "Nominal", nomTxt, g, i, rowPanel)
+            Else
+                Dim tmp As (Label, String) = (Nothing, Nothing)
+                placeLblTuple(tmp, "Nominal", nomTxt, g, i, rowPanel)
+            End If
+
+            If g.Unit IsNot Nothing AndAlso i < g.Unit.Length Then
+                placeLblTuple(g.Unit(i), "Unit", untTxt, g, i, rowPanel)
+            Else
+                Dim tmp As (Label, String) = (Nothing, Nothing)
+                placeLblTuple(tmp, "Unit", untTxt, g, i, rowPanel)
+            End If
+
+            If g.Frequency IsNot Nothing AndAlso i < g.Frequency.Length Then
+                placeLblTuple(g.Frequency(i), "Frequency", frqTxt, g, i, rowPanel)
+            Else
+                Dim tmp As (Label, String) = (Nothing, Nothing)
+                placeLblTuple(tmp, "Frequency", frqTxt, g, i, rowPanel)
+            End If
+
+            If g.FreqUnit IsNot Nothing AndAlso i < g.FreqUnit.Length Then
+                placeLblTuple(g.FreqUnit(i), "FreqUnit", fuTxt, g, i, rowPanel)
+            Else
+                Dim tmp As (Label, String) = (Nothing, Nothing)
+                placeLblTuple(tmp, "FreqUnit", fuTxt, g, i, rowPanel)
+            End If
+
+            ' --- INPUTS / OUTPUTS (skip if OOB; don't fabricate TBs) ---
+            If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length Then placeTbTuple(g.MV1(i), "MV1", g, "MV1", i, rowPanel)
+            If g.MV2 IsNot Nothing AndAlso i < g.MV2.Length Then placeTbTuple(g.MV2(i), "MV2", g, "MV2", i, rowPanel)
+            If g.MV3 IsNot Nothing AndAlso i < g.MV3.Length Then placeTbTuple(g.MV3(i), "MV3", g, "MV3", i, rowPanel)
+
+            If g.Average IsNot Nothing AndAlso i < g.Average.Length Then placeLbTuple2(g.Average(i), "Average", g, "AVG", i, rowPanel)
+            If g.Error IsNot Nothing AndAlso i < g.Error.Length Then placeLbTuple2(g.Error(i), "Error", g, "ERR", i, rowPanel)
+            If g.Tolerance IsNot Nothing AndAlso i < g.Tolerance.Length Then placeTbTuple(g.Tolerance(i), "Tolerance", g, "TOL", i, rowPanel)
+            If g.UpperLimit IsNot Nothing AndAlso i < g.UpperLimit.Length Then placeTbTuple(g.UpperLimit(i), "UpperLimit", g, "UP", i, rowPanel)
+            If g.LowerLimit IsNot Nothing AndAlso i < g.LowerLimit.Length Then placeTbTuple(g.LowerLimit(i), "LowerLimit", g, "LO", i, rowPanel)
+            If g.Remarks IsNot Nothing AndAlso i < g.Remarks.Length Then placeTbTuple(g.Remarks(i), "Remarks", g, "REM", i, rowPanel)
+            If g.FinalUncDecl IsNot Nothing AndAlso i < g.FinalUncDecl.Length Then placeLbTuple2(g.FinalUncDecl(i), "Final_U", g, "UNC", i, rowPanel)
+
+            fl.Controls.Add(rowPanel)
+        End Sub
+
+        ' ---------- Build rows (original insertion order) ----------
+        For Each g In ordered
+            If g Is Nothing Then Continue For
+
+            Dim headerText = $"Sheet: {g.SheetKey}"
+            Dim sheetHdr As New Label() With {
+            .AutoSize = False, .Height = 20, .Width = availW,
+            .Text = headerText,
+            .Font = New Font(Me.Font, FontStyle.Bold)
+        }
+            fl.Controls.Add(sheetHdr)
+            fl.SetFlowBreak(sheetHdr, True)
+
+            Dim nRows As Integer = Math.Max(1, g.TemplateRowCount)
+            For i As Integer = 0 To nRows - 1
+                addRow(g, i)
+            Next
+        Next
+
+        fl.AutoScroll = oldScroll
+        fl.ResumeLayout()
+        fl.PerformLayout()
+    End Sub
+
+    Private Sub ApplyCategoriesAndSelection()
+        If Groups Is Nothing OrElse Groups.Count = 0 Then Exit Sub
+
+        ' ----- helpers -----
+        Dim MakeAddr As Func(Of String, Integer, String) =
+        Function(col As String, r As Integer) $"{col}{r}"
+
+        Dim TryGetRow As Func(Of String, Integer) =
+        Function(addr As String) As Integer
+            If String.IsNullOrWhiteSpace(addr) Then Return -1
+            Dim m = System.Text.RegularExpressions.Regex.Match(addr.Trim(), "^\s*[A-Za-z]+(\d+)\s*$")
+            If Not m.Success Then Return -1
+            Return Integer.Parse(m.Groups(1).Value)
+        End Function
+
+        Dim Stamp As Action(Of Control, String) =
+        Sub(c As Control, addr As String)
+            If c Is Nothing OrElse String.IsNullOrWhiteSpace(addr) Then Exit Sub
+            c.Tag = addr : c.AccessibleName = addr
+            Dim base As String = If(c.Name, "")
+            Dim cut As Integer = base.IndexOf("__", StringComparison.Ordinal)
+            If cut >= 0 Then base = base.Substring(0, cut)
+            c.Name = base & "__" & addr
+        End Sub
+
+        Dim GetAddrLbl As Func(Of (lbl As Label, cell As String)(), Integer, String) =
+        Function(arr, i)
+            If arr Is Nothing OrElse i < 0 OrElse i >= arr.Length Then Return Nothing
+            Return arr(i).cell
+        End Function
+
+        Dim GetAddrTb As Func(Of (tb As TextBox, cell As String)(), Integer, String) =
+        Function(arr, i)
+            If arr Is Nothing OrElse i < 0 OrElse i >= arr.Length Then Return Nothing
+            Return arr(i).cell
+        End Function
+
+        ' Row from a *specific index* using any mapped cell at that index
+        Dim RowFromIndex As Func(Of ParamGroup, Integer, Integer) =
+        Function(g As ParamGroup, i As Integer) As Integer
+            Dim candidates As New List(Of String) From {
+                GetAddrLbl(g.COL_FUNCTION, i),
+                GetAddrLbl(g.RangeLabel, i),
+                GetAddrLbl(g.Nominal, i),
+                GetAddrLbl(g.Unit, i),
+                GetAddrLbl(g.Frequency, i),
+                GetAddrLbl(g.FreqUnit, i),
+                GetAddrTb(g.MV1, i),
+                GetAddrTb(g.MV2, i),
+                GetAddrTb(g.MV3, i),
+                GetAddrTb(g.Tolerance, i),
+                GetAddrTb(g.UpperLimit, i),
+                GetAddrTb(g.LowerLimit, i),
+                GetAddrTb(g.Remarks, i),
+                GetAddrLbl(g.Average, i),
+                GetAddrLbl(g.Error, i),
+                GetAddrLbl(g.FinalUncDecl, i)
+            }
+            For Each a In candidates
+                Dim r = TryGetRow(a)
+                If r > 0 Then Return r
+            Next
+            Return -1
+        End Function
+
+        ' Find the first (starting) row for this group:
+        ' prefer index 0’s mapped cells; otherwise scan the sheet lightly
+        Dim FindStartRow As Func(Of ParamGroup, Object, Integer) =
+        Function(g As ParamGroup, ws As Object) As Integer
+            Dim r0 = RowFromIndex(g, 0)
+            If r0 > 0 Then Return r0
+
+            ' light scan for first non-empty data row (A..F or G..Q)
+            Dim cols() As String = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "N", "O", "P", "Q", "AI"}
+            For r As Integer = 2 To 200
+                For Each col In cols
+                    Dim v = CalRowModule.ReadCell(ws, $"{col}{r}")
+                    If Not String.IsNullOrWhiteSpace(v) Then Return r
+                Next
+            Next
+            Return -1
+        End Function
+
+        For Each kv In Groups
+            Dim g = kv.Value
+            If g Is Nothing Then Continue For
+            Dim sheetName As String = If(String.IsNullOrWhiteSpace(g.SheetKey), kv.Key, g.SheetKey)
+            SetSheetsIfChanged(ctxDc, sheetName)
+            CalRowModule.WithWorksheet(ctxDc,
+            Sub(ws)
+
+                ' how many rows exist in this group
+                Dim n As Integer = 0
+                n = Math.Max(n, If(g.COL_FUNCTION IsNot Nothing, g.COL_FUNCTION.Length, 0))
+                n = Math.Max(n, If(g.RangeLabel IsNot Nothing, g.RangeLabel.Length, 0))
+                n = Math.Max(n, If(g.Nominal IsNot Nothing, g.Nominal.Length, 0))
+                n = Math.Max(n, If(g.Unit IsNot Nothing, g.Unit.Length, 0))
+                n = Math.Max(n, If(g.Frequency IsNot Nothing, g.Frequency.Length, 0))
+                n = Math.Max(n, If(g.FreqUnit IsNot Nothing, g.FreqUnit.Length, 0))
+                n = Math.Max(n, If(g.MV1 IsNot Nothing, g.MV1.Length, 0))
+                n = Math.Max(n, If(g.MV2 IsNot Nothing, g.MV2.Length, 0))
+                n = Math.Max(n, If(g.MV3 IsNot Nothing, g.MV3.Length, 0))
+                n = Math.Max(n, If(g.Average IsNot Nothing, g.Average.Length, 0))
+                n = Math.Max(n, If(g.Error IsNot Nothing, g.Error.Length, 0))
+                n = Math.Max(n, If(g.FinalUncDecl IsNot Nothing, g.FinalUncDecl.Length, 0))
+                n = Math.Max(n, If(g.Tolerance IsNot Nothing, g.Tolerance.Length, 0))
+                n = Math.Max(n, If(g.UpperLimit IsNot Nothing, g.UpperLimit.Length, 0))
+                n = Math.Max(n, If(g.LowerLimit IsNot Nothing, g.LowerLimit.Length, 0))
+                n = Math.Max(n, If(g.Remarks IsNot Nothing, g.Remarks.Length, 0))
+                n = Math.Max(n, Math.Max(1, g.TemplateRowCount))
+
+                ' discover the group start row once
+                Dim startRow As Integer = FindStartRow(g, ws)
+
+                For i As Integer = 0 To n - 1
+                    Dim excelRow As Integer = RowFromIndex(g, i)
+                    If excelRow <= 0 AndAlso startRow > 0 Then excelRow = startRow + i
+                    If excelRow <= 0 Then
+                        SetRowVisible(g, i, False)
+                        Continue For
+                    End If
+
+                    ' ----- LEFT (A..F) -----
+                    Dim a_fn = CalRowModule.ReadCell(ws, MakeAddr("A", excelRow))
+                    Dim b_rng = CalRowModule.ReadCell(ws, MakeAddr("B", excelRow))
+                    Dim c_nom = CalRowModule.ReadCell(ws, MakeAddr("C", excelRow))
+                    Dim d_unit = CalRowModule.ReadCell(ws, MakeAddr("D", excelRow))
+                    Dim e_frq = CalRowModule.ReadCell(ws, MakeAddr("E", excelRow))
+                    Dim f_fu = CalRowModule.ReadCell(ws, MakeAddr("F", excelRow))
+
+                    If g.COL_FUNCTION IsNot Nothing AndAlso i < g.COL_FUNCTION.Length Then
+                        If String.IsNullOrWhiteSpace(g.COL_FUNCTION(i).cell) Then g.COL_FUNCTION(i).cell = "A" & excelRow
+                        If g.COL_FUNCTION(i).lbl IsNot Nothing Then
+                            g.COL_FUNCTION(i).lbl.Text = a_fn : g.COL_FUNCTION(i).lbl.Visible = True
+                            Stamp(g.COL_FUNCTION(i).lbl, g.COL_FUNCTION(i).cell)
+                        End If
+                    End If
+                    If g.RangeLabel IsNot Nothing AndAlso i < g.RangeLabel.Length Then
+                        If String.IsNullOrWhiteSpace(g.RangeLabel(i).cell) Then g.RangeLabel(i).cell = "B" & excelRow
+                        If g.RangeLabel(i).lbl IsNot Nothing Then
+                            g.RangeLabel(i).lbl.Text = b_rng : g.RangeLabel(i).lbl.Visible = True
+                            Stamp(g.RangeLabel(i).lbl, g.RangeLabel(i).cell)
+                        End If
+                    End If
+                    If g.Nominal IsNot Nothing AndAlso i < g.Nominal.Length Then
+                        If String.IsNullOrWhiteSpace(g.Nominal(i).cell) Then g.Nominal(i).cell = "C" & excelRow
+                        If g.Nominal(i).lbl IsNot Nothing Then
+                            g.Nominal(i).lbl.Text = c_nom : g.Nominal(i).lbl.Visible = True
+                            Stamp(g.Nominal(i).lbl, g.Nominal(i).cell)
+                        End If
+                    End If
+                    If g.Unit IsNot Nothing AndAlso i < g.Unit.Length Then
+                        If String.IsNullOrWhiteSpace(g.Unit(i).cell) Then g.Unit(i).cell = "D" & excelRow
+                        If g.Unit(i).lbl IsNot Nothing Then
+                            g.Unit(i).lbl.Text = d_unit : g.Unit(i).lbl.Visible = True
+                            Stamp(g.Unit(i).lbl, g.Unit(i).cell)
+                        End If
+                    End If
+                    If g.Frequency IsNot Nothing AndAlso i < g.Frequency.Length Then
+                        If String.IsNullOrWhiteSpace(g.Frequency(i).cell) Then g.Frequency(i).cell = "E" & excelRow
+                        If g.Frequency(i).lbl IsNot Nothing Then
+                            g.Frequency(i).lbl.Text = e_frq : g.Frequency(i).lbl.Visible = True
+                            Stamp(g.Frequency(i).lbl, g.Frequency(i).cell)
+                        End If
+                    End If
+                    If g.FreqUnit IsNot Nothing AndAlso i < g.FreqUnit.Length Then
+                        If String.IsNullOrWhiteSpace(g.FreqUnit(i).cell) Then g.FreqUnit(i).cell = "F" & excelRow
+                        If g.FreqUnit(i).lbl IsNot Nothing Then
+                            g.FreqUnit(i).lbl.Text = f_fu : g.FreqUnit(i).lbl.Visible = True
+                            Stamp(g.FreqUnit(i).lbl, g.FreqUnit(i).cell)
+                        End If
+                    End If
+
+                    ' ----- RIGHT (computed labels) -----
+                    If g.Average IsNot Nothing AndAlso i < g.Average.Length Then
+                        If String.IsNullOrWhiteSpace(g.Average(i).cell) Then g.Average(i).cell = "J" & excelRow
+                        If g.Average(i).lbl IsNot Nothing Then
+                            g.Average(i).lbl.Text = CalRowModule.ReadCell(ws, g.Average(i).cell)
+                            g.Average(i).lbl.Visible = True
+                            Stamp(g.Average(i).lbl, g.Average(i).cell)
+                        End If
+                    End If
+                    If g.[Error] IsNot Nothing AndAlso i < g.[Error].Length Then
+                        If String.IsNullOrWhiteSpace(g.[Error](i).cell) Then g.[Error](i).cell = "K" & excelRow
+                        If g.[Error](i).lbl IsNot Nothing Then
+                            g.[Error](i).lbl.Text = CalRowModule.ReadCell(ws, g.[Error](i).cell)
+                            g.[Error](i).lbl.Visible = True
+                            Stamp(g.[Error](i).lbl, g.[Error](i).cell)
+                        End If
+                    End If
+                    If g.FinalUncDecl IsNot Nothing AndAlso i < g.FinalUncDecl.Length Then
+                        If String.IsNullOrWhiteSpace(g.FinalUncDecl(i).cell) Then g.FinalUncDecl(i).cell = "AI" & excelRow
+                        If g.FinalUncDecl(i).lbl IsNot Nothing Then
+                            g.FinalUncDecl(i).lbl.Text = CalRowModule.ReadCell(ws, g.FinalUncDecl(i).cell)
+                            g.FinalUncDecl(i).lbl.Visible = True
+                            Stamp(g.FinalUncDecl(i).lbl, g.FinalUncDecl(i).cell)
+                        End If
+                    End If
+
+                    ' ----- RIGHT (inputs/limits/remarks) -----
+                    If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length Then
+                        If String.IsNullOrWhiteSpace(g.MV1(i).cell) Then g.MV1(i).cell = "G" & excelRow
+                        If g.MV1(i).tb IsNot Nothing Then
+                            g.MV1(i).tb.Text = CalRowModule.ReadCell(ws, g.MV1(i).cell)
+                            g.MV1(i).tb.Visible = True
+                            Stamp(g.MV1(i).tb, g.MV1(i).cell)
+                        End If
+                    End If
+                    If g.MV2 IsNot Nothing AndAlso i < g.MV2.Length Then
+                        If String.IsNullOrWhiteSpace(g.MV2(i).cell) Then g.MV2(i).cell = "H" & excelRow
+                        If g.MV2(i).tb IsNot Nothing Then
+                            g.MV2(i).tb.Text = CalRowModule.ReadCell(ws, g.MV2(i).cell)
+                            g.MV2(i).tb.Visible = True
+                            Stamp(g.MV2(i).tb, g.MV2(i).cell)
+                        End If
+                    End If
+                    If g.MV3 IsNot Nothing AndAlso i < g.MV3.Length Then
+                        If String.IsNullOrWhiteSpace(g.MV3(i).cell) Then g.MV3(i).cell = "I" & excelRow
+                        If g.MV3(i).tb IsNot Nothing Then
+                            g.MV3(i).tb.Text = CalRowModule.ReadCell(ws, g.MV3(i).cell)
+                            g.MV3(i).tb.Visible = True
+                            Stamp(g.MV3(i).tb, g.MV3(i).cell)
+                        End If
+                    End If
+                    If g.Tolerance IsNot Nothing AndAlso i < g.Tolerance.Length Then
+                        If String.IsNullOrWhiteSpace(g.Tolerance(i).cell) Then g.Tolerance(i).cell = "N" & excelRow
+                        If g.Tolerance(i).tb IsNot Nothing Then
+                            g.Tolerance(i).tb.Text = CalRowModule.ReadCell(ws, g.Tolerance(i).cell)
+                            g.Tolerance(i).tb.Visible = True
+                            Stamp(g.Tolerance(i).tb, g.Tolerance(i).cell)
+                        End If
+                    End If
+                    If g.UpperLimit IsNot Nothing AndAlso i < g.UpperLimit.Length Then
+                        If String.IsNullOrWhiteSpace(g.UpperLimit(i).cell) Then g.UpperLimit(i).cell = "O" & excelRow
+                        If g.UpperLimit(i).tb IsNot Nothing Then
+                            g.UpperLimit(i).tb.Text = CalRowModule.ReadCell(ws, g.UpperLimit(i).cell)
+                            g.UpperLimit(i).tb.Visible = True
+                            Stamp(g.UpperLimit(i).tb, g.UpperLimit(i).cell)
+                        End If
+                    End If
+                    If g.LowerLimit IsNot Nothing AndAlso i < g.LowerLimit.Length Then
+                        If String.IsNullOrWhiteSpace(g.LowerLimit(i).cell) Then g.LowerLimit(i).cell = "P" & excelRow
+                        If g.LowerLimit(i).tb IsNot Nothing Then
+                            g.LowerLimit(i).tb.Text = CalRowModule.ReadCell(ws, g.LowerLimit(i).cell)
+                            g.LowerLimit(i).tb.Visible = True
+                            Stamp(g.LowerLimit(i).tb, g.LowerLimit(i).cell)
+                        End If
+                    End If
+                    If g.Remarks IsNot Nothing AndAlso i < g.Remarks.Length Then
+                        If String.IsNullOrWhiteSpace(g.Remarks(i).cell) Then g.Remarks(i).cell = "Q" & excelRow
+                        If g.Remarks(i).tb IsNot Nothing Then
+                            g.Remarks(i).tb.Text = CalRowModule.ReadCell(ws, g.Remarks(i).cell)
+                            g.Remarks(i).tb.Visible = True
+                            Stamp(g.Remarks(i).tb, g.Remarks(i).cell)
+                        End If
+                    End If
+
+                    SetRowVisible(g, i, True)
+                Next
+            End Sub)
+        Next
+    End Sub
+
+    ' --- drop-in: set both sheet names only if changed ---
+    Private Sub SetSheetsIfChanged(ctx As CalRowModule.RowContext, name As String)
+        If ctx Is Nothing OrElse String.IsNullOrWhiteSpace(name) Then Exit Sub
+
+        Dim sameInputs = String.Equals(ctx.SheetInputsName, name, StringComparison.OrdinalIgnoreCase)
+        Dim sameFormula = String.Equals(ctx.SheetFormulaName, name, StringComparison.OrdinalIgnoreCase)
+        If sameInputs AndAlso sameFormula Then Exit Sub
+
+        ' if your context exposes a suppression flag, briefly silence events
+        Dim suppressProp = ctx.GetType().GetProperty("SuppressEvents")
+        Dim hadProp As Boolean = False
+        If suppressProp IsNot Nothing Then
+            Try
+                suppressProp.SetValue(ctx, True)
+                hadProp = True
+            Catch
+            End Try
+        End If
+
+        ctx.SheetInputsName = name
+        ctx.SheetFormulaName = name
+
+        If hadProp Then
+            Try : suppressProp.SetValue(ctx, False) : Catch : End Try
+        End If
     End Sub
 
     Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
@@ -748,428 +1271,6 @@ Public Class calibratingResult
         Return names
     End Function
 
-    ' Treat a row as “empty” only if there are no descriptor texts
-    ' AND no MV textboxes exist for that index (or all are Nothing).
-    Private Function IsRowTrulyEmpty(g As ParamGroup, i As Integer) As Boolean
-        If g Is Nothing Then Return True
-
-        Dim descEmpty As Boolean =
-        (g.COL_FUNCTION Is Nothing OrElse i >= g.COL_FUNCTION.Length OrElse g.COL_FUNCTION(i).lbl Is Nothing OrElse String.IsNullOrWhiteSpace(g.COL_FUNCTION(i).lbl.Text)) AndAlso
-        (g.RangeLabel Is Nothing OrElse i >= g.RangeLabel.Length OrElse g.RangeLabel(i).lbl Is Nothing OrElse String.IsNullOrWhiteSpace(g.RangeLabel(i).lbl.Text)) AndAlso
-        (g.Nominal Is Nothing OrElse i >= g.Nominal.Length OrElse g.Nominal(i).lbl Is Nothing OrElse String.IsNullOrWhiteSpace(g.Nominal(i).lbl.Text)) AndAlso
-        (g.Unit Is Nothing OrElse i >= g.Unit.Length OrElse g.Unit(i).lbl Is Nothing OrElse String.IsNullOrWhiteSpace(g.Unit(i).lbl.Text)) AndAlso
-        (g.Frequency Is Nothing OrElse i >= g.Frequency.Length OrElse g.Frequency(i).lbl Is Nothing OrElse String.IsNullOrWhiteSpace(g.Frequency(i).lbl.Text)) AndAlso
-        (g.FreqUnit Is Nothing OrElse i >= g.FreqUnit.Length OrElse g.FreqUnit(i).lbl Is Nothing OrElse String.IsNullOrWhiteSpace(g.FreqUnit(i).lbl.Text))
-
-        Dim mvMissing As Boolean =
-        (g.MV1 Is Nothing OrElse i >= g.MV1.Length OrElse g.MV1(i).tb Is Nothing) AndAlso
-        (g.MV2 Is Nothing OrElse i >= g.MV2.Length OrElse g.MV2(i).tb Is Nothing) AndAlso
-        (g.MV3 Is Nothing OrElse i >= g.MV3.Length OrElse g.MV3(i).tb Is Nothing)
-
-        Return descEmpty AndAlso mvMissing
-    End Function
-
-    ' --- Render your existing preview UI into a specific FlowLayoutPanel ---
-    ' This is your current PopulatePreviewPanel logic, trimmed to render into "fl".
-    Private Sub PopulatePreview(Optional target As FlowLayoutPanel = Nothing)
-        ' Resolve target
-        Dim fl As FlowLayoutPanel = target
-        If fl Is Nothing Then
-            fl = TryCast(Me.Controls.Find("previewcalibrating", True).FirstOrDefault(), FlowLayoutPanel)
-            If fl Is Nothing Then Exit Sub
-            fl.Visible = True
-        End If
-
-        fl.SuspendLayout()
-        fl.FlowDirection = FlowDirection.TopDown
-        fl.WrapContents = False
-        Dim oldScroll = fl.AutoScroll
-        fl.AutoScroll = False
-        fl.Controls.Clear()
-
-        ' Robust width (tabs can be 0 on first layout)
-        Dim availW As Integer = fl.DisplayRectangle.Width
-        If availW <= 0 Then
-            availW = If(fl.Parent IsNot Nothing, fl.Parent.ClientSize.Width, 800)
-        End If
-        availW = Math.Max(200, availW - fl.Padding.Horizontal - SystemInformation.VerticalScrollBarWidth)
-
-        ' ===== Header =====
-        Dim colLeft As New Dictionary(Of String, Integer)
-        Dim colWidth As New Dictionary(Of String, Integer)
-
-        Dim hdr As New Panel() With {.Height = 22, .Width = availW}
-        Dim x As Integer = 0
-        Dim addHdr = Sub(text As String, left As Integer, width As Integer)
-                         Dim lbl As New Label() With {
-                         .AutoSize = False, .Text = text, .Left = left, .Top = 2,
-                         .Width = width, .Font = New Font(Me.Font, FontStyle.Bold)
-                     }
-                         hdr.Controls.Add(lbl)
-                     End Sub
-        Dim addCol = Sub(key As String, w As Integer)
-                         addHdr(key, x, w) : colLeft(key) = x : colWidth(key) = w : x += w
-                     End Sub
-
-        addCol("Function", 100)
-        addCol("RangeLabel", 80)
-        addCol("Nominal", 80)
-        addCol("Unit", 80)
-        addCol("Frequency", 80)
-        addCol("FreqUnit", 80)
-        addCol("MV1", 80)
-        addCol("MV2", 80)
-        addCol("MV3", 80)
-        addCol("Average", 120)
-        addCol("Error", 120)
-        addCol("Tolerance", 120)
-        addCol("UpperLimit", 120)
-        addCol("LowerLimit", 120)
-        addCol("Remarks", 100)
-        addCol("Final_U", 120)
-
-        fl.Controls.Add(hdr)
-        fl.SetFlowBreak(hdr, True)
-
-        ' ===== Row builder (single row, no Ensure* helpers) =====
-        Dim addRow =
-    Sub(g As ParamGroup, i As Integer)
-        If g Is Nothing Then Exit Sub
-
-        Dim rowPanel As New Panel() With {
-            .Margin = New Padding(0, 0, 0, 6),
-            .Padding = New Padding(0),
-            .BorderStyle = BorderStyle.FixedSingle,
-            .Width = availW,
-            .Height = 26,
-            .BackColor = Color.FromArgb(248, 248, 248)
-        }
-
-        ' Pull texts already set by ApplyCategoriesAndSelection()
-        Dim rngTxt As String = If(g.RangeLabel IsNot Nothing AndAlso i < g.RangeLabel.Length AndAlso g.RangeLabel(i).lbl IsNot Nothing, g.RangeLabel(i).lbl.Text, "")
-        Dim fnTxt As String = If(g.COL_FUNCTION IsNot Nothing AndAlso i < g.COL_FUNCTION.Length AndAlso g.COL_FUNCTION(i).lbl IsNot Nothing, g.COL_FUNCTION(i).lbl.Text, "")
-        Dim nomTxt As String = If(g.Nominal IsNot Nothing AndAlso i < g.Nominal.Length AndAlso g.Nominal(i).lbl IsNot Nothing, g.Nominal(i).lbl.Text, "")
-        Dim untTxt As String = If(g.Unit IsNot Nothing AndAlso i < g.Unit.Length AndAlso g.Unit(i).lbl IsNot Nothing, g.Unit(i).lbl.Text, "")
-        Dim frqTxt As String = If(g.Frequency IsNot Nothing AndAlso i < g.Frequency.Length AndAlso g.Frequency(i).lbl IsNot Nothing, g.Frequency(i).lbl.Text, "")
-        Dim fuTxt As String = If(g.FreqUnit IsNot Nothing AndAlso i < g.FreqUnit.Length AndAlso g.FreqUnit(i).lbl IsNot Nothing, g.FreqUnit(i).lbl.Text, "")
-
-        ' Tuple-based label placer
-        Dim placeLblTuple = Sub(ByRef tup As (Label, String), key As String, value As String, baseName As String)
-                                If tup.Item1 Is Nothing Then
-                                    tup.Item1 = New Label() With {.Name = $"{baseName}_{i}", .AutoSize = False, .Height = 20}
-                                End If
-                                tup.Item1.Text = value
-                                tup.Item1.Visible = True
-                                tup.Item1.Parent = rowPanel
-                                tup.Item1.Left = colLeft(key)
-                                tup.Item1.Top = 4
-                                tup.Item1.Width = colWidth(key)
-                            End Sub
-
-        ' ---- Use a DISTINCT scratch tuple per missing column (no reuse!) ----
-        Dim tmpFn As (Label, String)
-        Dim tmpRng As (Label, String)
-        Dim tmpNom As (Label, String)
-        Dim tmpUnt As (Label, String)
-        Dim tmpFrq As (Label, String)
-        Dim tmpFU As (Label, String)
-
-        If g.COL_FUNCTION IsNot Nothing AndAlso i < g.COL_FUNCTION.Length Then
-            placeLblTuple(g.COL_FUNCTION(i), "Function", fnTxt, "COL_FUNCTION")
-        Else
-            placeLblTuple(tmpFn, "Function", fnTxt, "COL_FUNCTION")
-        End If
-
-        If g.RangeLabel IsNot Nothing AndAlso i < g.RangeLabel.Length Then
-            placeLblTuple(g.RangeLabel(i), "RangeLabel", rngTxt, "RANGE")
-        Else
-            placeLblTuple(tmpRng, "RangeLabel", rngTxt, "RANGE")
-        End If
-
-        If g.Nominal IsNot Nothing AndAlso i < g.Nominal.Length Then
-            placeLblTuple(g.Nominal(i), "Nominal", nomTxt, "NOM")
-        Else
-            placeLblTuple(tmpNom, "Nominal", nomTxt, "NOM")
-        End If
-
-        If g.Unit IsNot Nothing AndAlso i < g.Unit.Length Then
-            placeLblTuple(g.Unit(i), "Unit", untTxt, "UNIT")
-        Else
-            placeLblTuple(tmpUnt, "Unit", untTxt, "UNIT")
-        End If
-
-        If g.Frequency IsNot Nothing AndAlso i < g.Frequency.Length Then
-            placeLblTuple(g.Frequency(i), "Frequency", frqTxt, "FREQ")
-        Else
-            placeLblTuple(tmpFrq, "Frequency", frqTxt, "FREQ")
-        End If
-
-        If g.FreqUnit IsNot Nothing AndAlso i < g.FreqUnit.Length Then
-            placeLblTuple(g.FreqUnit(i), "FreqUnit", fuTxt, "FUNIT")
-        Else
-            placeLblTuple(tmpFU, "FreqUnit", fuTxt, "FUNIT")
-        End If
-
-        ' --- ReDim guards for MV/results ---
-        If g.MV1 Is Nothing OrElse i >= g.MV1.Length Then ReDim Preserve g.MV1(Math.Max(i, If(g.MV1?.Length, 0)))
-        If g.MV2 Is Nothing OrElse i >= g.MV2.Length Then ReDim Preserve g.MV2(Math.Max(i, If(g.MV2?.Length, 0)))
-        If g.MV3 Is Nothing OrElse i >= g.MV3.Length Then ReDim Preserve g.MV3(Math.Max(i, If(g.MV3?.Length, 0)))
-        If g.Tolerance Is Nothing OrElse i >= g.Tolerance.Length Then ReDim Preserve g.Tolerance(Math.Max(i, If(g.Tolerance?.Length, 0)))
-        If g.UpperLimit Is Nothing OrElse i >= g.UpperLimit.Length Then ReDim Preserve g.UpperLimit(Math.Max(i, If(g.UpperLimit?.Length, 0)))
-        If g.LowerLimit Is Nothing OrElse i >= g.LowerLimit.Length Then ReDim Preserve g.LowerLimit(Math.Max(i, If(g.LowerLimit?.Length, 0)))
-        If g.Remarks Is Nothing OrElse i >= g.Remarks.Length Then ReDim Preserve g.Remarks(Math.Max(i, If(g.Remarks?.Length, 0)))
-        If g.Average Is Nothing OrElse i >= g.Average.Length Then ReDim Preserve g.Average(Math.Max(i, If(g.Average?.Length, 0)))
-        If g.Error Is Nothing OrElse i >= g.Error.Length Then ReDim Preserve g.Error(Math.Max(i, If(g.Error?.Length, 0)))
-        If g.FinalUncDecl Is Nothing OrElse i >= g.FinalUncDecl.Length Then ReDim Preserve g.FinalUncDecl(Math.Max(i, If(g.FinalUncDecl?.Length, 0)))
-
-        ' placers for TB/LB
-        Dim placeTbTuple = Sub(ByRef tup As (TextBox, String), key As String, baseName As String)
-                               If tup.Item1 Is Nothing Then
-                                   tup.Item1 = New TextBox() With {.Name = $"{baseName}_{i}", .Width = colWidth(key) - 6}
-                               End If
-                               tup.Item1.Visible = True
-                               tup.Item1.Parent = rowPanel
-                               tup.Item1.Left = colLeft(key) + 3
-                               tup.Item1.Top = 2
-                           End Sub
-        Dim placeLbTuple2 = Sub(ByRef tup As (Label, String), key As String, baseName As String)
-                                If tup.Item1 Is Nothing Then
-                                    tup.Item1 = New Label() With {.Name = $"{baseName}_{i}", .AutoSize = False, .Height = 20}
-                                End If
-                                tup.Item1.Visible = True
-                                tup.Item1.Parent = rowPanel
-                                tup.Item1.Left = colLeft(key)
-                                tup.Item1.Top = 4
-                                tup.Item1.Width = colWidth(key)
-                            End Sub
-
-        ' MV inputs / results
-        placeTbTuple(g.MV1(i), "MV1", "MV1")
-        placeTbTuple(g.MV2(i), "MV2", "MV2")
-        placeTbTuple(g.MV3(i), "MV3", "MV3")
-        placeLbTuple2(g.Average(i), "Average", "AVG")
-        placeLbTuple2(g.Error(i), "Error", "ERR")
-        placeTbTuple(g.Tolerance(i), "Tolerance", "TOL")
-        placeTbTuple(g.UpperLimit(i), "UpperLimit", "UP")
-        placeTbTuple(g.LowerLimit(i), "LowerLimit", "LO")
-        placeTbTuple(g.Remarks(i), "Remarks", "REM")
-        placeLbTuple2(g.FinalUncDecl(i), "Final_U", "UNC")
-
-        fl.Controls.Add(rowPanel)
-    End Sub
-
-        ' ===== Build rows inline =====
-        Dim totalPanels As Integer = 0
-
-        For Each kv In Groups
-            Dim sheetName = kv.Key
-            Dim g = kv.Value
-            If g Is Nothing Then Continue For
-
-            ' --- per-sheet header ---
-            Dim sheetHdr As New Label() With {
-                .AutoSize = False, .Height = 20, .Width = availW,
-                .Text = $"Sheet: {sheetName}",
-                .Font = New Font(Me.Font, FontStyle.Bold)
-            }
-            fl.Controls.Add(sheetHdr)
-            fl.SetFlowBreak(sheetHdr, True)
-
-            ' --- how many rows? take max across mapped arrays ---
-            Dim n As Integer = 0
-            n = Math.Max(n, If(g.COL_FUNCTION IsNot Nothing, g.COL_FUNCTION.Length, 0))
-            n = Math.Max(n, If(g.RangeLabel IsNot Nothing, g.RangeLabel.Length, 0))
-            n = Math.Max(n, If(g.Nominal IsNot Nothing, g.Nominal.Length, 0))
-            n = Math.Max(n, If(g.Unit IsNot Nothing, g.Unit.Length, 0))
-            n = Math.Max(n, If(g.Frequency IsNot Nothing, g.Frequency.Length, 0))
-            n = Math.Max(n, If(g.FreqUnit IsNot Nothing, g.FreqUnit.Length, 0))
-            n = Math.Max(n, If(g.MV1 IsNot Nothing, g.MV1.Length, 0))
-            n = Math.Max(n, If(g.MV2 IsNot Nothing, g.MV2.Length, 0))
-            n = Math.Max(n, If(g.MV3 IsNot Nothing, g.MV3.Length, 0))
-            n = Math.Max(n, If(g.Average IsNot Nothing, g.Average.Length, 0))
-            n = Math.Max(n, If(g.Error IsNot Nothing, g.Error.Length, 0))
-            n = Math.Max(n, If(g.FinalUncDecl IsNot Nothing, g.FinalUncDecl.Length, 0))
-            n = Math.Max(n, If(g.Tolerance IsNot Nothing, g.Tolerance.Length, 0))
-            n = Math.Max(n, If(g.UpperLimit IsNot Nothing, g.UpperLimit.Length, 0))
-            n = Math.Max(n, If(g.LowerLimit IsNot Nothing, g.LowerLimit.Length, 0))
-            n = Math.Max(n, If(g.Remarks IsNot Nothing, g.Remarks.Length, 0))
-
-            ' >>> ensure we render at least as many rows as the sheet has
-            n = Math.Max(n, Math.Max(1, g.TemplateRowCount))
-
-            ' --- add all rows for this sheet ---
-            For i As Integer = 0 To n - 1
-                addRow(g, i)
-                totalPanels += 1
-            Next
-        Next
-
-        fl.AutoScroll = oldScroll
-        fl.ResumeLayout()
-        fl.PerformLayout()
-
-    End Sub
-
-    Private Sub ApplyCategoriesAndSelection()
-
-        ' ---------- tiny helpers ----------
-        Dim TrimMatch As Func(Of System.Text.RegularExpressions.Regex, String, String) =
-    Function(rx As System.Text.RegularExpressions.Regex, src As String) As String
-        If rx Is Nothing OrElse String.IsNullOrEmpty(src) Then Return ""
-        Dim m = rx.Match(src)
-        If Not m.Success OrElse m.Groups.Count < 2 Then Return ""
-        Return m.Groups(1).Value.Trim()
-    End Function
-
-        Dim NormTxt As Func(Of String, String) =
-    Function(s As String) As String
-        s = If(s, "").Trim()
-        s = System.Text.RegularExpressions.Regex.Replace(s, "\s+", " ")
-        Return s.ToUpperInvariant()
-    End Function
-
-        Dim NormNum As Func(Of String, String) =
-    Function(s As String) As String
-        s = If(s, "")
-        s = System.Text.RegularExpressions.Regex.Replace(s, "(?<=\d)\s+(?=\d)", ".") ' 6 45 -> 6.45
-        s = s.Replace(" ", "").Replace(",", ".")
-        s = System.Text.RegularExpressions.Regex.Replace(s, "([+-]?[0-9]*\.?[0-9]+).*", "$1")
-        Return s
-    End Function
-
-        Dim MakeAddr As Func(Of String, Integer, String) =
-    Function(col As String, r As Integer) $"{col}{r}"
-
-        ' map preview row index -> real Excel row number (from any MV mapping)
-        Dim RowFromGroupIndex As Func(Of ParamGroup, Integer, Integer) =
-    Function(g As ParamGroup, i As Integer) As Integer
-        Dim addr As String = Nothing
-        If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length Then addr = g.MV1(i).cell
-        If String.IsNullOrWhiteSpace(addr) AndAlso g.MV2 IsNot Nothing AndAlso i < g.MV2.Length Then addr = g.MV2(i).cell
-        If String.IsNullOrWhiteSpace(addr) AndAlso g.MV3 IsNot Nothing AndAlso i < g.MV3.Length Then addr = g.MV3(i).cell
-        If String.IsNullOrWhiteSpace(addr) Then Return -1
-        Return GetRowFromAddr(addr)
-    End Function
-
-        ' helper to get array length safely
-        Dim L As Func(Of Object, Integer) =
-    Function(a As Object) As Integer
-        If a Is Nothing Then Return 0
-        Dim t = a.GetType()
-        If t.IsArray Then Return CType(a, Array).Length
-        Return 0
-    End Function
-
-        ' ---------- per-sheet fill: switch to each group's sheet, then read & write ----------
-        For Each kv In Groups
-            Dim sheetName = kv.Key
-            Dim g = kv.Value
-            If g Is Nothing Then Continue For
-
-            ' point context to this sheet
-            ctxDc.SheetInputsName = sheetName
-            ctxDc.SheetFormulaName = sheetName
-
-            CalRowModule.WithWorksheet(ctxDc,
-        Sub(ws As Object)
-
-            ' set label if present; always buffer into tuple Item2 if slot exists
-            Dim SetOrBuffer = Sub(ByRef arr As (Label, String)(), idx As Integer, value As String)
-                                  If arr IsNot Nothing AndAlso idx < arr.Length Then
-                                      arr(idx).Item2 = value
-                                      If arr(idx).Item1 IsNot Nothing Then
-                                          arr(idx).Item1.Text = value
-                                      End If
-                                  End If
-                              End Sub
-
-            ' determine number of rows = max length across ALL mapped columns
-            Dim n As Integer = 0
-            n = Math.Max(n, L(g.COL_FUNCTION))
-            n = Math.Max(n, L(g.RangeLabel))
-            n = Math.Max(n, L(g.Nominal))
-            n = Math.Max(n, L(g.Unit))
-            n = Math.Max(n, L(g.Frequency))
-            n = Math.Max(n, L(g.FreqUnit))
-
-            n = Math.Max(n, L(g.MV1))
-            n = Math.Max(n, L(g.MV2))
-            n = Math.Max(n, L(g.MV3))
-
-            ' if you map outputs/limits/remarks, include them too:
-            n = Math.Max(n, L(g.Average))
-            n = Math.Max(n, L(g.Error))
-            n = Math.Max(n, L(g.FinalUncDecl))
-            n = Math.Max(n, L(g.Tolerance))
-            n = Math.Max(n, L(g.UpperLimit))
-            n = Math.Max(n, L(g.LowerLimit))
-            n = Math.Max(n, L(g.Remarks))
-
-            If n = 0 Then Return
-            n = Math.Max(n, Math.Max(1, g.TemplateRowCount))
-            ' --- FILL RIGHT-SIDE FIELDS FROM THEIR MAPPED CELLS (if present) ---
-            Dim writeTbFromCell = Sub(ByRef arr As (tb As WinForms.TextBox, cell As String)(), idx As Integer)
-                                      If arr Is Nothing OrElse idx >= arr.Length Then Exit Sub
-                                      If arr(idx).tb Is Nothing Then Exit Sub                 ' bail before ReadCell
-                                      Dim addr = arr(idx).cell
-                                      If String.IsNullOrWhiteSpace(addr) Then Exit Sub
-                                      Dim val = CalRowModule.ReadCell(ws, addr)
-                                      arr(idx).tb.Text = CStr(val)
-                                  End Sub
-
-            Dim writeLbFromCell = Sub(ByRef arr As (lbl As WinForms.Label, cell As String)(), idx As Integer)
-                                      If arr Is Nothing OrElse idx >= arr.Length Then Exit Sub
-                                      If arr(idx).lbl Is Nothing Then Exit Sub                ' bail before ReadCell
-                                      Dim addr = arr(idx).cell
-                                      If String.IsNullOrWhiteSpace(addr) Then Exit Sub
-                                      Dim val = CalRowModule.ReadCell(ws, addr)
-                                      arr(idx).lbl.Text = CStr(val)
-                                  End Sub
-
-            ' --- per-row pass ---
-            For i As Integer = 0 To n - 1
-                Dim excelRow = RowFromGroupIndex(g, i)
-                If excelRow > 0 Then
-                    ' READ TEMPLATE A..F via ReadCell (from this sheet)
-                    Dim a_fn As String = CalRowModule.ReadCell(ws, MakeAddr("A", excelRow))
-                    Dim b_rng As String = CalRowModule.ReadCell(ws, MakeAddr("B", excelRow))
-                    Dim c_nom As String = CalRowModule.ReadCell(ws, MakeAddr("C", excelRow))
-                    Dim d_unit As String = CalRowModule.ReadCell(ws, MakeAddr("D", excelRow))
-                    Dim e_frq As String = CalRowModule.ReadCell(ws, MakeAddr("E", excelRow))
-                    Dim f_frqU As String = CalRowModule.ReadCell(ws, MakeAddr("F", excelRow))
-
-                    ' WRITE LEFT LABELS (label-if-present + buffer Item2)
-                    SetLabelTextIfPresent(GetMappedLabel(g.COL_FUNCTION, i), a_fn) : SetOrBuffer(g.COL_FUNCTION, i, a_fn)
-                    SetLabelTextIfPresent(GetMappedLabel(g.RangeLabel, i), b_rng) : SetOrBuffer(g.RangeLabel, i, b_rng)
-                    SetLabelTextIfPresent(GetMappedLabel(g.Nominal, i), c_nom) : SetOrBuffer(g.Nominal, i, c_nom)
-                    SetLabelTextIfPresent(GetMappedLabel(g.Unit, i), d_unit) : SetOrBuffer(g.Unit, i, d_unit)
-                    SetLabelTextIfPresent(GetMappedLabel(g.Frequency, i), e_frq) : SetOrBuffer(g.Frequency, i, e_frq)
-                    SetLabelTextIfPresent(GetMappedLabel(g.FreqUnit, i), f_frqU) : SetOrBuffer(g.FreqUnit, i, f_frqU)
-                End If
-
-                ' right-side fields (only if controls exist)
-                writeLbFromCell(g.Average, i)
-                writeLbFromCell(g.[Error], i)
-                writeLbFromCell(g.FinalUncDecl, i)
-
-                writeTbFromCell(g.Tolerance, i)
-                writeTbFromCell(g.UpperLimit, i)
-                writeTbFromCell(g.LowerLimit, i)
-                writeTbFromCell(g.Remarks, i)
-
-                ' show row
-                SetRowVisible(g, i, True)
-            Next
-        End Sub)
-        Next
-
-        ' Refresh the preview
-        Dim fl = TryCast(Me.Controls.Find("previewcalibrating", True).FirstOrDefault(), FlowLayoutPanel)
-        fl?.PerformLayout()
-        fl?.Refresh()
-
-    End Sub
-
 #End Region
 
 #Region "Portable Job_Export helpers"
@@ -1197,7 +1298,7 @@ Public Class calibratingResult
         ' Examples:
         ' Return $"CalReport_{NormalizeFile(WorkOrderNumber)}.xlsx"
         ' Return $"Cal_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}_{DateTime.Now:yyyyMMdd}.xlsx"
-        Return $"CalibrationReport_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}.xlsx"
+        Return $"CalReport_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}.xlsx"
     End Function
 
     ' Mirrors a saved file into the Job_Export folder (portable)
@@ -1212,26 +1313,26 @@ Public Class calibratingResult
         End Try
     End Sub
 
-    ' Read descriptor labels (Function / Range / Nominal / Unit / Frequency / FreqUnit)
-    ' using the same row as the MV cells (we derive the row from MV1/MV2/MV3 mapping).
-    Private Sub ReadDescriptorRow(ws As Object, g As Object, i As Integer)
-        Dim pg = DirectCast(g, Object)
+    '' Read descriptor labels (Function / Range / Nominal / Unit / Frequency / FreqUnit)
+    '' using the same row as the MV cells (we derive the row from MV1/MV2/MV3 mapping).
+    'Private Sub ReadDescriptorRow(ws As Object, g As Object, i As Integer)
+    '    Dim pg = DirectCast(g, Object)
 
-        ' Figure out which row to read (use MV1/MV2/MV3 mapped cells)
-        Dim rowNum As Integer = -1
-        Try
-            If pg.MV1 IsNot Nothing AndAlso i < pg.MV1.Length AndAlso pg.MV1(i).cell IsNot Nothing Then
-                rowNum = GetRowFromAddr(pg.MV1(i).cell)
-            ElseIf pg.MV2 IsNot Nothing AndAlso i < pg.MV2.Length AndAlso pg.MV2(i).cell IsNot Nothing Then
-                rowNum = GetRowFromAddr(pg.MV2(i).cell)
-            ElseIf pg.MV3 IsNot Nothing AndAlso i < pg.MV3.Length AndAlso pg.MV3(i).cell IsNot Nothing Then
-                rowNum = GetRowFromAddr(pg.MV3(i).cell)
-            End If
-        Catch
-        End Try
-        If rowNum <= 0 Then Exit Sub
+    '    ' Figure out which row to read (use MV1/MV2/MV3 mapped cells)
+    '    Dim rowNum As Integer = -1
+    '    Try
+    '        If pg.MV1 IsNot Nothing AndAlso i < pg.MV1.Length AndAlso pg.MV1(i).cell IsNot Nothing Then
+    '            rowNum = GetRowFromAddr(pg.MV1(i).cell)
+    '        ElseIf pg.MV2 IsNot Nothing AndAlso i < pg.MV2.Length AndAlso pg.MV2(i).cell IsNot Nothing Then
+    '            rowNum = GetRowFromAddr(pg.MV2(i).cell)
+    '        ElseIf pg.MV3 IsNot Nothing AndAlso i < pg.MV3.Length AndAlso pg.MV3(i).cell IsNot Nothing Then
+    '            rowNum = GetRowFromAddr(pg.MV3(i).cell)
+    '        End If
+    '    Catch
+    '    End Try
+    '    If rowNum <= 0 Then Exit Sub
 
-    End Sub
+    'End Sub
 
 #End Region
 
@@ -1432,49 +1533,6 @@ Public Class calibratingResult
     ' Collect per-row elapsed times in order
     Private rowTimes As New List(Of (Key As String, Elapsed As TimeSpan))
 
-    Private Sub OnDcComputeTimerTick(sender As Object, e As EventArgs)
-        dcComputeTimer.Stop()
-        Try
-            If dcTargetRowForTick > 0 Then ctxDc.TargetRow = dcTargetRowForTick
-            CalRowModule.RecalculateNow(ctxDc)
-        Finally
-            Me.Cursor = Cursors.Default
-
-            ' Inline “did anything compute?” check using existing fields
-            If currentGroup IsNot Nothing AndAlso currentRowIdx >= 0 Then
-                Dim anyComputed As Boolean = False
-
-                If currentGroup.Average IsNot Nothing AndAlso currentRowIdx < currentGroup.Average.Length Then
-                    If currentGroup.Average(currentRowIdx).lbl IsNot Nothing AndAlso
-           Not String.IsNullOrWhiteSpace(currentGroup.Average(currentRowIdx).lbl.Text) Then anyComputed = True
-                End If
-                If Not anyComputed AndAlso currentGroup.Error IsNot Nothing AndAlso currentRowIdx < currentGroup.Error.Length Then
-                    If currentGroup.Error(currentRowIdx).lbl IsNot Nothing AndAlso
-           Not String.IsNullOrWhiteSpace(currentGroup.Error(currentRowIdx).lbl.Text) Then anyComputed = True
-                End If
-                If Not anyComputed AndAlso currentGroup.FinalUncDecl IsNot Nothing AndAlso currentRowIdx < currentGroup.FinalUncDecl.Length Then
-                    If currentGroup.FinalUncDecl(currentRowIdx).lbl IsNot Nothing AndAlso
-           Not String.IsNullOrWhiteSpace(currentGroup.FinalUncDecl(currentRowIdx).lbl.Text) Then anyComputed = True
-                End If
-
-                ' If nothing populated in the Preview controls, reuse your existing preview/list UI refresh if you already have one.
-                ' (No new helpers added; just call your existing routine if present.)
-                ' Example (keep the name you already use):
-                ' If Not anyComputed Then RefreshPreviewUI() Else RefreshPreviewRowUI(currentGroup, currentRowIdx)
-            End If
-            ' Continue the nominal sequence after the compute for that row finishes
-            If nomSeqActive AndAlso nomSeqWaitingCompute Then
-                nomSeqWaitingCompute = False
-                If nomSeqTimer IsNot Nothing Then
-                    nomSeqTimer.Stop()
-                    nomSeqTimer.Start()
-                End If
-            End If
-
-        End Try
-
-    End Sub
-
 #End Region
 
 #Region "Row helpers & visibility" '---------need ko pang iedit kasi meron mga nagaappear na hindi na select sa calibrate
@@ -1500,12 +1558,7 @@ Public Class calibratingResult
                              Dim lb = a(idx).lbl : If lb IsNot Nothing Then lb.Visible = visible
                          End Sub
 
-        showLbl(g.RangeLabel) : showLbl(g.COL_FUNCTION) : showLbl(g.Nominal)
-        showLbl(g.Unit) : showLbl(g.Frequency) : showLbl(g.FreqUnit)
-
-        showTb(g.MV1) : showTb(g.MV2) : showTb(g.MV3)
-        showOutLbl(g.Average) : showOutLbl(g.Error) : showOutLbl(g.FinalUncDecl)
-        showTb(g.Tolerance) : showTb(g.UpperLimit) : showTb(g.LowerLimit) : showTb(g.Remarks)
+        showLbl(g.RangeLabel) : showLbl(g.COL_FUNCTION) : showLbl(g.Nominal) : showLbl(g.Unit) : showLbl(g.Frequency) : showLbl(g.FreqUnit) : showTb(g.MV1) : showTb(g.MV2) : showTb(g.MV3) : showOutLbl(g.Average) : showOutLbl(g.Error) : showOutLbl(g.FinalUncDecl) : showTb(g.Tolerance) : showTb(g.UpperLimit) : showTb(g.LowerLimit) : showTb(g.Remarks)
     End Sub
 
     Private Sub FocusAdvance(g As ParamGroup, row As Integer, currentTb As WinForms.TextBox)
@@ -1654,21 +1707,21 @@ Public Class calibratingResult
         End Try
     End Function
 
-    Private Sub WriteAllVisibleInputs(ws As Object, g As ParamGroup)
-        If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
-        For i As Integer = 0 To g.MV1.Length - 1
-            Dim tb1 As TextBox = g.MV1(i).tb
-            If tb1 IsNot Nothing AndAlso tb1.Visible Then WriteInputsRow(ws, g, i)
-        Next
-    End Sub
+    'Private Sub WriteAllVisibleInputs(ws As Object, g As ParamGroup)
+    '    If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
+    '    For i As Integer = 0 To g.MV1.Length - 1
+    '        Dim tb1 As TextBox = g.MV1(i).tb
+    '        If tb1 IsNot Nothing AndAlso tb1.Visible Then WriteInputsRow(ws, g, i)
+    '    Next
+    'End Sub
 
-    Private Sub ReadAllOutputsForVisibleRows(ws As Object, g As ParamGroup)
-        If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
-        For i As Integer = 0 To g.MV1.Length - 1
-            Dim tb1 As TextBox = g.MV1(i).tb
-            If tb1 IsNot Nothing AndAlso tb1.Visible Then ReadOutputsRow(ws, g, i)
-        Next
-    End Sub
+    'Private Sub ReadAllOutputsForVisibleRows(ws As Object, g As ParamGroup)
+    '    If g Is Nothing OrElse g.MV1 Is Nothing Then Exit Sub
+    '    For i As Integer = 0 To g.MV1.Length - 1
+    '        Dim tb1 As TextBox = g.MV1(i).tb
+    '        If tb1 IsNot Nothing AndAlso tb1.Visible Then ReadOutputsRow(ws, g, i)
+    '    Next
+    'End Sub
 
     Private Sub WriteCell(ws As Object, addr As String, value As String)
         Dim cell = CallByName(ws, "Range", CallType.Get, addr)
@@ -1910,189 +1963,263 @@ Public Class calibratingResult
 
             ' ---------- ONE capture+OCR ----------
             Dim CaptureReadingOnce As Func(Of Boolean) =
-            Function() As Boolean
-                capReadingNoUnit = "" : capRangeNoUnit = ""
+        Function() As Boolean
+            capReadingNoUnit = "" : capRangeNoUnit = ""
 
-                ' --- Capture frame ---
-                Try
-                    If videoSource IsNot Nothing Then
-                        RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
-                        If videoSource.IsRunning Then
-                            videoSource.SignalToStop()
-                            videoSource.WaitForStop()
-                        End If
-                    End If
-                    Dim cam = CreatePreferredCamera()
-                    If cam IsNot Nothing Then
-                        videoSource = cam
-                        AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
-                        videoSource.Start()
-                        Threading.Thread.Sleep(500)
-                    End If
-                Catch
-                End Try
-
-                ' --- Save a frame ---
-                Dim baseDir As String = "C:\CapImg"
-                If Not IO.Directory.Exists(baseDir) Then IO.Directory.CreateDirectory(baseDir)
-                Dim capturePath As String = IO.Path.Combine(baseDir, $"{DateTime.Now:yyHHmmss_fff}.jpg")
-
-                Dim toSave As Bitmap = Nothing
-                SyncLock latestFrameLock
-                    If latestFrame IsNot Nothing Then
-                        toSave = DirectCast(latestFrame.Clone(), Bitmap)
-                    End If
-                End SyncLock
-
-                If toSave Is Nothing AndAlso PictureBox1.Image IsNot Nothing Then
-                    toSave = DirectCast(PictureBox1.Image.Clone(), Bitmap)
-                End If
-
-                If toSave Is Nothing Then
-                    MessageBox.Show("Camera frame is empty.", "Capture", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                    Return False
-                End If
-
-                Try
-                    toSave.Save(capturePath, Imaging.ImageFormat.Jpeg)
-                Catch ex As Exception
-                    MessageBox.Show("Failed to save captured image: " & ex.Message, "Capture", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    toSave.Dispose()
-                    Return False
-                Finally
-                    toSave.Dispose()
-                End Try
-
-                ' --- Stop camera while OCRing ---
-                Try
-                    If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
+            ' --- Capture frame ---
+            Try
+                If videoSource IsNot Nothing Then
+                    RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
+                    If videoSource.IsRunning Then
                         videoSource.SignalToStop()
                         videoSource.WaitForStop()
                     End If
-                Catch
-                End Try
-
-                ' --- OCR extraction ---
-                DMMtxtparameter.Clear()
-                DMMreading.Clear()
-                RichTextBox1.Clear()
-                RemoveFocus()
-
-                Try
-                    Dim launched As Boolean = False
-                    Try
-                        Process.Start("C:\Users\dbneri\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe") : launched = True
-                    Catch
-                        Try : Process.Start("SnippingTool.exe") : launched = True : Catch : End Try
-                    End Try
-                    If Not launched Then
-                        MessageBox.Show("Cannot launch Snipping Tool.", "Snipping Tool", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                        Return False
-                    End If
-
+                End If
+                Dim cam = CreatePreferredCamera()
+                If cam IsNot Nothing Then
+                    videoSource = cam
+                    AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
+                    videoSource.Start()
                     Threading.Thread.Sleep(500)
-                    HideSnippingTool()
+                End If
+            Catch
+            End Try
 
-                    ' --- SendKeys automation ---
-                    My.Computer.Keyboard.SendKeys("{TAB}", True) : Threading.Thread.Sleep(100)
-                    My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(100)
-                    My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(1500)
-                    My.Computer.Keyboard.SendKeys(capturePath, True) : Threading.Thread.Sleep(100)
-                    My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(1000)
-                    My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}{RIGHT}{ENTER}", True)
-                    Threading.Thread.Sleep(1500)
-                    My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}{ENTER}", True)
-                    Threading.Thread.Sleep(100)
+            ' --- Save a frame ---
+            Dim baseDir As String = "C:\CapImg"
+            If Not IO.Directory.Exists(baseDir) Then IO.Directory.CreateDirectory(baseDir)
+            Dim capturePath As String = IO.Path.Combine(baseDir, $"{DateTime.Now:yyHHmmss_fff}.jpg")
 
-                    RichTextBox1.Paste()
-                    Dim raw As String = NormalizeOcrText(RichTextBox1.Text)
+            Dim toSave As Bitmap = Nothing
+            SyncLock latestFrameLock
+                If latestFrame IsNot Nothing Then
+                    toSave = DirectCast(latestFrame.Clone(), Bitmap)
+                End If
+            End SyncLock
 
-                    If String.IsNullOrWhiteSpace(DMMtxtparameter.Text) Then
-                        If raw.IndexOf("V", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                            DMMtxtparameter.Text = "V"
-                        ElseIf raw.IndexOf("A", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                            DMMtxtparameter.Text = "A"
-                        ElseIf raw.IndexOf("Ω", StringComparison.OrdinalIgnoreCase) >= 0 OrElse raw.IndexOf("OHM", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                            DMMtxtparameter.Text = "Ω"
+            If toSave Is Nothing AndAlso PictureBox1.Image IsNot Nothing Then
+                toSave = DirectCast(PictureBox1.Image.Clone(), Bitmap)
+            End If
+
+            If toSave Is Nothing Then
+                MessageBox.Show("Camera frame is empty.", "Capture", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return False
+            End If
+
+            Try
+                toSave.Save(capturePath, Imaging.ImageFormat.Jpeg)
+            Catch ex As Exception
+                MessageBox.Show("Failed to save captured image: " & ex.Message, "Capture", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                toSave.Dispose()
+                Return False
+            Finally
+                toSave.Dispose()
+            End Try
+
+            ' --- Stop camera while OCRing ---
+            Try
+                If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
+                    videoSource.SignalToStop()
+                    videoSource.WaitForStop()
+                End If
+            Catch
+            End Try
+
+            ' --- OCR extraction ---
+            DMMtxtparameter.Clear()
+            DMMreading.Clear()
+            RichTextBox1.Clear()
+            RemoveFocus()
+
+            Try
+                Dim launched As Boolean = False
+                Try
+                    Process.Start("C:\Users\dbneri\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe") : launched = True
+                Catch
+                    Try : Process.Start("SnippingTool.exe") : launched = True : Catch : End Try
+                End Try
+                If Not launched Then
+                    MessageBox.Show("Cannot launch Snipping Tool.", "Snipping Tool", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Return False
+                End If
+
+                Threading.Thread.Sleep(500)
+                HideSnippingTool()
+
+                ' --- SendKeys automation ---
+                My.Computer.Keyboard.SendKeys("{TAB}", True) : Threading.Thread.Sleep(100)
+                My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(100)
+                My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(1000)
+                My.Computer.Keyboard.SendKeys(capturePath, True) : Threading.Thread.Sleep(100)
+                My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(1000)
+                My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}{RIGHT}{ENTER}", True)
+                Threading.Thread.Sleep(1500)
+                My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}{ENTER}", True)
+                Threading.Thread.Sleep(100)
+
+                RichTextBox1.Paste()
+                Dim raw As String = NormalizeOcrText(RichTextBox1.Text)
+
+                If String.IsNullOrWhiteSpace(DMMtxtparameter.Text) Then
+                    If raw.IndexOf("V", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                        DMMtxtparameter.Text = "V"
+                    ElseIf raw.IndexOf("A", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                        DMMtxtparameter.Text = "A"
+                    ElseIf raw.IndexOf("Ω", StringComparison.OrdinalIgnoreCase) >= 0 OrElse raw.IndexOf("OHM", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                        DMMtxtparameter.Text = "Ω"
+                    End If
+                End If
+
+                Dim tokens = ExtractOcrTokens(raw)
+                Dim expectedUnit As String = If(String.IsNullOrWhiteSpace(DMMtxtparameter.Text), "", DMMtxtparameter.Text.Trim().ToUpperInvariant())
+                Dim readingStr As String = "", rangeStr As String = ""
+                PickReadingAndRange(tokens, expectedUnit, readingStr, rangeStr)
+
+                If readingStr = "" Then Return False
+
+                capReadingNoUnit = StripUnitSuffix(readingStr)
+                DMMreading.Text = capReadingNoUnit
+
+                If rangeStr <> "" Then
+                    capRangeNoUnit = StripUnitSuffix(rangeStr)
+                End If
+            Finally
+                For Each procName In New String() {"SnippingTool", "SnipAndSketch"}
+                    For Each p As Process In Process.GetProcessesByName(procName)
+                        Try : p.Kill() : p.WaitForExit() : Catch : End Try
+                    Next
+                Next
+            End Try
+
+            Return True
+        End Function
+
+            ' ---------- Find next empty (scans current group → next groups with wrap-around) ----------
+            Dim orderedGroups = Groups.OrderBy(Function(kv) kv.Value.SheetBase) _
+                                  .ThenBy(Function(kv) kv.Value.SheetIndex) _
+                                  .ToList()
+
+            Dim FindNextEmpty As Func(Of ParamGroup, Integer, (found As Boolean, row As Integer, slot As Integer, tb As TextBox)) =
+        Function(pg As ParamGroup, startRow As Integer)
+            ' search inside one group
+            Dim SearchInGroup As Func(Of ParamGroup, Integer, (Boolean, Integer, Integer, TextBox)) =
+            Function(pgx As ParamGroup, r0 As Integer)
+                Dim maxRows As Integer = Math.Max(Math.Max(If(pgx.MV1?.Length, 0), If(pgx.MV2?.Length, 0)), If(pgx.MV3?.Length, 0))
+                For rr As Integer = Math.Max(0, r0) To maxRows - 1
+                    If pgx.MV1 IsNot Nothing AndAlso rr < pgx.MV1.Length Then
+                        Dim t = pgx.MV1(rr).tb
+                        If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then
+                            Return (True, rr, 1, t)
                         End If
                     End If
-
-                    Dim tokens = ExtractOcrTokens(raw)
-                    Dim expectedUnit As String = If(String.IsNullOrWhiteSpace(DMMtxtparameter.Text), "", DMMtxtparameter.Text.Trim().ToUpperInvariant())
-                    Dim readingStr As String = "", rangeStr As String = ""
-                    PickReadingAndRange(tokens, expectedUnit, readingStr, rangeStr)
-
-                    If readingStr = "" Then Return False
-
-                    capReadingNoUnit = StripUnitSuffix(readingStr)
-                    DMMreading.Text = capReadingNoUnit
-
-                    If rangeStr <> "" Then
-                        capRangeNoUnit = StripUnitSuffix(rangeStr)
+                    If pgx.MV2 IsNot Nothing AndAlso rr < pgx.MV2.Length Then
+                        Dim t = pgx.MV2(rr).tb
+                        If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then
+                            Return (True, rr, 2, t)
+                        End If
                     End If
-                Finally
-                    For Each procName In New String() {"SnippingTool", "SnipAndSketch"}
-                        For Each p As Process In Process.GetProcessesByName(procName)
-                            Try : p.Kill() : p.WaitForExit() : Catch : End Try
-                        Next
-                    Next
-                End Try
-
-                Return True
+                    If pgx.MV3 IsNot Nothing AndAlso rr < pgx.MV3.Length Then
+                        Dim t = pgx.MV3(rr).tb
+                        If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then
+                            Return (True, rr, 3, t)
+                        End If
+                    End If
+                Next
+                Return (False, -1, 0, Nothing)
             End Function
 
-            ' ---------- Fill MV slots ----------
-            Dim slots As New List(Of TextBox) From {
-            If(g.MV1 IsNot Nothing AndAlso r < g.MV1.Length, g.MV1(r).tb, Nothing),
-            If(g.MV2 IsNot Nothing AndAlso r < g.MV2.Length, g.MV2(r).tb, Nothing),
-            If(g.MV3 IsNot Nothing AndAlso r < g.MV3.Length, g.MV3(r).tb, Nothing)
-        }
+            ' 1) current group from startRow
+            Dim hit = SearchInGroup(pg, startRow)
+            If hit.Item1 Then Return hit
 
-            Dim s As Integer = 0
-            While s < slots.Count
-                Dim targetTb = slots(s)
-                If targetTb Is Nothing OrElse Not String.IsNullOrWhiteSpace(targetTb.Text) Then
-                    s += 1 : Continue While
+            ' 2) other groups after current
+            Dim curIdx As Integer = orderedGroups.FindIndex(Function(kv) kv.Value Is pg)
+            If curIdx < 0 Then curIdx = 0
+
+            For gi As Integer = curIdx + 1 To orderedGroups.Count - 1
+                Dim nextPg = orderedGroups(gi).Value
+                hit = SearchInGroup(nextPg, 0)
+                If hit.Item1 Then
+                    currentGroup = nextPg ' hop group
+                    Return hit
                 End If
+            Next
 
+            ' 3) wrap-around to the beginning
+            For gi As Integer = 0 To Math.Max(0, curIdx - 1)
+                Dim nextPg = orderedGroups(gi).Value
+                hit = SearchInGroup(nextPg, 0)
+                If hit.Item1 Then
+                    currentGroup = nextPg
+                    Return hit
+                End If
+            Next
+
+            Return (False, -1, 0, Nothing)
+        End Function
+
+            ' ---------- Fill ALL available MV textboxes across groups ----------
+            Dim curRow As Integer = r
+            Do
+                Dim nxt = FindNextEmpty(g, curRow)
+                If Not nxt.found Then Exit Do
+
+                ' follow group hop if it occurred
+                If Not (currentGroup Is g) Then g = currentGroup
+                r = nxt.row
+
+                ' capture → write for this single slot
                 Dim tries As Integer = 0
                 Const MAX_TRIES As Integer = 3
+                Dim ok As Boolean = False
                 Do
-                    If CaptureReadingOnce() Then Exit Do
+                    ok = CaptureReadingOnce()
+                    If ok Then Exit Do
                     tries += 1
                     Application.DoEvents()
-                    Threading.Thread.Sleep(150)
+                    Threading.Thread.Sleep(120)
                 Loop While tries < MAX_TRIES
 
-                If tries >= MAX_TRIES Then
-                    s += 1 : Continue While
+                If Not ok Then
+                    ' skip to look after this row to avoid looping the same slot
+                    curRow = r + 1
+                    Continue Do
                 End If
 
-                targetTb.Text = capReadingNoUnit
+                nxt.tb.Text = capReadingNoUnit
                 If Not String.IsNullOrWhiteSpace(capRangeNoUnit) Then
                     DMMrange.Text = capRangeNoUnit
                     Me.Range = capRangeNoUnit
                 End If
 
+                ' if this row is now complete, compute it
                 If IsRowComplete(g, r) Then
                     currentGroup = g
                     currentRowIdx = r
-                    currentExcelRow = GetRowFromAddr(g.MV3(r).cell)
-                    ctxDc.TargetRow = currentExcelRow
-                    StartRowCompute(g, r)
-                    Exit While
+
+                    ' pick any available MV cell to resolve Excel row safely
+                    Dim addr As String = Nothing
+                    If g.MV3 IsNot Nothing AndAlso r < g.MV3.Length Then addr = g.MV3(r).cell
+                    If String.IsNullOrWhiteSpace(addr) AndAlso g.MV2 IsNot Nothing AndAlso r < g.MV2.Length Then addr = g.MV2(r).cell
+                    If String.IsNullOrWhiteSpace(addr) AndAlso g.MV1 IsNot Nothing AndAlso r < g.MV1.Length Then addr = g.MV1(r).cell
+
+                    If Not String.IsNullOrWhiteSpace(addr) Then
+                        currentExcelRow = GetRowFromAddr(addr)
+                        ctxDc.TargetRow = currentExcelRow
+                        StartRowCompute(g, r)   ' make sure StartRowCompute re-arms Pre/After each time
+                    End If
                 End If
 
-                s += 1
-            End While
+                ' next search starts at this row again (in case more MV slots are empty on it)
+                curRow = r
+            Loop
 
-            ' ---------- Automatically advance focus ----------
+            ' ---------- Automatically advance focus (optional) ----------
             Try
                 FocusAdvance(g, r, Nothing)
             Catch ex As Exception
                 Debug.WriteLine("FocusAdvance failed: " & ex.Message)
             Finally
-                ' After advancing focus, update currentGroup/currentRowIdx (and TargetRow) to match the new caret
                 Dim ng As ParamGroup = Nothing
                 Dim nr As Integer = -1
                 If TryResolveFocus(ng, nr) Then
@@ -2145,27 +2272,6 @@ Public Class calibratingResult
         Next
         Return False
     End Function
-
-    Private Sub OnReadingTextChanged(sender As Object, e As EventArgs)
-        Dim val = DMMreading.Text
-        If String.IsNullOrWhiteSpace(val) Then Exit Sub
-        txtReading.Text = val
-        AutoApplyReadingToCurrentRow(val)
-    End Sub
-
-    Private Sub FrmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
-        If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
-            videoSource.SignalToStop()
-            videoSource.WaitForStop()
-        End If
-        Dim snip() As String = {"SnippingTool", "SnipAndSketch"}
-        For Each procName As String In snip
-            For Each p As Process In Process.GetProcessesByName(procName)
-                Try : p.Kill() : p.WaitForExit() : Catch : End Try
-            Next
-        Next
-        'BlockInput(False)
-    End Sub
 
     ' ---------- OCR Text Normalization ----------
     Private Function NormalizeOcrText(s As String) As String
@@ -2338,318 +2444,6 @@ Public Class calibratingResult
     )
     End Function
 
-    'Private Function ResolveOrGuessCurrentTarget(ByRef g As ParamGroup, ByRef row As Integer) As Boolean
-    '    ' reuse current
-    '    g = currentGroup : row = currentRowIdx
-    '    If g IsNot Nothing AndAlso row >= 0 Then Return True
-
-    '    ' infer from UI
-    '    Dim p As String = If(DMMtxtparameter.Text, "").Trim().ToUpperInvariant()
-    '    If p = "OHM" Then p = "Ω"
-    '    Dim mode As String = ""
-    '    Dim mCtrl = Me.Controls.Find("DMMmode", True).FirstOrDefault()
-    '    If TypeOf mCtrl Is TextBox Then mode = DirectCast(mCtrl, TextBox).Text.Trim().ToUpperInvariant()
-
-    '    If AllGroups IsNot Nothing AndAlso AllGroups.Count > 0 Then
-    '        'If p <> "" Then g = GetGroupBy(p, mode)
-    '        If g Is Nothing Then
-    '            ' fallback: first visible row in any selected group
-    '            For Each cand In Groups.Values
-    '                If cand Is Nothing OrElse cand.MV1 Is Nothing Then Continue For
-    '                For i = 0 To cand.MV1.Length - 1
-    '                    Dim tb = cand.MV1(i).tb
-    '                    If tb IsNot Nothing AndAlso tb.Visible Then g = cand : row = i : Return True
-    '                Next
-    '            Next
-    '        End If
-    '    End If
-
-    '    If g Is Nothing Then Return False
-
-    '    row = 0
-    '    If g.MV1 IsNot Nothing Then
-    '        For i = 0 To g.MV1.Length - 1
-    '            Dim tb = g.MV1(i).tb
-    '            If tb IsNot Nothing AndAlso tb.Visible Then row = i : Exit For
-    '        Next
-    '    End If
-    '    Return True
-    'End Function
-
-    Private Sub OnTestBurstTick(sender As Object, e As EventArgs)
-        ' stop if invalid lock
-        If burstGroup Is Nothing OrElse burstRow < 0 _
-       OrElse burstGroup.MV3 Is Nothing _
-       OrElse burstRow >= burstGroup.MV3.Length _
-       OrElse burstGroup.MV3(burstRow).tb Is Nothing Then
-            testBurstTimer.Stop() : Exit Sub
-        End If
-
-        ' stop early if MV3 already filled
-        Dim mv3tb = burstGroup.MV3(burstRow).tb
-        If Not String.IsNullOrWhiteSpace(mv3tb.Text) Then
-            testBurstTimer.Stop() : Exit Sub
-        End If
-
-        Dim val = DMMreading.Text
-        If String.IsNullOrWhiteSpace(val) Then
-            testBurstTimer.Stop() : Exit Sub
-        End If
-
-        ' ---- write explicitly to the locked row (MV2 then MV3) ----
-        Dim wrote As Boolean = False
-        If burstGroup.MV1 IsNot Nothing AndAlso burstRow < burstGroup.MV1.Length Then
-            Dim tb1 = burstGroup.MV1(burstRow).tb
-            If tb1 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb1.Text) Then
-                tb1.Text = val : wrote = True
-            End If
-        End If
-        If Not wrote AndAlso burstGroup.MV2 IsNot Nothing AndAlso burstRow < burstGroup.MV2.Length Then
-            Dim tb2 = burstGroup.MV2(burstRow).tb
-            If tb2 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb2.Text) Then
-                tb2.Text = val : wrote = True
-            End If
-        End If
-        If Not wrote AndAlso burstGroup.MV3 IsNot Nothing AndAlso burstRow < burstGroup.MV3.Length Then
-            Dim tb3 = burstGroup.MV3(burstRow).tb
-            If tb3 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb3.Text) Then
-                tb3.Text = val : wrote = True
-            End If
-        End If
-
-        ' compute the locked row if now complete
-        If IsRowComplete(burstGroup, burstRow) Then
-            currentGroup = burstGroup
-            currentRowIdx = burstRow
-            currentExcelRow = GetRowFromAddr(burstGroup.MV3(burstRow).cell)
-            ctxDc.TargetRow = currentExcelRow
-            StartRowCompute(burstGroup, burstRow)
-        End If
-
-        testBurstCopiesRemaining -= 1
-        If testBurstCopiesRemaining <= 0 Then
-            testBurstTimer.Stop()
-        End If
-    End Sub
-
-    Private Sub WriteToSpecificSlot(g As ParamGroup, row As Integer, slot As Integer, val As String)
-        ' Declare the variable
-        Dim reading As String = val ' Or assign it to whatever value you want
-        Dim wrote As Boolean = False
-
-        ' Safety: ensure row and group exist
-        If g Is Nothing OrElse row < 0 Then Exit Sub
-
-        ' Write to the first empty MV in the specified row (considering MV1, MV2, MV3)
-        Dim rowTarget As Integer = row ' Row index to target
-
-        ' Check MV1 for empty TextBox
-        If g.MV1 IsNot Nothing AndAlso rowTarget < g.MV1.Length Then
-            Dim tb = g.MV1(rowTarget).tb
-            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
-                tb.Text = reading
-                wrote = True
-            End If
-        End If
-
-        ' If not written, check MV2 for empty TextBox
-        If Not wrote AndAlso g.MV2 IsNot Nothing AndAlso rowTarget < g.MV2.Length Then
-            Dim tb = g.MV2(rowTarget).tb
-            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
-                tb.Text = reading
-                wrote = True
-            End If
-        End If
-
-        ' If not written, check MV3 for empty TextBox
-        If Not wrote AndAlso g.MV3 IsNot Nothing AndAlso rowTarget < g.MV3.Length Then
-            Dim tb = g.MV3(rowTarget).tb
-            If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
-                tb.Text = reading
-                wrote = True
-            End If
-        End If
-
-        ' After writing, advance focus to the next visible row (if applicable)
-        If wrote Then
-            ' Move to the next row (next visible TextBox in MV1, MV2, or MV3)
-            MoveFocusToNextRow(g, rowTarget)
-        End If
-    End Sub
-
-    ' Helper to dynamically move focus to the next visible row
-    Private Sub MoveFocusToNextRow(g As ParamGroup, currentRow As Integer)
-        If g Is Nothing Then Exit Sub
-
-        ' Find the next visible row in MV1, MV2, or MV3
-        Dim nextRow As Integer = -1
-
-        ' Try to find the next visible row in MV1
-        If g.MV1 IsNot Nothing Then
-            For i As Integer = currentRow + 1 To g.MV1.Length - 1
-                If g.MV1(i).tb IsNot Nothing AndAlso g.MV1(i).tb.Visible Then
-                    nextRow = i
-                    Exit For
-                End If
-            Next
-        End If
-
-        ' If no row found in MV1, check MV2
-        If nextRow = -1 AndAlso g.MV2 IsNot Nothing Then
-            For i As Integer = currentRow + 1 To g.MV2.Length - 1
-                If g.MV2(i).tb IsNot Nothing AndAlso g.MV2(i).tb.Visible Then
-                    nextRow = i
-                    Exit For
-                End If
-            Next
-        End If
-
-        ' If still no row found, check MV3
-        If nextRow = -1 AndAlso g.MV3 IsNot Nothing Then
-            For i As Integer = currentRow + 1 To g.MV3.Length - 1
-                If g.MV3(i).tb IsNot Nothing AndAlso g.MV3(i).tb.Visible Then
-                    nextRow = i
-                    Exit For
-                End If
-            Next
-        End If
-
-        ' If a valid next row is found, move focus to it
-        If nextRow >= 0 Then
-            Dim nextControl = g.MV1(nextRow).tb
-            If nextControl IsNot Nothing Then
-                nextControl.Focus()
-                nextControl.SelectAll()
-            End If
-        End If
-    End Sub
-
-    ' === MV helpers (no duplicate reading) =======================================
-    Private Function NormalizeNumericText(s As String) As String
-        If String.IsNullOrWhiteSpace(s) Then Return ""
-        Dim t = s.Trim()
-        t = t.Replace(",", ".")
-        ' keep leading sign; strip spaces
-        t = System.Text.RegularExpressions.Regex.Replace(t, "\s+", "")
-        Return t
-    End Function
-
-    Private Function ValuesEqual(a As String, b As String) As Boolean
-        a = NormalizeNumericText(a) : b = NormalizeNumericText(b)
-        If a = "" OrElse b = "" Then Return False
-        Dim da As Double, db As Double
-        If Double.TryParse(a, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, da) AndAlso
-       Double.TryParse(b, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, db) Then
-            Return Math.Abs(da - db) <= 0.0000001 ' numeric compare with tiny tolerance
-        End If
-        Return String.Equals(a, b, StringComparison.OrdinalIgnoreCase)
-    End Function
-
-    Private Function NextEmptySlot(g As Object, r As Integer) As Integer
-        Dim grp = DirectCast(g, Object)
-        Dim p = DirectCast(g, Object)
-        Dim mg = DirectCast(g, Object)
-
-        Dim s1 As TextBox = If(DirectCast(g, ParamGroup).MV1 IsNot Nothing AndAlso r < DirectCast(g, ParamGroup).MV1.Length, DirectCast(g, ParamGroup).MV1(r).tb, Nothing)
-        Dim s2 As TextBox = If(DirectCast(g, ParamGroup).MV2 IsNot Nothing AndAlso r < DirectCast(g, ParamGroup).MV2.Length, DirectCast(g, ParamGroup).MV2(r).tb, Nothing)
-        Dim s3 As TextBox = If(DirectCast(g, ParamGroup).MV3 IsNot Nothing AndAlso r < DirectCast(g, ParamGroup).MV3.Length, DirectCast(g, ParamGroup).MV3(r).tb, Nothing)
-        If s1 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(s1.Text) Then Return 1
-        If s2 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(s2.Text) Then Return 2
-        If s3 IsNot Nothing AndAlso String.IsNullOrWhiteSpace(s3.Text) Then Return 3
-        Return 0
-    End Function
-
-    Private Function GetSlotText(g As ParamGroup, r As Integer, slot As Integer) As String
-        Select Case slot
-            Case 1 : If g.MV1 IsNot Nothing AndAlso r < g.MV1.Length AndAlso g.MV1(r).tb IsNot Nothing Then Return g.MV1(r).tb.Text
-            Case 2 : If g.MV2 IsNot Nothing AndAlso r < g.MV2.Length AndAlso g.MV2(r).tb IsNot Nothing Then Return g.MV2(r).tb.Text
-            Case 3 : If g.MV3 IsNot Nothing AndAlso r < g.MV3.Length AndAlso g.MV3(r).tb IsNot Nothing Then Return g.MV3(r).tb.Text
-        End Select
-        Return ""
-    End Function
-
-    Private Sub SetSlotText(g As ParamGroup, r As Integer, slot As Integer, val As String)
-        Select Case slot
-            Case 1 : If g.MV1 IsNot Nothing AndAlso r < g.MV1.Length AndAlso g.MV1(r).tb IsNot Nothing Then g.MV1(r).tb.Text = val
-            Case 2 : If g.MV2 IsNot Nothing AndAlso r < g.MV2.Length AndAlso g.MV2(r).tb IsNot Nothing Then g.MV2(r).tb.Text = val
-            Case 3 : If g.MV3 IsNot Nothing AndAlso r < g.MV3.Length AndAlso g.MV3(r).tb IsNot Nothing Then g.MV3(r).tb.Text = val
-        End Select
-    End Sub
-
-    Private Function IsDuplicateReadingInRow(g As ParamGroup, r As Integer, val As String) As Boolean
-        Dim v = NormalizeNumericText(val)
-        If v = "" Then Return False
-        Dim t1 = If(g.MV1 IsNot Nothing AndAlso r < g.MV1.Length AndAlso g.MV1(r).tb IsNot Nothing, g.MV1(r).tb.Text, "")
-        Dim t2 = If(g.MV2 IsNot Nothing AndAlso r < g.MV2.Length AndAlso g.MV2(r).tb IsNot Nothing, g.MV2(r).tb.Text, "")
-        Dim t3 = If(g.MV3 IsNot Nothing AndAlso r < g.MV3.Length AndAlso g.MV3(r).tb IsNot Nothing, g.MV3(r).tb.Text, "")
-        Return ValuesEqual(v, t1) OrElse ValuesEqual(v, t2) OrElse ValuesEqual(v, t3)
-    End Function
-
-    ' ============================================================================
-    Private Sub ApplyReadingWithClickInterval(val As String)
-        Dim gObj As ParamGroup = Nothing
-        Dim r As Integer = -1
-        'If Not ResolveOrGuessCurrentTarget(gObj, r) Then Exit Sub
-        Dim grp = DirectCast(gObj, ParamGroup)
-        Dim now As DateTime = DateTime.Now
-
-        ' Decide which slot we *intend* to write next
-        Dim slot As Integer = NextEmptySlot(grp, r)
-        If slot = 0 Then
-            ' row already complete; compute (safety) and bail
-            If IsRowComplete(grp, r) Then
-                currentGroup = grp : currentRowIdx = r
-                currentExcelRow = GetRowFromAddr(grp.MV3(r).cell)
-                ctxDc.TargetRow = currentExcelRow
-                StartRowCompute(grp, r)
-            End If
-            Return
-        End If
-
-        ' === NO-DUPLICATE RULE ===
-        If IsDuplicateReadingInRow(grp, r, val) Then
-            MessageBox.Show("Same reading detected in this row. Please recapture a new image/reading.",
-                        "Duplicate reading", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            ' Do NOT fill anything; user re-captures.
-            Exit Sub
-        End If
-
-        ' Write the value into the intended slot
-        SetSlotText(grp, r, slot, val)
-
-        ' If the row is now complete → compute and advance
-        If IsRowComplete(grp, r) Then
-            currentGroup = grp
-            currentRowIdx = r
-            currentExcelRow = GetRowFromAddr(grp.MV3(r).cell)
-            ctxDc.TargetRow = currentExcelRow
-            StartRowCompute(grp, r)
-
-            ' Reset click-interval state (fresh next row)
-            lastClickGroup = Nothing
-            lastClickRow = -1
-            lastNextSlot = 1
-        Else
-            ' Keep state so next capture within 2s goes to the next slot
-            lastClickGroup = grp
-            lastClickRow = r
-            lastNextSlot = slot + 1
-            If lastNextSlot > 3 Then lastNextSlot = 3
-        End If
-
-        lastCaptureAt = now
-    End Sub
-
-    ' In your form's constructor or Load event, subscribe to the Enter event of each TextBox
-    Private Sub SetupTextBoxEvents()
-        ' Add the Enter event for all textboxes dynamically
-        For Each ctrl As WinForms.Control In Me.Controls
-            If TypeOf ctrl Is TextBox Then
-                AddHandler ctrl.Enter, AddressOf TextBox_Enter
-            End If
-        Next
-    End Sub
-
     ' Global variable to track focused textbox
     Private currentFocusedTextBox As TextBox
 
@@ -2658,75 +2452,39 @@ Public Class calibratingResult
         currentFocusedTextBox = CType(sender, TextBox)
     End Sub
 
-    ' Mirror the template’s current cell values into the preview controls.
-    ' It does NOT write anything; it only reads.
-    Private Sub RefreshPreviewFromTemplate(Optional onlyGroup As ParamGroup = Nothing, Optional onlyRow As Integer = -1)
-        If ctxDc Is Nothing Then Exit Sub
+#End Region
 
-        Dim prevPre As Action(Of Object) = ctxDc.PreCalculate
-        Dim prevPost As Action(Of Object) = ctxDc.AfterCalculate
+    Private Sub ButtonDisable_Click(sender As Object, e As EventArgs) Handles ButtonDisable.Click
 
-        ' We won’t push anything; we only read.
-        ctxDc.PreCalculate = Sub(ws As Object)
-                                 ' no-op
-                             End Sub
+        ' === cancel pending Excel hooks so nothing fires after abort ===
+        If ctxDc IsNot Nothing Then
+            Try
+                ctxDc.PreCalculate = Nothing
+            Catch
+            End Try
+            Try
+                ctxDc.AfterCalculate = Nothing
+            Catch
+            End Try
+            Try
+                ctxDc.TargetRow = -1
+            Catch
+            End Try
+        End If
 
-        ctxDc.AfterCalculate = Sub(ws As Object)
-                                   Dim groupsToRead As IEnumerable(Of ParamGroup) =
-            If(onlyGroup Is Nothing, Groups.Values, {onlyGroup})
-
-                                   For Each g In groupsToRead
-                                       If g Is Nothing Then Continue For
-
-                                       ' Decide which rows to read
-                                       Dim rowCount As Integer = 0
-                                       rowCount = Math.Max(rowCount, If(g.MV1?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.MV2?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.MV3?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.Tolerance?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.UpperLimit?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.LowerLimit?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.Remarks?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.Average?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.Error?.Length, 0))
-                                       rowCount = Math.Max(rowCount, If(g.FinalUncDecl?.Length, 0))
-                                       If rowCount <= 0 Then Continue For
-
-                                       Dim startIdx As Integer = If(onlyRow >= 0, onlyRow, 0)
-                                       Dim endIdx As Integer = If(onlyRow >= 0, onlyRow, rowCount - 1)
-
-                                       ' Inside RefreshPreviewFromTemplate(...) -> ctxDc.AfterCalculate
-                                       For i As Integer = startIdx To endIdx
-                                           ' existing input reads...
-                                           If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length AndAlso g.MV1(i).tb IsNot Nothing Then
-                                               g.MV1(i).tb.Text = SafeReadCell(ws, g.MV1(i).cell)
-                                           End If
-                                           If g.MV2 IsNot Nothing AndAlso i < g.MV2.Length AndAlso g.MV2(i).tb IsNot Nothing Then
-                                               g.MV2(i).tb.Text = SafeReadCell(ws, g.MV2(i).cell)
-                                           End If
-                                           If g.MV3 IsNot Nothing AndAlso i < g.MV3.Length AndAlso g.MV3(i).tb IsNot Nothing Then
-                                               g.MV3(i).tb.Text = SafeReadCell(ws, g.MV3(i).cell)
-                                           End If
-
-                                           ' existing outputs/limits:
-                                           ReadOutputsRow(ws, g, i)
-
-                                           ' >>> NEW: Fill the descriptor labels from Excel <<<
-                                           ReadDescriptorRow(ws, g, i)
-                                       Next
-                                   Next
-                               End Sub
+        ' === UI back to idle ===
+        Me.Cursor = Cursors.Default
 
         Try
-            ' We can point TargetRow anywhere; AfterCalculate will iterate all needed rows.
-            If currentExcelRow > 0 Then ctxDc.TargetRow = currentExcelRow
-            CalRowModule.RecalculateNow(ctxDc)
-        Finally
-            ctxDc.PreCalculate = prevPre
-            ctxDc.AfterCalculate = prevPost
+            Dim btnCap As Button = TryCast(Me.Controls.Find("Capture", True).FirstOrDefault(), Button)
+            If btnCap IsNot Nothing Then btnCap.Enabled = True
+        Catch
+        End Try
+
+        Try
+            If ButtonDisable IsNot Nothing Then ButtonDisable.Enabled = False
+        Catch
         End Try
     End Sub
-
-#End Region
 
 End Class
