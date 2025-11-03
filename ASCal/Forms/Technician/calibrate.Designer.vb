@@ -23,6 +23,8 @@ Partial Class calibrate
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(calibrate))
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Panel8 = New System.Windows.Forms.Panel()
         Me.logoutBtn = New System.Windows.Forms.Button()
@@ -173,14 +175,14 @@ Partial Class calibrate
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Left
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(300, 961)
+        Me.Panel1.Size = New System.Drawing.Size(300, 862)
         Me.Panel1.TabIndex = 22
         '
         'Panel8
         '
         Me.Panel8.Controls.Add(Me.logoutBtn)
         Me.Panel8.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel8.Location = New System.Drawing.Point(0, 893)
+        Me.Panel8.Location = New System.Drawing.Point(0, 794)
         Me.Panel8.Name = "Panel8"
         Me.Panel8.Size = New System.Drawing.Size(300, 68)
         Me.Panel8.TabIndex = 5
@@ -356,7 +358,7 @@ Partial Class calibrate
         Me.mainPanelCalibrateInp.Dock = System.Windows.Forms.DockStyle.Fill
         Me.mainPanelCalibrateInp.Location = New System.Drawing.Point(300, 0)
         Me.mainPanelCalibrateInp.Name = "mainPanelCalibrateInp"
-        Me.mainPanelCalibrateInp.Size = New System.Drawing.Size(1624, 961)
+        Me.mainPanelCalibrateInp.Size = New System.Drawing.Size(1143, 862)
         Me.mainPanelCalibrateInp.TabIndex = 34
         '
         'flowParameters
@@ -1031,7 +1033,23 @@ Partial Class calibrate
         '
         Me.dataGridResultDMM.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.dataGridResultDMM.BackgroundColor = System.Drawing.Color.White
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.dataGridResultDMM.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle3
         Me.dataGridResultDMM.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.dataGridResultDMM.DefaultCellStyle = DataGridViewCellStyle4
         Me.dataGridResultDMM.Dock = System.Windows.Forms.DockStyle.Fill
         Me.dataGridResultDMM.Location = New System.Drawing.Point(0, 0)
         Me.dataGridResultDMM.Name = "dataGridResultDMM"
@@ -1481,7 +1499,7 @@ Partial Class calibrate
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1924, 961)
+        Me.ClientSize = New System.Drawing.Size(1443, 862)
         Me.Controls.Add(Me.mainPanelCalibrateInp)
         Me.Controls.Add(Me.Panel1)
         Me.Name = "calibrate"

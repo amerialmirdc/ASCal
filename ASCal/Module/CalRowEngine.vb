@@ -105,8 +105,8 @@ Module CalRowModule
             AddHandler ctx.txtUnitNominal.TextChanged, Sub(sender, e) OnNominalChanged(ctx)
         End If
 
-        SeedRangeNominalMap(ctx)
-        If ctx.txtRangeValue IsNot Nothing Then BuildGlobalRangeAutoComplete(ctx)
+        'SeedRangeNominalMap(ctx)
+        'If ctx.txtRangeValue IsNot Nothing Then BuildGlobalRangeAutoComplete(ctx)
 
         UpdateEntryState(ctx)
         RecalcAverage(ctx)
@@ -251,30 +251,30 @@ Module CalRowModule
         End Try
     End Sub
 
-    '==================== Autocomplete (optional) ====================
-    Private Sub BuildGlobalRangeAutoComplete(ctx As RowContext)
-        Dim acVals As New AutoCompleteStringCollection(), acUnits As New AutoCompleteStringCollection()
-        Dim seenVals As New HashSet(Of String)(StringComparer.Ordinal), seenUnits As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-        For Each kv In ctx.rangeNomMap
-            Dim p = kv.Key.Split("|"c)
-            If p.Length >= 5 Then
-                Dim v = Double.Parse(p(0), CultureInfo.InvariantCulture).ToString("G15", CultureInfo.InvariantCulture)
-                Dim u = p(1)
-                If Not seenVals.Contains(v) Then acVals.Add(v) : seenVals.Add(v)
-                If Not seenUnits.Contains(u) Then acUnits.Add(u) : seenUnits.Add(u)
-            End If
-        Next
-        If ctx.txtRangeValue IsNot Nothing Then
-            ctx.txtRangeValue.AutoCompleteMode = AutoCompleteMode.SuggestAppend
-            ctx.txtRangeValue.AutoCompleteSource = AutoCompleteSource.CustomSource
-            ctx.txtRangeValue.AutoCompleteCustomSource = acVals
-        End If
-        If ctx.txtUnitRange IsNot Nothing Then
-            ctx.txtUnitRange.AutoCompleteMode = AutoCompleteMode.SuggestAppend
-            ctx.txtUnitRange.AutoCompleteSource = AutoCompleteSource.CustomSource
-            ctx.txtUnitRange.AutoCompleteCustomSource = acUnits
-        End If
-    End Sub
+    ''==================== Autocomplete (optional) ====================
+    'Private Sub BuildGlobalRangeAutoComplete(ctx As RowContext)
+    '    Dim acVals As New AutoCompleteStringCollection(), acUnits As New AutoCompleteStringCollection()
+    '    Dim seenVals As New HashSet(Of String)(StringComparer.Ordinal), seenUnits As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+    '    For Each kv In ctx.rangeNomMap
+    '        Dim p = kv.Key.Split("|"c)
+    '        If p.Length >= 5 Then
+    '            Dim v = Double.Parse(p(0), CultureInfo.InvariantCulture).ToString("G15", CultureInfo.InvariantCulture)
+    '            Dim u = p(1)
+    '            If Not seenVals.Contains(v) Then acVals.Add(v) : seenVals.Add(v)
+    '            If Not seenUnits.Contains(u) Then acUnits.Add(u) : seenUnits.Add(u)
+    '        End If
+    '    Next
+    '    If ctx.txtRangeValue IsNot Nothing Then
+    '        ctx.txtRangeValue.AutoCompleteMode = AutoCompleteMode.SuggestAppend
+    '        ctx.txtRangeValue.AutoCompleteSource = AutoCompleteSource.CustomSource
+    '        ctx.txtRangeValue.AutoCompleteCustomSource = acVals
+    '    End If
+    '    If ctx.txtUnitRange IsNot Nothing Then
+    '        ctx.txtUnitRange.AutoCompleteMode = AutoCompleteMode.SuggestAppend
+    '        ctx.txtUnitRange.AutoCompleteSource = AutoCompleteSource.CustomSource
+    '        ctx.txtUnitRange.AutoCompleteCustomSource = acUnits
+    '    End If
+    'End Sub
 
     Private Sub OnRangeChanged(ctx As RowContext)
         If ctx.txtRangeValue Is Nothing Then Exit Sub
@@ -343,13 +343,13 @@ Module CalRowModule
     End Sub
 
     '==================== Defaults table (paste yours) ====================
-    Private Sub SeedRangeNominalMap(ctx As RowContext)
-        ctx.rangeNomMap.Clear()
-        ' Paste your full AddEntry list here:
-        ' Examples:
-        ' AddEntry(ctx, 600, "mV", 60, "mV", "", 0.00077, 0, 0.1, 0.0016)
-        ' AddEntry(ctx, 10, "A", 9, "A", "1 khz", 0.011, 0, 0.01, 0.0039)
-    End Sub
+    'Private Sub SeedRangeNominalMap(ctx As RowContext)
+    '    ctx.rangeNomMap.Clear()
+    '    ' Paste your full AddEntry list here:
+    '    ' Examples:
+    '    ' AddEntry(ctx, 600, "mV", 60, "mV", "", 0.00077, 0, 0.1, 0.0016)
+    '    ' AddEntry(ctx, 10, "A", 9, "A", "1 khz", 0.011, 0, 0.01, 0.0039)
+    'End Sub
 
     Private Sub AddEntry(ctx As RowContext, rangeVal As Double, rangeUnit As String, nomVal As Double, nomUnit As String, freq As String, s1 As Double, s2 As Double, uut As Double, cmc As Double)
         ctx.rangeNomMap(KeyRangeNominal(rangeVal, rangeUnit, nomVal, nomUnit, freq)) = New NominalDefaults(s1, s2, uut, cmc)
@@ -429,12 +429,12 @@ Module CalRowModule
     End Sub
 
     '==================== Unit helpers ====================
-    Private Function NormalizeFreq(s As String) As String
-        If s Is Nothing Then Return ""
-        Dim t = s.Trim().ToLowerInvariant().Replace(" ", "")
-        If t = "" OrElse t = "0" OrElse t = "dc" Then Return ""
-        Return t
-    End Function
+    'Private Function NormalizeFreq(s As String) As String
+    '    If s Is Nothing Then Return ""
+    '    Dim t = s.Trim().ToLowerInvariant().Replace(" ", "")
+    '    If t = "" OrElse t = "0" OrElse t = "dc" Then Return ""
+    '    Return t
+    'End Function
 
     Private Function NormalizeUnit(u As String) As String
         If u Is Nothing Then Return ""
@@ -473,8 +473,8 @@ Module CalRowModule
     Private Function KeyRangeNominal(rangeVal As Double, rangeUnit As String,
                                      nomVal As Double, nomUnit As String, freq As String) As String
         Return rangeVal.ToString("G15", CultureInfo.InvariantCulture) & "|" & NormalizeUnit(rangeUnit) & "|" &
-               nomVal.ToString("G15", CultureInfo.InvariantCulture) & "|" & NormalizeUnit(nomUnit) & "|" &
-               NormalizeFreq(freq)
+               nomVal.ToString("G15", CultureInfo.InvariantCulture) & "|" & NormalizeUnit(nomUnit) & "|"
+        'NormalizeFreq(freq)
     End Function
 
     '==================== Excel helpers ====================

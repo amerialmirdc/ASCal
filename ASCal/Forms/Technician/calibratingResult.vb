@@ -1,20 +1,38 @@
 ﻿Option Strict Off
 
+Imports System
+Imports System.ComponentModel
 Imports System.Drawing.Imaging
+Imports System.Globalization
 Imports System.IO
 Imports System.IO.Compression
 Imports System.IO.Packaging
+Imports System.IO.Ports
 Imports System.Linq
+Imports System.Net.Security
 Imports System.Reflection
 Imports System.Runtime.InteropServices
+Imports System.Security.Cryptography
+Imports System.Text
+Imports System.Text.RegularExpressions
 Imports System.Threading
+Imports System.Xml
 Imports System.Xml.Linq
+Imports AForge
 Imports AForge.Video
 Imports AForge.Video.DirectShow
 Imports Drawing = System.Drawing
 Imports WinForms = System.Windows.Forms
 
 Public Class calibratingResult
+    Dim wrongrangeparameter As Integer = 0
+    Dim looping As Integer = 1 'total number ng pagkuha ng mga reading
+    Dim stringList As New List(Of String)
+    Dim loopdelaythreadsleep As Integer = 0
+    Dim dec As Integer = 33
+    Dim malingreading As Integer = 0
+    Dim wireresistance As Decimal = 0
+    Dim getwireresistance As Integer = 0
 
 #Region "Fields & Excel context"
 
@@ -22,7 +40,6 @@ Public Class calibratingResult
     ' Handles navigation buttons (logo, logout, dashboard)
     ' -------------------------------
     Private Sub HandleNavClick(sender As Object, e As EventArgs) Handles logoBtn.Click, logoutBtn.Click, jobDashBtn.Click
-
         Select Case True
             Case sender Is logoBtn
                 landingPageTechnician.Show()
@@ -37,9 +54,6 @@ Public Class calibratingResult
     End Sub
 
     Private ctxDc As CalRowModule.RowContext
-
-    ' Serial ports found on the machine
-    Private myPort As String() = Array.Empty(Of String)()
 
     ' Parameter group holder
     Private Class ParamGroup
@@ -291,7 +305,7 @@ Public Class calibratingResult
         lb.Visible = True
     End Sub
 
-    ' Convenience: use the *current* row and fill the first empty MV cell
+    ' Convenience: use the current row and fill the first empty MV cell
     Private Sub AutoApplyReadingToCurrentRow(reading As String)
         If String.IsNullOrWhiteSpace(reading) Then Exit Sub
 
@@ -352,7 +366,7 @@ Public Class calibratingResult
         End If
         If Not wrote AndAlso currentGroup.MV3 IsNot Nothing AndAlso currentRowIdx < currentGroup.MV3.Length Then
             Dim tb = currentGroup.MV3(currentRowIdx).tb
-            ' Remove the IsEmptyMv function calls and handle them directly:
+            ' Remove the IsEmptyMv function calls and handle     them directly:
             If tb IsNot Nothing AndAlso String.IsNullOrWhiteSpace(tb.Text) Then
                 tb.Text = reading
                 wrote = True
@@ -399,40 +413,40 @@ Public Class calibratingResult
 #Region "Load / Close"
 
     Public Property UseSerialUI As Boolean = True
+    Dim myPort As Array  'COM Ports detected on the system will be stored here
+
+    Delegate Sub SetTextCallback(ByVal [text] As String) 'Added to prevent threading errors during receiveing of data
+
+    Dim sapi
 
     Private Sub calibratingResult_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        myPort = IO.Ports.SerialPort.GetPortNames() 'Get all com ports available
+        CmbBaud.Items.Add(9600)     'Populate the cmbBaud Combo box to common baud rates used
+
+        For i = 0 To UBound(myPort)
+            CmbPort.Items.Add(myPort(i))
+        Next
+        CmbPort.Text = CmbPort.Items.Item(0)    'Set cmbPort text to the first COM port detected
+        CmbBaud.Text = CmbBaud.Items.Item(0)    'Set cmbBaud text to the first Baud rate on the list
+        BtnDisconnect.Enabled = False           'Initially Disconnect Button is Disabled
         ' ================= WINDOW =================
         Me.StartPosition = FormStartPosition.Manual
+
         Me.MaximumSize = New Size(0, 0)
         Me.MinimumSize = New Size(0, 0)
         Me.Bounds = Screen.FromControl(Me).WorkingArea
 
         ' ================= SERIAL UI =================
-        If UseSerialUI Then
-            myPort = IO.Ports.SerialPort.GetPortNames()
-            CmbBaud.Items.Clear()
-            CmbBaud.Items.AddRange(New Object() {9600, 19200, 38400, 57600, 115200})
-            If CmbBaud.Items.Count > 0 Then CmbBaud.SelectedIndex = 0
-            If myPort IsNot Nothing AndAlso myPort.Length > 0 Then
-                CmbPort.Items.AddRange(myPort)
-                CmbPort.SelectedIndex = 0
-            End If
-            BtnDisconnect.Enabled = False
-        Else
-            Try
-                If SerialPort1 IsNot Nothing AndAlso SerialPort1.IsOpen Then SerialPort1.Close()
-            Catch
-            End Try
-            For Each c As WinForms.Control In New WinForms.Control() {CmbPort, CmbBaud, BtnConnect, BtnDisconnect, Label633, Label634}
-                If c IsNot Nothing Then c.Visible = False
-            Next
-        End If
-
+        'BtnConnect.PerformClick()
+        'Thread.Sleep(500)
+        'SerialPort1.Write("OREMOTEX")
         ' ================= CAMERA =================
         Try
             If videoSource IsNot Nothing Then
                 RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
-                If videoSource.IsRunning Then videoSource.SignalToStop()
+                If videoSource.IsRunning Then
+                    videoSource.SignalToStop()
+                End If
             End If
         Catch
         End Try
@@ -448,6 +462,22 @@ Public Class calibratingResult
                 camCtl.BringToFront()
             End If
         End If
+
+        Dim snippingToolProcesses As String() = {"SnippingTool", "SnipAndSketch"}
+
+        For Each procName In snippingToolProcesses
+            Dim processes As Process() = Process.GetProcessesByName(procName)
+
+            For Each proc In processes
+                Try
+                    proc.Kill()
+                    proc.WaitForExit()
+                    'MessageBox.Show($"{proc.ProcessName} closed successfully.")
+                Catch ex As Exception
+                    'MessageBox.Show($"Failed to close {proc.ProcessName}: {ex.Message}")
+                End Try
+            Next
+        Next
 
         ' ================= TEMPLATE =================
         Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
@@ -553,33 +583,46 @@ Public Class calibratingResult
         ' ================= POPULATE namesArr =================
         Dim namesArr As New List(Of String)()
         CalRowModule.WithWorksheet(ctxDc, Sub(ws)
-                                              ' Assume we are reading from column A
-                                              Dim row As Integer = 2 ' Starting from row 2
-                                              While True
-                                                  Dim aVal As String = CalRowModule.ReadCell(ws, "A" & row.ToString())
+                                              ' choose which sheets to scan; dataSheets has your detected “data-looking” tabs
+                                              Dim scanSheets = If(dataSheets IsNot Nothing AndAlso dataSheets.Count > 0, dataSheets, allSheets)
 
-                                                  ' Debugging: Log value to debug output to ensure the value is being read
-                                                  Debug.WriteLine($"Reading row {row}: {aVal}")
+                                              ' columns you already touch elsewhere (A..F for left; G..Q inputs/limits; J,K,AI outputs)
+                                              Dim cols As String() = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "N", "O", "P", "Q", "AI"}
 
-                                                  If String.IsNullOrWhiteSpace(aVal) Then
-                                                      Exit While ' Stop if a blank cell is found
-                                                  End If
-                                                  namesArr.Add(aVal) ' Add the value to namesArr
+                                              For Each sh In scanSheets
+                                                  Try
+                                                      ' hop to sheet
+                                                      ctxDc.SheetInputsName = sh
+                                                      ctxDc.SheetFormulaName = sh
 
-                                                  '' Show the value being populated on UI thread
-                                                  'If Me.InvokeRequired Then
-                                                  '    Me.Invoke(Sub()
-                                                  '                  MessageBox.Show($"Populating name: {aVal}", "Populating Names", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                                                  '              End Sub)
-                                                  'Else
-                                                  '    MessageBox.Show($"Populating name: {aVal}", "Populating Names", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                                                  'End If
+                                                      ' walk rows starting at 2 until we hit a long blank streak
+                                                      Dim blankStreak As Integer = 0
+                                                      For r As Integer = 2 To 1000
+                                                          Dim anyOnRow As Boolean = False
 
-                                                  row += 1
-                                              End While
+                                                          For Each col In cols
+                                                              Dim addr = col & r.ToString()
+                                                              Dim v As String = CalRowModule.ReadCell(ws, addr)
+                                                              If Not String.IsNullOrWhiteSpace(v) Then
+                                                                  namesArr.Add(sh & "|" & addr & "|" & v)
+                                                                  anyOnRow = True
+                                                              End If
+                                                          Next
+
+                                                          If anyOnRow Then
+                                                              blankStreak = 0
+                                                          Else
+                                                              blankStreak += 1
+                                                              If blankStreak >= 50 Then Exit For ' stop scan if long blank tail
+                                                          End If
+                                                      Next
+                                                  Catch
+                                                      ' ignore sheet read issues and continue
+                                                  End Try
+                                              Next
                                           End Sub)
 
-        ' Convert namesArr to an array
+        ' Convert to array if you still need it
         Dim namesArrArray As String() = namesArr.ToArray()
 
         ' Continue with the rest of your logic
@@ -610,6 +653,63 @@ Public Class calibratingResult
         ApplyCategoriesAndSelection()
 
         HookLiveCompute()
+    End Sub
+
+    Private Sub BtnConnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnConnect.Click
+        SerialPort1.PortName = CmbPort.Text         'Set SerialPort1 to the selected COM port at startup
+        SerialPort1.BaudRate = CmbBaud.Text         'Set Baud rate to the selected value on
+
+        'Other Serial Port Property
+        SerialPort1.Parity = IO.Ports.Parity.None
+        SerialPort1.StopBits = IO.Ports.StopBits.One
+        SerialPort1.DataBits = 8            'Open our serial port
+        SerialPort1.Open()
+
+        BtnConnect.Enabled = False          'Disable Connect button
+        BtnDisconnect.Enabled = True        'and Enable Disconnect button
+
+    End Sub
+
+    Private Sub BtnDisconnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnDisconnect.Click
+        SerialPort1.Close()             'Close our Serial Port
+
+        BtnConnect.Enabled = True
+        BtnDisconnect.Enabled = False
+    End Sub
+
+    Private Sub BtnSend_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnSend.Click
+        SerialPort1.Write(txtTransmit.Text) 'The text contained in the txtText will be sent to the serial port as ascii
+        'plus the carriage return (Enter Key) the carriage return can be ommitted if the other end does not need it
+    End Sub
+
+    Private Sub SerialPort1_DataReceived(ByVal sender As Object, ByVal e As System.IO.Ports.SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
+        ReceivedText(SerialPort1.ReadExisting())    'Automatically called every time a data is received at the serialPort
+    End Sub
+
+    Private Sub ReceivedText(ByVal [text] As String)
+        'compares the ID of the creating Thread to the ID of the calling Thread
+        If Me.rtbReceived.InvokeRequired Then
+            Dim x As New SetTextCallback(AddressOf ReceivedText)
+            Me.Invoke(x, New Object() {(text)})
+        Else
+            Me.rtbReceived.Text &= [text]
+        End If
+    End Sub
+
+    Private Sub CmbPort_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbPort.SelectedIndexChanged
+        If SerialPort1.IsOpen = False Then
+            SerialPort1.PortName = CmbPort.Text         'pop a message box to user if he is changing ports
+        Else                                                                               'without disconnecting first.
+            MsgBox(”Valid only if port is Closed”, vbCritical)
+        End If
+    End Sub
+
+    Private Sub CmbBaud_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CmbBaud.SelectedIndexChanged
+        If SerialPort1.IsOpen = False Then
+            SerialPort1.BaudRate = CmbBaud.Text         'pop a message box to user if he is changing baud rate
+        Else                                                                                'without disconnecting first.
+            MsgBox(”Valid only if port is Closed”, vbCritical)
+        End If
     End Sub
 
     ' --- Render preview UI into a specific FlowLayoutPanel ---
@@ -907,7 +1007,7 @@ Public Class calibratingResult
             Return arr(i).cell
         End Function
 
-        ' Row from a *specific index* using any mapped cell at that index
+        ' Row from a specific index using any mapped cell at that index
         Dim RowFromIndex As Func(Of ParamGroup, Integer, Integer) =
         Function(g As ParamGroup, i As Integer) As Integer
             Dim candidates As New List(Of String) From {
@@ -1068,7 +1168,7 @@ Public Class calibratingResult
                             Stamp(g.FinalUncDecl(i).lbl, g.FinalUncDecl(i).cell)
                         End If
                     End If
-
+                    'DCV__MV1_0
                     ' ----- RIGHT (inputs/limits/remarks) -----
                     If g.MV1 IsNot Nothing AndAlso i < g.MV1.Length Then
                         If String.IsNullOrWhiteSpace(g.MV1(i).cell) Then g.MV1(i).cell = "G" & excelRow
@@ -1076,6 +1176,7 @@ Public Class calibratingResult
                             g.MV1(i).tb.Text = CalRowModule.ReadCell(ws, g.MV1(i).cell)
                             g.MV1(i).tb.Visible = True
                             Stamp(g.MV1(i).tb, g.MV1(i).cell)
+                            stringList.Add(g.MV1(i).tb.Name)
                         End If
                     End If
                     If g.MV2 IsNot Nothing AndAlso i < g.MV2.Length Then
@@ -1186,6 +1287,9 @@ Public Class calibratingResult
         ' 3) Close serial port
         Try
             If SerialPort1 IsNot Nothing AndAlso SerialPort1.IsOpen Then
+                SerialPort1.Write("bigsj")
+                SerialPort1.Write("OOUT 0OHMX")
+                SerialPort1.Write("OSTBYX")
                 SerialPort1.Close()
             End If
         Catch
@@ -1246,7 +1350,7 @@ Public Class calibratingResult
         Return cam
     End Function
 
-    ' Read worksheet names from an .xlsx without Excel Interop (no extra refs)
+    ' Read worksheet names from an .xlsx without Excel Interop
     Private Function GetWorksheetNamesFromXlsx(path As String) As List(Of String)
         Dim names As New List(Of String)
         Try
@@ -1266,7 +1370,6 @@ Public Class calibratingResult
                 End Using
             End Using
         Catch
-            ' ignore and return anything we parsed
         End Try
         Return names
     End Function
@@ -1275,134 +1378,624 @@ Public Class calibratingResult
 
 #Region "Portable Job_Export helpers"
 
-    ' Returns a portable Job_Export folder.
-    ' 1) Prefer next to the EXE: <app>\Job_Export
-    ' 2) Fallback to: Documents\ASCal\Job_Export (always writable)
+    ' ========= EXPORT INTO YOUR TEMPLATE (rows with formulas + MV inline) =========
+    Private Sub SimpleExportExcel()
+        Dim calcPath As String = If(ctxDc IsNot Nothing, ctxDc.TemplatePath, Nothing) ' CALC workbook used during load
+        Const exportTemplatePath As String = "C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\exporttemplate.xlsx"
 
+        If String.IsNullOrWhiteSpace(calcPath) OrElse Not IO.File.Exists(calcPath) Then
+            MessageBox.Show("Live CALC workbook not found (ctxDc.TemplatePath).", "Export", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
+        If Not IO.File.Exists(exportTemplatePath) Then
+            MessageBox.Show("Export template not found:" & Environment.NewLine & exportTemplatePath, "Export", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
+
+        Dim outDir As String = GetJobExportDir()
+        If Not IO.Directory.Exists(outDir) Then IO.Directory.CreateDirectory(outDir)
+
+        Dim base As String = IO.Path.GetFileNameWithoutExtension(BuildReportFileName())
+        If String.IsNullOrWhiteSpace(base) Then base = "CalReport"
+        Dim outPath As String = IO.Path.Combine(outDir, base & "" & DateTime.Now.ToString("yyyyMMdd_HHmmssfff") & "" & Guid.NewGuid().ToString("N") & ".xlsx")
+
+        Try
+            IO.File.Copy(exportTemplatePath, outPath, True)
+            WriteMvTableIntoTemplate(calcPath, outPath, "Export")
+
+            ' ensure all Package/streams are closed before opening (prevents DisconnectedContext MDA)
+            GC.Collect()
+            GC.WaitForPendingFinalizers()
+
+            MessageBox.Show("Exported: " & outPath, "Export", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            ' open with default handler via shell (no Excel COM automation in this process)
+            Try
+                Dim psi As New ProcessStartInfo(outPath) With {.UseShellExecute = True}
+                Process.Start(psi)
+            Catch
+                ' ignore if no handler
+            End Try
+        Catch ex As Exception
+            MessageBox.Show("Export failed: " & ex.Message, "Export", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Application.Exit()
+        End Try
+    End Sub
+
+    ' ===== Read CALC workbook (values + formulas), then write rows with MV inline (G/H/I) =====
+    Private Sub WriteMvTableIntoTemplate(calcPath As String, outPath As String, exportSheetName As String)
+        Dim ns As XNamespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+        Dim rns As XNamespace = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+
+        ' ---------- 1) Write headers using existing COM-based method ----------
+        Dim xlApp As Object = Nothing
+        Dim xlWb As Object = Nothing
+        Dim xlWs As Object = Nothing
+        Try
+            xlApp = CreateObject("Excel.Application")
+            xlApp.DisplayAlerts = False
+            ' best-effort perf toggles (guard them to avoid your error)
+            Try : xlApp.ScreenUpdating = False : Catch : End Try
+            Try : xlApp.EnableEvents = False : Catch : End Try
+            ' Some installs refuse setting Calculation; do NOT fail the export.
+            Try : xlApp.Calculation = -4135  ' xlCalculationManual
+            Catch : End Try
+
+            xlWb = xlApp.Workbooks.Open(outPath, [ReadOnly]:=False)
+
+            For Each sht As Object In xlWb.Worksheets
+                If String.Equals(CStr(sht.Name), exportSheetName, StringComparison.OrdinalIgnoreCase) Then
+                    xlWs = sht : Exit For
+                End If
+            Next
+            If xlWs Is Nothing Then Throw New InvalidOperationException("Sheet '" & exportSheetName & "' not found in workbook (COM).")
+
+            WriteAllHeaderInputsToExcel_Cells(xlWs) ' your existing mapping method
+            xlWb.Save()
+        Finally
+            ' -------- restore & cleanup (best effort) --------
+            ' Close workbook first (no save)
+            If xlWb IsNot Nothing Then
+                Try
+                    xlWb.Close(False)
+                Catch
+                End Try
+            End If
+
+            ' Restore app state before quitting
+            If xlApp IsNot Nothing Then
+                Try
+                    xlApp.Calculation = -4105   ' xlCalculationAutomatic
+                Catch
+                End Try
+                Try
+                    xlApp.EnableEvents = True
+                Catch
+                End Try
+                Try
+                    xlApp.ScreenUpdating = True
+                Catch
+                End Try
+                Try
+                    xlApp.Quit()
+                Catch
+                End Try
+            End If
+
+            ' Release COM references (each guarded)
+            Try
+                If xlWs IsNot Nothing Then System.Runtime.InteropServices.Marshal.FinalReleaseComObject(xlWs)
+            Catch
+            End Try
+            Try
+                If xlWb IsNot Nothing Then System.Runtime.InteropServices.Marshal.FinalReleaseComObject(xlWb)
+            Catch
+            End Try
+            Try
+                If xlApp IsNot Nothing Then System.Runtime.InteropServices.Marshal.FinalReleaseComObject(xlApp)
+            Catch
+            End Try
+
+            xlWs = Nothing : xlWb = Nothing : xlApp = Nothing
+        End Try
+
+
+        ' ---------- 2) Your existing OpenXML code (unchanged helpers below) ----------
+        Dim ColLetters As Func(Of String, String) =
+        Function(a As String)
+            Dim i = 0 : While i < a.Length AndAlso Char.IsLetter(a(i)) : i += 1 : End While
+            If i = 0 Then Return "A" Else Return a.Substring(0, i)
+        End Function
+
+        Dim LoadShared As Func(Of System.IO.Packaging.Package, List(Of String)) =
+        Function(p)
+            Dim out As New List(Of String)
+            Dim sstUri As New Uri("/xl/sharedStrings.xml", UriKind.Relative)
+            If Not p.PartExists(sstUri) Then Return out
+            Dim sst = XDocument.Load(p.GetPart(sstUri).GetStream(FileMode.Open, FileAccess.Read))
+            For Each si In sst.Root.Elements(ns + "si")
+                Dim t = si.Element(ns + "t")
+                If t IsNot Nothing Then
+                    out.Add(t.Value)
+                Else
+                    Dim sb As New Text.StringBuilder()
+                    For Each run In si.Elements(ns + "r")
+                        Dim rt = run.Element(ns + "t")
+                        If rt IsNot Nothing Then sb.Append(rt.Value)
+                    Next
+                    out.Add(sb.ToString())
+                End If
+            Next
+            Return out
+        End Function
+
+        Dim GetValue As Func(Of XElement, System.IO.Packaging.Package, List(Of String), String) =
+        Function(c As XElement, pkg As System.IO.Packaging.Package, sst As List(Of String))
+            Dim tt As String = CStr(c.Attribute("t"))
+            If tt = "inlineStr" Then
+                Dim isEl = c.Element(ns + "is") : If isEl Is Nothing Then Return ""
+                Dim tnode = isEl.Element(ns + "t") : If tnode IsNot Nothing Then Return tnode.Value
+                Dim sb As New Text.StringBuilder()
+                For Each run In isEl.Elements(ns + "r")
+                    Dim rt = run.Element(ns + "t")
+                    If rt IsNot Nothing Then sb.Append(rt.Value)
+                Next
+                Return sb.ToString()
+            ElseIf tt = "s" Then
+                Dim vEl = c.Element(ns + "v") : If vEl Is Nothing Then Return ""
+                Dim idx As Integer
+                If Integer.TryParse(vEl.Value, idx) AndAlso idx >= 0 AndAlso idx < sst.Count Then Return sst(idx)
+                Return vEl.Value
+            Else
+                Dim vEl = c.Element(ns + "v") : If vEl Is Nothing Then Return ""
+                Return vEl.Value
+            End If
+        End Function
+
+        Dim SetInline As Action(Of XElement, String, Integer?) =
+        Sub(cellEl As XElement, val As String, styleIdx As Integer?)
+            If val Is Nothing Then val = ""
+            cellEl.SetAttributeValue("t", "inlineStr")
+            cellEl.Elements().Remove()
+            cellEl.Add(New XElement(ns + "is",
+                New XElement(ns + "t", New XAttribute(XNamespace.Xml + "space", "preserve"), val)))
+            If styleIdx.HasValue Then cellEl.SetAttributeValue("s", styleIdx.Value)
+        End Sub
+
+        Dim SetNumberOrInline As Action(Of XElement, String, Integer?) =
+        Sub(cellEl As XElement, val As String, styleIdx As Integer?)
+            If val Is Nothing Then val = ""
+            Dim d As Decimal
+            If Decimal.TryParse(val, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, d) Then
+                Dim tAttr = cellEl.Attribute("t") : If tAttr IsNot Nothing Then tAttr.Remove()
+                cellEl.Elements().Remove()
+                cellEl.Add(New XElement(ns + "v", d.ToString(Globalization.CultureInfo.InvariantCulture)))
+                If styleIdx.HasValue Then cellEl.SetAttributeValue("s", styleIdx.Value)
+            Else
+                SetInline(cellEl, val, styleIdx)
+            End If
+        End Sub
+
+        Dim SetFormula As Action(Of XElement, String, Integer?) =
+        Sub(cellEl As XElement, f As String, styleIdx As Integer?)
+            If String.IsNullOrWhiteSpace(f) Then Exit Sub
+            Dim fx = If(f.StartsWith("="), f.Substring(1), f)
+            Dim tAttr = cellEl.Attribute("t") : If tAttr IsNot Nothing Then tAttr.Remove()
+            cellEl.Elements().Remove()
+            cellEl.Add(New XElement(ns + "f", fx))
+            If styleIdx.HasValue Then cellEl.SetAttributeValue("s", styleIdx.Value)
+        End Sub
+
+        Dim EnsureCell As Func(Of XElement, String, XElement) =
+        Function(rowEl As XElement, addr As String) As XElement
+            Dim c = rowEl.Elements(ns + "c").FirstOrDefault(Function(x) String.Equals(CStr(x.Attribute("r")), addr, StringComparison.Ordinal))
+            If c Is Nothing Then
+                c = New XElement(ns + "c", New XAttribute("r", addr))
+                rowEl.Add(c)
+            End If
+            Return c
+        End Function
+
+        Dim AdjustA1FormulaWithSheetMaps As Func(Of String, String, Dictionary(Of String, Dictionary(Of Integer, Integer)), Dictionary(Of String, Integer), Integer, String) =
+        Function(fx As String, currentSheet As String,
+                 maps As Dictionary(Of String, Dictionary(Of Integer, Integer)),
+                 fallbackDeltaBySheet As Dictionary(Of String, Integer),
+                 globalFallbackDelta As Integer) As String
+            If String.IsNullOrWhiteSpace(fx) Then Return fx
+            Dim core As String = If(fx.StartsWith("="), fx.Substring(1), fx)
+            Dim rx As New Global.System.Text.RegularExpressions.Regex(
+                "(?<sheet>'[^']+'!|[A-Za-z0-9_\.]+!)?(?<col>\$?[A-Za-z]{1,3})(?<rowanchor>\$?)(?<row>\d+)",
+                Global.System.Text.RegularExpressions.RegexOptions.Compiled)
+            Dim result As String = rx.Replace(core, Function(m As Text.RegularExpressions.Match)
+                                                        Dim rowAnchor As String = m.Groups("rowanchor").Value
+                                                        If rowAnchor = "$" Then Return m.Value
+                                                        Dim sheetToken As String = m.Groups("sheet").Value
+                                                        Dim refSheet As String = currentSheet
+                                                        If sheetToken.Length > 0 Then
+                                                            Dim s = sheetToken.Substring(0, sheetToken.Length - 1)
+                                                            If s.StartsWith("'") AndAlso s.EndsWith("'") AndAlso s.Length >= 2 Then
+                                                                refSheet = s.Substring(1, s.Length - 2)
+                                                            Else
+                                                                refSheet = s
+                                                            End If
+                                                        End If
+                                                        Dim map As Dictionary(Of Integer, Integer) = Nothing
+                                                        maps.TryGetValue(refSheet, map)
+                                                        Dim oldRow As Integer = Integer.Parse(m.Groups("row").Value)
+                                                        Dim newRow As Integer
+                                                        If map IsNot Nothing AndAlso map.TryGetValue(oldRow, newRow) Then
+                                                            Return (If(sheetToken, "")) & m.Groups("col").Value & newRow.ToString()
+                                                        Else
+                                                            Dim delta As Integer = globalFallbackDelta
+                                                            Dim dTmp As Integer
+                                                            If fallbackDeltaBySheet IsNot Nothing AndAlso fallbackDeltaBySheet.TryGetValue(refSheet, dTmp) Then delta = dTmp
+                                                            Dim shifted As Integer = Math.Max(1, oldRow + delta)
+                                                            Return (If(sheetToken, "")) & m.Groups("col").Value & shifted.ToString()
+                                                        End If
+                                                    End Function)
+            Return result
+        End Function
+
+        Dim colsArr As String() = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI"}
+        Dim colsSet As New HashSet(Of String)(colsArr, StringComparer.OrdinalIgnoreCase)
+
+        Dim mvTriples As New Queue(Of (String, String, String))()
+        If Groups IsNot Nothing AndAlso Groups.Count > 0 Then
+            For Each g In Groups.Values
+                If g Is Nothing Then Continue For
+                Dim l1 = If(g.MV1 IsNot Nothing, g.MV1.Length, 0)
+                Dim l2 = If(g.MV2 IsNot Nothing, g.MV2.Length, 0)
+                Dim l3 = If(g.MV3 IsNot Nothing, g.MV3.Length, 0)
+                Dim n = Math.Max(l1, Math.Max(l2, l3))
+                For i = 0 To n - 1
+                    Dim v1 = If(g.MV1 IsNot Nothing AndAlso i < l1 AndAlso g.MV1(i).tb IsNot Nothing, g.MV1(i).tb.Text, "")
+                    Dim v2 = If(g.MV2 IsNot Nothing AndAlso i < l2 AndAlso g.MV2(i).tb IsNot Nothing, g.MV2(i).tb.Text, "")
+                    Dim v3 = If(g.MV3 IsNot Nothing AndAlso i < l3 AndAlso g.MV3(i).tb IsNot Nothing, g.MV3(i).tb.Text, "")
+                    mvTriples.Enqueue((v1, v2, v3))
+                Next
+            Next
+        End If
+
+        Dim expDoc As XDocument = Nothing
+        Dim expSheetData As XElement = Nothing
+        Dim expWsPart As System.IO.Packaging.PackagePart = Nothing
+        Dim writeRow As Integer
+        Dim numericStyleIndex As Integer? = Nothing
+
+        Dim EnsureNumericStyle As Func(Of System.IO.Packaging.Package, Integer?) =
+        Function(pkg As System.IO.Packaging.Package) As Integer?
+            Dim stylesUri = New Uri("/xl/styles.xml", UriKind.Relative)
+            If Not pkg.PartExists(stylesUri) Then Return Nothing
+            Dim stylesPart = pkg.GetPart(stylesUri)
+            Dim stylesDoc As XDocument
+            Using s = stylesPart.GetStream(FileMode.Open, FileAccess.Read)
+                stylesDoc = XDocument.Load(s)
+            End Using
+            Dim xfsParent = stylesDoc.Root.Element(ns + "cellXfs")
+            If xfsParent Is Nothing Then Return Nothing
+            Dim idx As Integer = 0
+            For Each xf In xfsParent.Elements(ns + "xf")
+                Dim numFmtIdAttr = xf.Attribute("numFmtId")
+                Dim applyAttr = xf.Attribute("applyNumberFormat")
+                Dim numFmtId As Integer = If(numFmtIdAttr Is Nothing, -1, Integer.Parse(numFmtIdAttr.Value))
+                Dim apply As Integer = If(applyAttr Is Nothing, 0, Integer.Parse(applyAttr.Value))
+                If numFmtId = 4 AndAlso apply = 1 Then Return idx
+                idx += 1
+            Next
+            Dim newIdx As Integer = idx
+            xfsParent.Add(New XElement(ns + "xf",
+                New XAttribute("numFmtId", "4"),
+                New XAttribute("applyNumberFormat", "1"),
+                New XAttribute("fontId", "0"),
+                New XAttribute("fillId", "0"),
+                New XAttribute("borderId", "0"),
+                New XAttribute("xfId", "0")))
+            xfsParent.SetAttributeValue("count", (newIdx + 1).ToString())
+            Using sW = stylesPart.GetStream(FileMode.Create, FileAccess.Write)
+                stylesDoc.Save(sW)
+            End Using
+            Return newIdx
+        End Function
+
+        Using pExp = System.IO.Packaging.Package.Open(outPath, FileMode.Open, FileAccess.ReadWrite)
+            numericStyleIndex = EnsureNumericStyle(pExp)
+
+            Dim wbDoc = XDocument.Load(pExp.GetPart(System.IO.Packaging.PackUriHelper.CreatePartUri(New Uri("/xl/workbook.xml", UriKind.Relative))).GetStream(FileMode.Open, FileAccess.Read))
+            Dim rels = XDocument.Load(pExp.GetPart(System.IO.Packaging.PackUriHelper.CreatePartUri(New Uri("/xl/_rels/workbook.xml.rels", UriKind.Relative))).GetStream(FileMode.Open, FileAccess.Read))
+
+            Dim rid = (From s In wbDoc.Root.Element(ns + "sheets").Elements(ns + "sheet")
+                       Where String.Equals(CStr(s.Attribute("name")), exportSheetName, StringComparison.OrdinalIgnoreCase)
+                       Select CStr(s.Attribute(rns + "id"))).FirstOrDefault()
+            If String.IsNullOrEmpty(rid) Then Throw New InvalidOperationException("Sheet '" & exportSheetName & "' not found in export template.")
+
+            Dim target = (From r In rels.Root.Elements() Where CStr(r.Attribute("Id")) = rid Select CStr(r.Attribute("Target"))).First()
+            Dim wsUri = System.IO.Packaging.PackUriHelper.CreatePartUri(New Uri("/xl/" & target.Replace("\", "/"), UriKind.Relative))
+            expWsPart = pExp.GetPart(wsUri)
+
+            Using s = expWsPart.GetStream(FileMode.Open, FileAccess.Read)
+                expDoc = XDocument.Load(s)
+            End Using
+            expSheetData = expDoc.Root.Element(ns + "sheetData")
+            If expSheetData Is Nothing Then Throw New InvalidOperationException("Export sheet has no sheetData.")
+
+            Dim startRow As Integer = 36
+            Dim maxRow As Integer = startRow - 1
+            For Each rEl In expSheetData.Elements(ns + "row")
+                Dim ra = rEl.Attribute("r") : If ra Is Nothing Then Continue For
+                Dim n As Integer : If Integer.TryParse(ra.Value, n) AndAlso n > maxRow Then maxRow = n
+            Next
+            writeRow = Math.Max(startRow, maxRow + 1)
+
+            Dim rowMapBySheet As New Dictionary(Of String, Dictionary(Of Integer, Integer))(StringComparer.OrdinalIgnoreCase)
+            Dim fallbackDeltaBySheet As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
+
+            Using pCalc = System.IO.Packaging.Package.Open(calcPath, FileMode.Open, FileAccess.Read)
+                Dim sst = LoadShared(pCalc)
+                Dim srcWb = XDocument.Load(pCalc.GetPart(New Uri("/xl/workbook.xml", UriKind.Relative)).GetStream(FileMode.Open, FileAccess.Read))
+                Dim srcRels = XDocument.Load(pCalc.GetPart(New Uri("/xl/_rels/workbook.xml.rels", UriKind.Relative)).GetStream(FileMode.Open, FileAccess.Read))
+
+                ' ---- PERF: only process "Portable" if it exists; else fall back to all sheets ----
+                Dim portableExists As Boolean =
+                srcWb.Root.Element(ns + "sheets").Elements(ns + "sheet").
+                    Any(Function(s) String.Equals(CStr(s.Attribute("name")), "Portable", StringComparison.OrdinalIgnoreCase))
+
+                For Each sh In srcWb.Root.Element(ns + "sheets").Elements(ns + "sheet")
+                    Dim srcSheetName As String = CStr(sh.Attribute("name"))
+                    If portableExists AndAlso Not String.Equals(srcSheetName, "Portable", StringComparison.OrdinalIgnoreCase) Then
+                        Continue For ' skip non-Portable sheets for speed (safe)
+                    End If
+
+                    Dim rid2 = CStr(sh.Attribute(rns + "id"))
+                    If String.IsNullOrEmpty(rid2) Then Continue For
+                    Dim target2 = (From r In srcRels.Root.Elements() Where CStr(r.Attribute("Id")) = rid2 Select CStr(r.Attribute("Target"))).FirstOrDefault()
+                    If String.IsNullOrEmpty(target2) Then Continue For
+
+                    Dim wsUri2 = New Uri("/xl/" & target2.Replace("\", "/"), UriKind.Relative)
+                    If Not pCalc.PartExists(wsUri2) Then Continue For
+
+                    Dim ws = XDocument.Load(pCalc.GetPart(wsUri2).GetStream(FileMode.Open, FileAccess.Read))
+                    Dim sd = ws.Root.Element(ns + "sheetData")
+                    If sd Is Nothing Then Continue For
+
+                    ' PRESCAN: shared formula masters (store base row)
+                    Dim sharedFx As New Dictionary(Of String, (fx As String, baseRow As Integer))(StringComparer.Ordinal)
+                    For Each rr In sd.Elements(ns + "row")
+                        Dim rrn As Integer = 0 : Integer.TryParse(CStr(rr.Attribute("r")), rrn)
+                        For Each cc In rr.Elements(ns + "c")
+                            Dim fEl = cc.Element(ns + "f")
+                            If fEl Is Nothing Then Continue For
+                            If String.Equals(CStr(fEl.Attribute("t")), "shared", StringComparison.OrdinalIgnoreCase) Then
+                                Dim si As String = CStr(fEl.Attribute("si"))
+                                Dim fxText As String = fEl.Value
+                                If Not String.IsNullOrWhiteSpace(si) AndAlso Not String.IsNullOrWhiteSpace(fxText) Then
+                                    If Not sharedFx.ContainsKey(si) Then sharedFx(si) = (fxText, rrn)
+                                End If
+                            End If
+                        Next
+                    Next
+
+                    If Not rowMapBySheet.ContainsKey(srcSheetName) Then rowMapBySheet(srcSheetName) = New Dictionary(Of Integer, Integer)()
+                    Dim styleIdx As Integer? = numericStyleIndex
+                    Dim firstDeltaSet As Boolean = False
+
+                    For Each srcRow In sd.Elements(ns + "row")
+                        Dim ra = srcRow.Attribute("r")
+                        Dim srcRowNum As Integer
+                        If ra Is Nothing OrElse Not Integer.TryParse(ra.Value, srcRowNum) OrElse srcRowNum < 2 Then Continue For
+
+                        Dim bucket As New Dictionary(Of String, (hasF As Boolean, txt As String))(StringComparer.OrdinalIgnoreCase)
+                        Dim anyCell As Boolean = False
+
+                        For Each c In srcRow.Elements(ns + "c")
+                            Dim addr As String = CStr(c.Attribute("r")) : If String.IsNullOrEmpty(addr) Then Continue For
+                            Dim col As String = ColLetters(addr).ToUpperInvariant()
+
+                            If Not anyCell Then
+                                If c.Element(ns + "v") IsNot Nothing OrElse c.Element(ns + "f") IsNot Nothing OrElse c.Element(ns + "is") IsNot Nothing Then
+                                    anyCell = True
+                                End If
+                            End If
+
+                            If Not colsSet.Contains(col) Then Continue For
+
+                            Dim fEl = c.Element(ns + "f")
+                            If fEl IsNot Nothing Then
+                                Dim tAttr As String = CStr(fEl.Attribute("t"))
+                                If String.Equals(tAttr, "shared", StringComparison.OrdinalIgnoreCase) Then
+                                    Dim si As String = CStr(fEl.Attribute("si"))
+                                    Dim resolved As String = Nothing
+                                    Dim baseRow As Integer = srcRowNum
+                                    If Not String.IsNullOrWhiteSpace(fEl.Value) Then
+                                        resolved = fEl.Value : baseRow = srcRowNum
+                                    ElseIf Not String.IsNullOrWhiteSpace(si) Then
+                                        Dim info As (fx As String, baseRow As Integer)
+                                        If sharedFx.TryGetValue(si, info) Then
+                                            resolved = info.fx : baseRow = info.baseRow
+                                        End If
+                                    End If
+                                    If Not String.IsNullOrWhiteSpace(resolved) Then
+                                        Dim rowShift As Integer = srcRowNum - baseRow
+                                        Dim followerFx As String = If(rowShift <> 0, AdjustA1Formula(resolved, rowShift), resolved)
+                                        bucket(col) = (True, followerFx) : anyCell = True
+                                        Continue For
+                                    End If
+                                ElseIf Not String.IsNullOrWhiteSpace(fEl.Value) Then
+                                    bucket(col) = (True, fEl.Value) : anyCell = True
+                                    Continue For
+                                End If
+                            End If
+
+                            Dim val As String = GetValue(c, pCalc, sst)
+                            If val IsNot Nothing AndAlso val.Length > 0 Then
+                                bucket(col) = (False, val) : anyCell = True
+                            End If
+                        Next
+
+                        If Not anyCell Then Continue For
+
+                        Dim rowEl As New XElement(ns + "row", New XAttribute("r", writeRow))
+                        expSheetData.Add(rowEl)
+
+                        Dim sheetMap = rowMapBySheet(srcSheetName)
+                        If Not sheetMap.ContainsKey(srcRowNum) Then sheetMap(srcRowNum) = writeRow
+
+                        If Not firstDeltaSet Then
+                            fallbackDeltaBySheet(srcSheetName) = writeRow - srcRowNum
+                            firstDeltaSet = True
+                        End If
+                        Dim globalFallbackDelta As Integer = writeRow - srcRowNum
+
+                        For Each col In New String() {"A", "B", "C", "D", "E", "F"}
+                            If bucket.ContainsKey(col) Then
+                                Dim cell = EnsureCell(rowEl, col & writeRow.ToString())
+                                Dim payload = bucket(col)
+                                If payload.hasF Then
+                                    Dim adj = AdjustA1FormulaWithSheetMaps(payload.txt, srcSheetName, rowMapBySheet, fallbackDeltaBySheet, globalFallbackDelta)
+                                    SetFormula(cell, adj, styleIdx)
+                                Else
+                                    SetNumberOrInline(cell, payload.txt, styleIdx)
+                                End If
+                            End If
+                        Next
+
+                        If mvTriples.Count > 0 Then
+                            Dim t = mvTriples.Dequeue()
+                            If t.Item1 <> "" Then SetNumberOrInline(EnsureCell(rowEl, "G" & writeRow.ToString()), t.Item1, styleIdx)
+                            If t.Item2 <> "" Then SetNumberOrInline(EnsureCell(rowEl, "H" & writeRow.ToString()), t.Item2, styleIdx)
+                            If t.Item3 <> "" Then SetNumberOrInline(EnsureCell(rowEl, "I" & writeRow.ToString()), t.Item3, styleIdx)
+                        End If
+
+                        For Each col In New String() {"J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI"}
+                            If bucket.ContainsKey(col) Then
+                                Dim cell = EnsureCell(rowEl, col & writeRow.ToString())
+                                Dim payload = bucket(col)
+                                If payload.hasF Then
+                                    Dim adj = AdjustA1FormulaWithSheetMaps(payload.txt, srcSheetName, rowMapBySheet, fallbackDeltaBySheet, globalFallbackDelta)
+                                    SetFormula(cell, adj, styleIdx)
+                                Else
+                                    SetNumberOrInline(cell, payload.txt, styleIdx)
+                                End If
+                            End If
+                        Next
+
+                        writeRow += 1
+                    Next
+                Next
+            End Using
+
+            ' save only the worksheet (compact, fast)
+            Dim wset As New XmlWriterSettings With {.Encoding = New Text.UTF8Encoding(False), .Indent = False, .OmitXmlDeclaration = False}
+            Using sW = expWsPart.GetStream(FileMode.Create, FileAccess.Write)
+                Using xw = XmlWriter.Create(sW, wset)
+                    expDoc.Save(xw)
+                End Using
+            End Using
+        End Using
+    End Sub
+
+    ' Returns a portable Job_Export folder.
     Private Function GetJobExportDir() As String
         Dim dir1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Job_Export")
         Try
             Directory.CreateDirectory(dir1)
             Return dir1
         Catch ex As UnauthorizedAccessException
-            Dim dir2 = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "ASCal", "Job_Export")
+            Dim dir2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "ASCal", "Job_Export")
             Directory.CreateDirectory(dir2)
             Return dir2
         End Try
     End Function
 
-    ' !!!!!!!!!!!!>>> CHANGE FILE NAME FORMAT HERE <<<!!!!!!!!!!!!!!!!!!!
     Private Function BuildReportFileName() As String
-        ' Examples:
-        ' Return $"CalReport_{NormalizeFile(WorkOrderNumber)}.xlsx"
-        ' Return $"Cal_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}_{DateTime.Now:yyyyMMdd}.xlsx"
         Return $"CalReport_{NormalizeFile(WorkOrderNumber)}_{NormalizeFile(SerialNumber)}.xlsx"
     End Function
 
-    ' Mirrors a saved file into the Job_Export folder (portable)
-    Private Sub CopyToJobExport(sourcePath As String)
-        Try
-            Dim exportDir = GetJobExportDir()
-            Dim dest = Path.Combine(exportDir, Path.GetFileName(sourcePath))
-            File.Copy(sourcePath, dest, True)
-        Catch ex As Exception
-            MessageBox.Show("Saved, but unable to copy to Job_Export: " & ex.Message,
-                            "Copy Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        End Try
-    End Sub
-
-    '' Read descriptor labels (Function / Range / Nominal / Unit / Frequency / FreqUnit)
-    '' using the same row as the MV cells (we derive the row from MV1/MV2/MV3 mapping).
-    'Private Sub ReadDescriptorRow(ws As Object, g As Object, i As Integer)
-    '    Dim pg = DirectCast(g, Object)
-
-    '    ' Figure out which row to read (use MV1/MV2/MV3 mapped cells)
-    '    Dim rowNum As Integer = -1
-    '    Try
-    '        If pg.MV1 IsNot Nothing AndAlso i < pg.MV1.Length AndAlso pg.MV1(i).cell IsNot Nothing Then
-    '            rowNum = GetRowFromAddr(pg.MV1(i).cell)
-    '        ElseIf pg.MV2 IsNot Nothing AndAlso i < pg.MV2.Length AndAlso pg.MV2(i).cell IsNot Nothing Then
-    '            rowNum = GetRowFromAddr(pg.MV2(i).cell)
-    '        ElseIf pg.MV3 IsNot Nothing AndAlso i < pg.MV3.Length AndAlso pg.MV3(i).cell IsNot Nothing Then
-    '            rowNum = GetRowFromAddr(pg.MV3(i).cell)
-    '        End If
-    '    Catch
-    '    End Try
-    '    If rowNum <= 0 Then Exit Sub
-
-    'End Sub
-
+    Private Function AdjustA1Formula(ByVal fx As String, ByVal deltaRow As Integer) As String
+        If String.IsNullOrWhiteSpace(fx) OrElse deltaRow = 0 Then Return fx
+        Dim core As String = If(fx.StartsWith("="), fx.Substring(1), fx)
+        Dim rx As New System.Text.RegularExpressions.Regex(
+        "(?<sheet>'[^']+'!|[A-Za-z0-9_\.]+!)?(?<col>\$?[A-Za-z]{1,3})(?<rowanchor>\$?)(?<row>\d+)",
+        System.Text.RegularExpressions.RegexOptions.Compiled)
+        Dim result As String = rx.Replace(core, Function(m As System.Text.RegularExpressions.Match)
+                                                    Dim rowAnchor As String = m.Groups("rowanchor").Value
+                                                    If rowAnchor = "$" Then Return m.Value
+                                                    Dim rowNum As Integer = Integer.Parse(m.Groups("row").Value)
+                                                    Dim shifted As Integer = Math.Max(1, rowNum + deltaRow)
+                                                    Dim sheetPart As String = m.Groups("sheet").Value
+                                                    Dim colPart As String = m.Groups("col").Value
+                                                    Return sheetPart & colPart & shifted.ToString()
+                                                End Function)
+        Return result
+    End Function
 #End Region
+
+
 
 #Region "Header write (cells mapping)" 'inputs na galing sa calibrate.vb
 
     Private Sub WriteAllHeaderInputsToExcel_Cells(ws As Object)
-        ' Left block
-        WriteIfNotEmpty(ws, "L7", WorkOrderNumber)      ' Work Order Number
-        WriteIfNotEmpty(ws, "AN7", TechnicianInitials)  ' Technical ID
-        WriteIfNotEmpty(ws, "K9", Description)          ' Description
-        WriteIfNotEmpty(ws, "K11", Manufacturer)        ' Manufacturer
-        WriteIfNotEmpty(ws, "K13", Model)               ' Model
-        WriteIfNotEmpty(ws, "K15", SerialNumber)        ' Serial Number
-        WriteIfNotEmpty(ws, "K17", Range)               ' Range
-        WriteIfNotEmpty(ws, "K19", Readability)         ' Res/Readability
-        WriteIfNotEmpty(ws, "K21", PrevSesCalCert)      ' Prev. SES Cal Cert
+        ' --- Header / Identification (left) ---
+        WriteIfNotEmpty(ws, "L3", WorkOrderNumber)      ' Work Order Number
+        WriteIfNotEmpty(ws, "B5", Description)          ' Description
+        WriteIfNotEmpty(ws, "B6", Manufacturer)         ' Manufacturer
+        WriteIfNotEmpty(ws, "B7", Model)               ' Model
+        WriteIfNotEmpty(ws, "B8", SerialNumber)        ' Serial Number
+        WriteIfNotEmpty(ws, "B9", Range)               ' Range
+        WriteIfNotEmpty(ws, "B10", Readability)        ' Res/Readability
+        WriteIfNotEmpty(ws, "L11", PrevSesCalCert)     ' Prev. SES Cal Cert
 
-        ' Right block
-        WriteIfNotEmpty(ws, "AL9", ReceivedDate)        ' received date
-        WriteIfNotEmpty(ws, "AL11", CalibrationDate)    ' calibration date
-        WriteIfNotEmpty(ws, "AL13", OptionsInstalled)   ' options installed
-        WriteIfNotEmpty(ws, "AL15", CustomerPO)         ' customers PO
-        WriteIfNotEmpty(ws, "AL17", AssetNumber)        ' asset number
-        WriteIfNotEmpty(ws, "AL19", AccuracyHeader)     ' accuracy header
-        WriteIfNotEmpty(ws, "AL21", PreviousTechnician) ' previous technician
+        ' --- Header / Identification (right) ---
+        WriteIfNotEmpty(ws, "L5", ReceivedDate)        ' Received date (moved off L3 to avoid conflict)
+        WriteIfNotEmpty(ws, "L6", CalibrationDate)     ' Calibration date
+        WriteIfNotEmpty(ws, "L7", OptionsInstalled)    ' Options installed
+        WriteIfNotEmpty(ws, "L8", CustomerPO)          ' Customer PO
+        WriteIfNotEmpty(ws, "L9", AssetNumber)         ' Asset number
+        WriteIfNotEmpty(ws, "L10", AccuracyHeader)     ' Accuracy header
+        WriteIfNotEmpty(ws, "L11", PreviousTechnician) ' Previous technician
 
-        ' Company
-        WriteIfNotEmpty(ws, "H25", CompanyName)         ' company name
-        WriteIfNotEmpty(ws, "H27", CompanyAddress)      ' company address
+        ' --- Company ---
+        WriteIfNotEmpty(ws, "B14", CompanyName)        ' Company name
+        WriteIfNotEmpty(ws, "B15", CompanyAddress)     ' Company address
 
-        ' In-house / On-site flags & address
+        ' --- In-house / On-site flags & address (kept from previous; update cells if template changed) ---
         Dim ct = If(CalibrationType, "").Trim().ToUpperInvariant()
         If ct.Contains("IN-HOUSE") OrElse ct.Contains("INHOUSE") Then
-            WriteIfNotEmpty(ws, "AE25", "x")            ' kung in-house ang checked
+            WriteIfNotEmpty(ws, "J14", "x")           ' in-house checked
         ElseIf ct.Contains("ON-SITE") OrElse ct.Contains("ONSITE") Then
-            WriteIfNotEmpty(ws, "AE27", "x")            ' kung on-site ang checked
-            WriteIfNotEmpty(ws, "AG29", SpecificSite)   ' address ng on site calibration
+            WriteIfNotEmpty(ws, "J15", "x")           ' on-site checked
+            WriteIfNotEmpty(ws, "J16", SpecificSite)  ' on-site address
         End If
 
-        ' Reference Standards (rows 33–34)
-        WriteIfNotEmpty(ws, "B33", RefDesc1)            ' reference description 1
-        WriteIfNotEmpty(ws, "Q33", RefSN1)              ' reference serial number 1
-        WriteIfNotEmpty(ws, "AB33", RefCalRef1)         ' reference cal reference 1
-        WriteIfNotEmpty(ws, "AO33", RefDue1)            ' reference due date 1
+        ' --- Reference Standards (rows 19–20) ---
+        WriteIfNotEmpty(ws, "A19", RefDesc1)
+        WriteIfNotEmpty(ws, "D19", RefSN1)
+        WriteIfNotEmpty(ws, "G19", RefCalRef1)
+        WriteIfNotEmpty(ws, "J19", RefDue1)
 
-        WriteIfNotEmpty(ws, "B34", RefDesc2)            ' reference description 2
-        WriteIfNotEmpty(ws, "Q34", RefSN2)              ' reference serial number 2
-        WriteIfNotEmpty(ws, "AB34", RefCalRef2)         ' reference cal reference 2
-        WriteIfNotEmpty(ws, "AO34", RefDue2)            ' reference due date 2
+        WriteIfNotEmpty(ws, "A20", RefDesc2)
+        WriteIfNotEmpty(ws, "D20", RefSN2)
+        WriteIfNotEmpty(ws, "G20", RefCalRef2)
+        WriteIfNotEmpty(ws, "J20", RefDue2)
 
-        ' Accessories (rows 37–38)
-        WriteIfNotEmpty(ws, "B37", AccDesc1)            ' accesory description 1
-        WriteIfNotEmpty(ws, "Q37", AccSN1)              ' accesory serial num 1
-        WriteIfNotEmpty(ws, "AB37", AccCalBrand1)       ' accesory brand 1
-        WriteIfNotEmpty(ws, "AO37", AccModel1)          ' accesory model 1
+        ' --- Accessories (rows 23–24) ---
+        WriteIfNotEmpty(ws, "A23", AccDesc1)
+        WriteIfNotEmpty(ws, "D23", AccSN1)
+        WriteIfNotEmpty(ws, "G23", AccCalBrand1)
+        WriteIfNotEmpty(ws, "J23", AccModel1)
 
-        WriteIfNotEmpty(ws, "B38", AccDesc2)            ' accesory description 2
-        WriteIfNotEmpty(ws, "Q38", AccSN2)              ' accesory serial num 2
-        WriteIfNotEmpty(ws, "AB38", AccCalBrand2)       ' accesory brand 2
-        WriteIfNotEmpty(ws, "AO38", AccModel2)          ' accesory model 2
+        WriteIfNotEmpty(ws, "A24", AccDesc2)
+        WriteIfNotEmpty(ws, "D24", AccSN2)
+        WriteIfNotEmpty(ws, "G24", AccCalBrand2)
+        WriteIfNotEmpty(ws, "J24", AccModel2)
 
-        ' Environmental condition
-        WriteIfNotEmpty(ws, "K41", TempStart)       ' Temperature Start
-        WriteIfNotEmpty(ws, "K42", TempEnd)         ' Temperature End
-        WriteIfNotEmpty(ws, "T41", HumidityStart)   ' Relative Humidity Start
-        WriteIfNotEmpty(ws, "T42", HumidityEnd)     ' Relative Humidity End
+        ' --- Environmental conditions ---
+        WriteIfNotEmpty(ws, "B27", TempStart)          ' Temperature Start
+        WriteIfNotEmpty(ws, "B28", TempEnd)            ' Temperature End
+        WriteIfNotEmpty(ws, "E27", HumidityStart)      ' Relative Humidity Start
+        WriteIfNotEmpty(ws, "E28", HumidityEnd)        ' Relative Humidity End
 
-        WriteIfNotEmpty(ws, "AB40", calMathod)     ' Calibration Method
-        WriteIfNotEmpty(ws, "B140", TechnicianName)     ' Technician Name
-
+        ' --- Method ---
+        WriteIfNotEmpty(ws, "J26", calMathod)          ' Calibration Method
     End Sub
 
     Private Sub WriteIfNotEmpty(ws As Object, addr As String, value As String)
@@ -1411,6 +2004,7 @@ Public Class calibratingResult
     End Sub
 
 #End Region
+
 
 #Region "Live compute plumbing" 'mag-aactivate eto kapag nagmanual input sa lahat ng fields
 
@@ -1864,7 +2458,7 @@ Public Class calibratingResult
     Private lastNextSlot As Integer = 0          ' 1=MV1, 2=MV2, 3=MV3
 
     ' For thread-safe UI updates in serial receive (kept for compatibility)
-    Delegate Sub SetTextCallback(ByVal [text] As String)
+    'Delegate Sub SetTextCallback(ByVal [text] As String)
 
     ' ---------- Win32 Imports ----------
     <DllImport("user32.dll")>
@@ -1892,6 +2486,11 @@ Public Class calibratingResult
     Private Sub RemoveFocus()
         Dim dummy = Me.Controls("lblDummy")
         If dummy IsNot Nothing Then dummy.Focus()
+    End Sub
+
+    Private Sub Captured(ByVal sender As Object, ByVal EventArgs As NewFrameEventArgs)
+        bmp = DirectCast(EventArgs.Frame.Clone(), Bitmap)
+        PictureBox1.Image = DirectCast(EventArgs.Frame.Clone(), Bitmap)
     End Sub
 
     ' ---------- Camera preview ----------
@@ -1929,326 +2528,616 @@ Public Class calibratingResult
     Private firstClick As Boolean = True
     Private isCapturing As Boolean = False
 
-    ' ---------- Capture Button (merged flow) ----------
-    Private Sub BtnCapture_Click(sender As Object, e As EventArgs) Handles BtnCapture.Click
-        ' ---- Re-entrancy guard ----
-        If isCapturing Then Return
-        isCapturing = True
-
+    Private Sub StopCamera()
         Try
-            ' ---------- Ensure we have a target row ----------
-            If currentGroup Is Nothing OrElse currentRowIdx < 0 Then
-                For Each pg As ParamGroup In Groups.Values
-                    If pg Is Nothing OrElse pg.MV1 Is Nothing Then Continue For
-                    For i As Integer = 0 To pg.MV1.Length - 1
-                        Dim tb = pg.MV1(i).tb
-                        If tb IsNot Nothing AndAlso tb.Visible Then
-                            currentGroup = pg
-                            currentRowIdx = i
-                            Exit For
-                        End If
-                    Next
-                    If currentGroup IsNot Nothing Then Exit For
-                Next
-                If currentGroup Is Nothing Then
-                    MessageBox.Show("No visible parameter rows. Check mappings and filters.", "Capture", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                    Exit Sub
-                End If
-            End If
-
-            Dim g As ParamGroup = currentGroup
-            Dim r As Integer = currentRowIdx
-            Dim capReadingNoUnit As String = ""
-            Dim capRangeNoUnit As String = ""
-
-            ' ---------- ONE capture+OCR ----------
-            Dim CaptureReadingOnce As Func(Of Boolean) =
-        Function() As Boolean
-            capReadingNoUnit = "" : capRangeNoUnit = ""
-
-            ' --- Capture frame ---
-            Try
-                If videoSource IsNot Nothing Then
-                    RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
-                    If videoSource.IsRunning Then
-                        videoSource.SignalToStop()
-                        videoSource.WaitForStop()
-                    End If
-                End If
-                Dim cam = CreatePreferredCamera()
-                If cam IsNot Nothing Then
-                    videoSource = cam
-                    AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
-                    videoSource.Start()
-                    Threading.Thread.Sleep(500)
-                End If
-            Catch
-            End Try
-
-            ' --- Save a frame ---
-            Dim baseDir As String = "C:\CapImg"
-            If Not IO.Directory.Exists(baseDir) Then IO.Directory.CreateDirectory(baseDir)
-            Dim capturePath As String = IO.Path.Combine(baseDir, $"{DateTime.Now:yyHHmmss_fff}.jpg")
-
-            Dim toSave As Bitmap = Nothing
-            SyncLock latestFrameLock
-                If latestFrame IsNot Nothing Then
-                    toSave = DirectCast(latestFrame.Clone(), Bitmap)
-                End If
-            End SyncLock
-
-            If toSave Is Nothing AndAlso PictureBox1.Image IsNot Nothing Then
-                toSave = DirectCast(PictureBox1.Image.Clone(), Bitmap)
-            End If
-
-            If toSave Is Nothing Then
-                MessageBox.Show("Camera frame is empty.", "Capture", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return False
-            End If
-
-            Try
-                toSave.Save(capturePath, Imaging.ImageFormat.Jpeg)
-            Catch ex As Exception
-                MessageBox.Show("Failed to save captured image: " & ex.Message, "Capture", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                toSave.Dispose()
-                Return False
-            Finally
-                toSave.Dispose()
-            End Try
-
-            ' --- Stop camera while OCRing ---
-            Try
-                If videoSource IsNot Nothing AndAlso videoSource.IsRunning Then
+            If videoSource IsNot Nothing Then
+                RemoveHandler videoSource.NewFrame, AddressOf VideoSource_NewFrame
+                If videoSource.IsRunning Then
                     videoSource.SignalToStop()
                     videoSource.WaitForStop()
                 End If
-            Catch
-            End Try
+            End If
+        Catch
+        End Try
+    End Sub
 
-            ' --- OCR extraction ---
-            DMMtxtparameter.Clear()
-            DMMreading.Clear()
-            RichTextBox1.Clear()
-            RemoveFocus()
+    Private Sub VideoSource_NewFrame(sender As Object, eventArgs As AForge.Video.NewFrameEventArgs)
+        Dim frame As Bitmap = Nothing
+        Try
+            frame = DirectCast(eventArgs.Frame.Clone(), Bitmap)
 
-            Try
-                Dim launched As Boolean = False
-                Try
-                    Process.Start("C:\Users\dbneri\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe") : launched = True
-                Catch
-                    Try : Process.Start("SnippingTool.exe") : launched = True : Catch : End Try
-                End Try
-                If Not launched Then
-                    MessageBox.Show("Cannot launch Snipping Tool.", "Snipping Tool", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Return False
-                End If
+            ' Save latest frame for OCR
+            SyncLock latestFrameLock
+                If latestFrame IsNot Nothing Then latestFrame.Dispose()
+                latestFrame = DirectCast(frame.Clone(), Bitmap)
+            End SyncLock
 
-                Threading.Thread.Sleep(500)
-                HideSnippingTool()
+            ' Update PictureBox safely
+            Dim displayFrame As Bitmap = DirectCast(frame.Clone(), Bitmap)
+            If PictureBox1.InvokeRequired Then
+                PictureBox1.BeginInvoke(Sub()
+                                            If PictureBox1.Image IsNot Nothing Then PictureBox1.Image.Dispose()
+                                            PictureBox1.Image = displayFrame
+                                        End Sub)
+            Else
+                If PictureBox1.Image IsNot Nothing Then PictureBox1.Image.Dispose()
+                PictureBox1.Image = displayFrame
+            End If
+        Catch ex As Exception
+            ' Optional: log or debug
+        Finally
+            If frame IsNot Nothing Then frame.Dispose()
+        End Try
+    End Sub
 
-                ' --- SendKeys automation ---
-                My.Computer.Keyboard.SendKeys("{TAB}", True) : Threading.Thread.Sleep(100)
-                My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(100)
-                My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(1000)
-                My.Computer.Keyboard.SendKeys(capturePath, True) : Threading.Thread.Sleep(100)
-                My.Computer.Keyboard.SendKeys("{ENTER}", True) : Threading.Thread.Sleep(1000)
-                My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}{RIGHT}{ENTER}", True)
-                Threading.Thread.Sleep(1500)
-                My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}{ENTER}", True)
-                Threading.Thread.Sleep(100)
+    Private Sub checkrange()
+        If PictureBox1.Image IsNot Nothing Then
+            PictureBox1.Image.Save("C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\A.jpg", ImageFormat.Jpeg)
+        Else
+            'kukuha ulit ng picture kasi walang laman yung picturebox1
+        End If
 
-                RichTextBox1.Paste()
-                Dim raw As String = NormalizeOcrText(RichTextBox1.Text)
+        ' --- OCR extraction ---
+        DMMtxtparameter.Clear()
+        RichTextBox1.Clear()
+        DMMrange.Clear()
+        RemoveFocus()
+        videoSource.Start()
+        Try
+            Process.Start("C:\Users\dbneri\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe")
+            Thread.Sleep(500)
+            HideSnippingTool()
+            ' Open the image via shortcut (more reliable than Tab-walking)
+            My.Computer.Keyboard.SendKeys("^o", True)
+            Thread.Sleep(1400)
+            My.Computer.Keyboard.SendKeys("A.jpg", True)
+            Thread.Sleep(500)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True)
+            Thread.Sleep(900) ' give it time to load
 
-                If String.IsNullOrWhiteSpace(DMMtxtparameter.Text) Then
-                    If raw.IndexOf("V", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                        DMMtxtparameter.Text = "V"
-                    ElseIf raw.IndexOf("A", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                        DMMtxtparameter.Text = "A"
-                    ElseIf raw.IndexOf("Ω", StringComparison.OrdinalIgnoreCase) >= 0 OrElse raw.IndexOf("OHM", StringComparison.OrdinalIgnoreCase) >= 0 Then
-                        DMMtxtparameter.Text = "Ω"
-                    End If
-                End If
+            ' ===== YOUR INSIDE-SNIPPING SEQUENCE =====
+            ' Option A: your tab path1
+            My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}{TAB}{TAB}{TAB}{TAB}", True)
+            Thread.Sleep(500)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True)   ' Text actions
+            Thread.Sleep(2000)
+            My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}", True)
+            Thread.Sleep(500)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True)   ' copy all text
+            Thread.Sleep(500)
+            RichTextBox1.Paste()
 
-                Dim tokens = ExtractOcrTokens(raw)
-                Dim expectedUnit As String = If(String.IsNullOrWhiteSpace(DMMtxtparameter.Text), "", DMMtxtparameter.Text.Trim().ToUpperInvariant())
-                Dim readingStr As String = "", rangeStr As String = ""
-                PickReadingAndRange(tokens, expectedUnit, readingStr, rangeStr)
+            Dim snippingToolProcesses As String() = {"SnippingTool", "SnipAndSketch"} 'close snipping tool
+            For Each procName In snippingToolProcesses
+                Dim processes As Process() = Process.GetProcessesByName(procName)
 
-                If readingStr = "" Then Return False
-
-                capReadingNoUnit = StripUnitSuffix(readingStr)
-                DMMreading.Text = capReadingNoUnit
-
-                If rangeStr <> "" Then
-                    capRangeNoUnit = StripUnitSuffix(rangeStr)
-                End If
-            Finally
-                For Each procName In New String() {"SnippingTool", "SnipAndSketch"}
-                    For Each p As Process In Process.GetProcessesByName(procName)
-                        Try : p.Kill() : p.WaitForExit() : Catch : End Try
-                    Next
+                For Each proc In processes
+                    Try
+                        proc.Kill()
+                        proc.WaitForExit()
+                        'MessageBox.Show($"{proc.ProcessName} closed successfully.")
+                    Catch ex As Exception
+                        'MessageBox.Show($"Failed to close {proc.ProcessName}: {ex.Message}")
+                    End Try
                 Next
-            End Try
+            Next
+            'after mapaste sa Richtextbox1, kukunin ko lang yung range at parameter (kung V ac ba or dc etc.)
+            If RichTextBox1.Text.Contains("114") Then
+                RichTextBox1.Text = RichTextBox1.Text.Replace("114", "A")
+            End If
+            '“V”, “A”, “mA”, “mV”,      “AC”, “DC”, “k”, “M”,       “1000”, “6 00”, “6 0”, “6” and “Manual”
+            If RichTextBox1.Text.Contains("mV") Then
+                DMMtxtparameter.Text = "mv" 'milli-volt para di magconflict sa V (volt)
+            ElseIf RichTextBox1.Text.Contains("V") Then
+                DMMtxtparameter.Text = "V"
+            ElseIf RichTextBox1.Text.Contains("mA") Then
+                DMMtxtparameter.Text = "ma" 'milla-ampere para di magconflict sa A (ampere)
+            ElseIf RichTextBox1.Text.Contains("A") Then
+                DMMtxtparameter.Text = "A"
+            End If
+            If RichTextBox1.Text.Contains("AC") Then
+                DMMtxtparameter.Text = DMMtxtparameter.Text + "ac" 'ginawang small letter yung ac para di magconflict sa A (ampere)
+            ElseIf RichTextBox1.Text.Contains("DC") Then
+                DMMtxtparameter.Text = DMMtxtparameter.Text + "dc"
+            ElseIf RichTextBox1.Text.Contains("k") Then
+                DMMtxtparameter.Text = "k"
+            ElseIf RichTextBox1.Text.Contains("M") Then
+                DMMtxtparameter.Text = "M"
+            End If
 
-            Return True
+            'If RichTextBox1.Text.Contains("Manual") Then
+            If RichTextBox1.Text.Contains("1000") Then
+                DMMrange.Text = "1000"
+            ElseIf RichTextBox1.Text.Contains("6 00") Or RichTextBox1.Text.Contains("600") Then
+                DMMrange.Text = "6 00"
+            ElseIf RichTextBox1.Text.Contains("6 0") Or RichTextBox1.Text.Contains("60") Then
+                DMMrange.Text = "6 0"
+            ElseIf RichTextBox1.Text.Contains("6") Then
+                DMMrange.Text = "6"
+            End If
+            'End If
+        Finally
+            For Each procName In New String() {"SnippingTool", "SnipAndSketch"}
+                For Each p As Process In Process.GetProcessesByName(procName)
+                    Try : p.Kill() : p.WaitForExit() : Catch : End Try
+                Next
+            Next
+        End Try
+        Timercontrolcalib.Start()
+    End Sub
+
+    Private Sub checkreading()
+        'StopCamera()
+        If PictureBox1.Image IsNot Nothing Then
+            PictureBox1.Image.Save("C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\A.jpg", ImageFormat.Jpeg)
+
+            PictureBox1.Image.Save("C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\" & looping & "A.jpg", ImageFormat.Jpeg)
+        Else
+            'kukuha ulit ng picture kasi walang laman yung picturebox1
+        End If
+        ' --- OCR extraction ---
+        DMMreading.Clear()
+        RichTextBox1.Clear()
+        RemoveFocus()
+
+        Try
+            ' --- Launch Snipping Tool reliably on Win10/11 ---
+            Process.Start("C:\Users\dbneri\AppData\Local\Microsoft\WindowsApps\SnippingTool.exe")
+            Thread.Sleep(500)
+            HideSnippingTool()
+            ' Open the image via shortcut (more reliable than Tab-walking)
+            My.Computer.Keyboard.SendKeys("^o", True)
+            Thread.Sleep(1400)
+            My.Computer.Keyboard.SendKeys("A.jpg", True)
+            Thread.Sleep(500)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True)
+            Thread.Sleep(900) ' give it time to load
+
+            ' ===== YOUR INSIDE-SNIPPING SEQUENCE =====
+            ' Option A: your tab path1
+            My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}{TAB}{TAB}{TAB}{TAB}", True)
+            Thread.Sleep(500)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True)   ' Text actions
+            Thread.Sleep(2000)
+            My.Computer.Keyboard.SendKeys("{TAB}{TAB}{TAB}", True)
+            Thread.Sleep(500)
+            My.Computer.Keyboard.SendKeys("{ENTER}", True)   ' copy all text
+            Thread.Sleep(500)
+            RichTextBox1.Paste()
+            Dim snippingToolProcesses As String() = {"SnippingTool", "SnipAndSketch"} 'close snipping tool
+            videoSource.Start()
+            For Each procName In snippingToolProcesses
+                Dim processes As Process() = Process.GetProcessesByName(procName)
+
+                For Each proc In processes
+                    Try
+                        proc.Kill()
+                        proc.WaitForExit()
+                        'MessageBox.Show($"{proc.ProcessName} closed successfully.")
+                    Catch ex As Exception
+                        'MessageBox.Show($"Failed to close {proc.ProcessName}: {ex.Message}")
+                    End Try
+                Next
+            Next
+            'after mapaste sa Richtextbox1, kukunin ko lang yung range at parameter (kung V ac ba or dc etc.)
+            RichTextBox1.Text = RichTextBox1.Text.Replace(",", ".")
+            RichTextBox1.Text = RichTextBox1.Text.Replace("0 ", "A")
+            '“V”, “A”, “mA”, “mV”,      “AC”, “DC”, “k”, “M”,       “1000”, “6 00”, “6 0”, “6” and “Manual”
+            If RichTextBox1.Text.Contains("114") Then
+                RichTextBox1.Text = RichTextBox1.Text.Replace("114", "A")
+            End If
+            If RichTextBox1.Text.Contains("6 00") Then
+                RichTextBox1.Text = RichTextBox1.Text.Replace("6 00", "A")
+            End If
+            If RichTextBox1.Text.Contains("6 0") Then
+                RichTextBox1.Text = RichTextBox1.Text.Replace("6 0", "A")
+            End If
+            If RichTextBox1.Text.Contains("6") Then
+                RichTextBox1.Text = RichTextBox1.Text.Replace("6", "A")
+            End If
+            If RichTextBox1.Text.Contains("-") Then 'if looping is for -600V huwag papasukin
+                If Not (looping = 13 Or looping = 14 Or looping = 15) Then
+                    RichTextBox1.Text = RichTextBox1.Text.Replace("-", "A")
+                End If
+            End If
+            If RichTextBox1.Text.Contains("+") Then
+                RichTextBox1.Text = RichTextBox1.Text.Replace("+", "A")
+            End If
+            dec = 32
+            While dec <= 43
+                If RichTextBox1.Text.Contains(ChrW(dec)) Then
+                    RichTextBox1.Text = RichTextBox1.Text.Replace(ChrW(dec), "A")
+                End If
+                dec = dec + 1
+            End While
+            If RichTextBox1.Text.Contains(ChrW(47)) Then
+                RichTextBox1.
+                    Text = RichTextBox1.Text.Replace(ChrW(47), "A")
+            End If
+            dec = 58
+            While dec <= 64
+                If RichTextBox1.Text.Contains(ChrW(dec)) Then
+                    RichTextBox1.Text = RichTextBox1.Text.Replace(ChrW(dec), "A")
+                End If
+                dec = dec + 1
+            End While
+            dec = 91
+            While dec <= 96
+                If RichTextBox1.Text.Contains(ChrW(dec)) Then
+                    RichTextBox1.Text = RichTextBox1.Text.Replace(ChrW(dec), "A")
+                End If
+                dec = dec + 1
+            End While
+            dec = 123
+            While dec <= 255
+                If RichTextBox1.Text.Contains(ChrW(dec)) Then
+                    RichTextBox1.Text = RichTextBox1.Text.Replace(ChrW(dec), "A")
+                End If
+                dec = dec + 1
+            End While
+            RichTextBox1.Text = Regex.Replace(RichTextBox1.Text, "(?<!\S)0(?!\S)", "")
+            RichTextBox1.Text = Regex.Replace(RichTextBox1.Text, "\s{2,}", " ").Trim()
+            RichTextBox1.Text = RichTextBox1.Text.Replace(" ", "A")
+            RichTextBox1.Text = RichTextBox1.Text.Replace(vbCr, "A")
+            RichTextBox1.Text = RichTextBox1.Text.Replace(vbNewLine, "A")
+            RichTextBox1.Text = RemoveAlphabets(RichTextBox1.Text)
+            If getwireresistance = 1 Then 'meaning kukuha ng resistance ng wire
+                DMMreading.Text = RichTextBox1.Text
+                If DMMreading.Text = Nothing Or DMMreading.Text.Contains("..") Or DMMreading.Text.Contains(". ") Then
+                    getwireresistance = 1 'magread ulit ng wire resistance
+                ElseIf Not DMMreading.Text.Contains("0") And Not DMMreading.Text.Contains("1") And Not DMMreading.Text.Contains("2") And Not DMMreading.Text.Contains("3") And Not DMMreading.Text.Contains("4") And Not DMMreading.Text.Contains("5") And Not DMMreading.Text.Contains("6") And Not DMMreading.Text.Contains("7") And Not DMMreading.Text.Contains("8") And Not DMMreading.Text.Contains("9") Then
+                    getwireresistance = 1 'magread ulit ng wire resistance
+                ElseIf Not DMMreading.Text.Contains(".") Then
+                    getwireresistance = 1 'magread ulit ng wire resistance
+                Else
+                    getwireresistance = 2
+                    wireresistance = DMMreading.Text
+                End If
+            ElseIf getwireresistance = 2 Then 'kapag 2 na ibig sabihin nakuha na value ng wire resistance at lagi na iminus sa reading
+                DMMreading.Text = RichTextBox1.Text - wireresistance
+            Else 'getwireresistance = 0
+                DMMreading.Text = RichTextBox1.Text
+                If DMMreading.Text = Nothing Or DMMreading.Text.Contains("..") Or DMMreading.Text.Contains(". ") Then
+                    malingreading = 1
+                    TextBox3.Text = malingreading
+                ElseIf Not DMMreading.Text.Contains("0") And Not DMMreading.Text.Contains("1") And Not DMMreading.Text.Contains("2") And Not DMMreading.Text.Contains("3") And Not DMMreading.Text.Contains("4") And Not DMMreading.Text.Contains("5") And Not DMMreading.Text.Contains("6") And Not DMMreading.Text.Contains("7") And Not DMMreading.Text.Contains("8") And Not DMMreading.Text.Contains("9") Then
+                    malingreading = 1
+                    TextBox3.Text = malingreading
+                ElseIf Not DMMreading.Text.Contains(".") Then
+                    malingreading = 1
+                    TextBox3.Text = malingreading
+                Else
+                    malingreading = 0
+                    TextBox3.Text = malingreading
+                End If
+            End If
+        Finally
+            For Each procName In New String() {"SnippingTool", "SnipAndSketch"}
+                For Each p As Process In Process.GetProcessesByName(procName)
+                    Try : p.Kill() : p.WaitForExit() : Catch : End Try
+                Next
+            Next
+        End Try
+    End Sub
+
+    ' Single entry-point: lahat ng logic nasa loob lang ng function na ’to.
+    ' Goal:
+    '  - 1st call → ilagay DMMreading.Text sa MV1(r)
+    '  - 2nd call → MV2(r)
+    '  - 3rd call → MV3(r) tapos mag-compute ng uncertainty
+    '  - Pag tapos ng MV3, lilipat sa next row
+    Private Sub inputReadingToMvTextbox()
+
+        ' ==== Guards: Check kung may groups at may reading, kung wala, exit agad ====
+        If Groups Is Nothing OrElse Groups.Count = 0 Then
+            Debug.WriteLine("inputReadingToMvTextbox: No groups found.")
+            Exit Sub
+        End If
+        If DMMreading Is Nothing OrElse String.IsNullOrWhiteSpace(DMMreading.Text) Then
+            Debug.WriteLine("inputReadingToMvTextbox: No DMM reading.")
+            Exit Sub
+        End If
+        ' Store the reading from DMM into a variable (para maging string)
+        Dim reading As String = DMMreading.Text
+
+        ' ==== Sticky State (persistent state across calls) ====
+        Static capturePhase As Integer = 1  ' 1 → MV1, 2 → MV2, 3 → MV3
+        Static curGroup As ParamGroup = Nothing
+        Static curRow As Integer = -1
+
+        ' Helper function to process the groups. 'orderedGroups' ay galing sa Groups data structure
+        ' In this list, we're ensuring that we follow the order of the groups (no alphabetic sorting).
+        Dim orderedGroups As List(Of ParamGroup) = Groups.Values.ToList()
+
+        ' Function to get the maximum number of rows from MV1, MV2, MV3. To avoid looping beyond valid rows.
+        Dim MaxRowsIn As Func(Of ParamGroup, Integer) =
+        Function(g As ParamGroup) As Integer
+            Return Math.Max(Math.Max(If(g.MV1?.Length, 0), If(g.MV2?.Length, 0)), If(g.MV3?.Length, 0))
         End Function
 
-            ' ---------- Find next empty (scans current group → next groups with wrap-around) ----------
-            Dim orderedGroups = Groups.OrderBy(Function(kv) kv.Value.SheetBase) _
-                                  .ThenBy(Function(kv) kv.Value.SheetIndex) _
-                                  .ToList()
+        ' Function to get the appropriate TextBox for each slot (MV1, MV2, MV3) based on the row and phase
+        ' In short, we are selecting which textbox we will input data into based on the "capturePhase".
+        Dim GetMVTextboxSafe As Func(Of ParamGroup, Integer, Integer, TextBox) =
+        Function(g As ParamGroup, r As Integer, slot As Integer) As TextBox
+            Try
+                Select Case slot
+                    Case 1 : If g IsNot Nothing AndAlso g.MV1 IsNot Nothing AndAlso r >= 0 AndAlso r < g.MV1.Length Then Return g.MV1(r).tb
+                    Case 2 : If g IsNot Nothing AndAlso g.MV2 IsNot Nothing AndAlso r >= 0 AndAlso r < g.MV2.Length Then Return g.MV2(r).tb
+                    Case 3 : If g IsNot Nothing AndAlso g.MV3 IsNot Nothing AndAlso r >= 0 AndAlso r < g.MV3.Length Then Return g.MV3(r).tb
+                End Select
+            Catch ex As Exception
+                Debug.WriteLine("Error in GetMVTextboxSafe: " & ex.Message)
+            End Try
+            Return Nothing
+        End Function
 
-            Dim FindNextEmpty As Func(Of ParamGroup, Integer, (found As Boolean, row As Integer, slot As Integer, tb As TextBox)) =
-        Function(pg As ParamGroup, startRow As Integer)
-            ' search inside one group
-            Dim SearchInGroup As Func(Of ParamGroup, Integer, (Boolean, Integer, Integer, TextBox)) =
-            Function(pgx As ParamGroup, r0 As Integer)
-                Dim maxRows As Integer = Math.Max(Math.Max(If(pgx.MV1?.Length, 0), If(pgx.MV2?.Length, 0)), If(pgx.MV3?.Length, 0))
-                For rr As Integer = Math.Max(0, r0) To maxRows - 1
-                    If pgx.MV1 IsNot Nothing AndAlso rr < pgx.MV1.Length Then
-                        Dim t = pgx.MV1(rr).tb
-                        If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then
-                            Return (True, rr, 1, t)
-                        End If
-                    End If
-                    If pgx.MV2 IsNot Nothing AndAlso rr < pgx.MV2.Length Then
-                        Dim t = pgx.MV2(rr).tb
-                        If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then
-                            Return (True, rr, 2, t)
-                        End If
-                    End If
-                    If pgx.MV3 IsNot Nothing AndAlso rr < pgx.MV3.Length Then
-                        Dim t = pgx.MV3(rr).tb
-                        If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then
-                            Return (True, rr, 3, t)
-                        End If
-                    End If
-                Next
-                Return (False, -1, 0, Nothing)
-            End Function
-
-            ' 1) current group from startRow
-            Dim hit = SearchInGroup(pg, startRow)
-            If hit.Item1 Then Return hit
-
-            ' 2) other groups after current
-            Dim curIdx As Integer = orderedGroups.FindIndex(Function(kv) kv.Value Is pg)
-            If curIdx < 0 Then curIdx = 0
-
-            For gi As Integer = curIdx + 1 To orderedGroups.Count - 1
-                Dim nextPg = orderedGroups(gi).Value
-                hit = SearchInGroup(nextPg, 0)
-                If hit.Item1 Then
-                    currentGroup = nextPg ' hop group
-                    Return hit
+        ' Function to search for the first empty slot (MV1 → MV2 → MV3) in a specific group and row
+        Dim SearchInGroup As Func(Of ParamGroup, Integer, (Boolean, Integer, Integer, TextBox)) =
+        Function(g As ParamGroup, r0 As Integer)
+            Dim mr As Integer = MaxRowsIn(g)
+            For rr = Math.Max(0, r0) To mr - 1
+                ' Trying to find the first empty textbox in MV1, MV2, or MV3
+                If g.MV1 IsNot Nothing AndAlso rr < g.MV1.Length Then
+                    Dim t As TextBox = g.MV1(rr).tb
+                    If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then Return (True, rr, 1, t)
+                End If
+                If g.MV2 IsNot Nothing AndAlso rr < g.MV2.Length Then
+                    Dim t As TextBox = g.MV2(rr).tb
+                    If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then Return (True, rr, 2, t)
+                End If
+                If g.MV3 IsNot Nothing AndAlso rr < g.MV3.Length Then
+                    Dim t As TextBox = g.MV3(rr).tb
+                    If t IsNot Nothing AndAlso t.Visible AndAlso String.IsNullOrWhiteSpace(t.Text) Then Return (True, rr, 3, t)
                 End If
             Next
-
-            ' 3) wrap-around to the beginning
-            For gi As Integer = 0 To Math.Max(0, curIdx - 1)
-                Dim nextPg = orderedGroups(gi).Value
-                hit = SearchInGroup(nextPg, 0)
-                If hit.Item1 Then
-                    currentGroup = nextPg
-                    Return hit
-                End If
-            Next
-
             Return (False, -1, 0, Nothing)
         End Function
 
-            ' ---------- Fill ALL available MV textboxes across groups ----------
-            Dim curRow As Integer = r
-            Do
-                Dim nxt = FindNextEmpty(g, curRow)
-                If Not nxt.found Then Exit Do
+        ' Function to find the next available empty slot across groups, with wrap-around.
+        Dim FindNextEmpty As Func(Of ParamGroup, Integer, (Boolean, Integer, Integer, TextBox, ParamGroup)) =
+        Function(g0 As ParamGroup, startRow As Integer)
+            ' Search in the current group
+            Dim hit = SearchInGroup(g0, startRow)
+            If hit.Item1 Then Return (True, hit.Item2, hit.Item3, hit.Item4, g0)
 
-                ' follow group hop if it occurred
-                If Not (currentGroup Is g) Then g = currentGroup
-                r = nxt.row
+            ' If no empty slot found, search in the following groups
+            Dim idx As Integer = orderedGroups.IndexOf(g0)
+            If idx < 0 Then idx = 0  ' Default to first group if current group not found
+            For i = idx + 1 To orderedGroups.Count - 1
+                Dim g As ParamGroup = orderedGroups(i)
+                hit = SearchInGroup(g, 0)  ' Start search from the first row of the next group
+                If hit.Item1 Then Return (True, hit.Item2, hit.Item3, hit.Item4, g)
+            Next
 
-                ' capture → write for this single slot
-                Dim tries As Integer = 0
-                Const MAX_TRIES As Integer = 3
-                Dim ok As Boolean = False
-                Do
-                    ok = CaptureReadingOnce()
-                    If ok Then Exit Do
-                    tries += 1
-                    Application.DoEvents()
-                    Threading.Thread.Sleep(120)
-                Loop While tries < MAX_TRIES
+            ' If still no empty slot, wrap-around to the first group
+            For i = 0 To idx - 1
+                Dim g As ParamGroup = orderedGroups(i)
+                hit = SearchInGroup(g, 0)
+                If hit.Item1 Then Return (True, hit.Item2, hit.Item3, hit.Item4, g)
+            Next
 
-                If Not ok Then
-                    ' skip to look after this row to avoid looping the same slot
-                    curRow = r + 1
-                    Continue Do
-                End If
+            ' If no empty slot found after searching all groups, return failure
+            Return (False, -1, 0, Nothing, Nothing)
+        End Function
 
-                nxt.tb.Text = capReadingNoUnit
-                If Not String.IsNullOrWhiteSpace(capRangeNoUnit) Then
-                    DMMrange.Text = capRangeNoUnit
-                    Me.Range = capRangeNoUnit
-                End If
+        ' Function to check if all MV slots in the row are filled (complete row)
+        Dim RowComplete As Func(Of ParamGroup, Integer, Boolean) =
+        Function(g As ParamGroup, r As Integer) As Boolean
+            ' To check if the current row is complete (i.e., no empty slots)
+            Dim allFilled As Boolean = True  ' Assume all slots are filled
+            If g.MV1 IsNot Nothing AndAlso r < g.MV1.Length AndAlso g.MV1(r).tb IsNot Nothing Then
+                If String.IsNullOrWhiteSpace(g.MV1(r).tb.Text) Then allFilled = False  ' If MV1 is empty, mark as not filled
+            End If
+            If g.MV2 IsNot Nothing AndAlso r < g.MV2.Length AndAlso g.MV2(r).tb IsNot Nothing Then
+                If String.IsNullOrWhiteSpace(g.MV2(r).tb.Text) Then allFilled = False  ' If MV2 is empty, mark as not filled
+            End If
+            If g.MV3 IsNot Nothing AndAlso r < g.MV3.Length AndAlso g.MV3(r).tb IsNot Nothing Then
+                If String.IsNullOrWhiteSpace(g.MV3(r).tb.Text) Then allFilled = False  ' If MV3 is empty, mark as not filled
+            End If
+            Return allFilled  ' Return true if all MV slots are filled, false otherwise
+        End Function
 
-                ' if this row is now complete, compute it
-                If IsRowComplete(g, r) Then
-                    currentGroup = g
-                    currentRowIdx = r
+        ' ==== Initialize focus on first row if needed ====
+        If curGroup Is Nothing OrElse curRow < 0 Then
+            ' Kung walang group or row, magsisimula tayo sa unang row ng unang group
+            Dim g0 As ParamGroup = orderedGroups.FirstOrDefault()
+            If g0 Is Nothing Then Exit Sub
+            Dim init = FindNextEmpty(g0, 0)
+            If Not init.Item1 Then Exit Sub
+            curGroup = init.Item5
+            curRow = init.Item2
+            capturePhase = 1  ' Start with MV1
+        End If
 
-                    ' pick any available MV cell to resolve Excel row safely
-                    Dim addr As String = Nothing
-                    If g.MV3 IsNot Nothing AndAlso r < g.MV3.Length Then addr = g.MV3(r).cell
-                    If String.IsNullOrWhiteSpace(addr) AndAlso g.MV2 IsNot Nothing AndAlso r < g.MV2.Length Then addr = g.MV2(r).cell
-                    If String.IsNullOrWhiteSpace(addr) AndAlso g.MV1 IsNot Nothing AndAlso r < g.MV1.Length Then addr = g.MV1(r).cell
+        ' ==== Strict sequence for filling MV1 → MV2 → MV3 ====
+        ' Piliin ang tamang TextBox na i-fill based on capturePhase (MV1, MV2, MV3)
+        Dim targetTB As TextBox = GetMVTextboxSafe(curGroup, curRow, capturePhase)
 
-                    If Not String.IsNullOrWhiteSpace(addr) Then
-                        currentExcelRow = GetRowFromAddr(addr)
-                        ctxDc.TargetRow = currentExcelRow
-                        StartRowCompute(g, r)   ' make sure StartRowCompute re-arms Pre/After each time
-                    End If
-                End If
+        ' ==== Write the reading to the selected TextBox ====
+        ' Kung may target textbox, i-assign yung reading sa textbox
+        If targetTB IsNot Nothing AndAlso targetTB.Visible Then
+            If targetTB.InvokeRequired Then
+                targetTB.Invoke(Sub() targetTB.Text = reading)
+            Else
+                targetTB.Text = reading
+            End If
+        End If
 
-                ' next search starts at this row again (in case more MV slots are empty on it)
-                curRow = r
-            Loop
+        ' ==== Compute uncertainty if row is complete ====
+        ' Kung kumpleto na yung row (lahat ng MV slots ay may laman), tatawagin ang uncertainty computation
+        If RowComplete(curGroup, curRow) Then
+            StartRowCompute(curGroup, curRow)  ' Uncertainty computation after MV3
+        End If
 
-            ' ---------- Automatically advance focus (optional) ----------
-            Try
-                FocusAdvance(g, r, Nothing)
-            Catch ex As Exception
-                Debug.WriteLine("FocusAdvance failed: " & ex.Message)
-            Finally
-                Dim ng As ParamGroup = Nothing
-                Dim nr As Integer = -1
-                If TryResolveFocus(ng, nr) Then
-                    currentGroup = ng
-                    currentRowIdx = nr
-                End If
-            End Try
+        ' ==== Advance phase and possibly row ====
+        capturePhase = If(capturePhase = 3, 1, capturePhase + 1)  ' Pag tapos sa MV3, mag-move to next row (MV1)
 
-            ' ---------- Resume live camera preview ----------
-            Try
-                If videoSource IsNot Nothing Then
-                    RemoveHandler videoSource.NewFrame, AddressOf Video_NewFrame
-                    If videoSource.IsRunning Then
-                        videoSource.SignalToStop()
-                        videoSource.WaitForStop()
-                    End If
-                End If
+        ' Pagkatapos ng MV3, move to the next row (MV1)
+        If capturePhase = 1 Then
+            Dim hop = FindNextEmpty(curGroup, curRow + 1)
+            If Not hop.Item1 Then hop = FindNextEmpty(curGroup, 0)
+            If hop.Item1 Then
+                curGroup = hop.Item5
+                curRow = hop.Item2
+            End If
+        End If
+    End Sub
 
-                Dim cam2 = CreatePreferredCamera()
-                If cam2 IsNot Nothing Then
-                    videoSource = cam2
-                    AddHandler videoSource.NewFrame, AddressOf Video_NewFrame
-                    videoSource.Start()
-                End If
-            Catch
-            End Try
-        Finally
-            isCapturing = False ' ---- release the guard ----
-        End Try
+    Private Sub sapialarm()
+
+        sapi = CreateObject("Sapi.spvoice")
+        sapi.Speak("Wrong range or parameter! Operation Stop.")
+
+        sapi = CreateObject("Sapi.spvoice")
+        sapi.Speak("Wrong range or parameter! Operation Stop.")
+
+        sapi = CreateObject("Sapi.spvoice")
+        sapi.Speak("Wrong range or parameter! Operation Stop.")
+        looping = 0
+    End Sub
+
+    Private Sub BtnCapture_Click(sender As Object, e As EventArgs) Handles BtnCapture.Click
+        For r As Integer = 1 To 26
+            For i As Integer = 1 To 3
+                DMMreading.Text = "0.001"
+                malingreading = 0
+                inputReadingToMvTextbox()
+            Next
+        Next
+
+        SimpleExportExcel()
+
+        '' --- INLINE CHECK BEFORE EXPORT (same logic, no new function) ---
+        'Dim totalVisible As Integer = 0
+        'Dim totalFilled As Integer = 0
+        'If Groups IsNot Nothing AndAlso Groups.Count > 0 Then
+        '    For Each g In Groups.Values
+        '        If g Is Nothing Then Continue For
+        '        Dim maxRows As Integer = Math.Max(Math.Max(If(g.MV1?.Length, 0), If(g.MV2?.Length, 0)), If(g.MV3?.Length, 0))
+        '        For i As Integer = 0 To maxRows - 1
+        '            Dim t1 As TextBox = If(g.MV1 IsNot Nothing AndAlso i < g.MV1.Length, g.MV1(i).tb, Nothing)
+        '            Dim t2 As TextBox = If(g.MV2 IsNot Nothing AndAlso i < g.MV2.Length, g.MV2(i).tb, Nothing)
+        '            Dim t3 As TextBox = If(g.MV3 IsNot Nothing AndAlso i < g.MV3.Length, g.MV3(i).tb, Nothing)
+
+        '            If t1 IsNot Nothing AndAlso t1.Visible Then
+        '                totalVisible += 1
+        '                If Not String.IsNullOrWhiteSpace(t1.Text) Then totalFilled += 1
+        '            End If
+        '            If t2 IsNot Nothing AndAlso t2.Visible Then
+        '                totalVisible += 1
+        '                If Not String.IsNullOrWhiteSpace(t2.Text) Then totalFilled += 1
+        '            End If
+        '            If t3 IsNot Nothing AndAlso t3.Visible Then
+        '                totalVisible += 1
+        '                If Not String.IsNullOrWhiteSpace(t3.Text) Then totalFilled += 1
+        '            End If
+        '        Next
+        '    Next
+        'End If
+        'TextBox1.Text = looping
+        'If looping = 1 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("R225rC2c") 'para tumapat sa Vdc yung DMM
+        '        Thread.Sleep(3000) 'delay 3 seconds
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 7 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 10 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 16 Then 'umulit
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("R225rC1c") 'para tumapat sa Vdc yung DMM
+        '        Thread.Sleep(3000) 'delay 3 seconds
+        '        SerialPort1.Write("X3800Y1P1RF") 'para pindutin yung yellow button 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 22 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("R225rW4w") 'para tumapat sa Vdc yung DMM
+        '        Timer1.Interval = 3000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 31 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("R225rC2c") 'para tumapat sa Vdc yung DMM
+        '        Thread.Sleep(3000) 'delay 3 seconds
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 37 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 43 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 49 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("R225rC2c") 'para tumapat sa Vdc yung DMM
+        '        Timer1.Interval = 3000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 55 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("R225rC1c") 'para tumapat sa ohms yung DMM
+        '        Thread.Sleep(3000) 'delay 3 seconds
+        '        SerialPort1.Write("X3000Y1P2RF") 'para pindutin yung range 2 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 61 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 64 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 67 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 70 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'ElseIf looping = 73 Then
+        '    If wrongrangeparameter = 0 And malingreading = 0 Then
+        '        SerialPort1.Write("X3000Y1P1RF") 'para pindutin yung range 1 time
+        '        Timer1.Interval = 7000
+        '    End If
+        '    Timer1.Start()
+        'Else
+        '    Timercontrolcalib.Interval = 100
+        '    Timercontrolcalib.Start()
+        'End If
+
     End Sub
 
     ' Resolve the ParamGroup/row from a focused TextBox control.
@@ -2273,177 +3162,6 @@ Public Class calibratingResult
         Return False
     End Function
 
-    ' ---------- OCR Text Normalization ----------
-    Private Function NormalizeOcrText(s As String) As String
-        If s Is Nothing Then Return ""
-        Dim t As String = s
-        ' Unicode minus & dashes -> ASCII hyphen
-        t = t.Replace(ChrW(&H2212), "-").Replace("–", "-").Replace("—", "-")
-        ' Remove spaces after sign ("- 12.3" -> "-12.3")
-        t = System.Text.RegularExpressions.Regex.Replace(t, "([+\-])\s+(?=\d)", "$1")
-        ' Normalize decimals to "."
-        t = t.Replace(",", ".")
-        Return t
-    End Function
-
-    ' ---------- Tokenize numbers (with optional SI + Unit) ----------
-    Private Class OcrToken
-        Public LineIndex As Integer
-        Public Raw As String
-        Public Sign As Integer      ' -1, 0, +1
-        Public Value As Double      ' scaled to base unit if SI prefix present
-        Public Unit As String       ' "V","A","Ω","OHM","HZ",""
-        Public HasDecimal As Boolean
-        Public LineText As String
-
-        Public NumText As String
-    End Class
-
-    Private Function ExtractOcrTokens(text As String) As List(Of OcrToken)
-        Dim list As New List(Of OcrToken)
-
-        If String.IsNullOrWhiteSpace(text) Then Return list
-
-        Dim lines = text.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-        Dim rx = New System.Text.RegularExpressions.Regex(
-            "([+\-]?)\s*(\d+(?:\.\d+)?)\s*(m|µ|u|k|M)?\s*(V|A|Ω|OHM|HZ)?",
-            System.Text.RegularExpressions.RegexOptions.IgnoreCase)
-
-        For i As Integer = 0 To lines.Length - 1
-            Dim ln = lines(i)
-            For Each m As System.Text.RegularExpressions.Match In rx.Matches(ln)
-                If Not m.Success Then Continue For
-                Dim signTxt = m.Groups(1).Value
-                Dim numTxt = m.Groups(2).Value
-                Dim siTxt = m.Groups(3).Value
-                Dim unitTxt = m.Groups(4).Value
-
-                If String.IsNullOrWhiteSpace(numTxt) Then Continue For
-
-                Dim val As Double
-                If Not Double.TryParse(numTxt, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, val) Then Continue For
-
-                Dim mult As Double = 1.0
-                Select Case siTxt
-                    Case "m" : mult = 0.001
-                    Case "µ", "u" : mult = 0.000001
-                    Case "k" : mult = 1000.0
-                    Case "M" : mult = 1000000.0
-                End Select
-                val *= mult
-
-                Dim tok As New OcrToken With {
-                    .LineIndex = i,
-                    .Raw = m.Value.Trim(),
-                    .Sign = If(signTxt = "-", -1, If(signTxt = "+", 1, 0)),
-                    .Value = val,
-                    .Unit = unitTxt.ToUpperInvariant(),
-                    .HasDecimal = numTxt.Contains("."),
-                    .LineText = ln,
-                    .NumText = numTxt
-                }
-                list.Add(tok)
-            Next
-        Next
-        Return list
-    End Function
-
-    ' ---------- Range heuristics ----------
-    Private Function StandardRangesFor(unitKey As String) As Double()
-        Select Case unitKey
-            Case "V" : Return New Double() {2, 6, 20, 60, 200, 600, 1000}
-            Case "A" : Return New Double() {0.002, 0.02, 0.2, 2, 10}
-            Case "Ω", "OHM" : Return New Double() {200, 2000, 20000, 200000, 2000000, 20000000}
-            Case Else : Return Array.Empty(Of Double)()
-        End Select
-    End Function
-
-    Private Function IsRangeLike(val As Double, unitKey As String) As Boolean
-        Dim ranges = StandardRangesFor(unitKey)
-        If ranges Is Nothing OrElse ranges.Length = 0 Then Return False
-        For Each r In ranges
-            If r = 0 Then Continue For
-            If Math.Abs(val - r) <= Math.Max(0.02 * r, If(r < 10, 0.5, 1.0)) Then Return True
-        Next
-        Return False
-    End Function
-
-    ' Score how likely a token is the main READING
-    Private Function ScoreReading(tok As OcrToken, expectedUnit As String) As Double
-        Dim s As Double = 0
-        s += Math.Min(8, tok.Raw.Length) * 0.6      ' longer with decimals → likely main
-        If tok.HasDecimal Then s += 0.8
-        If Not IsRangeLike(tok.Value, If(tok.Unit = "", expectedUnit, tok.Unit)) Then s += 1.2
-        If expectedUnit <> "" AndAlso (tok.Unit = "" OrElse tok.Unit.StartsWith(expectedUnit, StringComparison.OrdinalIgnoreCase)) Then s += 0.8
-        Dim l = tok.LineText.ToUpperInvariant()
-        If l.Contains("AUTO") OrElse l.Contains("LOZ") OrElse l.Contains("RANGE") Then s -= 0.7
-        Return s
-    End Function
-
-    ' Score how likely a token is a RANGE label
-    Private Function ScoreRange(tok As OcrToken, expectedUnit As String) As Double
-        Dim s As Double = 0
-        Dim unitKey = If(tok.Unit = "", expectedUnit, tok.Unit)
-        If IsRangeLike(tok.Value, unitKey) Then s += 2.0
-        Dim l = tok.LineText.ToUpperInvariant()
-        If l.Contains("AUTO") OrElse l.Contains("RANGE") OrElse l.Contains("AUTO VOLT") Then s += 0.8
-        s += Math.Max(0, 6 - Math.Log10(Math.Max(0.000001, tok.Value + 1))) * 0.2 ' smaller values look “range-like”
-        Return s
-    End Function
-
-    ' Pick best reading and best range from tokens
-    Private Sub PickReadingAndRange(tokens As List(Of OcrToken),
-                                    expectedUnit As String,
-                                    ByRef readingOut As String,
-                                    ByRef rangeOut As String)
-        readingOut = "" : rangeOut = ""
-        If tokens Is Nothing OrElse tokens.Count = 0 Then Exit Sub
-
-        Dim rBest As (tok As OcrToken, score As Double) = (Nothing, Double.NegativeInfinity)
-        Dim rngBest As (tok As OcrToken, score As Double) = (Nothing, Double.NegativeInfinity)
-
-        For Each t In tokens
-            Dim rs = ScoreReading(t, expectedUnit)
-            If rs > rBest.score Then rBest = (t, rs)
-            Dim gs = ScoreRange(t, expectedUnit)
-            If gs > rngBest.score Then rngBest = (t, gs)
-        Next
-
-        If rBest.tok IsNot Nothing Then
-            Dim sign = If(rBest.tok.Sign < 0, "-", If(rBest.tok.Sign > 0, "+", ""))
-            Dim unit = If(String.IsNullOrEmpty(rBest.tok.Unit), expectedUnit, rBest.tok.Unit)
-            ' was: rBest.tok.Value.ToString("G", ...)
-            Dim num = If(String.IsNullOrEmpty(rBest.tok.NumText),
-                 rBest.tok.Value.ToString("G", Globalization.CultureInfo.InvariantCulture),
-                 rBest.tok.NumText)
-            readingOut = (sign & num & If(unit = "", "", " " & unit)).Trim()
-        End If
-
-        If rngBest.tok IsNot Nothing Then
-            Dim unit = If(String.IsNullOrEmpty(rngBest.tok.Unit), expectedUnit, rngBest.tok.Unit)
-            Dim ranges = StandardRangesFor(unit)
-            If ranges.Length > 0 Then
-                Dim nearest = ranges.OrderBy(Function(v) Math.Abs(v - rngBest.tok.Value)).First()
-                rangeOut = nearest.ToString("G", Globalization.CultureInfo.InvariantCulture) &
-                           If(unit = "", "", " " & unit)
-            Else
-                rangeOut = rngBest.tok.Value.ToString("G", Globalization.CultureInfo.InvariantCulture) &
-                           If(unit = "", "", " " & unit)
-            End If
-        End If
-    End Sub
-
-    Private Function StripUnitSuffix(s As String) As String
-        If String.IsNullOrWhiteSpace(s) Then Return s
-        ' remove a single trailing unit token like V, A, Ω, OHM, HZ (case-insensitive)
-        Return System.Text.RegularExpressions.Regex.Replace(
-        s.Trim(),
-        "\s*(V|A|Ω|OHM|HZ)$",
-        "",
-        System.Text.RegularExpressions.RegexOptions.IgnoreCase
-    )
-    End Function
-
     ' Global variable to track focused textbox
     Private currentFocusedTextBox As TextBox
 
@@ -2452,39 +3170,686 @@ Public Class calibratingResult
         currentFocusedTextBox = CType(sender, TextBox)
     End Sub
 
-#End Region
 
-    Private Sub ButtonDisable_Click(sender As Object, e As EventArgs) Handles ButtonDisable.Click
+    Function RemoveAlphabets(ByVal str As String) As String
+        Dim output As String = ""
+        For Each ch As Char In str
+            ' Check if the character is NOT a letter
+            If Not Char.IsLetter(ch) Then
+                output &= ch
+            End If
+        Next
+        Return output
+    End Function
 
-        ' === cancel pending Excel hooks so nothing fires after abort ===
-        If ctxDc IsNot Nothing Then
-            Try
-                ctxDc.PreCalculate = Nothing
-            Catch
-            End Try
-            Try
-                ctxDc.AfterCalculate = Nothing
-            Catch
-            End Try
-            Try
-                ctxDc.TargetRow = -1
-            Catch
-            End Try
+    Private Sub KryptonWebBrowser1_DocumentCompleted(sender As Object, e As WebBrowserDocumentCompletedEventArgs) Handles KryptonWebBrowser1.DocumentCompleted
+
+    End Sub
+
+    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+        Timer1.Stop()
+        checkrange()
+    End Sub
+
+    Private Sub Timercontrolcalib_Tick(sender As Object, e As EventArgs) Handles Timercontrolcalib.Tick
+        Timercontrolcalib.Stop()
+        If looping >= 1 And looping <= 3 Then
+            If DMMtxtparameter.Text.Contains("Vdc") AndAlso DMMrange.Text.Contains("6") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 0V,0HZX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 1 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 0
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 4 AndAlso looping <= 6 Then
+            If DMMtxtparameter.Text.Contains("Vdc") AndAlso DMMrange.Text.Contains("6") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 5V,0HZX") '5v
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 4 Then
+                    Timeronepoint5.Interval = 4000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 3
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 7 AndAlso looping <= 9 Then
+            If DMMtxtparameter.Text.Contains("Vdc") AndAlso (DMMrange.Text.Contains("6 0") Or DMMrange.Text.Contains("60")) Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 50V,0HZX") '50v
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 7 Then
+                    Timeronepoint5.Interval = 5000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 6
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 10 AndAlso looping <= 12 Then
+            If DMMtxtparameter.Text.Contains("Vdc") AndAlso DMMrange.Text.Contains("6 00") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 600V,0HZX") '600v
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 10 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 9
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 13 AndAlso looping <= 15 Then
+            If DMMtxtparameter.Text.Contains("Vdc") AndAlso DMMrange.Text.Contains("6 00") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT -600V,0HZX") '-600v
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 13 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 12
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 16 AndAlso looping <= 18 Then
+            If DMMtxtparameter.Text.Contains("mvdc") AndAlso (DMMrange.Text.Contains("6 00") Or DMMrange.Text.Contains("600")) Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 10mV,0HZX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 16 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 15
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 19 AndAlso looping <= 21 Then
+            If DMMtxtparameter.Text.Contains("mvdc") AndAlso DMMrange.Text.Contains("6 00") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 600mV,0HZX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 19 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 18
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 22 AndAlso looping <= 24 Then
+            wrongrangeparameter = 0
+            TextBox2.Text = wrongrangeparameter
+            SerialPort1.Write("OOUT 0.5V,45HZX")
+            Thread.Sleep(500)
+            SerialPort1.Write("OOPERX") 'calibrator operate
+            SerialPort1.Write("!")
+            If looping = 22 Then
+                Timeronepoint5.Interval = 10000
+            Else
+                Timeronepoint5.Interval = 300
+            End If
+            Timeronepoint5.Start()
+        ElseIf looping >= 25 AndAlso looping <= 27 Then
+            wrongrangeparameter = 0
+            TextBox2.Text = wrongrangeparameter
+            SerialPort1.Write("OOUT 0.5V,0HZX")
+            Thread.Sleep(500)
+            SerialPort1.Write("OOPERX") 'calibrator operate
+            SerialPort1.Write("!")
+            If looping = 25 Then
+                Timeronepoint5.Interval = 3000
+            Else
+                Timeronepoint5.Interval = 300
+            End If
+            Timeronepoint5.Start()
+        ElseIf looping >= 28 AndAlso looping <= 30 Then
+            wrongrangeparameter = 0
+            TextBox2.Text = wrongrangeparameter
+            SerialPort1.Write("OOUT 250V,500HZX") '500v
+            Thread.Sleep(5000)
+            SerialPort1.Write("OOUT 300V,500HZX") '500v
+            Thread.Sleep(5000)
+            SerialPort1.Write("OOUT 350V,500HZX") '500v
+            Thread.Sleep(5000)
+            SerialPort1.Write("OOUT 400V,500HZX") '500v
+            Thread.Sleep(5000)
+            SerialPort1.Write("OOUT 450V,500HZX") '500v
+            Thread.Sleep(5000)
+            SerialPort1.Write("OOUT 500V,500HZX") '500v
+            Thread.Sleep(5000)
+            SerialPort1.Write("OOPERX") 'calibrator operate
+            SerialPort1.Write("!")
+            If looping = 28 Then
+                Timeronepoint5.Interval = 10000
+            Else
+                Timeronepoint5.Interval = 300
+            End If
+            Timeronepoint5.Start()
+        ElseIf looping >= 31 AndAlso looping <= 33 Then
+            If DMMtxtparameter.Text.Contains("Vac") AndAlso DMMrange.Text.Contains("6") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 5V,45HZX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 31 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 30
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 34 AndAlso looping <= 36 Then
+            If DMMtxtparameter.Text.Contains("Vac") AndAlso DMMrange.Text.Contains("6") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 5V,1KHZX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 34 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 33
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 37 AndAlso looping <= 39 Then
+            If DMMtxtparameter.Text.Contains("Vac") AndAlso DMMrange.Text.Contains("6 0") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 50V,45HZX") '50v
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 37 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 36
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 40 AndAlso looping <= 42 Then
+            If DMMtxtparameter.Text.Contains("Vac") AndAlso DMMrange.Text.Contains("6 0") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 50V,1KHZX") '50
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 40 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 39
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 43 AndAlso looping <= 45 Then
+            If DMMtxtparameter.Text.Contains("Vac") AndAlso DMMrange.Text.Contains("6 00") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 600V,45HZX") '6v
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 43 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 42
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 46 AndAlso looping <= 48 Then
+            If DMMtxtparameter.Text.Contains("Vac") AndAlso DMMrange.Text.Contains("6 00") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 600V,1KHZX") '6v
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 46 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 45
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 49 AndAlso looping <= 51 Then
+            If DMMtxtparameter.Text.Contains("mvac") AndAlso DMMrange.Text.Contains("6 00") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 6mV,45HZX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 49 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 48
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 52 AndAlso looping <= 54 Then
+            If DMMtxtparameter.Text.Contains("mvac") AndAlso DMMrange.Text.Contains("6 00") Then
+                wrongrangeparameter = 0
+                TextBox2.Text = wrongrangeparameter
+                SerialPort1.Write("OOUT 600mV,1KHZX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 52 Then
+                    Timeronepoint5.Interval = 10000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 51
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 55 AndAlso looping <= 57 Then 'resistor na
+            If getwireresistance = 1 Then 'kapag 1 kukuha ng resistance ng wire
+                SerialPort1.Write("OOUT 0OHMX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OSTBYX")
+                SerialPort1.Write("#")
+                If looping = 55 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            ElseIf getwireresistance = 0 Then
+                If DMMrange.Text.Contains("6 00") Then
+                    SerialPort1.Write("OOUT 0OHMX")
+                    Thread.Sleep(500)
+                    SerialPort1.Write("OOPERX") 'calibrator operate
+                    SerialPort1.Write("!")
+                    Timeronepoint5.Interval = 3000
+                    Timeronepoint5.Start()
+                Else
+                    wrongrangeparameter = wrongrangeparameter + 1
+                    TextBox2.Text = wrongrangeparameter
+                    If wrongrangeparameter >= 3 Then
+                        sapialarm()
+                    Else
+                        looping = 54
+                        TextBox1.Text = looping
+                    End If
+                    Timer2.Start()
+                End If
+            End If
+        ElseIf looping >= 58 AndAlso looping <= 60 Then
+            If DMMrange.Text.Contains("6 00") Then
+                SerialPort1.Write("OOUT 500OHMX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 58 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 57
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 61 AndAlso looping <= 63 Then
+            If DMMtxtparameter.Text.Contains("k") AndAlso DMMrange.Text.Contains("6") Then
+                SerialPort1.Write("OOUT 5KOHMX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 61 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 60
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 64 AndAlso looping <= 66 Then
+            If DMMtxtparameter.Text.Contains("k") AndAlso DMMrange.Text.Contains("6 0") Then
+                SerialPort1.Write("OOUT 50KOHMX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 64 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 63
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 67 AndAlso looping <= 69 Then
+            If DMMtxtparameter.Text.Contains("k") AndAlso DMMrange.Text.Contains("6 00") Then
+                SerialPort1.Write("OOUT 500KOHMX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 67 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 66
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 70 AndAlso looping <= 72 Then
+            If DMMtxtparameter.Text.Contains("M") AndAlso DMMrange.Text.Contains("6") Then
+                SerialPort1.Write("OOUT 5MOHMX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 70 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 69
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 73 AndAlso looping <= 75 Then
+            If DMMtxtparameter.Text.Contains("M") AndAlso DMMrange.Text.Contains("6 0") Then
+                SerialPort1.Write("OOUT 10MOHMX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 73 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 72
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
+        ElseIf looping >= 76 AndAlso looping <= 78 Then
+            If DMMtxtparameter.Text.Contains("M") AndAlso DMMrange.Text.Contains("6 0") Then
+                SerialPort1.Write("OOUT 30MOHMX")
+                Thread.Sleep(500)
+                SerialPort1.Write("OOPERX") 'calibrator operate
+                SerialPort1.Write("!")
+                If looping = 76 Then
+                    Timeronepoint5.Interval = 3000
+                Else
+                    Timeronepoint5.Interval = 300
+                End If
+                Timeronepoint5.Start()
+            Else
+                wrongrangeparameter = wrongrangeparameter + 1
+                TextBox2.Text = wrongrangeparameter
+                If wrongrangeparameter >= 3 Then
+                    sapialarm()
+                Else
+                    looping = 75
+                    TextBox1.Text = looping
+                End If
+                Timer2.Start()
+            End If
         End If
 
-        ' === UI back to idle ===
-        Me.Cursor = Cursors.Default
-
-        Try
-            Dim btnCap As Button = TryCast(Me.Controls.Find("Capture", True).FirstOrDefault(), Button)
-            If btnCap IsNot Nothing Then btnCap.Enabled = True
-        Catch
-        End Try
-
-        Try
-            If ButtonDisable IsNot Nothing Then ButtonDisable.Enabled = False
-        Catch
-        End Try
     End Sub
+
+    Private Sub Timeronepoint5_Tick(sender As Object, e As EventArgs) Handles Timeronepoint5.Tick
+        Timeronepoint5.Stop()
+        checkreading()         ' sets DMMreading.Text ONLY
+        If malingreading = 0 Then
+            inputReadingToMvTextbox()  ' writes to MV1/MV2/MV3 here
+            If looping = 54 And getwireresistance = 0 Then 'huling measure ng voltage kaya mag resistance na
+                getwireresistance = 1 'mag measure ng resistance
+                looping = looping + 1
+            End If
+        End If
+        If (looping = 3 And malingreading = 0) Or (looping = 6 And malingreading = 0) Or (looping = 9 And malingreading = 0) Or (looping = 12 And malingreading = 0) Or (looping = 15 And malingreading = 0) Or (looping = 18 And malingreading = 0) Or (looping = 21 And malingreading = 0) Or (looping = 24 And malingreading = 0) Or (looping = 27 And malingreading = 0) Or (looping = 30 And malingreading = 0) Or (looping = 33 And malingreading = 0) Or (looping = 36 And malingreading = 0) Or (looping = 39 And malingreading = 0) Or (looping = 42 And malingreading = 0) Or (looping = 45 And malingreading = 0) Or (looping = 48 And malingreading = 0) Or (looping = 51 And malingreading = 0) Or (looping = 54 And malingreading = 0) Or (looping = 57 And malingreading = 0) Or (looping = 60 And malingreading = 0) Or (looping = 63 And malingreading = 0) Or (looping = 66 And malingreading = 0) Or (looping = 69 And malingreading = 0) Or (looping = 72 And malingreading = 0) Or (looping = 75 And malingreading = 0) Or (looping = 78 And malingreading = 0) Then
+            SerialPort1.Write("OSTBYX") 'calibrator standby
+            SerialPort1.Write("@")
+        End If
+        Timer2.Start()
+    End Sub
+
+    Private Sub Timer2_Tick(sender As Object, e As EventArgs) Handles Timer2.Tick
+        Timer2.Stop()
+        If malingreading = 0 And getwireresistance = 0 Then
+            looping = looping + 1
+            TextBox1.Text = looping
+        End If
+        If looping = 79 Then
+            SerialPort1.Write("R225rW4w") 'para pindutin yung range 1 time
+            Thread.Sleep(3000) 'delay 3 seconds
+            TextBox1.Text = looping
+            getwireresistance = 0
+        ElseIf looping >= 80 Then
+            TextBox1.Text = looping
+            SerialPort1.Write("?")
+        Else
+            BtnCapture.PerformClick()
+        End If
+    End Sub
+#End Region
+
 
 End Class

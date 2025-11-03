@@ -37,6 +37,12 @@ Partial Class calibratingResult
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.Panel10 = New System.Windows.Forms.Panel()
         Me.pnlTools = New System.Windows.Forms.Panel()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.TextBox3 = New System.Windows.Forms.TextBox()
+        Me.TextBox2 = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.Label641 = New System.Windows.Forms.Label()
         Me.DMMrange = New System.Windows.Forms.TextBox()
         Me.Label638 = New System.Windows.Forms.Label()
@@ -71,6 +77,11 @@ Partial Class calibratingResult
         Me.PictureBox5 = New System.Windows.Forms.PictureBox()
         Me.KryptonWebBrowser1 = New Krypton.Toolkit.KryptonWebBrowser()
         Me.SerialPort1 = New System.IO.Ports.SerialPort(Me.components)
+        Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.Timercontrolcalib = New System.Windows.Forms.Timer(Me.components)
+        Me.Timeronepoint5 = New System.Windows.Forms.Timer(Me.components)
+        Me.Timer2 = New System.Windows.Forms.Timer(Me.components)
+        Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
         Me.Panel1.SuspendLayout()
         Me.Panel8.SuspendLayout()
         Me.Panel4.SuspendLayout()
@@ -207,7 +218,7 @@ Partial Class calibratingResult
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.Panel5.Location = New System.Drawing.Point(300, 526)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(1624, 535)
+        Me.Panel5.Size = New System.Drawing.Size(1604, 535)
         Me.Panel5.TabIndex = 24
         '
         'previewcalibrating
@@ -217,7 +228,7 @@ Partial Class calibratingResult
         Me.previewcalibrating.Dock = System.Windows.Forms.DockStyle.Fill
         Me.previewcalibrating.Location = New System.Drawing.Point(0, 0)
         Me.previewcalibrating.Name = "previewcalibrating"
-        Me.previewcalibrating.Size = New System.Drawing.Size(1624, 525)
+        Me.previewcalibrating.Size = New System.Drawing.Size(1604, 525)
         Me.previewcalibrating.TabIndex = 5
         '
         'FlowLayoutPanel1
@@ -234,11 +245,18 @@ Partial Class calibratingResult
         Me.Panel10.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.Panel10.Location = New System.Drawing.Point(0, 525)
         Me.Panel10.Name = "Panel10"
-        Me.Panel10.Size = New System.Drawing.Size(1624, 10)
+        Me.Panel10.Size = New System.Drawing.Size(1604, 10)
         Me.Panel10.TabIndex = 4
         '
         'pnlTools
         '
+        Me.pnlTools.Controls.Add(Me.ProgressBar1)
+        Me.pnlTools.Controls.Add(Me.Label3)
+        Me.pnlTools.Controls.Add(Me.TextBox3)
+        Me.pnlTools.Controls.Add(Me.TextBox2)
+        Me.pnlTools.Controls.Add(Me.Label2)
+        Me.pnlTools.Controls.Add(Me.Label1)
+        Me.pnlTools.Controls.Add(Me.TextBox1)
         Me.pnlTools.Controls.Add(Me.Label641)
         Me.pnlTools.Controls.Add(Me.DMMrange)
         Me.pnlTools.Controls.Add(Me.Label638)
@@ -272,14 +290,71 @@ Partial Class calibratingResult
         Me.pnlTools.Dock = System.Windows.Forms.DockStyle.Fill
         Me.pnlTools.Location = New System.Drawing.Point(300, 0)
         Me.pnlTools.Name = "pnlTools"
-        Me.pnlTools.Size = New System.Drawing.Size(1624, 526)
+        Me.pnlTools.Size = New System.Drawing.Size(1604, 526)
         Me.pnlTools.TabIndex = 25
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label3.Location = New System.Drawing.Point(266, 475)
+        Me.Label3.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(159, 19)
+        Me.Label3.TabIndex = 221
+        Me.Label3.Text = "maling reading:"
+        '
+        'TextBox3
+        '
+        Me.TextBox3.Location = New System.Drawing.Point(414, 474)
+        Me.TextBox3.Margin = New System.Windows.Forms.Padding(2)
+        Me.TextBox3.Name = "TextBox3"
+        Me.TextBox3.Size = New System.Drawing.Size(144, 20)
+        Me.TextBox3.TabIndex = 220
+        '
+        'TextBox2
+        '
+        Me.TextBox2.Location = New System.Drawing.Point(758, 498)
+        Me.TextBox2.Margin = New System.Windows.Forms.Padding(2)
+        Me.TextBox2.Name = "TextBox2"
+        Me.TextBox2.Size = New System.Drawing.Size(144, 20)
+        Me.TextBox2.TabIndex = 219
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label2.Location = New System.Drawing.Point(551, 497)
+        Me.Label2.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(209, 19)
+        Me.Label2.TabIndex = 218
+        Me.Label2.Text = "wrongrangeparameter:"
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
+        Me.Label1.Location = New System.Drawing.Point(623, 465)
+        Me.Label1.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(89, 19)
+        Me.Label1.TabIndex = 217
+        Me.Label1.Text = "looping:"
+        '
+        'TextBox1
+        '
+        Me.TextBox1.Location = New System.Drawing.Point(758, 465)
+        Me.TextBox1.Margin = New System.Windows.Forms.Padding(2)
+        Me.TextBox1.Name = "TextBox1"
+        Me.TextBox1.Size = New System.Drawing.Size(144, 20)
+        Me.TextBox1.TabIndex = 216
         '
         'Label641
         '
         Me.Label641.AutoSize = True
         Me.Label641.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label641.Location = New System.Drawing.Point(676, 383)
+        Me.Label641.Location = New System.Drawing.Point(644, 383)
         Me.Label641.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label641.Name = "Label641"
         Me.Label641.Size = New System.Drawing.Size(109, 19)
@@ -289,7 +364,7 @@ Partial Class calibratingResult
         'DMMrange
         '
         Me.DMMrange.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMrange.Location = New System.Drawing.Point(789, 380)
+        Me.DMMrange.Location = New System.Drawing.Point(758, 380)
         Me.DMMrange.Margin = New System.Windows.Forms.Padding(2)
         Me.DMMrange.Name = "DMMrange"
         Me.DMMrange.ReadOnly = True
@@ -414,7 +489,7 @@ Partial Class calibratingResult
         Me.ButtonDisable.BackColor = System.Drawing.Color.Red
         Me.ButtonDisable.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
         Me.ButtonDisable.ForeColor = System.Drawing.Color.White
-        Me.ButtonDisable.Location = New System.Drawing.Point(1088, 420)
+        Me.ButtonDisable.Location = New System.Drawing.Point(758, 24)
         Me.ButtonDisable.Margin = New System.Windows.Forms.Padding(2)
         Me.ButtonDisable.Name = "ButtonDisable"
         Me.ButtonDisable.Size = New System.Drawing.Size(115, 30)
@@ -426,7 +501,7 @@ Partial Class calibratingResult
         '
         Me.Label629.AutoSize = True
         Me.Label629.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label629.Location = New System.Drawing.Point(655, 426)
+        Me.Label629.Location = New System.Drawing.Point(623, 426)
         Me.Label629.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label629.Name = "Label629"
         Me.Label629.Size = New System.Drawing.Size(129, 19)
@@ -436,7 +511,7 @@ Partial Class calibratingResult
         'DMMtxtparameter
         '
         Me.DMMtxtparameter.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMtxtparameter.Location = New System.Drawing.Point(789, 340)
+        Me.DMMtxtparameter.Location = New System.Drawing.Point(758, 340)
         Me.DMMtxtparameter.Margin = New System.Windows.Forms.Padding(2)
         Me.DMMtxtparameter.Name = "DMMtxtparameter"
         Me.DMMtxtparameter.ReadOnly = True
@@ -447,7 +522,7 @@ Partial Class calibratingResult
         '
         Me.Label630.AutoSize = True
         Me.Label630.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.Label630.Location = New System.Drawing.Point(637, 344)
+        Me.Label630.Location = New System.Drawing.Point(605, 344)
         Me.Label630.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label630.Name = "Label630"
         Me.Label630.Size = New System.Drawing.Size(149, 19)
@@ -457,7 +532,7 @@ Partial Class calibratingResult
         'RichTextBox1
         '
         Me.RichTextBox1.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.RichTextBox1.Location = New System.Drawing.Point(633, 67)
+        Me.RichTextBox1.Location = New System.Drawing.Point(602, 67)
         Me.RichTextBox1.Margin = New System.Windows.Forms.Padding(2)
         Me.RichTextBox1.Name = "RichTextBox1"
         Me.RichTextBox1.Size = New System.Drawing.Size(300, 263)
@@ -467,7 +542,7 @@ Partial Class calibratingResult
         'BtnCapture
         '
         Me.BtnCapture.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.BtnCapture.Location = New System.Drawing.Point(949, 420)
+        Me.BtnCapture.Location = New System.Drawing.Point(619, 24)
         Me.BtnCapture.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnCapture.Name = "BtnCapture"
         Me.BtnCapture.Size = New System.Drawing.Size(121, 30)
@@ -478,10 +553,10 @@ Partial Class calibratingResult
         'PictureBox1
         '
         Me.PictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.PictureBox1.Location = New System.Drawing.Point(949, 67)
+        Me.PictureBox1.Location = New System.Drawing.Point(905, 11)
         Me.PictureBox1.Margin = New System.Windows.Forms.Padding(2)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(626, 340)
+        Me.PictureBox1.Size = New System.Drawing.Size(726, 513)
         Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
         Me.PictureBox1.TabIndex = 33
         Me.PictureBox1.TabStop = False
@@ -511,7 +586,7 @@ Partial Class calibratingResult
         'DMMreading
         '
         Me.DMMreading.Font = New System.Drawing.Font("Courier10 BT", 12.0!)
-        Me.DMMreading.Location = New System.Drawing.Point(789, 422)
+        Me.DMMreading.Location = New System.Drawing.Point(758, 422)
         Me.DMMreading.Margin = New System.Windows.Forms.Padding(2)
         Me.DMMreading.Name = "DMMreading"
         Me.DMMreading.ReadOnly = True
@@ -581,6 +656,7 @@ Partial Class calibratingResult
         Me.CmbBaud.Name = "CmbBaud"
         Me.CmbBaud.Size = New System.Drawing.Size(326, 27)
         Me.CmbBaud.TabIndex = 28
+        Me.CmbBaud.Text = "9600"
         '
         'CmbPort
         '
@@ -633,14 +709,38 @@ Partial Class calibratingResult
         Me.KryptonWebBrowser1.Location = New System.Drawing.Point(0, 0)
         Me.KryptonWebBrowser1.Margin = New System.Windows.Forms.Padding(2)
         Me.KryptonWebBrowser1.Name = "KryptonWebBrowser1"
-        Me.KryptonWebBrowser1.Size = New System.Drawing.Size(1624, 526)
+        Me.KryptonWebBrowser1.Size = New System.Drawing.Size(1604, 526)
         Me.KryptonWebBrowser1.TabIndex = 23
+        '
+        'SerialPort1
+        '
+        '
+        'Timer1
+        '
+        Me.Timer1.Interval = 5000
+        '
+        'Timercontrolcalib
+        '
+        '
+        'Timeronepoint5
+        '
+        Me.Timeronepoint5.Interval = 3000
+        '
+        'Timer2
+        '
+        '
+        'ProgressBar1
+        '
+        Me.ProgressBar1.Location = New System.Drawing.Point(68, 24)
+        Me.ProgressBar1.Name = "ProgressBar1"
+        Me.ProgressBar1.Size = New System.Drawing.Size(400, 23)
+        Me.ProgressBar1.TabIndex = 222
         '
         'calibratingResult
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1924, 1061)
+        Me.ClientSize = New System.Drawing.Size(1904, 1061)
         Me.Controls.Add(Me.pnlTools)
         Me.Controls.Add(Me.Panel5)
         Me.Controls.Add(Me.Panel1)
@@ -716,4 +816,15 @@ Partial Class calibratingResult
     Friend WithEvents KryptonWebBrowser1 As Krypton.Toolkit.KryptonWebBrowser
     Friend WithEvents previewcalibrating As FlowLayoutPanel
     Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
+    Friend WithEvents Timer1 As Timer
+    Friend WithEvents Timercontrolcalib As Timer
+    Friend WithEvents TextBox2 As TextBox
+    Friend WithEvents Label2 As Label
+    Friend WithEvents Label1 As Label
+    Friend WithEvents TextBox1 As TextBox
+    Friend WithEvents Timeronepoint5 As Timer
+    Friend WithEvents Timer2 As Timer
+    Friend WithEvents Label3 As Label
+    Friend WithEvents TextBox3 As TextBox
+    Friend WithEvents ProgressBar1 As ProgressBar
 End Class

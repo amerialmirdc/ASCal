@@ -120,7 +120,6 @@ C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\De
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\EnvDTE.xml
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.AssemblyReference.cache
-C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.exe.config
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.CoreCompileInputs.cache
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.Up2Date
 C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.frmMain.resources
@@ -198,3 +197,154 @@ C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Newtonsoft.Json.dll
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Newtonsoft.Json.xml
 C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.NEWDMM.resources
+D:\ASCal\ASCal\ASCal\bin\Debug\ASCal.exe.config
+D:\ASCal\ASCal\ASCal\bin\Debug\ASCal.exe
+D:\ASCal\ASCal\ASCal\bin\Debug\ASCal.pdb
+D:\ASCal\ASCal\ASCal\bin\Debug\ASCal.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.Framework.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\EntityFramework.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\EntityFramework.SqlServer.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\ExcelNumberFormat.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\Krypton.Navigator.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\Krypton.Toolkit.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\Microsoft.Bcl.HashCode.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\Newtonsoft.Json.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\RBush.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\SixLabors.Fonts.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\SQLite.Designer.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Buffers.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Data.SqlServerCe.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Memory.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Numerics.Vectors.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\EnvDTE.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\stdole.dll
+D:\ASCal\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\DocumentFormat.OpenXml.Framework.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\EntityFramework.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\EntityFramework.SqlServer.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\ExcelNumberFormat.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\Krypton.Navigator.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\Krypton.Toolkit.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\Microsoft.Bcl.HashCode.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\Newtonsoft.Json.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\RBush.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\SixLabors.Fonts.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\SQLite.Designer.pdb
+D:\ASCal\ASCal\ASCal\bin\Debug\SQLite.Designer.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Buffers.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Memory.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Numerics.Vectors.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+D:\ASCal\ASCal\ASCal\bin\Debug\EnvDTE.xml
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.AssemblyReference.cache
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.exe.config
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.ResolveComReference.cache
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.dmmManagementAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.editDMMAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.jobDashAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.NEWDMM.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.newDMMAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.FrmMain.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.calibratingResult.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.jobPreview.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.jobDashboard.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.landingPageSignatory.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.calibrate.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.compManagementAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.editCompanyAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.editUserAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.jobDashTech.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.newCompanyForm.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.userManagementAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.newUserAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.landingPageAdmin.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.landingPageTechnician.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.login.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.newCalResult.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.Resources.resources
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.GenerateResource.cache
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.CoreCompileInputs.cache
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.vbproj.Up2Date
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.exe
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.xml
+D:\ASCal\ASCal\ASCal\obj\x86\Debug\ASCal.pdb
+C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Newtonsoft.Json.dll
+C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\bin\Debug\Newtonsoft.Json.xml
+C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.NEWDMM.resources
+C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.newCalResult.resources
+C:\Users\mellu\OneDrive\Documents\Visual Studio 2010\Projects\ASCal\ASCal\obj\x86\Debug\ASCal.exe.config
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\ASCal.exe.config
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\ASCal.exe
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\ASCal.pdb
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\ASCal.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\DocumentFormat.OpenXml.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\DocumentFormat.OpenXml.Framework.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\EntityFramework.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\ExcelNumberFormat.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\Krypton.Navigator.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\Krypton.Toolkit.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\Microsoft.Bcl.HashCode.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\Newtonsoft.Json.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\RBush.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\SixLabors.Fonts.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\SQLite.Designer.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Buffers.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Data.SqlServerCe.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Memory.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\EnvDTE.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\stdole.dll
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\DocumentFormat.OpenXml.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\DocumentFormat.OpenXml.Framework.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\EntityFramework.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\ExcelNumberFormat.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\Krypton.Navigator.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\Krypton.Toolkit.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\Microsoft.Bcl.HashCode.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\Newtonsoft.Json.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\RBush.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\SixLabors.Fonts.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\SQLite.Designer.pdb
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\SQLite.Designer.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Buffers.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Memory.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\bin\Debug\EnvDTE.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.vbproj.AssemblyReference.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.exe.config
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.vbproj.ResolveComReference.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.dmmManagementAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.editDMMAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.jobDashAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.NEWDMM.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.newDMMAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.FrmMain.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.calibratingResult.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.jobPreview.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.jobDashboard.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.landingPageSignatory.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.calibrate.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.compManagementAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.editCompanyAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.editUserAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.jobDashTech.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.newCompanyForm.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.userManagementAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.newUserAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.landingPageAdmin.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.landingPageTechnician.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.login.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.newCalResult.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.Resources.resources
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.vbproj.GenerateResource.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.vbproj.CoreCompileInputs.cache
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.vbproj.Up2Date
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.exe
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.xml
+C:\Users\dbneri\Documents\Visual Studio 2010\Projects\ASCal-\ASCal\obj\x86\Debug\ASCal.pdb
